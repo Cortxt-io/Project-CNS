@@ -1,0 +1,39 @@
+{
+  "type": "object",
+  "required": ["project_slug", "action", "changes"],
+  "properties": {
+    "project_slug": { "type": "string" },
+    "action": { "enum": ["update", "create", "archive"] },
+    "clarification_needed": { "type": "boolean" },
+    "clarification_question": { "type": ["string", "null"] },
+    "changes": {
+      "type": "object",
+      "properties": {
+        "title":              { "type": ["string", "null"] },
+        "status":             { "enum": ["idea", "early_mvp", "mvp", "live", "shelved", null] },
+        "tags":               { "type": ["array", "null"] },
+        "cost_sek":           { "type": ["number", "null"] },
+        "value_sek":          { "type": ["number", "null"] },
+        "roi_percent":        { "type": ["number", "null"] },
+        "mvp_stage":          { "enum": ["hypothesis", "problem_interviews", "solution_test", "demand_test", "launch", null] },
+        "primary_audience":   { "type": ["string", "null"] },
+        "secondary_audience": { "type": ["string", "null"] },
+        "why_buy_not_build":  { "type": ["array", "null"], "maxItems": 3 },
+        "risks": {
+          "type": ["array", "null"],
+          "items": {
+            "type": "object",
+            "required": ["category", "description", "score"],
+            "properties": {
+              "category":    { "enum": ["technical", "market", "legal", "ops", "competition"] },
+              "description": { "type": "string" },
+              "score":       { "type": "number", "minimum": 1, "maximum": 5 }
+            }
+          }
+        },
+        "notes_append": { "type": ["string", "null"] },
+        "updated_at":   { "type": "string" }
+      }
+    }
+  }
+}
