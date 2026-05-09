@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from rich.console import Console
+from rich.panel import Panel
 from rich.prompt import Prompt, IntPrompt, Confirm
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schemas" / "project_schema.json"
@@ -173,3 +174,91 @@ def run_local_edit(
 
     changes["updated_at"] = date.today().isoformat()
     return changes
+
+
+# ---------------------------------------------------------------------------
+# New-project interview
+# ---------------------------------------------------------------------------
+
+
+def run_new_project_interview(
+    meta: dict[str, Any],
+    sections: dict[str, str],
+    console: Console,
+) -> tuple[dict[str, Any], dict[str, str]] | None:
+    """Run interactive interview for a new project.
+
+    Prompts for essential fields (title, problem, solution, audience, tags).
+    All prompts are skippable by pressing Enter.
+
+    Returns (meta, sections) with user input applied, or None if the user
+    cancels at the confirmation step or presses Ctrl+C.
+    """
+    try:
+        console.print()
+        console.print(f"[bold]Setting up project:[/bold] [cyan]{meta['slug']}[/cyan]")
+        console.print("[dim]Press Enter to skip any field.[/dim]\n")
+
+        # --- Title ---
+        title = Prompt.ask("  Title", default=meta["title"])
+        if title.strip():
+            meta["title"] = title.strip()
+
+        # --- Problem ---
+        problem = Prompt.ask("  What problem does this solve?", default="")
+        if problem.strip():
+            sections["Problem"] = problem.strip()
+
+        # --- Solution ---
+        solution = Prompt.ask("  Solution in one sentence", default="")
+        if solution.strip():
+            sections["Solution"] = solution.strip()
+
+        # --- Target Audience ---
+        audience = Prompt.ask("  Primary audience", default="")
+        if audience.strip():
+            sections["Target Audience"] = f"**Primary:** {audience.strip()}"
+
+        # --- Tags ---
+        tags_raw = Prompt.ask("  Tags (comma-separated)", default="")
+        if tags_raw.strip():
+            meta["tags"] = [t.strip() for t in tags_raw.split(",") if t.strip()]
+
+        # --- Summary panel ---
+        console.print()
+        summary = _build_new_project_summary(meta, sections)
+        console.print(Panel(
+            summary,
+            title=f"[bold cyan]New Project: {meta['slug']}[/bold cyan]",
+            border_style="blue",
+        ))
+
+        # --- Confirmation ---
+        if not Confirm.ask("  Create project with these details?", default=True):
+            console.print("[yellow]  Cancelled — project will use blank template.[/yellow]")
+            return None
+
+        return meta, sections
+
+    except (KeyboardInterrupt, EOFError):
+        console.print("\n[yellow]  Interrupted — project will use blank template.[/yellow]")
+        return None
+
+
+def _build_new_project_summary(
+    meta: dict[str, Any],
+    sections: dict[str, str],
+) -> str:
+    """Format a summary string for the new-project confirmation panel."""
+    dim_empty = "[dim](empty)[/dim]"
+
+    lines = [
+        f"  [bold]Title:[/bold]    {meta.get('title', dim_empty)}",
+        f"  [bold]Status:[/bold]   {meta.get('status', 'idea')}",
+        f"  [bold]Tags:[/bold]     {', '.join(meta.get('tags', [])) or dim_empty}",
+        "",
+        f"  [bold]Problem:[/bold]  {sections.get('Problem', '').strip() or dim_empty}",
+        f"  [bold]Solution:[/bold] {sections.get('Solution', '').strip() or dim_empty}",
+        f"  [bold]Audience:[/bold] {sections.get('Target Audience', '').strip() or dim_empty}",
+    ]
+    return "\n".join(lines)

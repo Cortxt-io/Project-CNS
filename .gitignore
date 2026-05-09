@@ -1,6 +1,3 @@
-# Project data (personal/local)
-projects/
-
 # Exports (auto-generated)
 exports/
 
@@ -13,3 +10,5 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+nul
+_ul

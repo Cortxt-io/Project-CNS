@@ -1,0 +1,21 @@
+# Routing-regler for Webhook Router
+# Kopiera denna fil till routing-rules.yaml och anpassa for din miljo.
+
+routes:
+  - name: site-change-monitor-alerts
+    description: Vidarebefordra andringshandelser fran Site Change Monitor
+    event_type: site_change.detected
+    destination_url: "https://hooks.example.com/site-changes"
+    retry:
+      max_attempts: 3
+      backoff_seconds: [5, 30, 120]
+    timeout_seconds: 10
+
+  - name: site-change-monitor-errors
+    description: Vidarebefordra felhandelser fran Site Change Monitor
+    event_type: site_change.error
+    destination_url: "https://hooks.example.com/alerts"
+    retry:
+      max_attempts: 2
+      backoff_seconds: [10, 60]
+    timeout_seconds: 5

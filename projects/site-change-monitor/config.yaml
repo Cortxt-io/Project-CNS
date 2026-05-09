@@ -1,0 +1,27 @@
+# Site Change Monitor - URL configuration
+# Add URLs to monitor. Each entry has a URL and an optional label.
+
+urls:
+  - label: "Notion pricing"
+    url: "https://www.notion.so/product/pricing"
+
+  - label: "Airtable pricing"
+    url: "https://www.airtable.com/pricing"
+
+  - label: "HubSpot Marketing Hub pricing"
+    url: "https://www.hubspot.com/pricing/marketing"
+
+  - label: "Linear changelog"
+    url: "https://linear.app/changelog"
+
+  - label: "Notion release notes"
+    url: "https://www.notion.so/releases"
+
+  - label: "Stripe privacy policy"
+    url: "https://stripe.com/privacy"
+
+# Noise filter settings (all optional, shown with defaults)
+filters:
+  min_change_chars: 10          # Ignore diffs shorter than this
+  ignore_whitespace_only: true  # Skip whitespace-only changes
+  ignore_timestamp_patterns: true  # Strip common date/time patterns before comparing

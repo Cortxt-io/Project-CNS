@@ -331,6 +331,15 @@ def cmd_new(args: argparse.Namespace) -> None:
     # Scaffold directories first, then write project.md
     scaffold_project_dirs(slug)
     meta, sections = new_project_template(slug)
+
+    # Interactive interview (unless --skip-prompts)
+    if not getattr(args, "skip_prompts", False):
+        from scripts.local_editor import run_new_project_interview
+
+        result = run_new_project_interview(meta, sections, console)
+        if result is not None:
+            meta, sections = result
+
     written = write_project(slug, meta, sections)
     console.print(f"[green]Created new project: {written}[/green]")
     console.print(f"[dim]Project folder: {pdir}[/dim]")
@@ -489,6 +498,10 @@ def main() -> None:
     # cns new <slug>
     sp_new = subparsers.add_parser("new", help="Create a new project")
     sp_new.add_argument("slug", help="Project slug (e.g. my-new-project)")
+    sp_new.add_argument(
+        "--skip-prompts", action="store_true", default=False,
+        help="Skip interactive prompts and create a blank project",
+    )
     sp_new.set_defaults(func=cmd_new)
 
     # cns validate <slug>
