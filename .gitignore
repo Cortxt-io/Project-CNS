@@ -12,3 +12,13 @@ __pycache__/
 Thumbs.db
 nul
 _ul
+
+# Projekt med egna repos (hanteras separat)
+projects/docs-watch/
+projects/dev-changelog-engine-mini/
+
+# Temporärt
+tmp/
+
+# Qoder
+.qoder/

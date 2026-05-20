@@ -1,0 +1,230 @@
+{
+  "exported_at": "2026-05-20T15:21:17.113430",
+  "version": "1.0",
+  "projects": [
+    {
+      "slug": "ai-ticket-triage",
+      "title": "AI Ticket Triage",
+      "status": "idea",
+      "mvp_stage": "hypothesis",
+      "cost_sek": 210000,
+      "value_sek": 750000,
+      "roi_percent": 257,
+      "tags": [],
+      "created": "2026-05-02",
+      "updated": "2026-05-02",
+      "problem": "",
+      "solution": "",
+      "primary_audience": "",
+      "assumptions": [],
+      "mvp_steps": [],
+      "top_risk": ""
+    },
+    {
+      "slug": "cns-hosting-infra",
+      "title": "CNS Hosting Infra",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
+      "cost_sek": 2000,
+      "value_sek": 15000,
+      "roi_percent": 650,
+      "tags": [
+        "hosting",
+        "infrastructure",
+        "github-actions",
+        "static"
+      ],
+      "created": "2026-05-19",
+      "updated": "2026-05-19",
+      "problem": "Alla projekt kräver manuella kommandon och en lokal dator för att köra. Inget kör automatiskt.",
+      "solution": "GitHub Actions för schemalagda körningar, statisk hosting för alla outputs, ingen lokal server behövs.",
+      "primary_audience": " Mig själv",
+      "assumptions": [
+        "GitHub Actions cron räcker för daglig körning av DocsWatch och Changelog Engine Mini",
+        "Statisk hosting (GitHub Pages) räcker för alla tre outputs i MVP",
+        "Snapshot-storage för DocsWatch kan lösas via git commit i samma repo",
+        "Migrering till egen server senare kräver ingen kodändring, bara ny trigger"
+      ],
+      "mvp_steps": [
+        "[x] Inventera repos: bekräfta att DocsWatch och Changelog Engine Mini har egna GitHub-repos",
+        "[x] Sätt upp GitHub Actions workflow för DocsWatch (daglig cron, committar snapshots)",
+        "[x] Sätt upp GitHub Actions workflow för Changelog Engine Mini (triggas efter DocsWatch)",
+        "[x] Publicera Dashboard på GitHub Pages",
+        "[x] Verifiera att alla tre outputs är tillgängliga via URL utan lokal dator"
+      ],
+      "top_risk": "**Technical** (score 2/5): DocsWatch snapshot-storage via git kan bli klumpigt vid stora diffs"
+    },
+    {
+      "slug": "dev-changelog-engine",
+      "title": "Dev Changelog Engine",
+      "status": "idea",
+      "mvp_stage": "hypothesis",
+      "cost_sek": 125000,
+      "value_sek": 380000,
+      "roi_percent": 204,
+      "tags": [],
+      "created": "2026-05-02",
+      "updated": "2026-05-02",
+      "problem": "",
+      "solution": "",
+      "primary_audience": "",
+      "assumptions": [],
+      "mvp_steps": [],
+      "top_risk": ""
+    },
+    {
+      "slug": "dev-changelog-engine-mini",
+      "title": "Dev Changelog Engine Mini",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
+      "cost_sek": 3000,
+      "value_sek": 12000,
+      "roi_percent": 300,
+      "tags": [
+        "typescript",
+        "nodejs",
+        "docswatch",
+        "digest"
+      ],
+      "created": "2026-05-05",
+      "updated": "2026-05-11",
+      "problem": "Raw change data from DocsWatch is technical and unreadable for quick consumption. There is no automated way to turn monitored site changes into a concise, human-friendly weekly digest.",
+      "solution": "A pipeline that ingests DocsWatch exports, scores changes by relevance, and renders prioritized weekly digests in Markdown and static HTML.",
+      "primary_audience": "",
+      "assumptions": [
+        "DocsWatch export format is stable enough to build on",
+        "Heuristic scoring provides useful prioritization without ML",
+        "Weekly cadence is the right default for digests"
+      ],
+      "mvp_steps": [
+        "[x] Repository skeleton & ChangeEvent schema",
+        "[x] DocsWatch adapter (data ingestion)",
+        "[x] Scoring heuristics (prioritize changes)",
+        "[x] Markdown & HTML renderer",
+        "[ ] LLM summarizer (concise descriptions)",
+        "[ ] GitHub Pages publishing"
+      ],
+      "top_risk": "Low: No external dependencies beyond DocsWatch exports"
+    },
+    {
+      "slug": "docs-watch",
+      "title": "DocsWatch",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
+      "cost_sek": 35000,
+      "value_sek": 120000,
+      "roi_percent": 243,
+      "tags": [
+        "devtools",
+        "monitoring",
+        "changelogs"
+      ],
+      "created": "2026-05-02",
+      "updated": "2026-05-02",
+      "problem": "Development teams depend on external APIs, platforms, and tools (Stripe, Vercel, Shopify, AWS, etc.) whose changelogs, release notes, and deprecation pages update without direct notification. Teams discover breaking changes, deprecations, or new versions too late -- often only when something breaks in production. Manually checking 5-15 changelog pages on a regular basis does not happen in practice.",
+      "solution": "DocsWatch is a lightweight CLI tool that monitors external documentation pages, changelogs, and release notes for meaningful content changes. It fetches pages, extracts text, diffs against previous snapshots, filters noise, and generates a clear per-run report. Built specifically for dev teams who build against external APIs and platforms.",
+      "primary_audience": " Developers and tech leads in small-to-mid teams (2-15 people) who build against external APIs and platforms and want to know when those change.",
+      "assumptions": [
+        "Dev teams lack a simple method to watch changelogs/docs they depend on (and do it manually or not at all).",
+        "Text-based diff of changelog pages gives meaningful enough information without JS rendering.",
+        "Changelogs and docs pages change frequently enough (weekly/monthly) to create recurring value.",
+        "Simple noise filtering heuristics (timestamps, whitespace, cookie banners) are sufficient to make output useful.",
+        "A CLI report (HTML/JSON) is enough as delivery format for MVP -- notifications are not needed for validation."
+      ],
+      "mvp_steps": [
+        "Hypothesis: validate that dev teams want a focused tool to watch external changelogs and docs.",
+        "Solution test: let 2-3 developers monitor their actual dependency changelogs and evaluate whether the reports are useful.",
+        "Demand test: validate whether this is a daily/weekly habit or a nice-to-have.",
+        "Launch: ship a narrow but reliable first version with clear diffs and useful default targets."
+      ],
+      "top_risk": "**Market** (score 2/5): Dev teams may not pay for this as a product -- many solve it with ad-hoc scripts or ignore it entirely."
+    },
+    {
+      "slug": "project-vault-dashboard",
+      "title": "Project Vault Dashboard",
+      "status": "idea",
+      "mvp_stage": "hypothesis",
+      "cost_sek": 4500,
+      "value_sek": 20000,
+      "roi_percent": 344,
+      "tags": [
+        "portfolio",
+        "dashboard",
+        "static-site",
+        "dataviz",
+        "cns"
+      ],
+      "created": "2026-05-11",
+      "updated": "2026-05-11",
+      "problem": "CNS och Project Vault lever i Markdown och CLI. Det finns ingen lättöverskådlig vy för en utomstående (eller framtida Rikard) att snabbt se vad som byggts, vad det kostat i tid, och vilket värde det levererat. Portföljöversikten kräver idag att man kör terminalkommandon och läser raw-filer.",
+      "solution": "En statisk HTML-dashboard som läser JSON exporterad från CNS och presenterar alla projekt med status, MVP-steg, kostnad/värde/ROI och visuella indikatorer -- utan backend, utan ramverk.",
+      "primary_audience": "",
+      "assumptions": [
+        "CNS kan exportera ren JSON som är stabil nog att vara enda datakälla.",
+        "Frontmatter-fälten är tillräckligt konsekventa för att renderas utan tung normalisering.",
+        "En statisk sajt räcker -- server-side filter/sök behövs inte i MVP.",
+        "Visuell portföljöversikt ger mätbart bättre intryck hos arbetsgivare/kunder."
+      ],
+      "mvp_steps": [],
+      "top_risk": "**Market** (score 2/5): Dashboarden är främst för egen portfölj, låg extern marknadsrisk."
+    },
+    {
+      "slug": "site-change-monitor",
+      "title": "Site Change Monitor",
+      "status": "shelved",
+      "mvp_stage": "solution_test",
+      "cost_sek": 71000,
+      "value_sek": 220000,
+      "roi_percent": 210,
+      "tags": [
+        "devtools",
+        "monitoring",
+        "competitor-intel",
+        "project-vault"
+      ],
+      "created": "2026-05-02",
+      "updated": "2026-05-07",
+      "problem": "Teams manually check competitor pages, pricing pages, changelogs, policy pages, and other critical URLs to detect important changes. This is slow, inconsistent, and easy to miss, which means strategic changes, compliance updates, or public-facing errors are often discovered too late.",
+      "solution": "Site Change Monitor is a lightweight monitoring tool that watches selected webpages, detects meaningful changes, and sends a clear alert with context about what changed. The product focuses on practical monitoring for business and product teams rather than generic uptime monitoring.",
+      "primary_audience": " Solo founders, product teams, and competitive intelligence workflows that need to detect important website changes without manually checking pages.",
+      "assumptions": [
+        "Users care more about meaningful page-change alerts than about generic uptime monitoring.",
+        "Teams are willing to pay for a simpler focused monitor instead of stitching together scripts and generic tools.",
+        "Competitor pricing, messaging, and product-page changes are frequent enough to create recurring value.",
+        "Users want alerts with context (what changed and why it matters), not just a raw \"page changed\" notification.",
+        "A lightweight setup experience is a competitive advantage over broader monitoring platforms."
+      ],
+      "mvp_steps": [
+        "Hypothesis: prove that focused website change monitoring solves a real business pain beyond uptime checks.",
+        "Problem interviews: talk to founders, marketers, and product/CI users about how they currently monitor important pages.",
+        "Solution test: let a few users monitor a small set of URLs and evaluate whether the alerts are useful.",
+        "Demand test: validate willingness to pay for competitor/pricing/policy monitoring with a simple landing page or manual concierge offer.",
+        "Launch: ship a narrow but reliable first version with clear alerting and understandable diffs."
+      ],
+      "top_risk": "**Market** (score 3/5): Users may see this as too similar to existing monitoring tools unless the positioning is sharp."
+    },
+    {
+      "slug": "webhook-router",
+      "title": "Webhook Router",
+      "status": "idea",
+      "mvp_stage": "hypothesis",
+      "cost_sek": 40000,
+      "value_sek": 0,
+      "roi_percent": 200,
+      "tags": [
+        "devtools",
+        "webhooks",
+        "self-hosted",
+        "debugging"
+      ],
+      "created": "2026-05-02",
+      "updated": "2026-05-07",
+      "problem": "Utvecklare som tar emot webhooks fran externa tjanster (Stripe, GitHub, SendGrid, Shopify, etc.) har inget enkelt satt att se exakt vad som skickades, nar, och om leveransen lyckades. Nar nagon rapporterar \"betalningen gick igenom men vart system reagerade inte\" borjar en manuell jakt genom applikationsloggar, tredjeparts-dashboards och gissningar. Att reproducera ett webhook-scenario i staging ar ofta omojligt eftersom payload:en ar borta.\n\nHookdeck och Convoy loser detta -- men som SaaS-plattformar med per-event-prissattning eller enterprise-fokus. Det finns inget latt self-hosted verktyg som bara gor: logga allt, lat mig soka, lat mig replay:a.",
+      "solution": "",
+      "primary_audience": "",
+      "assumptions": [],
+      "mvp_steps": [],
+      "top_risk": ""
+    }
+  ]
+}

@@ -25,6 +25,7 @@ from scripts.md_parser import (
     SECTIONS,
 )
 from scripts.xlsx_exporter import export_xlsx
+from scripts.json_exporter import export_json
 
 console = Console()
 
@@ -318,6 +319,17 @@ def cmd_export_xlsx(_args: argparse.Namespace) -> None:
         sys.exit(1)
 
 
+def cmd_export_json(args: argparse.Namespace) -> None:
+    """Export all projects to a JSON file."""
+    output = getattr(args, "output", None)
+    try:
+        path = export_json(output_path=output)
+        console.print(f"[green]Exported to {path}[/green]")
+    except Exception as exc:
+        console.print(f"[red]Export failed: {exc}[/red]")
+        sys.exit(1)
+
+
 def cmd_new(args: argparse.Namespace) -> None:
     """Create a new project from template with full folder scaffold."""
     slug = args.slug
@@ -494,6 +506,13 @@ def main() -> None:
     export_sub = sp_export.add_subparsers(dest="format")
     sp_xlsx = export_sub.add_parser("xlsx", help="Export to Excel")
     sp_xlsx.set_defaults(func=cmd_export_xlsx)
+
+    sp_json = export_sub.add_parser("json", help="Export to JSON")
+    sp_json.add_argument(
+        "--output", "-o", default=None,
+        help="Override output path (default: exports/projects.json)",
+    )
+    sp_json.set_defaults(func=cmd_export_json)
 
     # cns new <slug>
     sp_new = subparsers.add_parser("new", help="Create a new project")
