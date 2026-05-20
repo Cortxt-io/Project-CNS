@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-20T15:21:17.113430",
+  "exported_at": "2026-05-20T13:45:04.690276",
   "version": "1.0",
   "projects": [
     {
@@ -73,73 +73,6 @@
       "top_risk": ""
     },
     {
-      "slug": "dev-changelog-engine-mini",
-      "title": "Dev Changelog Engine Mini",
-      "status": "early_mvp",
-      "mvp_stage": "solution_test",
-      "cost_sek": 3000,
-      "value_sek": 12000,
-      "roi_percent": 300,
-      "tags": [
-        "typescript",
-        "nodejs",
-        "docswatch",
-        "digest"
-      ],
-      "created": "2026-05-05",
-      "updated": "2026-05-11",
-      "problem": "Raw change data from DocsWatch is technical and unreadable for quick consumption. There is no automated way to turn monitored site changes into a concise, human-friendly weekly digest.",
-      "solution": "A pipeline that ingests DocsWatch exports, scores changes by relevance, and renders prioritized weekly digests in Markdown and static HTML.",
-      "primary_audience": "",
-      "assumptions": [
-        "DocsWatch export format is stable enough to build on",
-        "Heuristic scoring provides useful prioritization without ML",
-        "Weekly cadence is the right default for digests"
-      ],
-      "mvp_steps": [
-        "[x] Repository skeleton & ChangeEvent schema",
-        "[x] DocsWatch adapter (data ingestion)",
-        "[x] Scoring heuristics (prioritize changes)",
-        "[x] Markdown & HTML renderer",
-        "[ ] LLM summarizer (concise descriptions)",
-        "[ ] GitHub Pages publishing"
-      ],
-      "top_risk": "Low: No external dependencies beyond DocsWatch exports"
-    },
-    {
-      "slug": "docs-watch",
-      "title": "DocsWatch",
-      "status": "early_mvp",
-      "mvp_stage": "solution_test",
-      "cost_sek": 35000,
-      "value_sek": 120000,
-      "roi_percent": 243,
-      "tags": [
-        "devtools",
-        "monitoring",
-        "changelogs"
-      ],
-      "created": "2026-05-02",
-      "updated": "2026-05-02",
-      "problem": "Development teams depend on external APIs, platforms, and tools (Stripe, Vercel, Shopify, AWS, etc.) whose changelogs, release notes, and deprecation pages update without direct notification. Teams discover breaking changes, deprecations, or new versions too late -- often only when something breaks in production. Manually checking 5-15 changelog pages on a regular basis does not happen in practice.",
-      "solution": "DocsWatch is a lightweight CLI tool that monitors external documentation pages, changelogs, and release notes for meaningful content changes. It fetches pages, extracts text, diffs against previous snapshots, filters noise, and generates a clear per-run report. Built specifically for dev teams who build against external APIs and platforms.",
-      "primary_audience": " Developers and tech leads in small-to-mid teams (2-15 people) who build against external APIs and platforms and want to know when those change.",
-      "assumptions": [
-        "Dev teams lack a simple method to watch changelogs/docs they depend on (and do it manually or not at all).",
-        "Text-based diff of changelog pages gives meaningful enough information without JS rendering.",
-        "Changelogs and docs pages change frequently enough (weekly/monthly) to create recurring value.",
-        "Simple noise filtering heuristics (timestamps, whitespace, cookie banners) are sufficient to make output useful.",
-        "A CLI report (HTML/JSON) is enough as delivery format for MVP -- notifications are not needed for validation."
-      ],
-      "mvp_steps": [
-        "Hypothesis: validate that dev teams want a focused tool to watch external changelogs and docs.",
-        "Solution test: let 2-3 developers monitor their actual dependency changelogs and evaluate whether the reports are useful.",
-        "Demand test: validate whether this is a daily/weekly habit or a nice-to-have.",
-        "Launch: ship a narrow but reliable first version with clear diffs and useful default targets."
-      ],
-      "top_risk": "**Market** (score 2/5): Dev teams may not pay for this as a product -- many solve it with ad-hoc scripts or ignore it entirely."
-    },
-    {
       "slug": "project-vault-dashboard",
       "title": "Project Vault Dashboard",
       "status": "idea",
@@ -167,41 +100,6 @@
       ],
       "mvp_steps": [],
       "top_risk": "**Market** (score 2/5): Dashboarden är främst för egen portfölj, låg extern marknadsrisk."
-    },
-    {
-      "slug": "site-change-monitor",
-      "title": "Site Change Monitor",
-      "status": "shelved",
-      "mvp_stage": "solution_test",
-      "cost_sek": 71000,
-      "value_sek": 220000,
-      "roi_percent": 210,
-      "tags": [
-        "devtools",
-        "monitoring",
-        "competitor-intel",
-        "project-vault"
-      ],
-      "created": "2026-05-02",
-      "updated": "2026-05-07",
-      "problem": "Teams manually check competitor pages, pricing pages, changelogs, policy pages, and other critical URLs to detect important changes. This is slow, inconsistent, and easy to miss, which means strategic changes, compliance updates, or public-facing errors are often discovered too late.",
-      "solution": "Site Change Monitor is a lightweight monitoring tool that watches selected webpages, detects meaningful changes, and sends a clear alert with context about what changed. The product focuses on practical monitoring for business and product teams rather than generic uptime monitoring.",
-      "primary_audience": " Solo founders, product teams, and competitive intelligence workflows that need to detect important website changes without manually checking pages.",
-      "assumptions": [
-        "Users care more about meaningful page-change alerts than about generic uptime monitoring.",
-        "Teams are willing to pay for a simpler focused monitor instead of stitching together scripts and generic tools.",
-        "Competitor pricing, messaging, and product-page changes are frequent enough to create recurring value.",
-        "Users want alerts with context (what changed and why it matters), not just a raw \"page changed\" notification.",
-        "A lightweight setup experience is a competitive advantage over broader monitoring platforms."
-      ],
-      "mvp_steps": [
-        "Hypothesis: prove that focused website change monitoring solves a real business pain beyond uptime checks.",
-        "Problem interviews: talk to founders, marketers, and product/CI users about how they currently monitor important pages.",
-        "Solution test: let a few users monitor a small set of URLs and evaluate whether the alerts are useful.",
-        "Demand test: validate willingness to pay for competitor/pricing/policy monitoring with a simple landing page or manual concierge offer.",
-        "Launch: ship a narrow but reliable first version with clear alerting and understandable diffs."
-      ],
-      "top_risk": "**Market** (score 3/5): Users may see this as too similar to existing monitoring tools unless the positioning is sharp."
     },
     {
       "slug": "webhook-router",
