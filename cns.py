@@ -450,6 +450,12 @@ def cmd_quest_sync(args: argparse.Namespace) -> None:
         console.print(f"[dim]current_slice already in sync for '{slug}'.[/dim]")
 
 
+def cmd_devwatch(args: argparse.Namespace) -> None:
+    """Run cns-devwatch: detect changes in project.md files and export ChangeEvents."""
+    from scripts.devwatch import run_devwatch
+    run_devwatch(output=args.output, since=args.since, dry_run=args.dry_run)
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
@@ -543,6 +549,25 @@ def main() -> None:
     sp_quest_sync = quest_sub.add_parser("sync", help="Sync mvp-scope.md into project.md")
     sp_quest_sync.add_argument("slug", help="Project slug")
     sp_quest_sync.set_defaults(func=cmd_quest_sync)
+
+    # cns devwatch
+    sp_devwatch = subparsers.add_parser(
+        "devwatch",
+        help="Detect changes in project.md files and export ChangeEvents to JSON",
+    )
+    sp_devwatch.add_argument(
+        "--output", "-o", default=None,
+        help="Override output file path (default: exports/devwatch_YYYY-MM-DD.json)",
+    )
+    sp_devwatch.add_argument(
+        "--since", default=None,
+        help="ISO date baseline, e.g. 2026-05-18 (overrides last-run state file)",
+    )
+    sp_devwatch.add_argument(
+        "--dry-run", action="store_true", default=False,
+        help="Print detected changes without writing output files",
+    )
+    sp_devwatch.set_defaults(func=cmd_devwatch)
 
     args = parser.parse_args()
 
