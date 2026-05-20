@@ -13,9 +13,11 @@ Thumbs.db
 nul
 _ul
 
-# Projekt med egna repos (hanteras separat)
-projects/docs-watch/
-projects/dev-changelog-engine-mini/
+# Projekt med egna repos – ignorera allt utom project.md
+projects/docs-watch/*
+!projects/docs-watch/project.md
+projects/dev-changelog-engine-mini/*
+!projects/dev-changelog-engine-mini/project.md
 
 # Temporärt
 tmp/
