@@ -72,3 +72,5 @@ Uppskattat till 10 000 SEK – sparad tid från manuell genomgång av projektfil
 ## Notes
 
 Koden lever i prompt-cns/scripts/ tills vidare – inget eget repo. Hårt beroende: CNS-repot måste vara ett git-repo med regelbunden commit-historik på project.md-filer. Utan commits ingen diff, utan diff inget värde.
+
+Testar att lägga till en rad
