@@ -37,6 +37,9 @@ jobs:
       - name: Export projects.json
         run: python cns.py export json --output projects/project-vault-dashboard/dashboard/data/projects.json
 
+      - name: Run devwatch
+        run: python cns.py devwatch
+
       - name: Copy latest devwatch export
         run: |
           LATEST=$(ls exports/devwatch_*.json 2>/dev/null | sort | tail -n 1)
