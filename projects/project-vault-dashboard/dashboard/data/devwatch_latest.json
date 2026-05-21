@@ -1,85 +1,14 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-05-20T06:00:00Z",
-  "run_id": "20260520_060000",
-  "baseline": "abc1234",
+  "exported_at": "2026-05-21T10:19:49Z",
+  "run_id": "20260521_101949",
+  "baseline": "cb60516",
+  "events": [],
   "meta": {
     "projects_scanned": 10,
-    "projects_changed": 3,
-    "events_exported": 3,
-    "noise_filtered": 1,
-    "no_changes": false
-  },
-  "events": [
-    {
-      "id": "devwatch:docs-watch:abc123:event1",
-      "detectedAt": "2026-05-20T06:00:00Z",
-      "source": {
-        "id": "docs-watch",
-        "name": "DocsWatch",
-        "type": "devwatch",
-        "url": null
-      },
-      "title": "docs-watch: project.md",
-      "rawContent": "### project.md\n## Problem\n+Ny mening...",
-      "kind": "changed",
-      "tags": ["docs-watch"],
-      "meta": {
-        "slug": "docs-watch",
-        "project_title": "DocsWatch",
-        "changed_fields": ["status", "updated"],
-        "changed_files": [
-          { "file": "project.md", "sections": ["Problem", "Solution"] }
-        ],
-        "noise_filtered": false
-      }
-    },
-    {
-      "id": "devwatch:project-alpha:abc123:event2",
-      "detectedAt": "2026-05-20T05:30:00Z",
-      "source": {
-        "id": "project-alpha",
-        "name": "Project Alpha",
-        "type": "devwatch",
-        "url": null
-      },
-      "title": "project-alpha: README.md",
-      "rawContent": "### README.md\n## Getting Started\n+Installation steps...",
-      "kind": "changed",
-      "tags": ["project-alpha"],
-      "meta": {
-        "slug": "project-alpha",
-        "project_title": "Project Alpha",
-        "changed_fields": ["updated"],
-        "changed_files": [
-          { "file": "README.md", "sections": [] }
-        ],
-        "noise_filtered": false
-      }
-    },
-    {
-      "id": "devwatch:project-beta:abc123:event3",
-      "detectedAt": "2026-05-20T05:15:00Z",
-      "source": {
-        "id": "project-beta",
-        "name": "Project Beta",
-        "type": "devwatch",
-        "url": null
-      },
-      "title": "project-beta: config.yml, index.md",
-      "rawContent": "### config.yml\n+new config...",
-      "kind": "changed",
-      "tags": ["project-beta"],
-      "meta": {
-        "slug": "project-beta",
-        "project_title": "Project Beta",
-        "changed_fields": ["cost_sek", "value_sek", "updated"],
-        "changed_files": [
-          { "file": "config.yml", "sections": ["Defaults"] },
-          { "file": "index.md", "sections": ["Hero", "Features"] }
-        ],
-        "noise_filtered": false
-      }
-    }
-  ]
+    "projects_changed": 0,
+    "events_exported": 0,
+    "noise_filtered": 0,
+    "no_changes": true
+  }
 }
