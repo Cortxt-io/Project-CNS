@@ -28,15 +28,43 @@
         return h + ':' + min + ' UTC';
     }
 
+    var NOISE_FIELDS = ['updated', 'created', 'slug', 'title', 'tags', 'roi_percent'];
+
+    var fmt = null;
+    var dataRef = null;
+
+    function refs() {
+        if (!fmt) fmt = window.PVD.format;
+        if (!dataRef) dataRef = window.PVD.data;
+    }
+
+    function getProjectMeta(slug) {
+        refs();
+        if (!dataRef || !dataRef.state || !dataRef.state.projects) return null;
+        for (var i = 0; i < dataRef.state.projects.length; i++) {
+            var p = dataRef.state.projects[i];
+            if (p.slug === slug) {
+                return { status: p.status, mvp_stage: p.mvp_stage };
+            }
+        }
+        return null;
+    }
+
     function renderFileChanges(changedFiles) {
         if (!changedFiles || changedFiles.length === 0) return '';
         var html = '';
         for (var i = 0; i < changedFiles.length; i++) {
             var cf = changedFiles[i];
+            if (cf.file !== 'project.md') continue;
             html += '<div class="text-xs text-slate-600">';
             html += '<span class="font-medium">' + cf.file + '</span>';
             if (cf.sections && cf.sections.length > 0) {
-                html += ' <span class="text-slate-400">→</span> ' + cf.sections.join(', ');
+                var visibleSections = cf.sections.slice(0, 3);
+                var remaining = cf.sections.length - 3;
+                html += ' <span class="text-slate-400">\u2192</span> ' + visibleSections.join(', ');
+                if (remaining > 0) {
+                    html += ' <span class="text-slate-400">+ ' + remaining + ' till</span>';
+                }
             }
             html += '</div>';
         }
@@ -45,12 +73,19 @@
 
     function renderFieldBadges(fields) {
         if (!fields || fields.length === 0) return '';
-        if (fields.length === 1 && fields[0] === 'updated') return '';
-        var html = '<div class="flex flex-wrap gap-1 mt-2">';
+        var filtered = [];
         for (var i = 0; i < fields.length; i++) {
             var f = fields[i];
-            if (f === 'updated') continue;
-            html += '<span class="inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-medium bg-slate-100 text-slate-600 border border-slate-200">' + f + '</span>';
+            var isNoise = false;
+            for (var j = 0; j < NOISE_FIELDS.length; j++) {
+                if (f === NOISE_FIELDS[j]) { isNoise = true; break; }
+            }
+            if (!isNoise) filtered.push(f);
+        }
+        if (filtered.length === 0) return '';
+        var html = '<div class="flex flex-wrap gap-1 mt-2">';
+        for (var k = 0; k < filtered.length; k++) {
+            html += '<span class="inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-medium bg-slate-100 text-slate-600 border border-slate-200">' + filtered[k] + '</span>';
         }
         html += '</div>';
         return html;
@@ -122,11 +157,16 @@
             html += '<div class="flex justify-between items-start mb-1">';
             html += '<div>';
             html += '<span class="font-semibold text-sm text-slate-800">' + title + '</span>';
-            if (slug) {
-                html += ' <span class="text-xs text-slate-400">' + slug + '</span>';
-            }
+            if (slug) { html += ' <span class="text-xs text-slate-400">' + slug + '</span>'; }
             html += '</div>';
-            html += '<span class="text-xs text-slate-400 flex-shrink-0">' + detected + '</span>';
+            html += '<div class="flex items-center gap-1.5 flex-shrink-0">';
+            var projMeta = getProjectMeta(slug);
+            if (projMeta && fmt) {
+                html += '<span class="inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-medium ' + fmt.statusBadgeClass(projMeta.status) + '">' + fmt.statusLabel(projMeta.status) + '</span>';
+                html += '<span class="inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-medium bg-slate-100 text-slate-600 border border-slate-200">' + fmt.stageLabel(projMeta.mvp_stage) + '</span>';
+            }
+            html += '<span class="text-xs text-slate-400">' + detected + '</span>';
+            html += '</div>';
             html += '</div>';
 
             // Changed files
