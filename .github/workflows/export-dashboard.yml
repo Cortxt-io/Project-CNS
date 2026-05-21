@@ -37,11 +37,22 @@ jobs:
       - name: Export projects.json
         run: python cns.py export json --output projects/project-vault-dashboard/dashboard/data/projects.json
 
+      - name: Copy latest devwatch export
+        run: |
+          LATEST=$(ls exports/devwatch_*.json 2>/dev/null | sort | tail -n 1)
+          if [ -n "$LATEST" ]; then
+            cp "$LATEST" projects/project-vault-dashboard/dashboard/data/devwatch_latest.json
+            echo "Copied $LATEST"
+          else
+            echo "No devwatch export found — skipping"
+          fi
+
       - name: Commit updated projects.json
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add projects/project-vault-dashboard/dashboard/data/projects.json
+          git add projects/project-vault-dashboard/dashboard/data/devwatch_latest.json
           if git diff --cached --quiet; then
             echo "No changes"
           else

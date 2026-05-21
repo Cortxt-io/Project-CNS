@@ -20,6 +20,7 @@
 <nav class="flex gap-1 mb-6 border-b-2 border-gray-200" id="main-nav">
 <button data-section="overview" class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors text-blue-600 border-blue-600">Översikt</button>
 <button data-section="charts" class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors text-gray-500 border-transparent hover:text-gray-700">Analys</button>
+<button data-section="activity" class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors text-gray-500 border-transparent hover:text-gray-700">Aktivitet</button>
 </nav>
 <p class="text-sm text-gray-500 mb-6 max-w-[700px] leading-relaxed">Alla projekt i mitt Project Vault &mdash; från tidiga idéer till levererade MVP:er. Datan exporteras från CNS via <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">python cns.py export json</code>.</p>
 <div class="flex gap-3 mb-6 flex-wrap" id="stats"></div>
@@ -85,6 +86,7 @@
 <p class="text-sm text-gray-500 leading-relaxed">Datan kommer från CNS, ett CLI-verktyg som läser Markdown med YAML-frontmatter. Exporten görs via <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">python cns.py export json</code>. Ingen backend &mdash; statisk HTML, Tailwind och vanilla JS.</p>
 </div>
 </section>
+<section id="section-activity" class="hidden"></section>
 <footer class="mt-8 pt-4 border-t border-gray-200 text-center text-xs text-gray-400"><span id="export-info"></span></footer>
 <div id="detail-overlay" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm z-50 items-center justify-center p-8" data-open="false">
 <div id="detail-panel" class="detail-panel bg-white border border-gray-200 rounded-md shadow-xl max-w-[600px] w-full max-h-[85vh] overflow-y-auto p-6"></div>
@@ -94,6 +96,7 @@
 <script src="src/views/overview.js"></script>
 <script src="src/views/analysis.js"></script>
 <script src="src/components/detail-modal.js"></script>
+<script src="src/views/activity.js"></script>
 <script src="src/main.js"></script>
 </body>
 </html>

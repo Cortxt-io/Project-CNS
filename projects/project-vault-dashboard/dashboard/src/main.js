@@ -5,7 +5,7 @@
     'use strict';
     window.PVD = window.PVD || {};
 
-    var data, overview, analysis, detail;
+    var data, overview, analysis, detail, activity;
     var searchTimeout = null;
 
     function refs() {
@@ -13,6 +13,7 @@
         overview = window.PVD.overview;
         analysis = window.PVD.analysis;
         detail = window.PVD.detail;
+        activity = window.PVD.activity;
     }
 
     // Centralt re-render av översiktsvyn
@@ -36,7 +37,8 @@
         var nav = document.getElementById('main-nav');
         var sections = {
             overview: document.getElementById('section-overview'),
-            charts: document.getElementById('section-charts')
+            charts: document.getElementById('section-charts'),
+            activity: document.getElementById('section-activity')
         };
         nav.addEventListener('click', function (e) {
             var btn = e.target.closest('button[data-section]');
@@ -170,6 +172,13 @@
             renderOverview();
             analysis.renderRoiChart(data.state.projects);
             analysis.renderStatusDonut(data.state.projects);
+
+            // Hämta och rendera aktivitetsdata
+            activity.fetchActivityData().then(function (actData) {
+                activity.renderActivity(actData);
+            }).catch(function () {
+                activity.renderActivityEmpty();
+            });
 
             // Footer
             document.getElementById('export-info').textContent =
