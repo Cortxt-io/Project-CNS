@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-20T13:57:02.029272",
+  "exported_at": "2026-05-21T10:33:10.835602",
   "version": "1.0",
   "projects": [
     {
@@ -19,6 +19,40 @@
       "assumptions": [],
       "mvp_steps": [],
       "top_risk": ""
+    },
+    {
+      "slug": "cns-devwatch",
+      "title": "CNS DevWatch",
+      "status": "idea",
+      "mvp_stage": "hypothesis",
+      "cost_sek": 3000,
+      "value_sek": 10000,
+      "roi_percent": 233,
+      "tags": [
+        "devtools",
+        "monitoring",
+        "internal",
+        "git",
+        "python"
+      ],
+      "created": "2026-05-20",
+      "updated": "2026-05-20",
+      "problem": "CNS har ingen automatisk vy över vad som ändrats i egna project.md-filer dag för dag.",
+      "solution": "Git diff-baserad bevakning av project.md-filer som detekterar och exporterar portföljändringar dagligen.",
+      "primary_audience": " Mig själv - portföljägare som vill ha intern monitoring utan manuell genomgång.",
+      "assumptions": [
+        "Git diff på project.md-filer ger tillräcklig signal om vad som faktiskt förändrats i portföljarbetet.",
+        "Daglig körning är rätt kadens – varken för frekvent (brus) eller för sällan (förlorad kontext).",
+        "Diff-output är strukturerad nog att cns-devlog kan konsumera den utan manuell bearbetning.",
+        "En portföljägare med 5–10 aktiva projekt behöver inte mer än filnivå-diff för att förstå vad som hänt."
+      ],
+      "mvp_steps": [
+        "Hypothesis: verifiera att git log + diff på projects/-mappen ger meningsfull daglig signal.",
+        "Solution test: kör skriptet dagligen i en vecka, utvärdera om output speglar vad som faktiskt gjordes.",
+        "Demand test: kontrollera om output faktiskt används som input till cns-devlog eller ignoreras.",
+        "Launch: schemalägg via GitHub Actions eller cron, integrera med cns-devlog-pipeline."
+      ],
+      "top_risk": "**Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal. Kräver disciplin att committa project.md-ändringar regelbundet."
     },
     {
       "slug": "cns-hosting-infra",
