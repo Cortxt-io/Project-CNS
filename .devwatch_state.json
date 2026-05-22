@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-05-22T08:22:49Z",
-  "run_id": "20260522_082249",
-  "baseline": "65f21fb",
+  "exported_at": "2026-05-22T10:18:05Z",
+  "run_id": "20260522_101805",
+  "baseline": "590fc36",
   "events": [],
   "meta": {
     "projects_scanned": 8,
@@ -11,5 +11,5 @@
     "noise_filtered": 0,
     "no_changes": true
   },
-  "last_commit": "590fc36a7091d0cf7533dd23d5fd0c3e6bb5350c"
+  "last_commit": "4a6ea85ef4c505ac7cb62673b1f1442c58856946"
 }
