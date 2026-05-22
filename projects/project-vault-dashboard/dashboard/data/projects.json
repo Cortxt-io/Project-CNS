@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-22T08:14:31.505140",
+  "exported_at": "2026-05-22T08:19:22.684991",
   "version": "1.0",
   "projects": [
     {
@@ -176,8 +176,8 @@
     {
       "slug": "project-vault-dashboard",
       "title": "Project Vault Dashboard",
-      "status": "idea",
-      "mvp_stage": "hypothesis",
+      "status": "solution_test",
+      "mvp_stage": "early_mvp",
       "cost_sek": 4500,
       "value_sek": 20000,
       "roi_percent": 344,
