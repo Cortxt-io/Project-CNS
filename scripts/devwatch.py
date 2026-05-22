@@ -27,7 +27,7 @@ from scripts.md_parser import read_project, list_project_files
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 EXPORTS_DIR = REPO_ROOT / "exports"
-LAST_RUN_FILE = EXPORTS_DIR / "devwatch_last_run.json"
+LAST_RUN_FILE = REPO_ROOT / ".devwatch_state.json"
 
 # Git empty-tree SHA — used as baseline when the repo has only one commit
 GIT_EMPTY_TREE = "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
