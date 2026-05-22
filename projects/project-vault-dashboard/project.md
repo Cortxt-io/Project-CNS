@@ -1,10 +1,10 @@
 ---
 cost_sek: 4500
 created: '2026-05-11'
-mvp_stage: hypothesis
+mvp_stage: early_mvp
 roi_percent: 344
 slug: project-vault-dashboard
-status: idea
+status: solution_test
 tags:
 - portfolio
 - dashboard
