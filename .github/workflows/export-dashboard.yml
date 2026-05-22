@@ -56,6 +56,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add projects/project-vault-dashboard/dashboard/data/projects.json
           git add projects/project-vault-dashboard/dashboard/data/devwatch_latest.json
+          git add exports/devwatch_last_run.json
           if git diff --cached --quiet; then
             echo "No changes"
           else
