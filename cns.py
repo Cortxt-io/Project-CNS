@@ -456,6 +456,12 @@ def cmd_devwatch(args: argparse.Namespace) -> None:
     run_devwatch(output=args.output, since=args.since, dry_run=args.dry_run)
 
 
+def cmd_devlog(args: argparse.Namespace) -> None:
+    """Run cns-devlog: generate AI digest from devwatch output and render static HTML."""
+    from scripts.devlog import run_devlog
+    run_devlog(input_path=args.input, output_path=args.output, dry_run=args.dry_run)
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
@@ -568,6 +574,25 @@ def main() -> None:
         help="Print detected changes without writing output files",
     )
     sp_devwatch.set_defaults(func=cmd_devwatch)
+
+    # cns devlog
+    sp_devlog = subparsers.add_parser(
+        "devlog",
+        help="Generate AI digest from devwatch output and render static HTML",
+    )
+    sp_devlog.add_argument(
+        "--input", "-i", default=None,
+        help="Override devwatch JSON path (default: latest exports/devwatch_YYYY-MM-DD.json)",
+    )
+    sp_devlog.add_argument(
+        "--output", "-o", default=None,
+        help="Override HTML output path (default: exports/devlog_YYYY-MM-DD.html)",
+    )
+    sp_devlog.add_argument(
+        "--dry-run", action="store_true", default=False,
+        help="Print prompt and skip OpenAI call + file write",
+    )
+    sp_devlog.set_defaults(func=cmd_devlog)
 
     args = parser.parse_args()
 

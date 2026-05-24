@@ -38,7 +38,10 @@ jobs:
         run: python cns.py export json --output projects/project-vault-dashboard/dashboard/data/projects.json
 
       - name: Run devwatch
-        run: python cns.py devwatch
+        run: |
+          SINCE=$(date -u -d 'yesterday 07:00' '+%Y-%m-%dT%H:%M:%S' 2>/dev/null || \
+                  date -u -v-1d -v7H -v0M -v0S '+%Y-%m-%dT%H:%M:%S')
+          python cns.py devwatch --since "$SINCE"
 
       - name: Copy latest devwatch export
         run: |
@@ -50,19 +53,48 @@ jobs:
             echo "No devwatch export found — skipping"
           fi
 
-      - name: Commit updated projects.json
+      - name: Run devlog
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python cns.py devlog
+
+      - name: Copy latest devlog export
+        run: |
+          LATEST=$(ls exports/devlog_[0-9]*.html 2>/dev/null | sort | tail -n 1)
+          if [ -n "$LATEST" ]; then
+            cp "$LATEST" projects/project-vault-dashboard/dashboard/data/devlog_latest.html
+            echo "Copied $LATEST"
+          else
+            echo "No devlog export found — skipping"
+          fi
+
+      - name: Commit updated files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add projects/project-vault-dashboard/dashboard/data/projects.json
           git add projects/project-vault-dashboard/dashboard/data/devwatch_latest.json
-          git add .devwatch_state.json
+          git add exports/devlog_*.html
+          git add projects/project-vault-dashboard/dashboard/data/devlog_latest.html
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "chore: update projects.json $(date +%Y-%m-%d)"
+            git commit -m "chore: update dashboard data $(date +%Y-%m-%d)"
             git push
           fi
+
+      - name: Trigger DocsWatch daily run
+        continue-on-error: true
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token $PAT_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/rian010194/docs-watch/dispatches \
+            -d '{"event_type":"cns-daily-trigger"}'
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
