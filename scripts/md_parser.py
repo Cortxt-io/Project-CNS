@@ -187,6 +187,29 @@ def scaffold_project_dirs(slug: str) -> Path:
     return pdir
 
 
+def ensure_project_dirs(slug: str) -> None:
+    """Ensure all PROJECT_SUBDIRS exist for a project. Creates only directories,
+    no seed files and no project.md."""
+    pdir = project_dir(slug)
+    for sub in PROJECT_SUBDIRS:
+        (pdir / sub).mkdir(parents=True, exist_ok=True)
+
+
+def ensure_all_project_dirs() -> list[str]:
+    """Run ensure_project_dirs for all existing projects.
+    Returns list of slugs where directories were created."""
+    created: list[str] = []
+    for path in list_project_files():
+        slug = path.parent.name
+        # Check if any subdir was missing before creating
+        pdir = project_dir(slug)
+        had_missing = any(not (pdir / sub).exists() for sub in PROJECT_SUBDIRS)
+        ensure_project_dirs(slug)
+        if had_missing:
+            created.append(slug)
+    return created
+
+
 def _seed_if_missing(path: Path, content: str) -> None:
     """Write *content* to *path* only if the file does not already exist."""
     if not path.exists():

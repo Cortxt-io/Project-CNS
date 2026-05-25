@@ -1,25 +1,26 @@
 ---
-title: DocsWatch
+cost_sek: 35000
+created: 2026-05-02
+current_slice: Focused changelog/docs monitor via CLI, reusing Site Change Monitor
+  core
+family: developer-tools
+mvp_stage: solution_test
+roi_percent: 243
 slug: docs-watch
 status: early_mvp
+summary: CLI-verktyg som bevakar externa changelogs och docs för dev-team.
 tags:
 - devtools
 - monitoring
 - changelogs
-cost_sek: 35000
-value_sek: 120000
-roi_percent: 243
-mvp_stage: solution_test
-created: 2026-05-02
+title: DocsWatch
 updated: 2026-05-02
-current_slice: Focused changelog/docs monitor via CLI, reusing Site Change Monitor core
-summary: CLI-verktyg som bevakar externa changelogs och docs för dev-team.
-family: developer-tools
 url_repo: https://github.com/rian010194/docs-watch
+value_sek: 120000
 ---
 
 ## Problem
-Development teams depend on external APIs, platforms, and tools (Stripe, Vercel, Shopify, AWS, etc.) whose changelogs, release notes, and deprecation pages update without direct notification. Teams discover breaking changes, deprecations, or new versions too late -- often only when something breaks in production. Manually checking 5-15 changelog pages on a regular basis does not happen in practice.
+Development teams depend on external APIs, platforms, and tools (Stripe, Vercel, Shopify, AWS, etc.) whose changelogs, release notes, and deprecation pages update without direct notification. Teams discover breaking changes, deprecations, or new versions too late -- often only when something breaks in production. Manually checking 5-15 changelog pages on a regular basis does not happen in practice. 
 
 ## Solution
 DocsWatch is a lightweight CLI tool that monitors external documentation pages, changelogs, and release notes for meaningful content changes. It fetches pages, extracts text, diffs against previous snapshots, filters noise, and generates a clear per-run report. Built specifically for dev teams who build against external APIs and platforms.

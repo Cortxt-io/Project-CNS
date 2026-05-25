@@ -462,6 +462,105 @@ def cmd_devlog(args: argparse.Namespace) -> None:
     run_devlog(input_path=args.input, output_path=args.output, dry_run=args.dry_run)
 
 
+def cmd_watch(_args: argparse.Namespace) -> None:
+    """Start file watcher for auto-updating 'updated' timestamps."""
+    from scripts.file_watcher import run_watch
+    run_watch()
+
+
+def cmd_analyze(args: argparse.Namespace) -> None:
+    """AI-analyze a project and suggest field updates."""
+    from scripts.analyst import run_analyze
+    try:
+        run_analyze(
+            args.slug,
+            _show_diff_and_confirm,
+            dry_run=getattr(args, "dry_run", False),
+        )
+    except FileNotFoundError as exc:
+        console.print(f"[red]{exc}[/red]")
+        sys.exit(1)
+    except RuntimeError as exc:
+        console.print(f"[red]Error:[/red] {exc}")
+        sys.exit(1)
+
+
+def cmd_scaffold(_args: argparse.Namespace) -> None:
+    """Ensure all project directories exist."""
+    from scripts.md_parser import ensure_all_project_dirs
+    created = ensure_all_project_dirs()
+    if created:
+        for slug in created:
+            console.print(f"[green]Scaffolded missing dirs for: {slug}[/green]")
+    else:
+        console.print("[dim]All project directories already complete.[/dim]")
+
+
+def cmd_install_hooks(_args: argparse.Namespace) -> None:
+    """Install git hooks for CNS."""
+    from scripts.install_hooks import install_post_commit_hook
+    install_post_commit_hook()
+
+
+def cmd_post_commit_analyze(_args: argparse.Namespace) -> None:
+    """Identify slugs changed in last commit and queue analyze."""
+    import subprocess
+    from scripts.analyst import run_analyze
+    from pathlib import Path
+
+    result = subprocess.run(
+        ["git", "diff-tree", "--no-commit-id", "-r",
+         "--name-only", "HEAD"],
+        capture_output=True, text=True
+    )
+    changed_files = result.stdout.strip().splitlines()
+
+    slugs = set()
+    for f in changed_files:
+        parts = Path(f).parts
+        if len(parts) >= 2 and parts[0] == "projects":
+            slugs.add(parts[1])
+
+    if not slugs:
+        return
+
+    EXPORTS_DIR = Path("exports")
+    EXPORTS_DIR.mkdir(exist_ok=True)
+    today = date.today().isoformat()
+
+    for slug in sorted(slugs):
+        output_path = EXPORTS_DIR / f"analyze_{slug}_{today}.json"
+        try:
+            run_analyze(slug, confirm_fn=None, output_path=output_path)
+        except Exception as exc:
+            print(f"[cns post-commit] Error analyzing {slug}: {exc}")
+
+
+def cmd_review(_args: argparse.Namespace) -> None:
+    """Review and apply pending AI suggestions."""
+    from scripts.analyst import load_pending_suggestions, apply_pending
+
+    pending_list = load_pending_suggestions()
+    if not pending_list:
+        console.print("[dim]No pending suggestions.[/dim]")
+        return
+
+    console.print(f"[bold]{len(pending_list)} pending suggestion(s):[/bold]")
+    for item in pending_list:
+        console.print(
+            f"  [cyan]{item['slug']}[/cyan] "
+            f"[dim](analyzed {item['analyzed_at']})[/dim]"
+        )
+    console.print()
+
+    for item in pending_list:
+        console.print(
+            f"[bold]Reviewing suggestions for "
+            f"[cyan]{item['slug']}[/cyan]:[/bold]"
+        )
+        apply_pending(item, _show_diff_and_confirm)
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
@@ -601,13 +700,45 @@ def main() -> None:
     )
     sp_watch.set_defaults(func=cmd_watch)
 
-    # cns analyze <slug>
+    # cns analyze <slug> [--dry-run]
     sp_analyze = subparsers.add_parser(
         "analyze",
         help="AI-analyze a project and suggest field updates",
     )
     sp_analyze.add_argument("slug", help="Project slug")
+    sp_analyze.add_argument(
+        "--dry-run", action="store_true", default=False,
+        help="Run analysis without saving or applying changes",
+    )
     sp_analyze.set_defaults(func=cmd_analyze)
+
+    # cns scaffold
+    sp_scaffold = subparsers.add_parser(
+        "scaffold",
+        help="Ensure all project directories exist",
+    )
+    sp_scaffold.set_defaults(func=cmd_scaffold)
+
+    # cns install-hooks
+    sp_install_hooks = subparsers.add_parser(
+        "install-hooks",
+        help="Install git hooks for CNS",
+    )
+    sp_install_hooks.set_defaults(func=cmd_install_hooks)
+
+    # cns post-commit-analyze
+    sp_post_commit = subparsers.add_parser(
+        "post-commit-analyze",
+        help="Analyze projects changed in the last commit (intended for git hooks)",
+    )
+    sp_post_commit.set_defaults(func=cmd_post_commit_analyze)
+
+    # cns review
+    sp_review = subparsers.add_parser(
+        "review",
+        help="Review and apply pending AI suggestions",
+    )
+    sp_review.set_defaults(func=cmd_review)
 
     args = parser.parse_args()
 

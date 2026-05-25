@@ -41,7 +41,7 @@ class _ProjectMdHandler(FileSystemEventHandler):
 
             # Derive slug from parent directory name
             slug = path.parent.name
-            console.print(f"[cns watch] {slug}/project.md → updated: {today}")
+            console.print(f"[cns watch] {slug}/project.md -> updated: {today}")
 
         except Exception as exc:
             console.print(f"[red][cns watch] Error processing {event.src_path}: {exc}[/red]")

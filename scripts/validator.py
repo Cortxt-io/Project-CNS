@@ -19,7 +19,7 @@ REQUIRED_FM_FIELDS = [
 # Allowed enum values
 VALID_STATUSES = {"idea", "early_mvp", "mvp", "live", "shelved"}
 VALID_MVP_STAGES = {"hypothesis", "problem_interviews", "solution_test", "demand_test", "launch"}
-VALID_RISK_CATEGORIES = {"technical", "market", "legal", "ops", "competition", "positioning"}
+VALID_RISK_CATEGORIES = {"technical", "market", "legal", "ops", "competition", "positioning", "adoption"}
 VALID_FAMILIES = {"developer-tools", "digest-pipeline", "internal-monitoring", "cns-core", "ideas"}
 
 # Required sections (must exist as ## headings)

@@ -7,6 +7,7 @@ import os
 import re
 import sys
 from datetime import date
+from pathlib import Path
 from typing import Any, Callable
 
 import requests
@@ -100,6 +101,40 @@ def _call_openai(system_prompt: str, user_prompt: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Project context reader
+# ---------------------------------------------------------------------------
+
+
+def _read_project_context(slug: str) -> str:
+    """Read and concatenate all project Markdown files as context."""
+    from scripts.md_parser import project_dir
+
+    pdir = project_dir(slug)
+    parts: list[str] = []
+
+    files_to_read: list[tuple[Path, str]] = []
+    # project.md always first
+    project_md = pdir / "project.md"
+    if project_md.exists():
+        files_to_read.append((project_md, "project.md"))
+
+    for subdir in ("planning", "notes", "research"):
+        for md_file in sorted(pdir.glob(f"{subdir}/*.md")):
+            if md_file.name.lower() == "readme.md":
+                continue
+            rel_path = md_file.relative_to(pdir).as_posix()
+            files_to_read.append((md_file, rel_path))
+
+    for filepath, rel_path in files_to_read:
+        content = filepath.read_text(encoding="utf-8")
+        if not content.strip():
+            continue
+        parts.append(f"### {rel_path}\n{content}")
+
+    return "\n\n".join(parts)
+
+
+# ---------------------------------------------------------------------------
 # Prompt builders
 # ---------------------------------------------------------------------------
 
@@ -112,7 +147,7 @@ def _build_system_prompt() -> str:
     )
 
 
-def _build_user_prompt(raw_content: str) -> str:
+def _build_user_prompt(context: str) -> str:
     schema = """{
   "mvp_stage": "solution_test" | null,
   "status": "early_mvp" | null,
@@ -132,7 +167,9 @@ def _build_user_prompt(raw_content: str) -> str:
 
     return (
         f"Här är ett MVP-projekt:\n\n"
-        f"---\n{raw_content}\n---\n\n"
+        f"---\n{context}\n---\n\n"
+        f"Du har tillgång till hela projektmappen ovan, inklusive planning-, notes- och research-filer. "
+        f"Basera dina förslag på allt material, inte bara project.md.\n\n"
         f"Giltiga status-värden: {sorted(VALID_STATUSES)}\n"
         f"Giltiga mvp_stage-värden: {sorted(VALID_MVP_STAGES)}\n"
         f"Giltiga risk_categories: {sorted(VALID_RISK_CATEGORIES)}\n\n"
@@ -140,7 +177,7 @@ def _build_user_prompt(raw_content: str) -> str:
         f"Analysera projektet ovan. För varje fält: om det redan ser korrekt "
         f"och aktuellt ut, returnera null. Om det bör uppdateras, returnera "
         f"det nya värdet. Null betyder \"inget förslag\". Fälten title, slug, "
-        f"created, tags, url_live, url_repo och family får INTE föreslås — "
+        f"created, tags, url_live, url_repo och family får INTE föreslås -- "
         f"dessa är manuella fält."
     )
 
@@ -203,7 +240,9 @@ def _parse_response(raw: str) -> dict[str, Any]:
 
 def run_analyze(
     slug: str,
-    confirm_fn: Callable[[dict, dict, dict, dict, str], bool],
+    confirm_fn: Callable[[dict, dict, dict, dict, str], bool] | None = None,
+    dry_run: bool = False,
+    output_path: Path | None = None,
 ) -> bool:
     """Analyze a project via OpenAI and apply suggested updates.
 
@@ -211,25 +250,53 @@ def run_analyze(
         slug: Project slug.
         confirm_fn: Callable with signature (meta, new_meta, sections,
             new_sections, slug) -> bool. Returns True if user confirmed.
+            If None and output_path is also None, logs a warning.
+        dry_run: If True, log context length and suggestion count but do not
+            save or apply anything.
+        output_path: If set, save suggestions as JSON to this path instead of
+            calling confirm_fn.
 
     Returns:
-        True if changes were applied, False otherwise.
+        True if changes were applied or saved, False otherwise.
     """
     meta, sections, raw = read_project(slug)
 
     console.print(f"[bold]Analyzing [cyan]{slug}[/cyan] with {OPENAI_MODEL}...[/bold]")
 
+    context = _read_project_context(slug)
+
+    if dry_run:
+        console.print(f"[dim]Context length: {len(context)} characters[/dim]")
+
     system_prompt = _build_system_prompt()
-    user_prompt = _build_user_prompt(raw)
+    user_prompt = _build_user_prompt(context)
 
     ai_raw = _call_openai(system_prompt, user_prompt)
     suggestions = _parse_response(ai_raw)
 
     if not suggestions:
-        console.print("[dim]No suggestions — project looks up to date.[/dim]")
+        console.print("[dim]No suggestions -- project looks up to date.[/dim]")
+        return False
+
+    if dry_run:
+        console.print(f"[dim]Dry run: {len(suggestions)} suggestion(s) found.[/dim]")
         return False
 
     suggestions["updated_at"] = date.today().isoformat()
+
+    if output_path is not None:
+        payload = {
+            "slug": slug,
+            "analyzed_at": date.today().isoformat(),
+            "suggestions": suggestions,
+        }
+        output_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+        console.print(f"[cns analyze] Saved suggestions for {slug} -> {output_path}")
+        return True
+
+    if confirm_fn is None:
+        console.print("[yellow]Warning: No confirm_fn provided and no output_path set — nothing to do.[/yellow]")
+        return False
 
     new_meta, new_sections = apply_changes(
         meta.copy(), {k: v for k, v in sections.items()}, suggestions
@@ -242,3 +309,62 @@ def run_analyze(
     new_meta["updated"] = date.today().isoformat()
 
     return confirm_fn(meta, new_meta, sections, new_sections, slug)
+
+
+# ---------------------------------------------------------------------------
+# Pending suggestions
+# ---------------------------------------------------------------------------
+
+
+def load_pending_suggestions() -> list[dict]:
+    """Load all pending analyze suggestions from exports/.
+
+    Returns list sorted by analyzed_at (oldest first).
+    """
+    exports_dir = Path("exports")
+    if not exports_dir.exists():
+        return []
+
+    pending: list[dict] = []
+    for json_path in sorted(exports_dir.glob("analyze_*.json")):
+        try:
+            data = json.loads(json_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        pending.append({
+            "path": json_path,
+            "slug": data.get("slug", ""),
+            "analyzed_at": data.get("analyzed_at", ""),
+            "suggestions": data.get("suggestions", {}),
+        })
+
+    pending.sort(key=lambda x: x["analyzed_at"])
+    return pending
+
+
+def apply_pending(
+    pending: dict,
+    confirm_fn: Callable[[dict, dict, dict, dict, str], bool],
+) -> bool:
+    """Apply a pending suggestion set after user confirmation.
+
+    Returns True if confirmed and applied (and JSON file removed).
+    """
+    slug = pending["slug"]
+    suggestions = pending["suggestions"]
+
+    meta, sections, _ = read_project(slug)
+
+    new_meta, new_sections = apply_changes(
+        meta.copy(), {k: v for k, v in sections.items()}, suggestions
+    )
+
+    if "current_slice" in suggestions and suggestions["current_slice"] is not None:
+        new_meta["current_slice"] = suggestions["current_slice"]
+
+    new_meta["updated"] = date.today().isoformat()
+
+    confirmed = confirm_fn(meta, new_meta, sections, new_sections, slug)
+    if confirmed:
+        pending["path"].unlink()
+    return confirmed

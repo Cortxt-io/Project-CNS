@@ -29,7 +29,7 @@
             "type": "object",
             "required": ["category", "description", "score"],
             "properties": {
-              "category":    { "enum": ["technical", "market", "legal", "ops", "competition", "positioning"] },
+              "category":    { "enum": ["technical", "market", "legal", "ops", "competition", "positioning", "adoption"] },
               "description": { "type": "string" },
               "score":       { "type": "number", "minimum": 1, "maximum": 5 }
             }
