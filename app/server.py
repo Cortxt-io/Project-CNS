@@ -729,7 +729,16 @@ def api_health():
 # Startup
 # ---------------------------------------------------------------------------
 
-configure_git()
+_configured = False
+
+
+@app.before_request
+def _setup() -> None:
+    global _configured
+    if not _configured:
+        configure_git()
+        _configured = True
+
 
 if not PASSWORD:
     app.logger.warning(
