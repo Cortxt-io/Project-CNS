@@ -204,8 +204,14 @@
             });
 
             // Footer
+            var sourceLabel = data.state.dataSource === 'railway'
+                ? ' | Källa: Railway (live)'
+                : ' | Källa: Lokal cache';
             document.getElementById('export-info').textContent =
-                'Exporterad: ' + data.state.exportedAt + ' | ' + data.state.projects.length + ' projekt | v' + data.state.version;
+                'Exporterad: ' + data.state.exportedAt +
+                ' | ' + data.state.projects.length + ' projekt' +
+                ' | v' + data.state.version +
+                sourceLabel;
 
             // Setup filter/sök events (efter att chips renderats)
             setupFilters();

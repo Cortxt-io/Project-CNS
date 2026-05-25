@@ -5,10 +5,14 @@
     'use strict';
     window.PVD = window.PVD || {};
 
+    var RAILWAY_URL = 'https://project-cns-production.up.railway.app';
+    var RAILWAY_TIMEOUT_MS = 3000;
+
     var state = {
         projects: [],
         exportedAt: '',
         version: '',
+        dataSource: 'local', // 'railway' or 'local'
         // Aktiva filter
         statusFilter: [],   // ['idea', 'mvp']
         tagFilter: [],      // ['devtools', 'monitoring']
@@ -19,18 +23,42 @@
         sortAsc: true
     };
 
-    // Hämta projects.json
+    // Fetch with timeout using AbortController
+    function _fetchWithTimeout(url, ms) {
+        var controller = new AbortController();
+        var timer = setTimeout(function () { controller.abort(); }, ms);
+        return fetch(url, { signal: controller.signal })
+            .finally(function () { clearTimeout(timer); });
+    }
+
+    // Try Railway API first, fall back to local projects.json
     function fetchData() {
-        return fetch('./data/projects.json')
+        return _fetchWithTimeout(RAILWAY_URL + '/api/projects', RAILWAY_TIMEOUT_MS)
             .then(function (res) {
-                if (!res.ok) throw new Error('HTTP ' + res.status);
+                if (!res.ok) throw new Error('Railway HTTP ' + res.status);
                 return res.json();
             })
             .then(function (data) {
                 state.projects = data.projects || [];
                 state.exportedAt = data.exported_at || '';
                 state.version = data.version || '';
+                state.dataSource = 'railway';
                 return data;
+            })
+            .catch(function () {
+                // Fallback to local projects.json
+                return fetch('./data/projects.json')
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        return res.json();
+                    })
+                    .then(function (data) {
+                        state.projects = data.projects || [];
+                        state.exportedAt = data.exported_at || '';
+                        state.version = data.version || '';
+                        state.dataSource = 'local';
+                        return data;
+                    });
             });
     }
 

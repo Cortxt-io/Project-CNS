@@ -21,6 +21,7 @@ os.chdir(REPO_ROOT)
 import markdown as md_lib  # noqa: E402
 from flask import (  # noqa: E402
     Flask,
+    after_this_request,
     flash,
     g,
     jsonify,
@@ -84,6 +85,31 @@ def verify_password(username: str, password: str) -> bool:
 
 def is_admin() -> bool:
     return getattr(g, "role", "guest") == "admin"
+
+
+ALLOWED_ORIGINS = [
+    "https://rian010194.github.io",
+    "http://localhost:5000",
+    "http://127.0.0.1:5000",
+]
+
+
+@app.after_request
+def add_cors_headers(response):
+    origin = request.headers.get("Origin", "")
+    if origin in ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
+
+
+@app.route("/api/<path:path>", methods=["OPTIONS"])
+@auth.login_required
+def handle_options(path):
+    response = app.make_default_options_response()
+    return add_cors_headers(response)
 
 
 # ---------------------------------------------------------------------------
@@ -709,7 +735,6 @@ def api_review_reject(slug):
 
 
 @app.route("/api/projects")
-@auth.login_required
 def api_projects():
     git_pull()
     path = export_json()
@@ -722,16 +747,6 @@ def api_health():
     return jsonify({
         "status": "ok",
         "repo": os.getenv("GITHUB_REPO", "not configured"),
-    })
-
-
-@app.route("/api/debug-env")
-def debug_env():
-    return jsonify({
-        "CNS_GITHUB_TOKEN": "set" if os.getenv("CNS_GITHUB_TOKEN") else "NOT SET",
-        "GITHUB_REPO": os.getenv("GITHUB_REPO", "NOT SET"),
-        "CNS_ADMIN_PASSWORD": "set" if os.getenv("CNS_ADMIN_PASSWORD") else "NOT SET",
-        "OPENAI_API_KEY": "set" if os.getenv("OPENAI_API_KEY") else "NOT SET",
     })
 
 

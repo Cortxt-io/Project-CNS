@@ -15,6 +15,7 @@ tags:
   - web
   - cns-core
 url_repo: https://github.com/rian010194/Project-CNS
+url_live: https://project-cns-production.up.railway.app
 created: '2026-05-25'
 updated: '2026-05-25'
 ---

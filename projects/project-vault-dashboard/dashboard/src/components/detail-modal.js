@@ -5,6 +5,8 @@
     'use strict';
     window.PVD = window.PVD || {};
 
+    var RAILWAY_URL = 'https://project-cns-production.up.railway.app';
+
     var fmt = null;
     var data = null;
 
@@ -62,6 +64,12 @@
             (tags ? '<div class="mb-4"><h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Taggar</h4><div class="flex flex-wrap gap-1">' + tags + '</div></div>' : '') +
             (function () {
                 var detailBtns = '';
+                detailBtns += '<a href="' + RAILWAY_URL + '/project/' + p.slug +
+                    '" target="_blank" rel="noopener" ' +
+                    'class="inline-flex items-center px-3 py-1.5 rounded-md ' +
+                    'text-xs font-medium bg-violet-50 text-violet-700 ' +
+                    'hover:bg-violet-100 border border-violet-200 ' +
+                    'transition-colors mr-2">Öppna i Vault &rarr;</a>';
                 if (p.url_repo) {
                     detailBtns += '<a href="' + p.url_repo + '" target="_blank" rel="noopener" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors mr-2">Repo</a>';
                 }

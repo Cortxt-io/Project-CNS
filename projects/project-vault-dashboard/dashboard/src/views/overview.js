@@ -10,31 +10,62 @@
     var MAX_VISIBLE_TAGS = 6; // Visa max 6 tag-chips, resten bakom "+N fler"
     var tagsExpanded = false;
 
-    // Railway API integration – set RAILWAY_URL after deploy
-    var RAILWAY_URL = ''; // e.g. 'https://cns-vault.railway.app'
+    // Railway API integration
+    var RAILWAY_URL = 'https://project-cns-production.up.railway.app';
 
-    function tryRailwayAction(slug, action) {
-        if (!RAILWAY_URL) {
-            showRailwayModal();
-            return;
-        }
-        var endpoint = RAILWAY_URL + '/api/analyze/' + slug;
-        var username = prompt('Användarnamn för CNS Vault:');
+    function tryRailwayAction(slug) {
+        var storedUser = sessionStorage.getItem('cns_username');
+        var storedPass = sessionStorage.getItem('cns_password');
+        var username = storedUser || prompt('CNS Vault användarnamn:');
         if (!username) return;
-        var password = prompt('Lösenord:');
+        var password = storedPass || prompt('CNS Vault lösenord:');
         if (!password) return;
-        fetch(endpoint, {
+        sessionStorage.setItem('cns_username', username);
+        sessionStorage.setItem('cns_password', password);
+
+        var respStatus;
+        fetch(RAILWAY_URL + '/api/analyze/' + slug, {
             method: 'POST',
-            headers: { 'Authorization': 'Basic ' + btoa(username + ':' + password) }
-        }).then(function (r) { return r.json(); }).then(function (data) {
-            if (data.status === 'ok') {
-                alert('Analyze klar för ' + slug + ': ' + data.suggestions_count + ' förslag');
-            } else {
-                alert('Fel: ' + data.message);
+            headers: {
+                'Authorization': 'Basic ' + btoa(username + ':' + password)
             }
-        }).catch(function () {
+        })
+        .then(function (r) {
+            respStatus = r.status;
+            return r.json();
+        })
+        .then(function (data) {
+            if (data.status === 'ok') {
+                showNotification(
+                    'Analyze klar för ' + slug + ': ' +
+                    data.suggestions_count + ' förslag. ' +
+                    'Öppna CNS Vault för att granska.',
+                    'success'
+                );
+            } else if (respStatus === 401) {
+                sessionStorage.removeItem('cns_username');
+                sessionStorage.removeItem('cns_password');
+                showNotification('Fel användarnamn eller lösenord', 'error');
+            } else {
+                showNotification('Fel: ' + data.message, 'error');
+            }
+        })
+        .catch(function () {
             showRailwayModal();
         });
+    }
+
+    // Show a toast notification in the bottom-right corner
+    function showNotification(message, type) {
+        var toast = document.createElement('div');
+        var bg = type === 'success'
+            ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+            : 'bg-rose-50 border-rose-200 text-rose-800';
+        toast.className = 'fixed bottom-4 right-4 z-50 px-4 py-3 ' +
+            'rounded-lg border shadow-lg text-sm font-medium max-w-sm ' + bg;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(function () { toast.remove(); }, 5000);
     }
 
     function showRailwayModal() {
