@@ -104,6 +104,42 @@
             });
     }
 
+    function fetchDevlogData() {
+        return fetch('./data/devlog_latest.html')
+            .then(function (res) {
+                if (!res.ok) return null;
+                return res.text();
+            })
+            .then(function (htmlText) {
+                if (!htmlText) return null;
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(htmlText, 'text/html');
+
+                var digest = doc.querySelector('.digest-content');
+                var noActivity = doc.querySelector('.no-activity');
+                var content = '';
+                if (digest) {
+                    content = digest.innerHTML;
+                } else if (noActivity) {
+                    content = noActivity.innerHTML;
+                } else {
+                    return null;
+                }
+
+                var footer = doc.querySelector('footer');
+                var generatedAt = '';
+                if (footer) {
+                    var match = footer.textContent.match(/Genererad av cns-devlog\s*·\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}\s+UTC)/);
+                    if (match) generatedAt = match[1];
+                }
+
+                return { content: content, generatedAt: generatedAt };
+            })
+            .catch(function () {
+                return null;
+            });
+    }
+
     function renderActivityEmpty() {
         var section = document.getElementById('section-activity');
         section.innerHTML =
@@ -113,83 +149,106 @@
             '</div>';
     }
 
-    function renderActivity(data) {
+    function renderActivity(data, devlogData) {
         var section = document.getElementById('section-activity');
-        if (!data) {
-            renderActivityEmpty();
-            return;
-        }
-        if (data.meta && data.meta.no_changes === true) {
-            renderActivityEmpty();
-            return;
-        }
-        if (!data.events || data.events.length === 0) {
+
+        var hasEvents = data && data.events && data.events.length > 0 && !(data.meta && data.meta.no_changes === true);
+        var hasDevlog = devlogData && devlogData.content;
+
+        if (!hasEvents && !hasDevlog) {
             renderActivityEmpty();
             return;
         }
 
-        var meta = data.meta || {};
+        var meta = (data && data.meta) || {};
         var scanned = meta.projects_scanned || 0;
         var changed = meta.projects_changed || 0;
-        var exportedAt = data.exported_at ? formatDateTime(data.exported_at) : '';
+        var exportedAt = (data && data.exported_at) ? formatDateTime(data.exported_at) : '';
 
         var html = '';
 
-        // Metadata header
-        html += '<div class="mb-4">';
-        html += '<p class="text-xs text-slate-500">';
-        html += 'Senast kontrollerad: ' + exportedAt;
-        html += ' &middot; ' + scanned + ' projekt granskade';
-        html += ' &middot; ' + changed + ' ändrade';
-        html += '</p>';
-        html += '</div>';
-
-        // Event cards
-        html += '<div class="space-y-3">';
-        for (var i = 0; i < data.events.length; i++) {
-            var ev = data.events[i];
-            var m = ev.meta || {};
-            var title = m.project_title || ev.title || 'Okänt projekt';
-            var slug = m.slug || '';
-            var detected = ev.detectedAt ? formatTime(ev.detectedAt) : '';
-
-            html += '<div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">';
-            html += '<div class="flex justify-between items-start mb-1">';
-            html += '<div>';
-            html += '<span class="font-semibold text-sm text-slate-800">' + title + '</span>';
-            if (slug) { html += ' <span class="text-xs text-slate-400">' + slug + '</span>'; }
-            html += '</div>';
-            html += '<div class="flex items-center gap-1.5 flex-shrink-0">';
-            var projMeta = getProjectMeta(slug);
-            if (projMeta && fmt) {
-                html += '<span class="inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-medium ' + fmt.statusBadgeClass(projMeta.status) + '">' + fmt.statusLabel(projMeta.status) + '</span>';
-                html += '<span class="inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-medium bg-slate-100 text-slate-600 border border-slate-200">' + fmt.stageLabel(projMeta.mvp_stage) + '</span>';
+        // Devlog card
+        if (hasDevlog) {
+            html += '<div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm border-l-4 border-indigo-400 mb-4">';
+            html += '<h2 class="text-base font-semibold text-slate-800 mb-2">Dagens sammanfattning</h2>';
+            if (devlogData.generatedAt) {
+                html += '<p class="text-xs text-slate-400 mb-3">Genererad: ' + devlogData.generatedAt + '</p>';
             }
-            html += '<span class="text-xs text-slate-400">' + detected + '</span>';
+            html += '<div class="text-sm text-slate-700" style="line-height:1.6;">';
+            html += devlogData.content;
             html += '</div>';
-            html += '</div>';
-
-            // Changed files
-            var filesHtml = renderFileChanges(m.changed_files);
-            if (filesHtml) {
-                html += '<div class="mt-2 space-y-0.5">' + filesHtml + '</div>';
-            }
-
-            // Field badges
-            var badgesHtml = renderFieldBadges(m.changed_fields);
-            if (badgesHtml) {
-                html += badgesHtml;
-            }
-
             html += '</div>';
         }
-        html += '</div>';
+
+        // Metadata header
+        if (hasEvents) {
+            html += '<div class="mb-4">';
+            html += '<p class="text-xs text-slate-500">';
+            html += 'Senast kontrollerad: ' + exportedAt;
+            html += ' &middot; ' + scanned + ' projekt granskade';
+            html += ' &middot; ' + changed + ' ändrade';
+            html += '</p>';
+            html += '</div>';
+        }
+
+        // Event cards
+        if (hasEvents) {
+            html += '<div class="space-y-3">';
+            for (var i = 0; i < data.events.length; i++) {
+                var ev = data.events[i];
+                var m = ev.meta || {};
+                var title = m.project_title || ev.title || 'Okänt projekt';
+                var slug = m.slug || '';
+                var detected = ev.detectedAt ? formatTime(ev.detectedAt) : '';
+
+                html += '<div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">';
+                html += '<div class="flex justify-between items-start mb-1">';
+                html += '<div>';
+                html += '<span class="font-semibold text-sm text-slate-800">' + title + '</span>';
+                if (slug) { html += ' <span class="text-xs text-slate-400">' + slug + '</span>'; }
+                html += '</div>';
+                html += '<div class="flex items-center gap-1.5 flex-shrink-0">';
+                var projMeta = getProjectMeta(slug);
+                if (projMeta && fmt) {
+                    html += '<span class="inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-medium ' + fmt.statusBadgeClass(projMeta.status) + '">' + fmt.statusLabel(projMeta.status) + '</span>';
+                    html += '<span class="inline-block px-2 py-0.5 rounded-full text-[0.65rem] font-medium bg-slate-100 text-slate-600 border border-slate-200">' + fmt.stageLabel(projMeta.mvp_stage) + '</span>';
+                }
+                html += '<span class="text-xs text-slate-400">' + detected + '</span>';
+                html += '</div>';
+                html += '</div>';
+
+                // Changed files
+                var filesHtml = renderFileChanges(m.changed_files);
+                if (filesHtml) {
+                    html += '<div class="mt-2 space-y-0.5">' + filesHtml + '</div>';
+                }
+
+                // Field badges
+                var badgesHtml = renderFieldBadges(m.changed_fields);
+                if (badgesHtml) {
+                    html += badgesHtml;
+                }
+
+                html += '</div>';
+            }
+            html += '</div>';
+        }
+
+        // Raw data link
+        if (hasEvents || hasDevlog) {
+            html += '<div class="mt-4 text-right">';
+            html += '<a href="./data/devwatch_latest.json" target="_blank" class="text-xs text-slate-400 hover:text-slate-600 inline-flex items-center gap-1">';
+            html += 'Visa rådata &rarr; data/devwatch_latest.json';
+            html += '</a>';
+            html += '</div>';
+        }
 
         section.innerHTML = html;
     }
 
     window.PVD.activity = {
         fetchActivityData: fetchActivityData,
+        fetchDevlogData: fetchDevlogData,
         renderActivity: renderActivity,
         renderActivityEmpty: renderActivityEmpty
     };

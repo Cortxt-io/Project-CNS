@@ -174,8 +174,11 @@
             analysis.renderStatusDonut(data.state.projects);
 
             // Hämta och rendera aktivitetsdata
-            activity.fetchActivityData().then(function (actData) {
-                activity.renderActivity(actData);
+            Promise.all([
+                activity.fetchActivityData(),
+                activity.fetchDevlogData()
+            ]).then(function (results) {
+                activity.renderActivity(results[0], results[1]);
             }).catch(function () {
                 activity.renderActivityEmpty();
             });
