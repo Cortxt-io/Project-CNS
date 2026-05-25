@@ -784,6 +784,60 @@ def api_pending():
     return jsonify({"pending": result})
 
 
+@app.route("/api/project/<slug>/full")
+def api_project_full(slug):
+    """Return full project data including sections and subdir files."""
+    git_pull()
+    try:
+        meta, sections, raw = read_project(slug)
+    except FileNotFoundError:
+        return jsonify({"status": "error",
+                        "message": f"Project '{slug}' not found"}), 404
+
+    # Read subdir files (planning/, notes/, research/)
+    project_files: dict[str, list[dict]] = {}
+    pdir = project_dir(slug)
+    for subdir in ("planning", "notes", "research"):
+        subpath = pdir / subdir
+        if not subpath.exists():
+            continue
+        files = []
+        for md_file in sorted(subpath.glob("*.md")):
+            if md_file.name.lower() == "readme.md":
+                continue
+            content = md_file.read_text(encoding="utf-8").strip()
+            if not content:
+                continue
+            files.append({"filename": md_file.name, "content": content})
+        if files:
+            project_files[subdir] = files
+
+    # Check pending suggestions
+    pending_list = load_pending_suggestions()
+    pending = next((p for p in pending_list if p["slug"] == slug), None)
+    pending_data = None
+    if pending:
+        pending_data = {
+            "analyzed_at": pending["analyzed_at"],
+            "suggestions": pending["suggestions"],
+        }
+
+    # Convert non-JSON-serializable meta values to strings
+    meta_clean = {
+        k: str(v) if not isinstance(v, (str, int, float, bool, list, type(None))) else v
+        for k, v in meta.items()
+    }
+
+    return jsonify({
+        "status": "ok",
+        "slug": slug,
+        "meta": meta_clean,
+        "sections": sections,
+        "project_files": project_files,
+        "pending": pending_data,
+    })
+
+
 # ---------------------------------------------------------------------------
 # Startup
 # ---------------------------------------------------------------------------
