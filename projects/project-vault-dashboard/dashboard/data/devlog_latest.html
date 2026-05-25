@@ -97,8 +97,8 @@
       <h1>CNS DevLog</h1>
       <p class="subtitle">2026-05-25</p>
       <div class="meta">
-        <p><span>Antal händelser:</span> 10</p>
-        <p><span>Källa:</span> devwatch_2026-05-25.json (20260525_103610)</p>
+        <p><span>Antal händelser:</span> 13</p>
+        <p><span>Källa:</span> devwatch_2026-05-25.json (20260525_113448)</p>
       </div>
     </header>
 
@@ -106,26 +106,28 @@
   <h2>Dagens sammanfattning</h2>
   <div class="digest-content">
 <h3>Vad hände igår</h3>
-<p>I <strong>CNS DevWatch</strong> har vi identifierat ett problem: det saknas en automatisk vy över ändringar i project.md-filer. Lösningen innebär att implementera en Git diff-baserad bevakning för att dagligen exportera portföljändringar.</p>
-<p>I <strong>Dev Changelog Engine Mini</strong> har vi definierat ett problem där rådata från DocsWatch är svåråtkomlig. Lösningen är att skapa en pipeline som omvandlar dessa data till en lättförståelig veckodigest.</p>
-<p>I <strong>DocsWatch</strong> har vi också identifierat att utvecklingsteam är beroende av externa API:er och verktyg vars changelogs uppdateras utan notifiering. Detta kan leda till att förändringar upptäckts för sent.</p>
-<p>I <strong>Project Vault Dashboard</strong> har vi gjort omfattande uppdateringar, inklusive att definiera MVP Steps och problemformuleringar. Vi har också lagt till en ny struktur för dashboard-översikten och ROI-metrics.</p>
-<p>I <strong>Webhook Router</strong> har vi uppdaterat projektets status och definierat MVP-steg, inklusive en hypotes om att positionera produkten som en extern lösning. Vi har också specificerat routing-regler och dokumentation för integration.</p>
+<p>I projektet <strong>CNS Analyst</strong> har vi identifierat ett problem där projektfiler uppdateras manuellt och analyseras aldrig automatiskt. Lösningen innebär att vi använder OpenAI för att generera strukturerade förslag på mvp_stage, roi_percent och risker.</p>
+<p>I <strong>CNS DevLog</strong> och <strong>CNS DevWatch</strong> har vi också uppdaterat innehållet i projekt.md för att reflektera aktuella MVP-steg och riskbedömningar. Det finns en tydlig koppling till hur vi hanterar och prioriterar utvecklingen av dessa projekt.</p>
+<p><strong>Dev Changelog Engine Mini</strong> adresserar ett problem med att rådata från DocsWatch är tekniskt och svårt att konsumera. Vi har definierat en pipeline för att omvandla dessa data till en mer användarvänlig form.</p>
+<p>I <strong>DocsWatch</strong> har vi uppdaterat problemformuleringen för att belysa hur utvecklingsteam är beroende av externa API:er och verktyg, vilket kan leda till sena upptäckter av förändringar.</p>
+<p>I <strong>Webhook Router</strong> har vi gjort omfattande förändringar i projekt.md, där vi nu har en tydlig struktur för MVP-steget, problemformulering och lösning, vilket ger en bättre förståelse för projektets syfte och mål.</p>
 <h3>Vad är kvar</h3>
-<p>För <strong>CNS DevWatch</strong>: Implementera Git diff-bevakningen och testa den.</p>
-<p>För <strong>Dev Changelog Engine Mini</strong>: Utveckla pipeline för att bearbeta och rendera veckodigester.</p>
-<p>För <strong>DocsWatch</strong>: Utveckla en notifieringslösning för att hålla utvecklingsteam informerade om förändringar.</p>
-<p>För <strong>Project Vault Dashboard</strong>: Slutföra dashboard-design och implementera ROI-metrics.</p>
-<p>För <strong>Webhook Router</strong>: Färdigställa dokumentationen och påbörja utvecklingen av routing-funktionaliteten.</p>
+<ul>
+<li><strong>CNS Analyst</strong>: Implementera och testa den automatiserade analyslösningen med OpenAI.</li>
+<li><strong>CNS DevLog och CNS DevWatch</strong>: Slutföra MVP-stegen och initiera användartester.</li>
+<li><strong>Dev Changelog Engine Mini</strong>: Bygga och testa pipelinen för att generera användarvänliga rapporter.</li>
+<li><strong>DocsWatch</strong>: Utveckla en prototyp för att övervaka externa API-changelog och notifiera teamet.</li>
+<li><strong>Webhook Router</strong>: Fortsätta utvecklingen av routing-regler och integrera med Site Change Monitor.</li>
+</ul>
 <h3>Nästa steg idag</h3>
-<h3>Prioritera utvecklingen av Git diff-bevakningen för CNS DevWatch.</h3>
-<h3>Arbeta med pipeline-utvecklingen för Dev Changelog Engine Mini.</h3>
-<h3>Fortsätta dokumentationsarbetet och implementeringen för Webhook Router.</h3>
+<h3>Samla feedback från teamet på de senaste ändringarna i CNS-projekten.</h3>
+<h3>Prioritera utvecklingen av DocsWatch och Webhook Router för att säkerställa att vi håller tidslinjen.</h3>
+<h3>Planera en demo av Dev Changelog Engine Mini för att visa den nya pipelinen för intressenter.</h3>
   </div>
 </section>
 
     <footer>
-      <p>Genererad av cns-devlog &middot; 2026-05-25 10:36 UTC</p>
+      <p>Genererad av cns-devlog &middot; 2026-05-25 11:35 UTC</p>
     </footer>
   </main>
 </body>

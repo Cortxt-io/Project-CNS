@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-05-25T10:36:10Z",
-  "run_id": "20260525_103610",
+  "exported_at": "2026-05-25T11:34:48Z",
+  "run_id": "20260525_113448",
   "baseline": "2026-05-24T07:00:00",
   "events": [
     {
-      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
         "id": "ai-ticket-triage",
         "name": "AI Ticket Triage",
@@ -21,17 +21,19 @@
         "ai-ticket-triage"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
         "slug": "ai-ticket-triage",
         "project_title": "AI Ticket Triage",
         "changed_fields": [
           "cost_sek",
           "created",
+          "family",
           "mvp_stage",
           "roi_percent",
           "slug",
           "status",
+          "summary",
           "tags",
           "title",
           "updated",
@@ -83,38 +85,39 @@
       }
     },
     {
-      "id": "devwatch:cns-devwatch:319a90eeb1a55b05:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:cns-analyst:416bae0a33bfb0ff:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
-        "id": "cns-devwatch",
-        "name": "CNS DevWatch",
+        "id": "cns-analyst",
+        "name": "CNS Analyst",
         "type": "devwatch",
         "url": null
       },
-      "title": "cns-devwatch: project.md",
-      "rawContent": "### project.md\n## Problem\n+\n+CNS har ingen automatisk vy över vad som ändrats i egna project.md-filer dag för dag.\n+\n\n## Solution\n+\n+Git diff-baserad bevakning av project.md-filer som detekterar och exporterar portföljändringar dagligen.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv - portföljägare som vill ha intern monitoring utan manuell genomgång.\n+\n\n## Assumptions to Validate\n+\n+- Git diff på project.md-filer ger tillräcklig signal om vad som faktiskt förändrats i portföljarbetet.\n+- Daglig körning är rätt kadens – varken för frekvent (brus) eller för sällan (förlorad kontext).\n+- Diff-output är strukturerad nog att cns-devlog kan konsumera den utan manuell bearbetning.\n+- En portföljägare med 5–10 aktiva projekt behöver inte mer än filnivå-diff för att förstå vad som hänt.\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n+- Hypothesis: verifiera att git log + diff på projects/-mappen ger meningsfull daglig signal.\n+- Solution test: kör skriptet dagligen i en vecka, utvärdera om output speglar vad som faktiskt gjordes.\n+- Demand test: kontrollera om output faktiskt används som input till cns-devlog eller ignoreras.\n+- Launch: schemalägg via GitHub Actions eller cron, integrera med cns-devlog-pipeline.\n+\n\n## Cost Estimate\n+\n+Uppskattat till 3 000 SEK – enbart utvecklingstid för ett internt Python-skript. Ingen infrastruktur, inga licenser.\n+\n\n## Value Estimate\n+\n+Uppskattat till 10 000 SEK – sparad tid från manuell genomgång av projektfiler, plus ökad synlighet som driver bättre prioriteringar.\n+\n\n## ROI\n+\n+(10 000 - 3 000) / 3 000 = 233%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal. Kräver disciplin att committa project.md-ändringar regelbundet.\n+- **Ops** (score 3/5): Skriptet måste köras dagligen för att ge värde. Om det inte automatiseras tidigt faller det i glömska.\n+- **Ops** (score 2/5): Output-format måste vara stabilt från dag ett – annars bryts cns-devlog-integrationen vid minsta ändring.\n+\n\n## Timeline\n+\n+- Vecka 1: Implementera git diff-logik, filtrera på projects/-mappen, exportera till JSON.\n+- Vecka 2: Kör dagligen manuellt, utvärdera signal vs brus. Justera filter.\n+- Vecka 3: Koppla output till cns-devlog (även om devlog inte är klar – definiera kontraktet).\n+- Vecka 4: Automatisera via cron eller GitHub Actions. Dokumentera i Notes.\n+\n\n## Notes\n+\n+Koden lever i prompt-cns/scripts/ tills vidare – inget eget repo. Hårt beroende: CNS-repot måste vara ett git-repo med regelbunden commit-historik på project.md-filer. Utan commits ingen diff, utan diff inget värde.\n+\n+Testar att lägga till en rad",
+      "title": "cns-analyst: project.md",
+      "rawContent": "### project.md\n## Problem\n+\n+CNS-projektfiler uppdateras manuellt och analyseras aldrig automatiskt. MVP-steg, riskbedömningar och ROI-estimat blir inaktuella tyst utan att någon märker det.\n+\n\n## Solution\n+\n+cns analyze <slug> skickar hela project.md till OpenAI och returnerar strukturerade förslag på mvp_stage, current_slice, roi_percent, value_sek, cost_sek, risker och summary. Användaren godkänner eller avvisar i terminalen.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv – portföljägare som vill ha AI-assisterad genomgång av projektfiler utan att lämna terminalen.\n+\n\n## Assumptions to Validate\n+\n+- OpenAI returnerar strukturerad JSON tillräckligt konsekvent för att vara användbar utan manuell korrigering.\n+- Förslag på mvp_stage och risker är meningsfulla nog att faktiskt accepteras, inte bara avvisas.\n+- Flödet känns snabbt nog (< 10 sek) för att användas regelbundet.\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n+- Hypothesis: verifiera att GPT-4o-mini returnerar användbara förslag på ett verkligt projekt.\n+- Solution test: kör cns analyze på 3–5 projekt, utvärdera träffsäkerhet per fält.\n+- Demand test: används analyze faktiskt regelbundet eller är det en one-off?\n+- Launch: stabil implementation med felhantering, ingår i normal CNS-workflow.\n+\n\n## Cost Estimate\n+\n+5 000 SEK – Python-skript, prompt-engineering, felhantering. OpenAI API-kostnad försumbar (< 10 SEK/månad vid manuell användning).\n+\n\n## Value Estimate\n+\n+25 000 SEK – sparad tid från manuell projektanalys, bättre kvalitet på MVP-steg och riskbedömningar, driver bättre prioriteringar.\n+\n\n## ROI\n+\n+(25 000 - 5 000) / 5 000 = 400%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 3/5): LLM-output kan vara inkonsekvent – JSON-parsning måste vara robust med tydlig felhantering.\n+- **Ops** (score 2/5): OpenAI-anrop kostar pengar och tid – bör inte köras automatiskt, alltid manuellt triggat.\n+\n\n## Timeline\n+\n\n## Notes\n+\n+Koden lever i scripts/analyst.py och scripts/file_watcher.py. Inga egna repos. Samma OpenAI-nyckel som devlog.py. Designprincip: AI föreslår, användaren bestämmer.",
       "url": null,
       "kind": "changed",
       "tags": [
-        "cns-devwatch",
-        "devtools",
-        "git",
-        "internal",
-        "monitoring",
+        "analysis",
+        "cns-analyst",
+        "cns-core",
+        "openai",
         "python"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
-        "slug": "cns-devwatch",
-        "project_title": "CNS DevWatch",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
+        "slug": "cns-analyst",
+        "project_title": "CNS Analyst",
         "changed_fields": [
           "cost_sek",
           "created",
+          "family",
           "mvp_stage",
           "roi_percent",
           "slug",
           "status",
+          "summary",
           "tags",
           "title",
           "updated",
@@ -143,8 +146,180 @@
       }
     },
     {
-      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:cns-devlog:70843caca0b251d7:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
+      "source": {
+        "id": "cns-devlog",
+        "name": "CNS DevLog",
+        "type": "devwatch",
+        "url": null
+      },
+      "title": "cns-devlog: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+      "rawContent": "### assets/README.md\ndiff --git a/projects/cns-devlog/assets/README.md b/projects/cns-devlog/assets/README.md\nnew file mode 100644\nindex 0000000..a1cf0a6\n--- /dev/null\n+++ b/projects/cns-devlog/assets/README.md\n@@ -0,0 +1,3 @@\n+# cns-devlog / assets\n+\n+Add assets files here.\n\n\n### notes/README.md\ndiff --git a/projects/cns-devlog/notes/README.md b/projects/cns-devlog/notes/README.md\nnew file mode 100644\nindex 0000000..edc7f7c\n--- /dev/null\n+++ b/projects/cns-devlog/notes/README.md\n@@ -0,0 +1,3 @@\n+# cns-devlog / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/projects/cns-devlog/planning/decisions.md b/projects/cns-devlog/planning/decisions.md\nnew file mode 100644\nindex 0000000..c31a2c6\n--- /dev/null\n+++ b/projects/cns-devlog/planning/decisions.md\n@@ -0,0 +1 @@\n+# cns-devlog / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/cns-devlog/planning/roadmap.md b/projects/cns-devlog/planning/roadmap.md\nnew file mode 100644\nindex 0000000..71a480f\n--- /dev/null\n+++ b/projects/cns-devlog/planning/roadmap.md\n@@ -0,0 +1 @@\n+# cns-devlog / roadmap\n\n\n### project.md\n## Problem\n+\n+Ingen automatisk sammanfattning av vad som faktiskt hänt i portföljen dag för dag - framsteg, blockers och nästa steg är osynliga.\n+\n\n## Solution\n+\n+Daglig AI-sammanfattning av cns-devwatch-output med OpenAI, publicerad som statisk sida.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv - portföljägare som vill ha en daglig digest utan att öppna varje fil.\n+\n\n## Assumptions to Validate\n+\n+- cns-devwatch-output är strukturerad nog att fungera som prompt-input till OpenAI utan manuell redigering.\n+- En daglig AI-sammanfattning på 200–400 ord ger tillräcklig kontext för att prioritera nästa steg per projekt.\n+- Statisk HTML-sida är tillräcklig leveransform – ingen notifiering eller push-mekanism behövs för MVP.\n+- OpenAI-kostnaden per dag håller sig under 1–2 SEK vid normal portföljstorlek (5–10 projekt).\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n+- Hypothesis: verifiera att cns-devwatch-output kombinerat med en enkel prompt ger en läsbar och användbar daglig sammanfattning.\n+- Solution test: kör dagligen i en vecka, utvärdera om sammanfattningen faktiskt speglar vad som gjorts och vad som är kvar.\n+- Demand test: kontrollera om sidan faktiskt öppnas och används för prioritering, eller ignoreras.\n+- Launch: publicera som GitHub Pages, koppla till GitHub Actions-pipeline tillsammans med cns-devwatch.\n+\n\n## Cost Estimate\n+\n+Uppskattat till 4 000 SEK – utvecklingstid för Python-skript + prompt-engineering + GitHub Pages-setup. OpenAI API-kostnad försumbar (< 50 SEK/månad).\n+\n\n## Value Estimate\n+\n+Uppskattat till 15 000 SEK – daglig klarhet över portföljstatus utan manuell genomgång, bättre prioriteringar, mindre kognitiv overhead.\n+\n\n## ROI\n+\n+(15 000 - 4 000) / 4 000 = 275%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 3/5): Promptkvalitet avgör värdet helt. Dålig prompt ger generiska sammanfattningar som inte tillför något utöver att läsa filerna direkt.\n+- **Ops** (score 3/5): Pipeline-beroendet på cns-devwatch är hårt – om devwatch inte kör eller ger tom output, kör devlog på inaktuell data utan varning.\n+- **Technical** (score 2/5): OpenAI API-anrop kan misslyckas tyst. Felhantering och fallback måste in tidigt annars publiceras tom sida.\n+\n\n## Timeline\n+\n+- Vecka 1: Implementera grundläggande prompt + OpenAI-anrop, testa med hårdkodad devwatch-output.\n+- Vecka 2: Koppla till verklig cns-devwatch-output, iterera prompt tills sammanfattningen är användbar.\n+- Vecka 3: Bygg statisk HTML-renderer, publicera manuellt till GitHub Pages.\n+- Vecka 4: Automatisera hela pipeline via GitHub Actions. Lägg till felhantering och fallback.\n+\n\n## Notes\n+\n+Koden lever i prompt-cns/scripts/ tills vidare – inget eget repo. Beroende på cns-devwatch för input och OpenAI API-nyckel (finns tillgänglig). Output är en statisk HTML-sida, samma mönster som dev-changelog-engine-mini. Designprincip: AI är ett verktyg i pipeline, inte produkten.\n\n### research/market-notes.md\ndiff --git a/projects/cns-devlog/research/market-notes.md b/projects/cns-devlog/research/market-notes.md\nnew file mode 100644\nindex 0000000..0d83a96\n--- /dev/null\n+++ b/projects/cns-devlog/research/market-notes.md\n@@ -0,0 +1 @@\n+# cns-devlog / market notes\n\n\n### research/sources.md\ndiff --git a/projects/cns-devlog/research/sources.md b/projects/cns-devlog/research/sources.md\nnew file mode 100644\nindex 0000000..7e0d082\n--- /dev/null\n+++ b/projects/cns-devlog/research/sources.md\n@@ -0,0 +1 @@\n+# cns-devlog / sources\n",
+      "url": null,
+      "kind": "changed",
+      "tags": [
+        "cns-devlog",
+        "devtools",
+        "digest",
+        "internal",
+        "openai",
+        "python"
+      ],
+      "meta": {
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
+        "slug": "cns-devlog",
+        "project_title": "CNS DevLog",
+        "changed_fields": [
+          "cost_sek",
+          "created",
+          "family",
+          "mvp_stage",
+          "roi_percent",
+          "slug",
+          "status",
+          "summary",
+          "tags",
+          "title",
+          "updated",
+          "value_sek"
+        ],
+        "changed_files": [
+          {
+            "file": "assets/README.md",
+            "sections": []
+          },
+          {
+            "file": "notes/README.md",
+            "sections": []
+          },
+          {
+            "file": "planning/decisions.md",
+            "sections": []
+          },
+          {
+            "file": "planning/roadmap.md",
+            "sections": []
+          },
+          {
+            "file": "project.md",
+            "sections": [
+              "Assumptions to Validate",
+              "Cost Estimate",
+              "MVP Steps",
+              "Notes",
+              "Problem",
+              "ROI",
+              "Risk Assessment",
+              "Solution",
+              "Target Audience",
+              "Timeline",
+              "Value Estimate",
+              "Why Buy Instead of Build?"
+            ]
+          },
+          {
+            "file": "research/market-notes.md",
+            "sections": []
+          },
+          {
+            "file": "research/sources.md",
+            "sections": []
+          }
+        ],
+        "noise_filtered": false
+      }
+    },
+    {
+      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
+      "source": {
+        "id": "cns-devwatch",
+        "name": "CNS DevWatch",
+        "type": "devwatch",
+        "url": null
+      },
+      "title": "cns-devwatch: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+      "rawContent": "### assets/README.md\ndiff --git a/projects/cns-devwatch/assets/README.md b/projects/cns-devwatch/assets/README.md\nnew file mode 100644\nindex 0000000..1c5aed1\n--- /dev/null\n+++ b/projects/cns-devwatch/assets/README.md\n@@ -0,0 +1,3 @@\n+# cns-devwatch / assets\n+\n+Add assets files here.\n\n\n### notes/README.md\ndiff --git a/projects/cns-devwatch/notes/README.md b/projects/cns-devwatch/notes/README.md\nnew file mode 100644\nindex 0000000..8ab4519\n--- /dev/null\n+++ b/projects/cns-devwatch/notes/README.md\n@@ -0,0 +1,3 @@\n+# cns-devwatch / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/projects/cns-devwatch/planning/decisions.md b/projects/cns-devwatch/planning/decisions.md\nnew file mode 100644\nindex 0000000..66d747a\n--- /dev/null\n+++ b/projects/cns-devwatch/planning/decisions.md\n@@ -0,0 +1 @@\n+# cns-devwatch / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/cns-devwatch/planning/roadmap.md b/projects/cns-devwatch/planning/roadmap.md\nnew file mode 100644\nindex 0000000..4fbad38\n--- /dev/null\n+++ b/projects/cns-devwatch/planning/roadmap.md\n@@ -0,0 +1 @@\n+# cns-devwatch / roadmap\n\n\n### project.md\n## Problem\n+\n+CNS har ingen automatisk vy över vad som ändrats i egna project.md-filer dag för dag.\n+\n\n## Solution\n+\n+Git diff-baserad bevakning av project.md-filer som detekterar och exporterar portföljändringar dagligen.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv - portföljägare som vill ha intern monitoring utan manuell genomgång.\n+\n\n## Assumptions to Validate\n+\n+- Git diff på project.md-filer ger tillräcklig signal om vad som faktiskt förändrats i portföljarbetet.\n+- Daglig körning är rätt kadens – varken för frekvent (brus) eller för sällan (förlorad kontext).\n+- Diff-output är strukturerad nog att cns-devlog kan konsumera den utan manuell bearbetning.\n+- En portföljägare med 5–10 aktiva projekt behöver inte mer än filnivå-diff för att förstå vad som hänt.\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n+- Hypothesis: verifiera att git log + diff på projects/-mappen ger meningsfull daglig signal.\n+- Solution test: kör skriptet dagligen i en vecka, utvärdera om output speglar vad som faktiskt gjordes.\n+- Demand test: kontrollera om output faktiskt används som input till cns-devlog eller ignoreras.\n+- Launch: schemalägg via GitHub Actions eller cron, integrera med cns-devlog-pipeline.\n+\n\n## Cost Estimate\n+\n+Uppskattat till 3 000 SEK – enbart utvecklingstid för ett internt Python-skript. Ingen infrastruktur, inga licenser.\n+\n\n## Value Estimate\n+\n+Uppskattat till 10 000 SEK – sparad tid från manuell genomgång av projektfiler, plus ökad synlighet som driver bättre prioriteringar.\n+\n\n## ROI\n+\n+(10 000 - 3 000) / 3 000 = 233%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal. Kräver disciplin att committa project.md-ändringar regelbundet.\n+- **Ops** (score 3/5): Skriptet måste köras dagligen för att ge värde. Om det inte automatiseras tidigt faller det i glömska.\n+- **Ops** (score 2/5): Output-format måste vara stabilt från dag ett – annars bryts cns-devlog-integrationen vid minsta ändring.\n+\n\n## Timeline\n+\n+- Vecka 1: Implementera git diff-logik, filtrera på projects/-mappen, exportera till JSON.\n+- Vecka 2: Kör dagligen manuellt, utvärdera signal vs brus. Justera filter.\n+- Vecka 3: Koppla output till cns-devlog (även om devlog inte är klar – definiera kontraktet).\n+- Vecka 4: Automatisera via cron eller GitHub Actions. Dokumentera i Notes.\n+\n\n## Notes\n+\n+Koden lever i prompt-cns/scripts/ tills vidare – inget eget repo. Hårt beroende: CNS-repot måste vara ett git-repo med regelbunden commit-historik på project.md-filer. Utan commits ingen diff, utan diff inget värde.\n+\n+Testar att lägga till en rad\n\n### research/market-notes.md\ndiff --git a/projects/cns-devwatch/research/market-notes.md b/projects/cns-devwatch/research/market-notes.md\nnew file mode 100644\nindex 0000000..ca3fe13\n--- /dev/null\n+++ b/projects/cns-devwatch/research/market-notes.md\n@@ -0,0 +1 @@\n+# cns-devwatch / market notes\n\n\n### research/sources.md\ndiff --git a/projects/cns-devwatch/research/sources.md b/projects/cns-devwatch/research/sources.md\nnew file mode 100644\nindex 0000000..f3e0770\n--- /dev/null\n+++ b/projects/cns-devwatch/research/sources.md\n@@ -0,0 +1 @@\n+# cns-devwatch / sources\n",
+      "url": null,
+      "kind": "changed",
+      "tags": [
+        "cns-devwatch",
+        "devtools",
+        "git",
+        "internal",
+        "monitoring",
+        "python"
+      ],
+      "meta": {
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
+        "slug": "cns-devwatch",
+        "project_title": "CNS DevWatch",
+        "changed_fields": [
+          "cost_sek",
+          "created",
+          "family",
+          "mvp_stage",
+          "roi_percent",
+          "slug",
+          "status",
+          "summary",
+          "tags",
+          "title",
+          "updated",
+          "value_sek"
+        ],
+        "changed_files": [
+          {
+            "file": "assets/README.md",
+            "sections": []
+          },
+          {
+            "file": "notes/README.md",
+            "sections": []
+          },
+          {
+            "file": "planning/decisions.md",
+            "sections": []
+          },
+          {
+            "file": "planning/roadmap.md",
+            "sections": []
+          },
+          {
+            "file": "project.md",
+            "sections": [
+              "Assumptions to Validate",
+              "Cost Estimate",
+              "MVP Steps",
+              "Notes",
+              "Problem",
+              "ROI",
+              "Risk Assessment",
+              "Solution",
+              "Target Audience",
+              "Timeline",
+              "Value Estimate",
+              "Why Buy Instead of Build?"
+            ]
+          },
+          {
+            "file": "research/market-notes.md",
+            "sections": []
+          },
+          {
+            "file": "research/sources.md",
+            "sections": []
+          }
+        ],
+        "noise_filtered": false
+      }
+    },
+    {
+      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
         "id": "cns-hosting-infra",
         "name": "CNS Hosting Infra",
@@ -163,20 +338,23 @@
         "static"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
         "slug": "cns-hosting-infra",
         "project_title": "CNS Hosting Infra",
         "changed_fields": [
           "cost_sek",
           "created",
+          "family",
           "mvp_stage",
           "roi_percent",
           "slug",
           "status",
+          "summary",
           "tags",
           "title",
           "updated",
+          "url_repo",
           "value_sek"
         ],
         "changed_files": [
@@ -225,8 +403,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine-mini:d916d25d44df7396:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:dev-changelog-engine-mini:d916d25d44df7396:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
         "id": "dev-changelog-engine-mini",
         "name": "Dev Changelog Engine Mini",
@@ -245,21 +423,25 @@
         "typescript"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
         "slug": "dev-changelog-engine-mini",
         "project_title": "Dev Changelog Engine Mini",
         "changed_fields": [
           "cost_sek",
           "created",
           "current_slice",
+          "family",
           "mvp_stage",
           "roi_percent",
           "slug",
           "status",
+          "summary",
           "tags",
           "title",
           "updated",
+          "url_live",
+          "url_repo",
           "value_sek"
         ],
         "changed_files": [
@@ -283,8 +465,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
         "id": "dev-changelog-engine",
         "name": "Dev Changelog Engine",
@@ -299,17 +481,19 @@
         "dev-changelog-engine"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
         "slug": "dev-changelog-engine",
         "project_title": "Dev Changelog Engine",
         "changed_fields": [
           "cost_sek",
           "created",
+          "family",
           "mvp_stage",
           "roi_percent",
           "slug",
           "status",
+          "summary",
           "tags",
           "title",
           "updated",
@@ -361,8 +545,8 @@
       }
     },
     {
-      "id": "devwatch:docs-watch:0e244806cfb8feee:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:docs-watch:0e244806cfb8feee:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
         "id": "docs-watch",
         "name": "DocsWatch",
@@ -370,7 +554,7 @@
         "url": null
       },
       "title": "docs-watch: project.md",
-      "rawContent": "### project.md\n## Problem\n+Development teams depend on external APIs, platforms, and tools (Stripe, Vercel, Shopify, AWS, etc.) whose changelogs, release notes, and deprecation pages update without direct notification. Teams discover breaking changes, deprecations, or new versions too late -- often only when something breaks in production. Manually checking 5-15 changelog pages on a regular basis does not happen in practice.\n+\n\n## Solution\n+DocsWatch is a lightweight CLI tool that monitors external documentation pages, changelogs, and release notes for meaningful content changes. It fetches pages, extracts text, diffs against previous snapshots, filters noise, and generates a clear per-run report. Built specifically for dev teams who build against external APIs and platforms.\n+\n\n## Target Audience\n+**Primary:** Developers and tech leads in small-to-mid teams (2-15 people) who build against external APIs and platforms and want to know when those change.\n+\n+**Secondary:** DevOps and platform engineers responsible for keeping a team's external dependencies current and who need systematic tracking of upstream changes.\n+\n\n## Assumptions to Validate\n+- Dev teams lack a simple method to watch changelogs/docs they depend on (and do it manually or not at all).\n+- Text-based diff of changelog pages gives meaningful enough information without JS rendering.\n+- Changelogs and docs pages change frequently enough (weekly/monthly) to create recurring value.\n+- Simple noise filtering heuristics (timestamps, whitespace, cookie banners) are sufficient to make output useful.\n+- A CLI report (HTML/JSON) is enough as delivery format for MVP -- notification\n...[truncated]\n\n## Why Buy Instead of Build?\n+- Eliminates the gap between \"we should track this\" and actually doing it, with zero custom scripting.\n+- Noise filtering means the output is actionable, not a wall of meaningless diffs.\n+- Pre-configured for common developer changelog pages, works out of the box in under a minute.\n+\n\n## MVP Steps\n+- Hypothesis: validate that dev teams want a focused tool to watch external changelogs and docs.\n+- Solution test: let 2-3 developers monitor their actual dependency changelogs and evaluate whether the reports are useful.\n+- Demand test: validate whether this is a daily/weekly habit or a nice-to-have.\n+- Launch: ship a narrow but reliable first version with clear diffs and useful default targets.\n+\n\n## Cost Estimate\n+Estimated first-year cost is 35,000 SEK. Low because the technical core (fetch, extract, snapshot, diff, report) already exists from Site Change Monitor. Remaining cost is repositioning, config, testing with real changelog pages, and minor adjustments.\n+\n\n## Value Estimate\n+Estimated first-year value is 120,000 SEK through earlier detection of API changes, deprecations, and breaking changes across external dependencies, reducing production incidents and wasted investigation time.\n+\n\n## ROI\n+Estimated ROI is 243%, based on 120,000 SEK in value and 35,000 SEK in cost.\n+\n\n## Risk Assessment\n+- **Market** (score 2/5): Dev teams may not pay for this as a product -- many solve it with ad-hoc scripts or ignore it entirely.\n+- **Technical** (score 2/5): Some changelog pages are JS-rendered (React SPAs) and return empty HTML with plain fetch. Requires manual URL verification per target.\n+- **Positioning** (score 3/5): Risk of blending into generic website monitoring in the market's eyes -- requires sharp messaging.\n+\n\n## Timeline\n+- Week 1-2: Create project. Copy code to new repo. Reposition naming and config. Test end-to-end with real changelog URLs.\n+- Week 3-4: Run 10-15 times against real targets. Evaluate: does the diff give meaningful info? Does noise filtering work? Which pages need JS rendering?\n+- Week 5-6: Adjust based on results. Fix obvious gaps. Create a demo run with report to show.\n+- Week 7-8: Validate with 2-3 other developers. Ask: \"Would you use this?\". Decide on further investment.\n+\n\n## Notes\n+This project reuses the complete technical core from Site Change Monitor (fetch, extract, snapshot, diff, JSON+HTML report). The difference is positioning: DocsWatch is exclusively for dev teams monitoring external docs, changelogs, and release notes. It does not cover pricing pages, competitor intel, policy monitoring, or general website change detection. The code lives in its own repo outside the CNS project directory.",
+      "rawContent": "### project.md\n## Problem\n+Development teams depend on external APIs, platforms, and tools (Stripe, Vercel, Shopify, AWS, etc.) whose changelogs, release notes, and deprecation pages update without direct notification. Teams discover breaking changes, deprecations, or new versions too late -- often only when something breaks in production. Manually checking 5-15 changelog pages on a regular basis does not happen in practice. \n+\n\n## Solution\n+DocsWatch is a lightweight CLI tool that monitors external documentation pages, changelogs, and release notes for meaningful content changes. It fetches pages, extracts text, diffs against previous snapshots, filters noise, and generates a clear per-run report. Built specifically for dev teams who build against external APIs and platforms.\n+\n\n## Target Audience\n+**Primary:** Developers and tech leads in small-to-mid teams (2-15 people) who build against external APIs and platforms and want to know when those change.\n+\n+**Secondary:** DevOps and platform engineers responsible for keeping a team's external dependencies current and who need systematic tracking of upstream changes.\n+\n\n## Assumptions to Validate\n+- Dev teams lack a simple method to watch changelogs/docs they depend on (and do it manually or not at all).\n+- Text-based diff of changelog pages gives meaningful enough information without JS rendering.\n+- Changelogs and docs pages change frequently enough (weekly/monthly) to create recurring value.\n+- Simple noise filtering heuristics (timestamps, whitespace, cookie banners) are sufficient to make output useful.\n+- A CLI report (HTML/JSON) is enough as delivery format for MVP -- notification\n...[truncated]\n\n## Why Buy Instead of Build?\n+- Eliminates the gap between \"we should track this\" and actually doing it, with zero custom scripting.\n+- Noise filtering means the output is actionable, not a wall of meaningless diffs.\n+- Pre-configured for common developer changelog pages, works out of the box in under a minute.\n+\n\n## MVP Steps\n+- Hypothesis: validate that dev teams want a focused tool to watch external changelogs and docs.\n+- Solution test: let 2-3 developers monitor their actual dependency changelogs and evaluate whether the reports are useful.\n+- Demand test: validate whether this is a daily/weekly habit or a nice-to-have.\n+- Launch: ship a narrow but reliable first version with clear diffs and useful default targets.\n+\n\n## Cost Estimate\n+Estimated first-year cost is 35,000 SEK. Low because the technical core (fetch, extract, snapshot, diff, report) already exists from Site Change Monitor. Remaining cost is repositioning, config, testing with real changelog pages, and minor adjustments.\n+\n\n## Value Estimate\n+Estimated first-year value is 120,000 SEK through earlier detection of API changes, deprecations, and breaking changes across external dependencies, reducing production incidents and wasted investigation time.\n+\n\n## ROI\n+Estimated ROI is 243%, based on 120,000 SEK in value and 35,000 SEK in cost.\n+\n\n## Risk Assessment\n+- **Market** (score 2/5): Dev teams may not pay for this as a product -- many solve it with ad-hoc scripts or ignore it entirely.\n+- **Technical** (score 2/5): Some changelog pages are JS-rendered (React SPAs) and return empty HTML with plain fetch. Requires manual URL verification per target.\n+- **Positioning** (score 3/5): Risk of blending into generic website monitoring in the market's eyes -- requires sharp messaging.\n+\n\n## Timeline\n+- Week 1-2: Create project. Copy code to new repo. Reposition naming and config. Test end-to-end with real changelog URLs.\n+- Week 3-4: Run 10-15 times against real targets. Evaluate: does the diff give meaningful info? Does noise filtering work? Which pages need JS rendering?\n+- Week 5-6: Adjust based on results. Fix obvious gaps. Create a demo run with report to show.\n+- Week 7-8: Validate with 2-3 other developers. Ask: \"Would you use this?\". Decide on further investment.\n+\n\n## Notes\n+This project reuses the complete technical core from Site Change Monitor (fetch, extract, snapshot, diff, JSON+HTML report). The difference is positioning: DocsWatch is exclusively for dev teams monitoring external docs, changelogs, and release notes. It does not cover pricing pages, competitor intel, policy monitoring, or general website change detection. The code lives in its own repo outside the CNS project directory.",
       "url": null,
       "kind": "changed",
       "tags": [
@@ -380,21 +564,24 @@
         "monitoring"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
         "slug": "docs-watch",
         "project_title": "DocsWatch",
         "changed_fields": [
           "cost_sek",
           "created",
           "current_slice",
+          "family",
           "mvp_stage",
           "roi_percent",
           "slug",
           "status",
+          "summary",
           "tags",
           "title",
           "updated",
+          "url_repo",
           "value_sek"
         ],
         "changed_files": [
@@ -420,8 +607,8 @@
       }
     },
     {
-      "id": "devwatch:project-vault-dashboard:2030d8e6a13bc685:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:project-vault-dashboard:2030d8e6a13bc685:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
         "id": "project-vault-dashboard",
         "name": "Project Vault Dashboard",
@@ -429,7 +616,7 @@
         "url": null
       },
       "title": "project-vault-dashboard: assets/README.md, dashboard/data/README.md, notes/README.md, notes/design-ideas.md, planning/api-schema.md, planning/dashboard-views.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
-      "rawContent": "### assets/README.md\ndiff --git a/projects/project-vault-dashboard/assets/README.md b/projects/project-vault-dashboard/assets/README.md\nnew file mode 100644\nindex 0000000..83cfd7e\n--- /dev/null\n+++ b/projects/project-vault-dashboard/assets/README.md\n@@ -0,0 +1,3 @@\n+# project-vault-dashboard / assets\n+\n+Add assets files here.\n\n\n### dashboard/data/README.md\n## Generera projects.json\n+\n+Fran CNS-repots rot:\n+\n+```bash\n+python cns.py export json --output projects/project-vault-dashboard/dashboard/data/projects.json\n+```\n+\n+Eller till stdout (for pipe):\n+\n+```bash\n+python cns.py export json > path/to/projects.json\n+```\n+\n\n## Schema\n+\n+Se `planning/api-schema.md` for fullstandig schemadokumentation.\n+\n\n## Uppdatering\n+\n+Kor exportkommandot igen efter varje andring i CNS-projekten for att halla dashboarden aktuell.\n+<!DOCTYPE html>\n+<html lang=\"sv\">\n+<head>\n+  <meta charset=\"utf-8\">\n+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n+  <title>CNS DevLog — 2026-05-25</title>\n+  <style>\n+    body {\n+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n+      background-color: #f8fafc;\n+      color: #0f172a;\n+      margin: 0;\n+      \n...[truncated]\n\n### notes/README.md\ndiff --git a/projects/project-vault-dashboard/notes/README.md b/projects/project-vault-dashboard/notes/README.md\nnew file mode 100644\nindex 0000000..cadfad5\n--- /dev/null\n+++ b/projects/project-vault-dashboard/notes/README.md\n@@ -0,0 +1,3 @@\n+# project-vault-dashboard / notes\n+\n+Add notes files here.\n\n\n### notes/design-ideas.md\n## Designideer\n+\n+- Mörkt tema som default (matchar terminal-estetik, signalerar \"developer portfolio\").\n+- Varje projekt visas som ett kort med statusfärg (gron = live, gul = early_mvp, gra = idea, rod = shelved).\n+- ROI-stapel intill varje kort -- snabb visuell jamforelse.\n+- Responsivt: kortlayout pa mobil, tabell pa desktop.\n+- Ingen JavaScript-framework -- vanilla JS + CSS custom properties for tema.\n+\n\n## Mojliga grafer\n+\n+1. **ROI per projekt** -- horisontell bar chart, sorterad fallande.\n+2. **Statusfordelning** -- enkel donut/pie (idea vs early_mvp vs mvp vs live vs shelved).\n+3. **Kostnad vs. Varde** -- scatter plot med projektnamn som labels.\n+4. **Tidslinje** -- simpel timeline med `created`-datum per projekt.\n+\n\n## Datakalla\n+\n+- `projects.json` genereras av `cns export --format json`.\n+- Filen kopieras till `public/data/projects.json` vid build/deploy.\n+- Dashboarden laser filen via `fetch()` -- ingen server behoves.\n+\n\n## Inspirationskallor\n+\n+- Linear's changelog (ren, tydlig, snabb).\n+- GitHub's contribution graph (visuell densitet).\n+- Stripe's docs sidebar (navigering).\n+\n\n## Oppen fraga\n+\n+- Ska dashboarden ha filter/sok? I MVP: nej. Projekten ar fa nog att oversikten racker.\n+- Ska den visa quest-data (current_slice)? Ja, om projektet har quest state -- visa som badge/tag.\n\n### planning/api-schema.md\n## Toppniva\n+\n+```json\n+{\n+  \"exported_at\": \"2026-05-11T14:00:00Z\",\n+  \"version\": \"1.0\",\n+  \"project_count\": 8,\n+  \"projects\": [ ... ]\n+}\n+```\n+\n\n## Projektobjekt\n+\n+```json\n+{\n+  \"slug\": \"project-vault-dashboard\",\n+  \"title\": \"Project Vault Dashboard\",\n+  \"status\": \"idea\",\n+  \"mvp_stage\": \"hypothesis\",\n+  \"cost_sek\": 4500,\n+  \"value_sek\": 20000,\n+  \"roi_percent\": 344,\n+  \"tags\": [\"portfolio\", \"dashboard\", \"static-site\", \"dataviz\", \"cns\"],\n+  \"created\": \"2026-05-11\",\n+  \"updated\": \"2026-05-11\",\n+  \"current_slice\": null,\n+  \"sections\": {\n+    \"problem\": \"CNS och Project Vault lever i Markdown...\",\n+    \"solution\": \"En statisk HTML-dashboard...\",\n+    \"targ\n...[truncated]\n\n## Faltbeskrivningar\n+\n+| Falt | Typ | Beskrivning |\n+|------|-----|-------------|\n+| `slug` | string | Unik identifierare, matchar katalognamn |\n+| `title` | string | Lasbart projektnamn |\n+| `status` | enum | `idea`, `early_mvp`, `mvp`, `live`, `shelved` |\n+| `mvp_stage` | enum | `hypothesis`, `problem_interviews`, `solution_test`, `demand_test`, `launch` |\n+| `cost_sek` | number | Total uppskattad kostnad i SEK |\n+| `value_sek` | number | Total uppskattat varde i SEK |\n+| `roi_percent` | number | ROI i procent: `\n...[truncated]\n\n## Anmarkningar\n+\n+- `sections` ar valfritt i MVP -- dashboarden kan klara sig pa enbart frontmatter-data.\n+- Om `sections` inkluderas ska `mvp_steps` vara en array av steg, inte ratt markdown.\n+- `risks` bor vara en array av objekt for att kunna renderas som visuella indikatorer.\n+- Versionsfaltet (`version`) mojliggor framtida schemandring utan att bryta dashboarden.\n\n### planning/dashboard-views.md\n## 1. Portfolio Overview (startsida)\n+\n+**Syfte:** Ge besokaren en omedelbar bild av vad som byggts och vad som pagar.\n+\n+**Innehall:**\n+- Sammanfattande siffror langst upp: antal projekt, total investerad tid/SEK, genomsnittligt ROI.\n+- Projektkort i grid-layout, sorterade efter `updated` (senast uppdaterade forst).\n+- Varje kort visar: titel, status (fargkodad badge), MVP-steg, ROI-procent.\n+- Klick pa kort -> detaljvy.\n+\n+**Design:**\n+- Morkt tema, minimalistiskt.\n+- Max 3-4 kolumner pa desktop, 1 kolumn pa mobil.\n+\n+---\n+\n\n## 2. ROI & Metrics (analysvyn)\n+\n+**Syfte:** Visa aggregerad data -- hur mycket har jag investerat totalt, vad ar totalt varde, vilka projekt levererar bast ROI?\n+\n+**Innehall:**\n+- ROI bar chart (horisontell, sorterad fallande).\n+- Kostnad vs. varde scatter plot.\n+- Statusfordelning (pie/donut).\n+- Topplista: \"Basta ROI\", \"Hogsta varde\", \"Lagsta kostnad\".\n+\n+**Design:**\n+- Grafer renderade med Canvas API eller enkel SVG (ingen Chart.js i MVP for att halla zero-dependency).\n+- Alternativ: om zero-dep ar for tidskravande, till\n...[truncated]\n\n## 3. Project Detail (detaljvy)\n+\n+**Syfte:** Visa fullstandig information om ett enskilt projekt.\n+\n+**Innehall:**\n+- Titel + status + MVP-steg langst upp.\n+- Problemformulering och losning.\n+- Kostnads- och vardetabell.\n+- ROI-formel visuellt.\n+- Risker med fargkodade badges (gron/gul/rod baserat pa score).\n+- Tidslinje om tillganglig.\n+- Quest-state om aktivt (current_slice, next_steps).\n+- Lank tillbaka till oversikten.\n+\n+**Design:**\n+- Enkel enspaltig layout.\n+- Lasbar typografi, god kontrast.\n+\n+---\n+\n\n## 4. Status Filter (eventuell MVP+)\n+\n+**Syfte:** Filtrera projekt baserat pa status eller tags.\n+\n+**Innehall:**\n+- Filterrad langst upp med klickbara badges: All, Idea, Early MVP, MVP, Live, Shelved.\n+- Alternativt: enkel textfiltrering.\n+\n+**Beslut:** Inte i MVP. Projekten ar tillrackligt fa for att oversikten racker. Lagg till nar det finns 15+ projekt.\n+\n+---\n+\n\n## Navigationsstruktur\n+\n+```\n+/ (Portfolio Overview)\n+/metrics (ROI & Metrics)\n+/project/:slug (Project Detail)\n+```\n+\n+Implementeras med enkel hash-routing (`window.location.hash`) -- ingen router-lib behovs.\n\n### planning/decisions.md\ndiff --git a/projects/project-vault-dashboard/planning/decisions.md b/projects/project-vault-dashboard/planning/decisions.md\nnew file mode 100644\nindex 0000000..2dcbfc2\n--- /dev/null\n+++ b/projects/project-vault-dashboard/planning/decisions.md\n@@ -0,0 +1 @@\n+# project-vault-dashboard / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/project-vault-dashboard/planning/roadmap.md b/projects/project-vault-dashboard/planning/roadmap.md\nnew file mode 100644\nindex 0000000..179edd8\n--- /dev/null\n+++ b/projects/project-vault-dashboard/planning/roadmap.md\n@@ -0,0 +1 @@\n+# project-vault-dashboard / roadmap\n\n\n### project.md\n## Problem\n+CNS och Project Vault lever i Markdown och CLI. Det finns ingen lättöverskådlig vy för en utomstående (eller framtida Rikard) att snabbt se vad som byggts, vad det kostat i tid, och vilket värde det levererat. Portföljöversikten kräver idag att man kör terminalkommandon och läser raw-filer.\n+\n\n## Solution\n+En statisk HTML-dashboard som läser JSON exporterad från CNS och presenterar alla projekt med status, MVP-steg, kostnad/värde/ROI och visuella indikatorer -- utan backend, utan ramverk.\n+\n\n## Target Audience\n+**Primärt:** Framtida arbetsgivare och kunder som besöker portföljen och vill se vad som byggts, till vilken kostnad, och med vilket resultat.\n+\n+**Sekundärt:** Jag själv, för att hålla koll på vad som pågår, vad som kostar, och vad som levererar värde.\n+\n+**Tertiärt:** Andra utvecklare som vill se hur Project Vault är strukturerat och inspireras av ett zero-framework dashboard-bygge.\n+\n\n## Assumptions to Validate\n+- CNS kan exportera ren JSON som är stabil nog att vara enda datakälla.\n+- Frontmatter-fälten är tillräckligt konsekventa för att renderas utan tung normalisering.\n+- En statisk sajt räcker -- server-side filter/sök behövs inte i MVP.\n+- Visuell portföljöversikt ger mätbart bättre intryck hos arbetsgivare/kunder.\n+\n\n## Why Buy Instead of Build?\n+- Skapar en visuell portfölj som kan delas med en URL istället för att kräva terminaltillgång.\n+- Eliminerar behovet av att förklara projektstrukturen muntligt vid intervjuer.\n+- Ger ett konkret bevis på förmåga att bygga frontend utan ramverk.\n+\n\n## MVP Steps\n+1. Ta fram JSON-export från CNS (`projects.json`) med en tydlig datamodell.\n+2. Bygga ett statiskt dashboard-skal (HTML/CSS/vanilla JS).\n+3. Visa en projekttabell med status, MVP-steg och ROI.\n+4. Lägga till 2-3 enkla grafer (ROI per projekt, statusfördelning, kostnad vs. värde).\n+5. Länka varje projekt till detaljvy eller extern dokumentation.\n+6. Dokumentera setup + deploy i README.\n+\n\n## Cost Estimate\n+Uppskattad totalkostnad: 4 500 SEK (ca 18 h x 250 kr/h).\n+\n+| Steg | Timmar | SEK |\n+|------|--------|-----|\n+| JSON-export och datamodell | 3 | 750 |\n+| Dashboard-skal (HTML/CSS) | 4 | 1 000 |\n+| Projekttabell/kort | 3 | 750 |\n+| Visualiseringar (grafer) | 4 | 1 000 |\n+| Detaljvy + länkar | 2 | 500 |\n+| README + deploy | 2 | 500 |\n+\n\n## Value Estimate\n+Uppskattat värde: 20 000 SEK.\n+\n+- Portföljen blir skummbar visuellt -- besökare stannar längre och förstår bredden snabbare.\n+- Konkret exempel på statisk dashboard utan ramverk fungerar som arbetsexempel vid intervjuer.\n+- Återanvändbart skal för framtida verktyg (Changelog Digest, AI-verktyg).\n+- Ger mig själv bättre portföljkontroll utan att behöva öppna terminalen.\n+\n\n## ROI\n+ROI = (värde - kostnad) / kostnad = (20 000 - 4 500) / 4 500 = 344 %\n+\n+Estimerat ROI är 344 %, baserat på 20 000 SEK i portföljvärde och 4 500 SEK i tidskostnad.\n+\n\n## Risk Assessment\n+- **Market** (score 2/5): Dashboarden är främst för egen portfölj, låg extern marknadsrisk.\n+- **Technical** (score 2/5): Enkel stack (HTML/CSS/JS + JSON), inga tunga beroenden.\n+- **Competition** (score 1/5): Personlig portfölj, ingen direkt konkurrens.\n+- **Ops** (score 1/5): Statisk sajt utan server, minimalt underhåll.\n+- **Legal** (score 1/5): All data är min egen, inga tredjepartskrav.\n+\n+Primära risker:\n+- **Datastabilitet:** Om frontmatter-formatet ändras i CNS måste export + dashboard \n...[truncated]\n\n## Timeline\n+- Vecka 1: Export-lager + datamodell + dashboard-skal.\n+- Vecka 2: Projekttabell + kort + visualiseringar.\n+- Vecka 3: Detaljvy + README + deploy.\n+\n\n## Notes\n+Fokusera på att dashboarden är ett lättviktigt fönster mot CNS-datan -- inte en ny produkt. Håll stacken minimal: ingen bundler, inget ramverk, ingen server. JSON-filen genereras av CNS och kopieras till dashboardens public-mapp vid deploy.\n\n### research/market-notes.md\ndiff --git a/projects/project-vault-dashboard/research/market-notes.md b/projects/project-vault-dashboard/research/market-notes.md\nnew file mode 100644\nindex 0000000..7bf592c\n--- /dev/null\n+++ b/projects/project-vault-dashboard/research/market-notes.md\n@@ -0,0 +1 @@\n+# project-vault-dashboard / market notes\n\n\n### research/sources.md\ndiff --git a/projects/project-vault-dashboard/research/sources.md b/projects/project-vault-dashboard/research/sources.md\nnew file mode 100644\nindex 0000000..2d4148b\n--- /dev/null\n+++ b/projects/project-vault-dashboard/research/sources.md\n@@ -0,0 +1 @@\n+# project-vault-dashboard / sources\ndiff --git a/projects/site-change-monitor/.gitignore b/projects/site-change-monitor/.gitignore\nnew file mode 100644\nindex 0000000..28cf638\n--- /dev/null\n+++ b/projects/site-change-monitor/.gitignore\n@@ -0,0 +1,33 @@\n+# Runtime data\n+data/\n+\n+# Python\n+__pycache__/\n+*.py[cod]\n+*.egg-info/\n+dist/\n+build/\n+.eggs/\n+*.egg\n+\n+# Virtual environments\n+venv/\n+.venv/\n+env/\n+\n+# IDE\n+.vscode/\n+.idea/\n+*.swp\n+*.swo\n+\n+# OS\n+.DS_Store\n+Thumbs.db\n+\n+# CNS project metadata (not part of the tool itself)\n+project.md\n+asset",
+      "rawContent": "### assets/README.md\ndiff --git a/projects/project-vault-dashboard/assets/README.md b/projects/project-vault-dashboard/assets/README.md\nnew file mode 100644\nindex 0000000..83cfd7e\n--- /dev/null\n+++ b/projects/project-vault-dashboard/assets/README.md\n@@ -0,0 +1,3 @@\n+# project-vault-dashboard / assets\n+\n+Add assets files here.\n\n\n### dashboard/data/README.md\n## Generera projects.json\n+\n+Fran CNS-repots rot:\n+\n+```bash\n+python cns.py export json --output projects/project-vault-dashboard/dashboard/data/projects.json\n+```\n+\n+Eller till stdout (for pipe):\n+\n+```bash\n+python cns.py export json > path/to/projects.json\n+```\n+\n\n## Schema\n+\n+Se `planning/api-schema.md` for fullstandig schemadokumentation.\n+\n\n## Uppdatering\n+\n+Kor exportkommandot igen efter varje andring i CNS-projekten for att halla dashboarden aktuell.\n+<!DOCTYPE html>\n+<html lang=\"sv\">\n+<head>\n+  <meta charset=\"utf-8\">\n+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n+  <title>CNS DevLog — 2026-05-25</title>\n+  <style>\n+    body {\n+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n+      background-color: #f8fafc;\n+      color: #0f172a;\n+      margin: 0;\n+      \n...[truncated]\n\n### notes/README.md\ndiff --git a/projects/project-vault-dashboard/notes/README.md b/projects/project-vault-dashboard/notes/README.md\nnew file mode 100644\nindex 0000000..cadfad5\n--- /dev/null\n+++ b/projects/project-vault-dashboard/notes/README.md\n@@ -0,0 +1,3 @@\n+# project-vault-dashboard / notes\n+\n+Add notes files here.\n\n\n### notes/design-ideas.md\n## Designideer\n+\n+- Mörkt tema som default (matchar terminal-estetik, signalerar \"developer portfolio\").\n+- Varje projekt visas som ett kort med statusfärg (gron = live, gul = early_mvp, gra = idea, rod = shelved).\n+- ROI-stapel intill varje kort -- snabb visuell jamforelse.\n+- Responsivt: kortlayout pa mobil, tabell pa desktop.\n+- Ingen JavaScript-framework -- vanilla JS + CSS custom properties for tema.\n+\n\n## Mojliga grafer\n+\n+1. **ROI per projekt** -- horisontell bar chart, sorterad fallande.\n+2. **Statusfordelning** -- enkel donut/pie (idea vs early_mvp vs mvp vs live vs shelved).\n+3. **Kostnad vs. Varde** -- scatter plot med projektnamn som labels.\n+4. **Tidslinje** -- simpel timeline med `created`-datum per projekt.\n+\n\n## Datakalla\n+\n+- `projects.json` genereras av `cns export --format json`.\n+- Filen kopieras till `public/data/projects.json` vid build/deploy.\n+- Dashboarden laser filen via `fetch()` -- ingen server behoves.\n+\n\n## Inspirationskallor\n+\n+- Linear's changelog (ren, tydlig, snabb).\n+- GitHub's contribution graph (visuell densitet).\n+- Stripe's docs sidebar (navigering).\n+\n\n## Oppen fraga\n+\n+- Ska dashboarden ha filter/sok? I MVP: nej. Projekten ar fa nog att oversikten racker.\n+- Ska den visa quest-data (current_slice)? Ja, om projektet har quest state -- visa som badge/tag.\n\n### planning/api-schema.md\n## Toppniva\n+\n+```json\n+{\n+  \"exported_at\": \"2026-05-11T14:00:00Z\",\n+  \"version\": \"1.0\",\n+  \"project_count\": 8,\n+  \"projects\": [ ... ]\n+}\n+```\n+\n\n## Projektobjekt\n+\n+```json\n+{\n+  \"slug\": \"project-vault-dashboard\",\n+  \"title\": \"Project Vault Dashboard\",\n+  \"status\": \"idea\",\n+  \"mvp_stage\": \"hypothesis\",\n+  \"cost_sek\": 4500,\n+  \"value_sek\": 20000,\n+  \"roi_percent\": 344,\n+  \"tags\": [\"portfolio\", \"dashboard\", \"static-site\", \"dataviz\", \"cns\"],\n+  \"created\": \"2026-05-11\",\n+  \"updated\": \"2026-05-11\",\n+  \"current_slice\": null,\n+  \"sections\": {\n+    \"problem\": \"CNS och Project Vault lever i Markdown...\",\n+    \"solution\": \"En statisk HTML-dashboard...\",\n+    \"targ\n...[truncated]\n\n## Faltbeskrivningar\n+\n+| Falt | Typ | Beskrivning |\n+|------|-----|-------------|\n+| `slug` | string | Unik identifierare, matchar katalognamn |\n+| `title` | string | Lasbart projektnamn |\n+| `status` | enum | `idea`, `early_mvp`, `mvp`, `live`, `shelved` |\n+| `mvp_stage` | enum | `hypothesis`, `problem_interviews`, `solution_test`, `demand_test`, `launch` |\n+| `cost_sek` | number | Total uppskattad kostnad i SEK |\n+| `value_sek` | number | Total uppskattat varde i SEK |\n+| `roi_percent` | number | ROI i procent: `\n...[truncated]\n\n## Anmarkningar\n+\n+- `sections` ar valfritt i MVP -- dashboarden kan klara sig pa enbart frontmatter-data.\n+- Om `sections` inkluderas ska `mvp_steps` vara en array av steg, inte ratt markdown.\n+- `risks` bor vara en array av objekt for att kunna renderas som visuella indikatorer.\n+- Versionsfaltet (`version`) mojliggor framtida schemandring utan att bryta dashboarden.\n\n### planning/dashboard-views.md\n## 1. Portfolio Overview (startsida)\n+\n+**Syfte:** Ge besokaren en omedelbar bild av vad som byggts och vad som pagar.\n+\n+**Innehall:**\n+- Sammanfattande siffror langst upp: antal projekt, total investerad tid/SEK, genomsnittligt ROI.\n+- Projektkort i grid-layout, sorterade efter `updated` (senast uppdaterade forst).\n+- Varje kort visar: titel, status (fargkodad badge), MVP-steg, ROI-procent.\n+- Klick pa kort -> detaljvy.\n+\n+**Design:**\n+- Morkt tema, minimalistiskt.\n+- Max 3-4 kolumner pa desktop, 1 kolumn pa mobil.\n+\n+---\n+\n\n## 2. ROI & Metrics (analysvyn)\n+\n+**Syfte:** Visa aggregerad data -- hur mycket har jag investerat totalt, vad ar totalt varde, vilka projekt levererar bast ROI?\n+\n+**Innehall:**\n+- ROI bar chart (horisontell, sorterad fallande).\n+- Kostnad vs. varde scatter plot.\n+- Statusfordelning (pie/donut).\n+- Topplista: \"Basta ROI\", \"Hogsta varde\", \"Lagsta kostnad\".\n+\n+**Design:**\n+- Grafer renderade med Canvas API eller enkel SVG (ingen Chart.js i MVP for att halla zero-dependency).\n+- Alternativ: om zero-dep ar for tidskravande, till\n...[truncated]\n\n## 3. Project Detail (detaljvy)\n+\n+**Syfte:** Visa fullstandig information om ett enskilt projekt.\n+\n+**Innehall:**\n+- Titel + status + MVP-steg langst upp.\n+- Problemformulering och losning.\n+- Kostnads- och vardetabell.\n+- ROI-formel visuellt.\n+- Risker med fargkodade badges (gron/gul/rod baserat pa score).\n+- Tidslinje om tillganglig.\n+- Quest-state om aktivt (current_slice, next_steps).\n+- Lank tillbaka till oversikten.\n+\n+**Design:**\n+- Enkel enspaltig layout.\n+- Lasbar typografi, god kontrast.\n+\n+---\n+\n\n## 4. Status Filter (eventuell MVP+)\n+\n+**Syfte:** Filtrera projekt baserat pa status eller tags.\n+\n+**Innehall:**\n+- Filterrad langst upp med klickbara badges: All, Idea, Early MVP, MVP, Live, Shelved.\n+- Alternativt: enkel textfiltrering.\n+\n+**Beslut:** Inte i MVP. Projekten ar tillrackligt fa for att oversikten racker. Lagg till nar det finns 15+ projekt.\n+\n+---\n+\n\n## Navigationsstruktur\n+\n+```\n+/ (Portfolio Overview)\n+/metrics (ROI & Metrics)\n+/project/:slug (Project Detail)\n+```\n+\n+Implementeras med enkel hash-routing (`window.location.hash`) -- ingen router-lib behovs.\n\n### planning/decisions.md\ndiff --git a/projects/project-vault-dashboard/planning/decisions.md b/projects/project-vault-dashboard/planning/decisions.md\nnew file mode 100644\nindex 0000000..2dcbfc2\n--- /dev/null\n+++ b/projects/project-vault-dashboard/planning/decisions.md\n@@ -0,0 +1 @@\n+# project-vault-dashboard / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/project-vault-dashboard/planning/roadmap.md b/projects/project-vault-dashboard/planning/roadmap.md\nnew file mode 100644\nindex 0000000..179edd8\n--- /dev/null\n+++ b/projects/project-vault-dashboard/planning/roadmap.md\n@@ -0,0 +1 @@\n+# project-vault-dashboard / roadmap\n\n\n### project.md\n## Problem\n+CNS och Project Vault lever i Markdown och CLI. Det finns ingen lättöverskådlig vy för en utomstående (eller framtida Rikard) att snabbt se vad som byggts, vad det kostat i tid, och vilket värde det levererat. Portföljöversikten kräver idag att man kör terminalkommandon och läser raw-filer.\n+\n\n## Solution\n+En statisk HTML-dashboard som läser JSON exporterad från CNS och presenterar alla projekt med status, MVP-steg, kostnad/värde/ROI och visuella indikatorer -- utan backend, utan ramverk.\n+\n\n## Target Audience\n+**Primärt:** Framtida arbetsgivare och kunder som besöker portföljen och vill se vad som byggts, till vilken kostnad, och med vilket resultat.\n+\n+**Sekundärt:** Jag själv, för att hålla koll på vad som pågår, vad som kostar, och vad som levererar värde.\n+\n+**Tertiärt:** Andra utvecklare som vill se hur Project Vault är strukturerat och inspireras av ett zero-framework dashboard-bygge.\n+\n\n## Assumptions to Validate\n+- CNS kan exportera ren JSON som är stabil nog att vara enda datakälla.\n+- Frontmatter-fälten är tillräckligt konsekventa för att renderas utan tung normalisering.\n+- En statisk sajt räcker -- server-side filter/sök behövs inte i MVP.\n+- Visuell portföljöversikt ger mätbart bättre intryck hos arbetsgivare/kunder.\n+\n\n## Why Buy Instead of Build?\n+- Skapar en visuell portfölj som kan delas med en URL istället för att kräva terminaltillgång.\n+- Eliminerar behovet av att förklara projektstrukturen muntligt vid intervjuer.\n+- Ger ett konkret bevis på förmåga att bygga frontend utan ramverk.\n+\n\n## MVP Steps\n+1. Ta fram JSON-export från CNS (`projects.json`) med en tydlig datamodell.\n+2. Bygga ett statiskt dashboard-skal (HTML/CSS/vanilla JS).\n+3. Visa en projekttabell med status, MVP-steg och ROI.\n+4. Lägga till 2-3 enkla grafer (ROI per projekt, statusfördelning, kostnad vs. värde).\n+5. Länka varje projekt till detaljvy eller extern dokumentation.\n+6. Dokumentera setup + deploy i README.\n+\n\n## Cost Estimate\n+Uppskattad totalkostnad: 4 500 SEK (ca 18 h x 250 kr/h).\n+\n+| Steg | Timmar | SEK |\n+|------|--------|-----|\n+| JSON-export och datamodell | 3 | 750 |\n+| Dashboard-skal (HTML/CSS) | 4 | 1 000 |\n+| Projekttabell/kort | 3 | 750 |\n+| Visualiseringar (grafer) | 4 | 1 000 |\n+| Detaljvy + länkar | 2 | 500 |\n+| README + deploy | 2 | 500 |\n+\n\n## Value Estimate\n+Uppskattat värde: 20 000 SEK.\n+\n+- Portföljen blir skummbar visuellt -- besökare stannar längre och förstår bredden snabbare.\n+- Konkret exempel på statisk dashboard utan ramverk fungerar som arbetsexempel vid intervjuer.\n+- Återanvändbart skal för framtida verktyg (Changelog Digest, AI-verktyg).\n+- Ger mig själv bättre portföljkontroll utan att behöva öppna terminalen.\n+\n\n## ROI\n+ROI = (värde - kostnad) / kostnad = (20 000 - 4 500) / 4 500 = 344 %\n+\n+Estimerat ROI är 344 %, baserat på 20 000 SEK i portföljvärde och 4 500 SEK i tidskostnad.\n+\n\n## Risk Assessment\n+- **Market** (score 2/5): Dashboarden är främst för egen portfölj, låg extern marknadsrisk.\n+- **Technical** (score 2/5): Enkel stack (HTML/CSS/JS + JSON), inga tunga beroenden.\n+- **Competition** (score 1/5): Personlig portfölj, ingen direkt konkurrens.\n+- **Ops** (score 1/5): Statisk sajt utan server, minimalt underhåll.\n+- **Legal** (score 1/5): All data är min egen, inga tredjepartskrav.\n+\n+Primära risker:\n+- **Datastabilitet:** Om frontmatter-formatet ändras i CNS måste export + dashboard \n...[truncated]\n\n## Timeline\n+- Vecka 1: Export-lager + datamodell + dashboard-skal.\n+- Vecka 2: Projekttabell + kort + visualiseringar.\n+- Vecka 3: Detaljvy + README + deploy.\n+\n\n## Notes\n+Fokusera på att dashboarden är ett lättviktigt fönster mot CNS-datan -- inte en ny produkt. Håll stacken minimal: ingen bundler, inget ramverk, ingen server. JSON-filen genereras av CNS och kopieras till dashboardens public-mapp vid deploy.\n\n### research/market-notes.md\ndiff --git a/projects/project-vault-dashboard/research/market-notes.md b/projects/project-vault-dashboard/research/market-notes.md\nnew file mode 100644\nindex 0000000..7bf592c\n--- /dev/null\n+++ b/projects/project-vault-dashboard/research/market-notes.md\n@@ -0,0 +1 @@\n+# project-vault-dashboard / market notes\n\n\n### research/sources.md\ndiff --git a/projects/project-vault-dashboard/research/sources.md b/projects/project-vault-dashboard/research/sources.md\nnew file mode 100644\nindex 0000000..2d4148b\n--- /dev/null\n+++ b/projects/project-vault-dashboard/research/sources.md\n@@ -0,0 +1 @@\n+# project-vault-dashboard / sources\n",
       "url": null,
       "kind": "changed",
       "tags": [
@@ -441,20 +628,24 @@
         "static-site"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
         "slug": "project-vault-dashboard",
         "project_title": "Project Vault Dashboard",
         "changed_fields": [
           "cost_sek",
           "created",
+          "family",
           "mvp_stage",
           "roi_percent",
           "slug",
           "status",
+          "summary",
           "tags",
           "title",
           "updated",
+          "url_live",
+          "url_repo",
           "value_sek"
         ],
         "changed_files": [
@@ -541,8 +732,70 @@
       }
     },
     {
-      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
+      "source": {
+        "id": "scoring-studio",
+        "name": "Scoring Studio",
+        "type": "devwatch",
+        "url": null
+      },
+      "title": "scoring-studio: project.md",
+      "rawContent": "### project.md\n## Problem\n+\n+Scoring-vikterna i Changelog Engine Mini är hårdkodade i `weights.ts`. Varje justering kräver att man öppnar koden, hittar rätt konstant, ändrar ett värde och committar. Under en månads drift har vikterna behövt justeras flera gånger för att rätt ändringar ska ta sig igenom – för mycket filtreras bort som brus. Det finns inget sätt att se effekten av en viktändring utan att köra hela pipeline på nytt.\n+\n\n## Solution\n+\n+Ett statiskt HTML-verktyg som läser aktuell `scoring.config.json` från Changelog Engine Mini-repot, låter användaren justera vikter och nyckelord visuellt, och exporterar en ny JSON-fil redo att committas. På sikt: live preview mot senaste digest-data som visar vilka events som hade inkluderats med de nya vikterna.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv – som underhåller DocsWatch + Changelog Engine Mini-pipeline och behöver justera scoring utan att gå in i koden.\n+\n\n## Assumptions to Validate\n+\n+- Att flytta `DEFAULT_WEIGHTS` till en extern `scoring.config.json` inte bryter befintlig pipeline.\n+- Att en visuell editor för vikter ger tillräcklig kontroll utan att exponera hela TypeScript-strukturen.\n+- Att export-till-JSON + manuell commit är ett acceptabelt arbetsflöde för MVP – ingen backend behövs.\n+- Att live preview mot befintlig digest-data är värdefullt nog att motivera steget efter MVP.\n+\n\n## Why Buy Instead of Build?\n+\n+- Eliminerar friktionen att justera scoring – från \"öppna kod, hitta konstant, ändra, committa\" till ett formulär med slider och spara-knapp.\n+- Gör pipeline-underhåll möjligt utan att ha utvecklingsmiljön öppen.\n+- Skapar ett stabilt konfigurationslager som framtida features (fler vikter, nyckelord, dampeners) kan bygga på.\n+\n\n## MVP Steps\n+\n+- Hypothesis: verifiera att `DEFAULT_WEIGHTS` kan externaliseras till `scoring.config.json` utan att pipeline-beteendet förändras.\n+- Solution test: använd den statiska editorn för att göra en verklig viktjustering, utvärdera om det är snabbare och mindre friktionsfyllt än att redigera koden direkt.\n+- Demand test: kontrollera om verktyget faktiskt används vid nästa behov av viktjustering, eller om gamla vanor tar över.\n+- Launch: publicera som statisk sida under digest-pipeline-familjen, län\n...[truncated]\n\n## Cost Estimate\n+\n+Uppskattat till 4 000 SEK – externalisering av config i TypeScript-koden (1 dag) plus statisk HTML-editor med export (1–2 dagar). Ingen infrastruktur, ingen backend.\n+\n\n## Value Estimate\n+\n+Uppskattat till 14 000 SEK – sparad tid och friktion vid scoring-justeringar, plus ett stabilt konfigurationslager för framtida features i digest-pipeline.\n+\n\n## ROI\n+\n+(14 000 - 4 000) / 4 000 = 250%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 2/5): Externaliseringen av `DEFAULT_WEIGHTS` är ett litet ingrepp i befintlig kod men kräver att CLI:t läser filen korrekt och faller tillbaka på defaults utan att krascha.\n+- **Ops** (score 2/5): Config-filen måste versionshanteras i repot – annars försvinner justeringar vid nästa pull. Kräver tydlig konvention för var filen bor.\n+- **Technical** (score 3/5): Live preview mot digest-data kräver att editorn kan ladda och re-scorea events i browsern – det är ett större s\n...[truncated]\n\n## Timeline\n+\n+- Vecka 1: Externalisera `DEFAULT_WEIGHTS` till `scoring.config.json` i Changelog Engine Mini. Verifiera att pipeline fungerar identiskt.\n+- Vecka 2: Bygg statisk HTML-editor – formulär för kind-vikter, keyword-lista, dampener-patterns. Export till JSON.\n+- Vecka 3: Testa i verklig situation – gör en justerings-session med editorn istället för kod. Utvärdera friktion.\n+- Vecka 4: Publicera, länka från README. Besluta om live preview är nästa steg.\n+\n\n## Notes\n+\n+Beroende på Changelog Engine Mini (`src/scoring/weights.ts`) – externalisering måste göras där först. Scoring Studio är ett verktyg i digest-pipeline-familjen, inte ett fristående projekt. Koden lever troligen i dev-changelog-engine-mini-repot som en `/studio`-undermapp eller som en separat statisk sida i samma GitHub Pages-deploy. Live preview är ett tydligt steg-2-feature och ingår inte i MVP.\n+# Runtime data\n+data/\n+\n+# Python\n+__pycache__/\n+*.py[cod]\n+*.egg-info/\n+dist/\n+build/\n+.eggs/\n+*\n...[truncated]",
+      "url": null,
+      "kind": "changed",
+      "tags": [
+        "config",
+        "devtools",
+        "digest-pipeline",
+        "scoring",
+        "scoring-studio",
+        "static-site"
+      ],
+      "meta": {
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
+        "slug": "scoring-studio",
+        "project_title": "Scoring Studio",
+        "changed_fields": [
+          "cost_sek",
+          "created",
+          "family",
+          "mvp_stage",
+          "roi_percent",
+          "slug",
+          "status",
+          "summary",
+          "tags",
+          "title",
+          "updated",
+          "value_sek"
+        ],
+        "changed_files": [
+          {
+            "file": "project.md",
+            "sections": [
+              "Assumptions to Validate",
+              "Cost Estimate",
+              "MVP Steps",
+              "Notes",
+              "Problem",
+              "ROI",
+              "Risk Assessment",
+              "Solution",
+              "Target Audience",
+              "Timeline",
+              "Value Estimate",
+              "Why Buy Instead of Build?"
+            ]
+          }
+        ],
+        "noise_filtered": false
+      }
+    },
+    {
+      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
         "id": "site-change-monitor",
         "name": "site-change-monitor",
@@ -557,8 +810,8 @@
         "site-change-monitor"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
         "slug": "site-change-monitor",
         "project_title": "site-change-monitor",
         "changed_fields": [],
@@ -605,8 +858,8 @@
       }
     },
     {
-      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
         "id": "test-interactive",
         "name": "test-interactive",
@@ -621,8 +874,8 @@
         "test-interactive"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
         "slug": "test-interactive",
         "project_title": "test-interactive",
         "changed_fields": [],
@@ -656,8 +909,8 @@
       }
     },
     {
-      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260525T103610Z",
-      "detectedAt": "2026-05-25T10:36:10Z",
+      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260525T113448Z",
+      "detectedAt": "2026-05-25T11:34:48Z",
       "source": {
         "id": "webhook-router",
         "name": "Webhook Router",
@@ -676,18 +929,20 @@
         "webhooks"
       ],
       "meta": {
-        "run_id": "20260525_103610",
-        "run_timestamp": "20260525T103610Z",
+        "run_id": "20260525_113448",
+        "run_timestamp": "20260525T113448Z",
         "slug": "webhook-router",
         "project_title": "Webhook Router",
         "changed_fields": [
           "cost_sek",
           "created",
           "current_slice",
+          "family",
           "mvp_stage",
           "roi_percent",
           "slug",
           "status",
+          "summary",
           "tags",
           "title",
           "updated"
@@ -799,9 +1054,9 @@
     }
   ],
   "meta": {
-    "projects_scanned": 8,
-    "projects_changed": 10,
-    "events_exported": 10,
+    "projects_scanned": 11,
+    "projects_changed": 13,
+    "events_exported": 13,
     "noise_filtered": 0,
     "no_changes": false
   }
