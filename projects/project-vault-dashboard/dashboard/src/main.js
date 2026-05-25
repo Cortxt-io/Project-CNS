@@ -34,6 +34,21 @@
     }
 
     // ===== Tab-navigering =====
+
+    // Per-tab description texts
+    var TAB_DESCRIPTIONS = {
+        overview: 'Din produktportf\u00f6lj \u2013 projekt fr\u00e5n id\u00e9 till lansering. Klicka p\u00e5 ett projekt f\u00f6r att se detaljer, status och ROI.',
+        flow: 'Vad h\u00e4nde senast i portf\u00f6ljen? Git-\u00e4ndringar, AI-digest och projektuppdateringar samlade p\u00e5 ett st\u00e4lle.',
+        ai: 'Analysera och uppdatera projekt med AI. Granska f\u00f6rslag innan de appliceras p\u00e5 dina projektfiler.',
+        portfolio: 'Nyckeltal och visualiseringar \u00f6ver hela portf\u00f6ljen \u2013 ROI per projekt, statusf\u00f6rdelning och ekonomisk \u00f6versikt.'
+    };
+
+    function updateTabDescription(section) {
+        var el = document.getElementById('tab-description');
+        if (!el) return;
+        el.textContent = TAB_DESCRIPTIONS[section] || '';
+    }
+
     function setupNav() {
         var nav = document.getElementById('main-nav');
         var sections = {
@@ -51,6 +66,7 @@
             Object.keys(sections).forEach(function (k) {
                 sections[k].classList.toggle('hidden', k !== btn.dataset.section);
             });
+            updateTabDescription(btn.dataset.section);
         });
     }
 
@@ -110,6 +126,14 @@
         document.getElementById('clear-all-filters').addEventListener('click', function (e) {
             e.preventDefault();
             clearAll();
+        });
+
+        // Avancerat-toggle (delegated, element recreated on render)
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('#advanced-toggle');
+            if (!btn) return;
+            window.PVD.overview.toggleAdvanced();
+            renderOverview();
         });
     }
 
@@ -188,6 +212,7 @@
         data.fetchData().then(function () {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('section-overview').classList.remove('hidden');
+            updateTabDescription('overview');
 
             // Rendera allt
             overview.renderStats();

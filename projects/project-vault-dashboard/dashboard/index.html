@@ -23,7 +23,7 @@
 <button data-section="ai" class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors text-gray-500 border-transparent hover:text-gray-700">AI</button>
 <button data-section="portfolio" class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors text-gray-500 border-transparent hover:text-gray-700">Portfolio</button>
 </nav>
-<p class="text-sm text-gray-500 mb-6 max-w-[700px] leading-relaxed">Alla projekt i mitt Project Vault &mdash; från tidiga idéer till levererade MVP:er. Datan exporteras från CNS via <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">python cns.py export json</code>.</p>
+<p id="tab-description" class="text-sm text-gray-500 mb-6 max-w-[700px] leading-relaxed"></p>
 <div class="flex gap-3 mb-6 flex-wrap" id="stats"></div>
 <div id="loading" class="text-center py-12 text-sm text-gray-500">Laddar projektdata...</div>
 <div id="error" class="hidden text-center py-12 text-sm text-red-600">Kunde inte ladda data. Kontrollera att data/projects.json finns.</div>
@@ -41,8 +41,11 @@
 </div>
 <div class="space-y-2">
 <div class="flex items-center gap-2 flex-wrap"><span class="text-xs text-slate-500 font-medium uppercase tracking-wide flex-shrink-0">Status:</span><div class="flex flex-wrap gap-1.5" id="filter-status"></div></div>
-<div class="flex items-center gap-2 flex-wrap"><span class="text-xs text-slate-500 font-medium uppercase tracking-wide flex-shrink-0">Taggar:</span><div class="flex flex-wrap gap-1.5" id="filter-tags"></div></div>
 <div class="flex items-center gap-2 flex-wrap"><span class="text-xs text-slate-500 font-medium uppercase tracking-wide flex-shrink-0">Familj:</span><div class="flex flex-wrap gap-1.5" id="filter-family"></div></div>
+<div id="advanced-toggle-row" class="flex items-center gap-2 flex-wrap"></div>
+<div id="advanced-tags-row" class="hidden">
+<div class="flex items-center gap-2 flex-wrap mt-1 pl-3 border-l-2 border-slate-100"><span class="text-xs text-slate-400 font-medium uppercase tracking-wide flex-shrink-0">Taggar:</span><div class="flex flex-wrap gap-1.5" id="filter-tags"></div></div>
+</div>
 </div>
 <div class="relative max-w-sm">
 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -58,8 +61,6 @@
 <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide cursor-pointer select-none" data-sort="status">Status<span class="sort-icon text-slate-300"> ⇅</span></th>
 <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide cursor-pointer select-none" data-sort="mvp_stage">MVP-steg<span class="sort-icon text-slate-300"> ⇅</span></th>
 <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide cursor-pointer select-none" data-sort="roi_percent">ROI %<span class="sort-icon text-slate-300"> ⇅</span></th>
-<th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide cursor-pointer select-none" data-sort="cost_sek">Kostnad<span class="sort-icon text-slate-300"> ⇅</span></th>
-<th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide cursor-pointer select-none" data-sort="value_sek">Värde<span class="sort-icon text-slate-300"> ⇅</span></th>
 <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide">Taggar</th>
 </tr></thead>
 <tbody id="table-body"></tbody>

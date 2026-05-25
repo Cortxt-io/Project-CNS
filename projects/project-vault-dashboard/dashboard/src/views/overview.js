@@ -9,6 +9,7 @@
     var data = null;
     var MAX_VISIBLE_TAGS = 6; // Visa max 6 tag-chips, resten bakom "+N fler"
     var tagsExpanded = false;
+    var advancedOpen = false;
 
     // Railway API integration
     var RAILWAY_URL = 'https://project-cns-production.up.railway.app';
@@ -132,7 +133,6 @@
     function renderFilters() {
         refs();
         var statusEl = document.getElementById('filter-status');
-        var tagEl = document.getElementById('filter-tags');
         var clearBtn = document.getElementById('clear-all-filters');
 
         // Visa/dölj "Rensa alla filter"
@@ -154,44 +154,11 @@
                 fmt.statusLabel(s) + '</button>';
         }).join('');
 
-        // Tag-chips (max 6 synliga, resten bakom "+N fler")
-        var tags = data.allTags();
-        // Aktiva taggar först (de ska alltid synas)
-        var activeTags = tags.filter(function (t) { return data.state.tagFilter.indexOf(t) !== -1; });
-        var inactiveTags = tags.filter(function (t) { return data.state.tagFilter.indexOf(t) === -1; });
-        var orderedTags = activeTags.concat(inactiveTags);
-
-        var visibleLimit = tagsExpanded ? orderedTags.length : MAX_VISIBLE_TAGS;
-        var visibleTags = orderedTags.slice(0, visibleLimit);
-        var hiddenCount = orderedTags.length - visibleLimit;
-
-        var chipsHtml = visibleTags.map(function (t) {
-            var isActive = data.state.tagFilter.indexOf(t) !== -1;
-            if (isActive) {
-                return '<button data-tag="' + t + '" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-blue-100 text-blue-700 border border-blue-200 hover:bg-blue-200">' +
-                    t +
-                    '<span class="text-blue-400 hover:text-blue-700 ml-0.5 cursor-pointer" data-tag-remove="' + t + '">&times;</span>' +
-                '</button>';
-            }
-            return '<button data-tag="' + t + '" class="px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100">' +
-                t + '</button>';
-        }).join('');
-
-        // "+N fler" knapp
-        if (hiddenCount > 0) {
-            chipsHtml += '<button id="expand-tags-btn" class="px-2.5 py-1 rounded-full text-xs font-medium text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors">+' + hiddenCount + ' fler</button>';
-        } else if (tagsExpanded && orderedTags.length > MAX_VISIBLE_TAGS) {
-            chipsHtml += '<button id="collapse-tags-btn" class="px-2.5 py-1 rounded-full text-xs font-medium text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors">Visa färre</button>';
-        }
-
-        tagEl.innerHTML = chipsHtml;
-
         // Family-filter
         var familyEl = document.getElementById('filter-family');
         if (familyEl) {
             var families = data.allFamilies();
             var familyChipsHtml = '';
-            // "Alla"-knapp
             var allActive = !data.state.familyFilter;
             familyChipsHtml += '<button data-family="" class="px-2.5 py-1 rounded-full text-xs font-medium transition-colors ' +
                 (allActive ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100') +
@@ -204,6 +171,58 @@
             });
             familyEl.innerHTML = familyChipsHtml;
         }
+
+        // Advanced toggle
+        var toggleRow = document.getElementById('advanced-toggle-row');
+        if (toggleRow) {
+            var hasActiveTags = data.state.tagFilter.length > 0;
+            toggleRow.innerHTML =
+                '<button id="advanced-toggle" class="text-xs text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1 transition-colors">' +
+                    (advancedOpen ? '\u25BE' : '\u25B8') + ' Avancerat' +
+                    (hasActiveTags
+                        ? ' <span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 ml-0.5"></span>'
+                        : '') +
+                '</button>';
+        }
+
+        // Show/hide tags row
+        var tagsRow = document.getElementById('advanced-tags-row');
+        if (tagsRow) {
+            tagsRow.classList.toggle('hidden', !advancedOpen);
+        }
+
+        // Tag-chips (rendered into the conditional container)
+        var tagEl = document.getElementById('filter-tags');
+        if (tagEl) {
+            var tags = data.allTags();
+            var activeTags = tags.filter(function (t) { return data.state.tagFilter.indexOf(t) !== -1; });
+            var inactiveTags = tags.filter(function (t) { return data.state.tagFilter.indexOf(t) === -1; });
+            var orderedTags = activeTags.concat(inactiveTags);
+
+            var visibleLimit = tagsExpanded ? orderedTags.length : MAX_VISIBLE_TAGS;
+            var visibleTags = orderedTags.slice(0, visibleLimit);
+            var hiddenCount = orderedTags.length - visibleLimit;
+
+            var chipsHtml = visibleTags.map(function (t) {
+                var isActive = data.state.tagFilter.indexOf(t) !== -1;
+                if (isActive) {
+                    return '<button data-tag="' + t + '" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-blue-100 text-blue-700 border border-blue-200 hover:bg-blue-200">' +
+                        t +
+                        '<span class="text-blue-400 hover:text-blue-700 ml-0.5 cursor-pointer" data-tag-remove="' + t + '">&times;</span>' +
+                    '</button>';
+                }
+                return '<button data-tag="' + t + '" class="px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100">' +
+                    t + '</button>';
+            }).join('');
+
+            if (hiddenCount > 0) {
+                chipsHtml += '<button id="expand-tags-btn" class="px-2.5 py-1 rounded-full text-xs font-medium text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors">+' + hiddenCount + ' fler</button>';
+            } else if (tagsExpanded && orderedTags.length > MAX_VISIBLE_TAGS) {
+                chipsHtml += '<button id="collapse-tags-btn" class="px-2.5 py-1 rounded-full text-xs font-medium text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-colors">Visa färre</button>';
+            }
+
+            tagEl.innerHTML = chipsHtml;
+        }
     }
 
     // ===== Tabell =====
@@ -213,7 +232,7 @@
 
         // Empty state
         if (projects.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-10 text-center text-sm text-slate-400">' +
+            tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-10 text-center text-sm text-slate-400">' +
                 'Inga projekt matchar dina filter &mdash; ' +
                 '<a href="#" id="empty-state-clear" class="text-blue-600 hover:text-blue-800 font-medium">Rensa alla filter</a>' +
             '</td></tr>';
@@ -224,18 +243,21 @@
             var tags = (p.tags || []).slice(0, 3).map(function (t) {
                 return '<span class="inline-block px-1.5 py-0.5 rounded-full text-[0.65rem] bg-slate-100 text-slate-600 font-medium mr-0.5">' + t + '</span>';
             }).join('');
-            var sliceHtml = p.current_slice
-                ? '<div class="text-[0.72rem] text-slate-400 mt-0.5 truncate max-w-[220px]">' + fmt.truncate(p.current_slice, 80) + '</div>'
-                : '';
             return '<tr data-slug="' + p.slug + '" class="hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-100 last:border-0">' +
-                '<td class="px-3 py-2.5"><span class="font-semibold text-sm text-slate-800">' + p.title + '</span>' + sliceHtml + '</td>' +
-                '<td class="px-3 py-2.5"><span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ' + fmt.statusBadgeClass(p.status) + '">' + fmt.statusLabel(p.status) + '</span></td>' +
+                '<td class="px-3 py-2.5">' +
+                    '<span class="font-semibold text-sm text-slate-800">' + p.title + '</span>' +
+                    (p.summary
+                        ? '<div class="text-xs text-slate-400 mt-0.5 truncate max-w-[260px]">' + fmt.truncate(p.summary, 80) + '</div>'
+                        : (p.current_slice
+                            ? '<div class="text-[0.72rem] text-slate-400 mt-0.5 truncate max-w-[260px]">' + fmt.truncate(p.current_slice, 80) + '</div>'
+                            : '')) +
+                '</td>' +
+                '<td class="px-3 py-2.5">' +
+                    '<span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ' + fmt.statusBadgeClass(p.status) + '">' + fmt.statusLabel(p.status) + '</span>' +
+                '</td>' +
                 '<td class="px-3 py-2.5 text-sm text-slate-600">' + fmt.stageLabel(p.mvp_stage) + '</td>' +
                 '<td class="px-3 py-2.5 text-sm ' + fmt.roiClass(p.roi_percent) + '">' + p.roi_percent + '%</td>' +
-                '<td class="px-3 py-2.5 text-sm text-slate-500">' + fmt.formatSEK(p.cost_sek) + '</td>' +
-                '<td class="px-3 py-2.5 text-sm text-slate-500">' + fmt.formatSEK(p.value_sek) + '</td>' +
                 '<td class="px-3 py-2.5">' + (tags || '<span class="text-slate-300">-</span>') + '</td>' +
-                '<td class="px-3 py-2.5"><button class="analyze-btn inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium" data-analyze-slug="' + p.slug + '" onclick="event.stopPropagation()">Analyze</button></td>' +
             '</tr>';
         }).join('');
     }
@@ -310,6 +332,12 @@
     function expandTags() { tagsExpanded = true; renderFilters(); }
     function collapseTags() { tagsExpanded = false; renderFilters(); }
 
+    // Toggle avancerat filter-läge
+    function toggleAdvanced() {
+        advancedOpen = !advancedOpen;
+        tagsExpanded = false;
+    }
+
     window.PVD.overview = {
         renderStats: renderStats,
         renderFilters: renderFilters,
@@ -318,6 +346,7 @@
         updateSortIndicators: updateSortIndicators,
         expandTags: expandTags,
         collapseTags: collapseTags,
+        toggleAdvanced: toggleAdvanced,
         tryRailwayAction: tryRailwayAction
     };
 })();
