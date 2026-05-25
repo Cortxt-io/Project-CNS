@@ -2,7 +2,7 @@
 
 Railway deploys without a .git/ directory, so all git subprocess calls crash.
 This module uses the GitHub Contents API instead, requiring only
-GITHUB_TOKEN and GITHUB_REPO environment variables.
+CNS_GITHUB_TOKEN and GITHUB_REPO environment variables.
 """
 
 from __future__ import annotations
@@ -28,8 +28,8 @@ BRANCH = "main"
 
 
 def _get_config() -> tuple[str, str]:
-    """Read GITHUB_TOKEN and GITHUB_REPO from environment."""
-    token = os.getenv("GITHUB_TOKEN", "")
+    """Read CNS_GITHUB_TOKEN and GITHUB_REPO from environment."""
+    token = os.getenv("CNS_GITHUB_TOKEN", "")
     repo = os.getenv("GITHUB_REPO", "")
     return token, repo
 
@@ -54,7 +54,7 @@ def configure_git() -> None:
         logger.info("GitHub API configured for %s", repo)
     else:
         logger.warning(
-            "GITHUB_TOKEN or GITHUB_REPO not set – GitHub API will not work. "
+            "CNS_GITHUB_TOKEN or GITHUB_REPO not set – GitHub API will not work. "
             "Running in local-only mode."
         )
 
@@ -72,7 +72,7 @@ def git_commit_and_push(message: str) -> tuple[bool, str]:
     """
     token, repo = _get_config()
     if not token or not repo:
-        return False, "GITHUB_TOKEN or GITHUB_REPO not configured"
+        return False, "CNS_GITHUB_TOKEN or GITHUB_REPO not configured"
 
     headers = _headers(token)
     pushed: list[str] = []
