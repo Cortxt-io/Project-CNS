@@ -1,0 +1,14 @@
+{
+  "slug": "dev-changelog-engine-mini",
+  "analyzed_at": "2026-05-25",
+  "suggestions": {
+    "risks": [
+      {
+        "category": "technical",
+        "description": "LLM summarization quality depends on prompt engineering",
+        "score": 3
+      }
+    ],
+    "updated_at": "2026-05-25"
+  }
+}
