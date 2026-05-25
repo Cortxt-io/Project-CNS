@@ -1,0 +1,26 @@
+{
+  "slug": "docs-watch",
+  "analyzed_at": "2026-05-25",
+  "suggestions": {
+    "current_slice": "Focused changelog/docs monitor via CLI, reusing Site Change Monitor",
+    "risks": [
+      {
+        "category": "market",
+        "description": "Dev teams may not pay for this as a product -- many solve it with ad-hoc scripts or ignore it entirely.",
+        "score": 2
+      },
+      {
+        "category": "technical",
+        "description": "Some changelog pages are JS-rendered (React SPAs) and return empty HTML with plain fetch. Requires manual URL verification per target.",
+        "score": 2
+      },
+      {
+        "category": "positioning",
+        "description": "Risk of blending into generic website monitoring in the market's eyes -- requires sharp messaging.",
+        "score": 3
+      }
+    ],
+    "summary": "CLI-verktyg som bevakar externa changelogs och docs för dev-team.",
+    "updated_at": "2026-05-25"
+  }
+}
