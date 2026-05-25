@@ -2,6 +2,9 @@
   "slug": "dev-changelog-engine-mini",
   "analyzed_at": "2026-05-25",
   "suggestions": {
+    "roi_percent": 300,
+    "value_sek": 12000,
+    "cost_sek": 3000,
     "risks": [
       {
         "category": "technical",
@@ -9,6 +12,7 @@
         "score": 3
       }
     ],
+    "summary": "Omvandlar DocsWatch-data till prioriterade veckodigest i Markdown och HTML.",
     "updated_at": "2026-05-25"
   }
 }
