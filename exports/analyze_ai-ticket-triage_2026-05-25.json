@@ -2,13 +2,18 @@
   "slug": "ai-ticket-triage",
   "analyzed_at": "2026-05-25",
   "suggestions": {
+    "status": "idea",
+    "roi_percent": 257,
+    "value_sek": 750000,
+    "cost_sek": 210000,
     "risks": [
       {
         "category": "technical",
-        "description": "Risk för att AI-modellen inte presterar som förväntat.",
+        "description": "Potential challenges in AI model accuracy and integration with existing systems.",
         "score": 3
       }
     ],
+    "summary": "AI-driven triagering av supportärenden – ännu ej specificerad.",
     "updated_at": "2026-05-25"
   }
 }
