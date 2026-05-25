@@ -1,19 +1,23 @@
 ---
-title: "Dev Changelog Engine Mini"
-slug: "dev-changelog-engine-mini"
-status: early_mvp
-tags: [typescript, nodejs, docswatch, digest]
 cost_sek: 3000
-value_sek: 12000
-roi_percent: 300
-mvp_stage: solution_test
 created: 2026-05-05
-updated: 2026-05-11
-current_slice: "Step 4 — Markdown & HTML renderers"
-summary: Omvandlar DocsWatch-data till prioriterade veckodigest i Markdown och HTML.
+current_slice: Step 4 — Markdown & HTML renderers
 family: digest-pipeline
-url_repo: https://github.com/rian010194/dev-changelog-engine-mini
+mvp_stage: solution_test
+roi_percent: 300
+slug: dev-changelog-engine-mini
+status: early_mvp
+summary: Omvandlar DocsWatch-data till prioriterade veckodigest i Markdown och HTML.
+tags:
+- typescript
+- nodejs
+- docswatch
+- digest
+title: Dev Changelog Engine Mini
+updated: '2026-05-25'
 url_live: https://rian010194.github.io/dev-changelog-engine-mini/
+url_repo: https://github.com/rian010194/dev-changelog-engine-mini
+value_sek: 12000
 ---
 
 ## Problem
@@ -34,6 +38,8 @@ A pipeline that ingests DocsWatch exports, scores changes by relevance, and rend
 - DocsWatch export format is stable enough to build on
 - Heuristic scoring provides useful prioritization without ML
 - Weekly cadence is the right default for digests
+
+## Why Buy Instead of Build?
 
 ## MVP Steps
 
@@ -61,6 +67,9 @@ A pipeline that ingests DocsWatch exports, scores changes by relevance, and rend
 - Low: No external dependencies beyond DocsWatch exports
 - Medium: LLM summarization quality depends on prompt engineering
 - Low: Static output means no hosting complexity
+- **Technical** (score 3/5): LLM summarization quality depends on prompt engineering
+
+## Timeline
 
 ## Notes
 
