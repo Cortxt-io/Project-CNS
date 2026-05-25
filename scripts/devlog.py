@@ -141,14 +141,22 @@ def _build_prompt(events: list[dict]) -> str:
         parts.append(f"Excerpt:\n{excerpt}")
         parts.append("")
 
-    parts.append("---\n")
+    parts.append("---\n\n")
     parts.append(
-        "Svara med en kort analys (max ~400 ord) som innehåller:\n"
-        "1. Vad hände igår i portföljen – per projekt, konkret.\n"
-        "2. Vad är kvar per projekt baserat på MVP Steps och senaste ändringar.\n"
-        "3. Vad borde vara nästa steg för hela portföljen idag.\n\n"
-        "Formatera svaret som ren text med rubriker och punktlistor. "
-        "Ingen markdown-kodblock."
+        "Skriv en daglig portföljbrief på svenska. Max 400 ord totalt.\n\n"
+        "Regler:\n"
+        "- Börja direkt med analysen. Upprepa inte listan ovan.\n"
+        "- Ignorera projekt där bara README-filer eller scaffold-mappar ändrats – det är infrastruktur, inte progress.\n"
+        "- Ignorera projekt där bara frontmatter-fält som cost_sek, roi_percent, created, updated ändrats utan sektionsinnehåll.\n"
+        "- Fokusera på projekt där faktiskt innehåll ändrats: Problem, Solution, MVP Steps, Notes, planning/, research/.\n"
+        "- Om inga meningsfulla ändringar finns: skriv 'Ingen meningsfull aktivitet idag.' och inget mer.\n\n"
+        "Format:\n"
+        "## Vad hände igår\n"
+        "Per projekt med faktisk aktivitet – vad ändrades konkret.\n\n"
+        "## Vad är kvar\n"
+        "Per projekt – nästa konkreta steg baserat på MVP Steps.\n\n"
+        "## Nästa steg idag\n"
+        "Max 3 punkter för hela portföljen."
     )
 
     return "\n".join(parts)
@@ -276,6 +284,13 @@ def _text_to_html(text: str) -> str:
         # Bullet list items: - text
         if stripped.startswith("- "):
             current_list.append(stripped[2:])
+            continue
+
+        # Numbered headings: "1. Lång rubriktext..." → <h3>
+        numbered_heading = re.match(r"^\d+\.\s+(.{40,})$", stripped)
+        if numbered_heading:
+            _flush_list()
+            blocks.append(f"<h3>{_inline_format(numbered_heading.group(1))}</h3>")
             continue
 
         # Numbered list items: 1. text
