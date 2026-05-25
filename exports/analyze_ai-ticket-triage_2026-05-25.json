@@ -1,0 +1,14 @@
+{
+  "slug": "ai-ticket-triage",
+  "analyzed_at": "2026-05-25",
+  "suggestions": {
+    "risks": [
+      {
+        "category": "technical",
+        "description": "Risk för att AI-modellen inte presterar som förväntat.",
+        "score": 3
+      }
+    ],
+    "updated_at": "2026-05-25"
+  }
+}
