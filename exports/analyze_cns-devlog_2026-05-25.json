@@ -1,0 +1,30 @@
+{
+  "slug": "cns-devlog",
+  "analyzed_at": "2026-05-25",
+  "suggestions": {
+    "mvp_stage": "solution_test",
+    "status": "early_mvp",
+    "roi_percent": 275,
+    "value_sek": 15000,
+    "cost_sek": 4000,
+    "risks": [
+      {
+        "category": "technical",
+        "description": "Promptkvalitet avgör värdet helt. Dålig prompt ger generiska sammanfattningar som inte tillför något utöver att läsa filerna direkt.",
+        "score": 3
+      },
+      {
+        "category": "ops",
+        "description": "Pipeline-beroendet på cns-devwatch är hårt – om devwatch inte kör eller ger tom output, kör devlog på inaktuell data utan varning.",
+        "score": 3
+      },
+      {
+        "category": "technical",
+        "description": "OpenAI API-anrop kan misslyckas tyst. Felhantering och fallback måste in tidigt annars publiceras tom sida.",
+        "score": 2
+      }
+    ],
+    "summary": "Genererar daglig AI-sammanfattning av portföljförändringar, publicerad som statisk sida.",
+    "updated_at": "2026-05-25"
+  }
+}
