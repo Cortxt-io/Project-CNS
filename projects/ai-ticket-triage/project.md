@@ -34,6 +34,7 @@ value_sek: 750000
 ## Risk Assessment
 
 - **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.
+- **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.
 
 ## Timeline
 
