@@ -728,7 +728,7 @@ def api_health():
 @app.route("/api/debug-env")
 def debug_env():
     return jsonify({
-        "GITHUB_TOKEN": "set" if os.getenv("GITHUB_TOKEN") else "NOT SET",
+        "CNS_GITHUB_TOKEN": "set" if os.getenv("CNS_GITHUB_TOKEN") else "NOT SET",
         "GITHUB_REPO": os.getenv("GITHUB_REPO", "NOT SET"),
         "CNS_PASSWORD": "set" if os.getenv("CNS_PASSWORD") else "NOT SET",
         "OPENAI_API_KEY": "set" if os.getenv("OPENAI_API_KEY") else "NOT SET",
