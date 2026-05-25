@@ -62,7 +62,7 @@ app.secret_key = os.getenv("SECRET_KEY", "cns-vault-dev-key")
 auth = HTTPBasicAuth()
 
 USERNAME = os.getenv("CNS_USERNAME", "admin")
-PASSWORD = os.getenv("CNS_PASSWORD", "")
+PASSWORD = os.getenv("CNS_ADMIN_PASSWORD", "")
 GUEST_USERNAME = os.getenv("CNS_GUEST_USERNAME", "guest")
 GUEST_PASSWORD = os.getenv("CNS_GUEST_PASSWORD", "")
 
@@ -730,7 +730,7 @@ def debug_env():
     return jsonify({
         "CNS_GITHUB_TOKEN": "set" if os.getenv("CNS_GITHUB_TOKEN") else "NOT SET",
         "GITHUB_REPO": os.getenv("GITHUB_REPO", "NOT SET"),
-        "CNS_PASSWORD": "set" if os.getenv("CNS_PASSWORD") else "NOT SET",
+        "CNS_ADMIN_PASSWORD": "set" if os.getenv("CNS_ADMIN_PASSWORD") else "NOT SET",
         "OPENAI_API_KEY": "set" if os.getenv("OPENAI_API_KEY") else "NOT SET",
     })
 
@@ -752,7 +752,7 @@ def _setup() -> None:
 
 if not PASSWORD:
     app.logger.warning(
-        "CNS_PASSWORD not set – running in dev mode (no auth). "
+        "CNS_ADMIN_PASSWORD not set – running in dev mode (no auth). "
         "Set CNS_PASSWORD for production."
     )
 
