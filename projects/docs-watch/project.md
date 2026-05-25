@@ -13,6 +13,9 @@ mvp_stage: solution_test
 created: 2026-05-02
 updated: 2026-05-02
 current_slice: Focused changelog/docs monitor via CLI, reusing Site Change Monitor core
+summary: CLI-verktyg som bevakar externa changelogs och docs för dev-team.
+family: developer-tools
+url_repo: https://github.com/rian010194/docs-watch
 ---
 
 ## Problem

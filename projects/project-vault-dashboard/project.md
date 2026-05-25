@@ -14,6 +14,10 @@ tags:
 title: Project Vault Dashboard
 updated: '2026-05-11'
 value_sek: 20000
+summary: Statisk portföljdashboard som visualiserar alla CNS-projekt via JSON-export.
+family: cns-core
+url_repo: https://github.com/rian010194/Project-CNS
+url_live: https://rian010194.github.io/Project-CNS/
 ---
 
 ## Problem

@@ -9,6 +9,8 @@ roi_percent: 204
 mvp_stage: hypothesis
 created: 2026-05-02
 updated: 2026-05-02
+summary: Fullskalig pipeline för changelog-digest – ännu ej specificerad.
+family: digest-pipeline
 ---
 
 ## Problem

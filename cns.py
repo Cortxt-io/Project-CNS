@@ -594,6 +594,21 @@ def main() -> None:
     )
     sp_devlog.set_defaults(func=cmd_devlog)
 
+    # cns watch
+    sp_watch = subparsers.add_parser(
+        "watch",
+        help="Watch projects/ for changes and auto-update 'updated' timestamp",
+    )
+    sp_watch.set_defaults(func=cmd_watch)
+
+    # cns analyze <slug>
+    sp_analyze = subparsers.add_parser(
+        "analyze",
+        help="AI-analyze a project and suggest field updates",
+    )
+    sp_analyze.add_argument("slug", help="Project slug")
+    sp_analyze.set_defaults(func=cmd_analyze)
+
     args = parser.parse_args()
 
     if not args.command:

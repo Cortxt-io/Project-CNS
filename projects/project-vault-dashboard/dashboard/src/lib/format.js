@@ -74,16 +74,30 @@
         return text.length > max ? text.slice(0, max) + '…' : text;
     }
 
+    var FAMILY_LABELS = {
+        'developer-tools': 'Developer Tools',
+        'digest-pipeline': 'Digest Pipeline',
+        'internal-monitoring': 'Internal Monitoring',
+        'cns-core': 'CNS Core',
+        'ideas': 'Ideas'
+    };
+
+    function familyLabel(family) {
+        return FAMILY_LABELS[family] || family;
+    }
+
     window.PVD.format = {
         STATUS_LABELS: STATUS_LABELS,
         STAGE_LABELS: STAGE_LABELS,
         STATUS_COLORS: STATUS_COLORS,
+        FAMILY_LABELS: FAMILY_LABELS,
         formatSEK: formatSEK,
         roiClass: roiClass,
         statusLabel: statusLabel,
         stageLabel: stageLabel,
         statusColor: statusColor,
         statusBadgeClass: statusBadgeClass,
+        familyLabel: familyLabel,
         truncate: truncate
     };
 })();

@@ -16,6 +16,10 @@
         "value_sek":          { "type": ["number", "null"] },
         "roi_percent":        { "type": ["number", "null"] },
         "mvp_stage":          { "enum": ["hypothesis", "problem_interviews", "solution_test", "demand_test", "launch", null] },
+        "summary":            { "type": ["string", "null"] },
+        "family":             { "enum": ["developer-tools", "digest-pipeline", "internal-monitoring", "cns-core", "ideas", null] },
+        "url_live":           { "type": ["string", "null"] },
+        "url_repo":           { "type": ["string", "null"] },
         "primary_audience":   { "type": ["string", "null"] },
         "secondary_audience": { "type": ["string", "null"] },
         "why_buy_not_build":  { "type": ["array", "null"], "maxItems": 3 },
@@ -25,7 +29,7 @@
             "type": "object",
             "required": ["category", "description", "score"],
             "properties": {
-              "category":    { "enum": ["technical", "market", "legal", "ops", "competition"] },
+              "category":    { "enum": ["technical", "market", "legal", "ops", "competition", "positioning"] },
               "description": { "type": "string" },
               "score":       { "type": "number", "minimum": 1, "maximum": 5 }
             }

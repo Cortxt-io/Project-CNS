@@ -415,7 +415,8 @@ def run_devwatch(
         output_path.parent.mkdir(parents=True, exist_ok=True)
         json_text = json.dumps(payload, ensure_ascii=False, indent=2, default=str)
         output_path.write_text(json_text, encoding="utf-8")
-        # State file includes last_commit (HEAD SHA) for precise next baseline
+        # State file: used for local runs only. CI uses --since flag instead
+        # to avoid race conditions with automated commits.
         head_sha = _git(["rev-parse", "HEAD"]).stdout.strip()
         state = {**payload, "last_commit": head_sha}
         LAST_RUN_FILE.write_text(

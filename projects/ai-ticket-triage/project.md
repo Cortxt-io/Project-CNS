@@ -9,6 +9,8 @@ roi_percent: 257
 mvp_stage: hypothesis
 created: 2026-05-02
 updated: 2026-05-02
+summary: AI-driven triagering av supportärenden – ännu ej specificerad.
+family: ideas
 ---
 
 ## Problem

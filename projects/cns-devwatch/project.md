@@ -14,6 +14,8 @@ tags:
 title: CNS DevWatch
 updated: '2026-05-20'
 value_sek: 10000
+summary: Bevakar dagliga git-ändringar i project.md-filer och exporterar dem som ChangeEvents.
+family: internal-monitoring
 ---
 
 ## Problem

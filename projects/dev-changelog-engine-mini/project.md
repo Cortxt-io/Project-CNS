@@ -10,6 +10,10 @@ mvp_stage: solution_test
 created: 2026-05-05
 updated: 2026-05-11
 current_slice: "Step 4 — Markdown & HTML renderers"
+summary: Omvandlar DocsWatch-data till prioriterade veckodigest i Markdown och HTML.
+family: digest-pipeline
+url_repo: https://github.com/rian010194/dev-changelog-engine-mini
+url_live: https://rian010194.github.io/dev-changelog-engine-mini/
 ---
 
 ## Problem

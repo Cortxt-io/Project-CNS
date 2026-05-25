@@ -12,6 +12,7 @@
         // Aktiva filter
         statusFilter: [],   // ['idea', 'mvp']
         tagFilter: [],      // ['devtools', 'monitoring']
+        familyFilter: '',   // 'cns-core' eller '' för "Alla"
         searchQuery: '',
         // Sortering
         sortField: null,
@@ -49,6 +50,15 @@
         return Object.keys(seen).sort();
     }
 
+    // Alla unika familjer i datan (ej tomma)
+    function allFamilies() {
+        var seen = {};
+        state.projects.forEach(function (p) {
+            if (p.family) seen[p.family] = true;
+        });
+        return Object.keys(seen).sort();
+    }
+
     // Sätt filter från URL-params
     function loadFiltersFromURL() {
         var params = new URLSearchParams(window.location.search);
@@ -57,6 +67,8 @@
         var q = params.get('q');
         state.statusFilter = s ? s.split(',').filter(Boolean) : [];
         state.tagFilter = t ? t.split(',').filter(Boolean) : [];
+        var f = params.get('family');
+        state.familyFilter = f || '';
         state.searchQuery = q || '';
     }
 
@@ -65,6 +77,7 @@
         var params = new URLSearchParams();
         if (state.statusFilter.length) params.set('status', state.statusFilter.join(','));
         if (state.tagFilter.length) params.set('tag', state.tagFilter.join(','));
+        if (state.familyFilter) params.set('family', state.familyFilter);
         if (state.searchQuery) params.set('q', state.searchQuery);
         var qs = params.toString();
         var newUrl = window.location.pathname + (qs ? '?' + qs : '') + window.location.hash;
@@ -90,6 +103,12 @@
         } else {
             state.tagFilter.splice(idx, 1);
         }
+        saveFiltersToURL();
+    }
+
+    // Sätt family-filter
+    function setFamilyFilter(family) {
+        state.familyFilter = family;
         saveFiltersToURL();
     }
 
@@ -127,6 +146,13 @@
                 return state.tagFilter.some(function (t) {
                     return tags.indexOf(t) !== -1;
                 });
+            });
+        }
+
+        // Family-filter
+        if (state.familyFilter) {
+            result = result.filter(function (p) {
+                return p.family === state.familyFilter;
             });
         }
 
@@ -180,13 +206,14 @@
 
     // Har minst ett filter aktivt?
     function hasActiveFilters() {
-        return state.statusFilter.length > 0 || state.tagFilter.length > 0 || state.searchQuery !== '';
+        return state.statusFilter.length > 0 || state.tagFilter.length > 0 || state.familyFilter !== '' || state.searchQuery !== '';
     }
 
     // Rensa alla filter + sök
     function clearAllFilters() {
         state.statusFilter = [];
         state.tagFilter = [];
+        state.familyFilter = '';
         state.searchQuery = '';
         saveFiltersToURL();
     }
@@ -196,10 +223,12 @@
         fetchData: fetchData,
         allStatuses: allStatuses,
         allTags: allTags,
+        allFamilies: allFamilies,
         loadFiltersFromURL: loadFiltersFromURL,
         saveFiltersToURL: saveFiltersToURL,
         toggleStatusFilter: toggleStatusFilter,
         toggleTagFilter: toggleTagFilter,
+        setFamilyFilter: setFamilyFilter,
         setSearch: setSearch,
         setSort: setSort,
         getFilteredProjects: getFilteredProjects,

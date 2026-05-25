@@ -19,7 +19,8 @@ REQUIRED_FM_FIELDS = [
 # Allowed enum values
 VALID_STATUSES = {"idea", "early_mvp", "mvp", "live", "shelved"}
 VALID_MVP_STAGES = {"hypothesis", "problem_interviews", "solution_test", "demand_test", "launch"}
-VALID_RISK_CATEGORIES = {"technical", "market", "legal", "ops", "competition"}
+VALID_RISK_CATEGORIES = {"technical", "market", "legal", "ops", "competition", "positioning"}
+VALID_FAMILIES = {"developer-tools", "digest-pipeline", "internal-monitoring", "cns-core", "ideas"}
 
 # Required sections (must exist as ## headings)
 from scripts.md_parser import SECTIONS as REQUIRED_SECTIONS
@@ -70,6 +71,13 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
     if mvp_stage is not None and mvp_stage not in VALID_MVP_STAGES:
         errors.append(
             f"Invalid mvp_stage '{mvp_stage}'. Allowed: {', '.join(sorted(VALID_MVP_STAGES))}"
+        )
+
+    # 2b. Family enum check
+    family = meta.get("family")
+    if family is not None and family not in VALID_FAMILIES:
+        errors.append(
+            f"Invalid family '{family}'. Allowed: {', '.join(sorted(VALID_FAMILIES))}"
         )
 
     # 3. Required sections

@@ -97,6 +97,13 @@
             data.toggleTagFilter(btn.dataset.tag);
             renderOverview();
         });
+        // Family-filter klick
+        document.getElementById('filter-family').addEventListener('click', function (e) {
+            var btn = e.target.closest('button[data-family]');
+            if (!btn) return;
+            data.setFamilyFilter(btn.dataset.family);
+            renderOverview();
+        });
         // "Rensa alla filter" knapp
         document.getElementById('clear-all-filters').addEventListener('click', function (e) {
             e.preventDefault();

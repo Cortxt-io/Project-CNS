@@ -111,6 +111,25 @@
         }
 
         tagEl.innerHTML = chipsHtml;
+
+        // Family-filter
+        var familyEl = document.getElementById('filter-family');
+        if (familyEl) {
+            var families = data.allFamilies();
+            var familyChipsHtml = '';
+            // "Alla"-knapp
+            var allActive = !data.state.familyFilter;
+            familyChipsHtml += '<button data-family="" class="px-2.5 py-1 rounded-full text-xs font-medium transition-colors ' +
+                (allActive ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100') +
+                '">Alla</button>';
+            families.forEach(function (f) {
+                var isActive = data.state.familyFilter === f;
+                familyChipsHtml += '<button data-family="' + f + '" class="px-2.5 py-1 rounded-full text-xs font-medium transition-colors ' +
+                    (isActive ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100') +
+                    '">' + fmt.familyLabel(f) + '</button>';
+            });
+            familyEl.innerHTML = familyChipsHtml;
+        }
     }
 
     // ===== Tabell =====
@@ -161,16 +180,35 @@
         }
 
         grid.innerHTML = projects.map(function (p) {
+            // Summary (endast om fältet finns och inte är tomt)
+            var summaryHtml = p.summary
+                ? '<div class="text-xs text-slate-500 mb-3 line-clamp-2">' + p.summary + '</div>'
+                : '';
+
+            // Länkknappar
+            var linksHtml = '';
+            if (p.url_repo || p.url_live) {
+                var btns = '';
+                if (p.url_repo) {
+                    btns += '<a href="' + p.url_repo + '" target="_blank" rel="noopener" class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium mr-1" onclick="event.stopPropagation()">Repo</a>';
+                }
+                if (p.url_live) {
+                    btns += '<a href="' + p.url_live + '" target="_blank" rel="noopener" class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium mr-1" onclick="event.stopPropagation()">Live</a>';
+                }
+                linksHtml = '<div class="flex items-center gap-1 mt-2">' + btns + '</div>';
+            }
+
             return '<div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm cursor-pointer hover:border-blue-400 hover:shadow-md transition-all" data-slug="' + p.slug + '">' +
                 '<div class="flex justify-between items-start mb-2">' +
                     '<span class="font-semibold text-sm text-slate-800">' + p.title + '</span>' +
                     '<span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ml-2 flex-shrink-0 ' + fmt.statusBadgeClass(p.status) + '">' + fmt.statusLabel(p.status) + '</span>' +
                 '</div>' +
-                '<div class="text-xs text-slate-500 mb-3 line-clamp-2">' + (p.short_summary || 'Ingen beskrivning.') + '</div>' +
+                summaryHtml +
                 '<div class="flex justify-between items-center text-xs text-slate-400">' +
                     '<span>' + fmt.stageLabel(p.mvp_stage) + '</span>' +
                     '<span class="font-bold ' + fmt.roiClass(p.roi_percent) + '">' + p.roi_percent + '% ROI</span>' +
                 '</div>' +
+                linksHtml +
             '</div>';
         }).join('');
     }

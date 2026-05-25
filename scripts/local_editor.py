@@ -18,6 +18,8 @@ MENU_FIELDS = [
     ("status", "Status"),
     ("mvp_stage", "MVP Stage"),
     ("tags", "Tags"),
+    ("summary", "Summary"),
+    ("family", "Product Family"),
     ("cost_sek", "Cost (SEK)"),
     ("value_sek", "Value (SEK)"),
     ("primary_audience", "Primary Audience"),
@@ -121,6 +123,22 @@ def _ask_why_buy(console: Console) -> list[str]:
     return items
 
 
+def _ask_summary(meta: dict, console: Console) -> str:
+    current = meta.get("summary", "")
+    if current:
+        console.print(f"  Current summary: [dim]{current}[/dim]")
+    return Prompt.ask("  Summary (one sentence)", default=current)
+
+
+def _ask_family(meta: dict, console: Console) -> str:
+    families = ["developer-tools", "digest-pipeline", "internal-monitoring", "cns-core", "ideas"]
+    current = meta.get("family", "")
+    console.print(f"  Current family: [dim]{current or '(none)'}[/dim]")
+    console.print("  Options: " + ", ".join(families))
+    raw = Prompt.ask("  Product family (or press Enter to skip)", default=current)
+    return raw if raw in families else ""
+
+
 def run_local_edit(
     meta: dict[str, Any],
     sections: dict[str, str],
@@ -146,6 +164,10 @@ def run_local_edit(
             changes["mvp_stage"] = _ask_mvp_stage(meta, console)
         elif field == "tags":
             changes["tags"] = _ask_tags(meta, console)
+        elif field == "summary":
+            changes["summary"] = _ask_summary(meta, console)
+        elif field == "family":
+            changes["family"] = _ask_family(meta, console)
         elif field == "cost_sek":
             changes["cost_sek"] = _ask_number("cost_sek", meta, console)
         elif field == "value_sek":
@@ -224,6 +246,18 @@ def run_new_project_interview(
         if tags_raw.strip():
             meta["tags"] = [t.strip() for t in tags_raw.split(",") if t.strip()]
 
+        # --- Family ---
+        families = ["developer-tools", "digest-pipeline", "internal-monitoring", "cns-core", "ideas"]
+        console.print("  Product families: " + ", ".join(families))
+        family_raw = Prompt.ask("  Product family (or press Enter to skip)", default="")
+        if family_raw.strip() and family_raw.strip() in families:
+            meta["family"] = family_raw.strip()
+
+        # --- Summary ---
+        summary_raw = Prompt.ask("  Summary (one sentence, or press Enter to skip)", default="")
+        if summary_raw.strip():
+            meta["summary"] = summary_raw.strip()
+
         # --- Summary panel ---
         console.print()
         summary = _build_new_project_summary(meta, sections)
@@ -256,6 +290,8 @@ def _build_new_project_summary(
         f"  [bold]Title:[/bold]    {meta.get('title', dim_empty)}",
         f"  [bold]Status:[/bold]   {meta.get('status', 'idea')}",
         f"  [bold]Tags:[/bold]     {', '.join(meta.get('tags', [])) or dim_empty}",
+        f"  [bold]Family:[/bold]   {meta.get('family', '') or dim_empty}",
+        f"  [bold]Summary:[/bold]  {meta.get('summary', '') or dim_empty}",
         "",
         f"  [bold]Problem:[/bold]  {sections.get('Problem', '').strip() or dim_empty}",
         f"  [bold]Solution:[/bold] {sections.get('Solution', '').strip() or dim_empty}",

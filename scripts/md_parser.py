@@ -147,6 +147,10 @@ def new_project_template(slug: str) -> tuple[dict[str, Any], dict[str, str]]:
         "value_sek": 0,
         "roi_percent": 0,
         "mvp_stage": "hypothesis",
+        "summary": None,
+        "family": None,
+        "url_live": None,
+        "url_repo": None,
         "created": today,
         "updated": today,
     }
@@ -207,6 +211,10 @@ def apply_changes(
         "value_sek": "value_sek",
         "roi_percent": "roi_percent",
         "mvp_stage": "mvp_stage",
+        "summary": "summary",
+        "family": "family",
+        "url_live": "url_live",
+        "url_repo": "url_repo",
     }
     for src, dst in fm_fields.items():
         val = changes.get(src)

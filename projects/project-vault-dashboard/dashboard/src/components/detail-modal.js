@@ -60,6 +60,16 @@
             '</div>' +
             sliceHtml + problemHtml + solutionHtml +
             (tags ? '<div class="mb-4"><h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Taggar</h4><div class="flex flex-wrap gap-1">' + tags + '</div></div>' : '') +
+            (function () {
+                var detailBtns = '';
+                if (p.url_repo) {
+                    detailBtns += '<a href="' + p.url_repo + '" target="_blank" rel="noopener" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200 transition-colors mr-2">Repo</a>';
+                }
+                if (p.url_live) {
+                    detailBtns += '<a href="' + p.url_live + '" target="_blank" rel="noopener" class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors mr-2">Live</a>';
+                }
+                return detailBtns ? '<div class="mb-4 flex items-center gap-2">' + detailBtns + '</div>' : '';
+            })() +
             '<div class="text-xs text-gray-400 border-t border-gray-100 pt-3 flex gap-5">' +
                 '<span>Skapad: ' + p.created + '</span>' +
                 '<span>Uppdaterad: ' + p.updated + '</span>' +
