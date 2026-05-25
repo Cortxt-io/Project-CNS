@@ -11,7 +11,8 @@
         early_mvp: 'Tidig MVP',
         mvp: 'MVP',
         live: 'Live',
-        shelved: 'Vilande'
+        shelved: 'Vilande',
+        solution_test: 'Lösningstest'
     };
 
     const STAGE_LABELS = {
