@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Aktivitet – Project Vault{% endblock %}
+
+{% block content %}
+
+<h2 class="text-lg font-bold text-slate-800 mb-1">Aktivitet</h2>
+<p class="text-sm text-slate-500 mb-6">
+  {{ devwatch_date }} · {{ devwatch_events|length }} händelse{{ 'r' if devwatch_events|length != 1 else '' }}
+</p>
+
+{% if no_activity %}
+<div class="text-center py-16 bg-white border border-slate-200 rounded-lg">
+  <div class="text-4xl mb-3">&#128172;</div>
+  <h3 class="text-lg font-semibold text-slate-600 mb-1">Ingen aktivitet registrerad ännu.</h3>
+</div>
+{% else %}
+
+<!-- Section 1: Daily digest (devlog) -->
+<div class="mb-8">
+  <h3 class="text-base font-bold text-slate-800 mb-3">Dagens sammanfattning</h3>
+  <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+    <div class="px-4 py-3 md-content text-sm text-slate-700">
+      {% if devlog_html %}
+      {{ devlog_html|safe }}
+      {% else %}
+      <span class="text-slate-400 italic">(Ingen digest genererad idag)</span>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Section 2: Changed projects (devwatch) -->
+<div class="mb-8">
+  <h3 class="text-base font-bold text-slate-800 mb-3">Ändrade projekt</h3>
+  <div class="space-y-3">
+    {% for event in devwatch_events %}
+    {% set slug = event.meta.slug %}
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4">
+      <div class="flex items-start justify-between mb-2">
+        <div>
+          <a href="/project/{{ slug }}" class="font-semibold text-sm text-slate-800 hover:text-blue-600 transition-colors">{{ event.meta.project_title or slug }}</a>
+          <span class="text-xs text-slate-400 ml-2">{{ event.detectedAt }}</span>
+        </div>
+        {% if is_admin %}
+        <form method="post" action="/api/analyze/{{ slug }}" class="inline">
+          <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer">
+            Analysera
+          </button>
+        </form>
+        {% endif %}
+      </div>
+      <div class="flex flex-wrap gap-1.5">
+        {% for field in event.meta.changed_fields or [] %}
+        <span class="inline-block px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-medium">{{ field }}</span>
+        {% endfor %}
+        {% for file_info in event.meta.changed_files or [] %}
+          {% for section in file_info.sections or [] %}
+          <span class="inline-block px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 text-xs font-medium">{{ section }}</span>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% endif %}
+
+{% endblock %}

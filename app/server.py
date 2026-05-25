@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from datetime import date
 from pathlib import Path
@@ -21,6 +22,7 @@ import markdown as md_lib  # noqa: E402
 from flask import (  # noqa: E402
     Flask,
     flash,
+    g,
     jsonify,
     redirect,
     render_template,
@@ -61,14 +63,27 @@ auth = HTTPBasicAuth()
 
 USERNAME = os.getenv("CNS_USERNAME", "admin")
 PASSWORD = os.getenv("CNS_PASSWORD", "")
+GUEST_USERNAME = os.getenv("CNS_GUEST_USERNAME", "guest")
+GUEST_PASSWORD = os.getenv("CNS_GUEST_PASSWORD", "")
 
 
 @auth.verify_password
 def verify_password(username: str, password: str) -> bool:
     if not PASSWORD:
         # Dev mode – no password set, allow all
+        g.role = "admin"
         return True
-    return username == USERNAME and password == PASSWORD
+    if username == USERNAME and password == PASSWORD:
+        g.role = "admin"
+        return True
+    if GUEST_PASSWORD and username == GUEST_USERNAME and password == GUEST_PASSWORD:
+        g.role = "guest"
+        return True
+    return False
+
+
+def is_admin() -> bool:
+    return getattr(g, "role", "guest") == "admin"
 
 
 # ---------------------------------------------------------------------------
@@ -198,6 +213,46 @@ def _read_project_files(slug: str) -> dict[str, list[tuple[str, str]]]:
 
 
 # ---------------------------------------------------------------------------
+# Helpers: exports / devlog / devwatch
+# ---------------------------------------------------------------------------
+
+
+def _latest_export(pattern: str) -> Path | None:
+    """Find the most recent file in REPO_ROOT/exports matching a glob pattern.
+
+    Returns the Path with the highest alphabetical (i.e. latest date) name,
+    or None if no files match.
+    """
+    exports_dir = REPO_ROOT / "exports"
+    if not exports_dir.exists():
+        return None
+    matches = sorted(exports_dir.glob(pattern))
+    return matches[-1] if matches else None
+
+
+def _extract_devlog_body(html_path: Path | None) -> str:
+    """Extract inner HTML from <main> or <body> of a devlog HTML file.
+
+    Returns empty string if file is missing or unparsable.
+    """
+    if not html_path or not html_path.exists():
+        return ""
+    try:
+        html = html_path.read_text(encoding="utf-8")
+        # Try <main> first
+        m = re.search(r"<main[^>]*>(.*?)</main>", html, re.DOTALL | re.IGNORECASE)
+        if m:
+            return m.group(1).strip()
+        # Fallback to <body>
+        m = re.search(r"<body[^>]*>(.*?)</body>", html, re.DOTALL | re.IGNORECASE)
+        if m:
+            return m.group(1).strip()
+    except Exception:
+        pass
+    return ""
+
+
+# ---------------------------------------------------------------------------
 # Routes – UI
 # ---------------------------------------------------------------------------
 
@@ -297,6 +352,7 @@ def index():
         sort_field=sort_field,
         sort_dir=sort_dir,
         view_mode=view_mode,
+        is_admin=is_admin(),
     )
 
 
@@ -317,6 +373,7 @@ def project_detail(slug):
             section_order=[],
             project_files={},
             has_pending=False,
+            is_admin=is_admin(),
         ), 404
 
     project_files = _read_project_files(slug)
@@ -335,6 +392,7 @@ def project_detail(slug):
         has_pending=has_pending,
         slug=slug,
         error=None,
+        is_admin=is_admin(),
     )
 
 
@@ -363,6 +421,105 @@ def review():
         "review.html",
         pending=enriched,
         slug_filter=slug_filter,
+        is_admin=is_admin(),
+    )
+
+
+@app.route("/activity")
+@auth.login_required
+def activity():
+    git_pull()
+
+    devwatch_path = _latest_export("devwatch_*.json")
+    devlog_path = _latest_export("devlog_*.html")
+
+    devwatch_events: list[dict[str, Any]] = []
+    devwatch_meta: dict[str, Any] = {}
+    devwatch_date = ""
+    no_activity = True
+
+    if devwatch_path:
+        try:
+            data = json.loads(devwatch_path.read_text(encoding="utf-8"))
+            devwatch_events = data.get("events", [])
+            devwatch_meta = data.get("meta", {})
+            devwatch_date = data.get("exported_at", "")
+            no_activity = not devwatch_events
+        except Exception:
+            pass
+
+    devlog_html = _extract_devlog_body(devlog_path)
+
+    return render_template(
+        "activity.html",
+        devwatch_events=devwatch_events,
+        devwatch_meta=devwatch_meta,
+        devwatch_date=devwatch_date,
+        devlog_html=devlog_html,
+        no_activity=no_activity,
+        is_admin=is_admin(),
+    )
+
+
+@app.route("/analyze")
+@auth.login_required
+def analyze():
+    git_pull()
+
+    all_projects = read_all_projects()
+    projects_data = []
+    for meta, _sections in all_projects:
+        projects_data.append(meta)
+
+    # Load latest devwatch to find changed slugs
+    devwatch_path = _latest_export("devwatch_*.json")
+    changed_slugs: set[str] = set()
+    if devwatch_path:
+        try:
+            data = json.loads(devwatch_path.read_text(encoding="utf-8"))
+            for event in data.get("events", []):
+                slug = event.get("meta", {}).get("slug")
+                if slug:
+                    changed_slugs.add(slug)
+        except Exception:
+            pass
+
+    # Load pending suggestions grouped by slug
+    pending_list = load_pending_suggestions()
+    pending_by_slug: dict[str, dict[str, Any]] = {}
+    for p in pending_list:
+        pending_by_slug[p["slug"]] = p
+
+    # Build project list with analysis state
+    project_list = []
+    for meta in projects_data:
+        slug = meta.get("slug", "")
+        pending = pending_by_slug.get(slug)
+        has_pending = pending is not None
+        project_list.append({
+            "meta": meta,
+            "has_pending": has_pending,
+            "pending_count": len(pending["suggestions"]) if has_pending else 0,
+            "last_analyzed": pending.get("analyzed_at") if has_pending else None,
+            "changed_in_devwatch": slug in changed_slugs,
+        })
+
+    # Sort: changed first, then pending, then alphabetically
+    project_list.sort(
+        key=lambda p: (
+            not p["changed_in_devwatch"],
+            not p["has_pending"],
+            (p["meta"].get("title") or "").lower(),
+        )
+    )
+
+    total_pending = sum(p["pending_count"] for p in project_list)
+
+    return render_template(
+        "analyze.html",
+        project_list=project_list,
+        total_pending=total_pending,
+        is_admin=is_admin(),
     )
 
 
@@ -374,6 +531,9 @@ def review():
 @app.route("/api/analyze/<slug>", methods=["POST"])
 @auth.login_required
 def api_analyze(slug):
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Guests cannot perform this action"}), 403
+
     git_pull()
 
     try:
@@ -411,9 +571,66 @@ def api_analyze(slug):
         return jsonify({"status": "error", "message": str(exc)}), 500
 
 
+@app.route("/api/analyze/all", methods=["POST"])
+@auth.login_required
+def api_analyze_all():
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Guests cannot perform this action"}), 403
+
+    git_pull()
+
+    devwatch_path = _latest_export("devwatch_*.json")
+    changed_slugs: set[str] = set()
+    if devwatch_path:
+        try:
+            data = json.loads(devwatch_path.read_text(encoding="utf-8"))
+            for event in data.get("events", []):
+                slug = event.get("meta", {}).get("slug")
+                if slug:
+                    changed_slugs.add(slug)
+        except Exception:
+            pass
+
+    analyzed: list[str] = []
+    errors: dict[str, str] = {}
+
+    for slug in sorted(changed_slugs):
+        try:
+            output_path = (
+                Path("exports")
+                / f"analyze_{slug}_{date.today().isoformat()}.json"
+            )
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+
+            result = run_analyze(
+                slug,
+                confirm_fn=None,
+                output_path=output_path,
+            )
+
+            if result and output_path.exists():
+                analyzed.append(slug)
+            else:
+                analyzed.append(slug)
+        except FileNotFoundError:
+            errors[slug] = f"Project '{slug}' not found"
+        except Exception as exc:
+            errors[slug] = str(exc)
+
+    if analyzed:
+        ok, msg = git_commit_and_push("cns-vault: analyze all changed projects")
+        if not ok:
+            app.logger.warning("Failed to commit analyze-all JSONs: %s", msg)
+
+    return jsonify({"status": "ok", "analyzed": analyzed, "errors": errors})
+
+
 @app.route("/api/review/<slug>/approve", methods=["POST"])
 @auth.login_required
 def api_review_approve(slug):
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Guests cannot perform this action"}), 403
+
     git_pull()
 
     # Find the pending JSON file for this slug
@@ -467,6 +684,9 @@ def api_review_approve(slug):
 @app.route("/api/review/<slug>/reject", methods=["POST"])
 @auth.login_required
 def api_review_reject(slug):
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Guests cannot perform this action"}), 403
+
     # Find and delete the pending JSON file
     pending_list = load_pending_suggestions()
     matching = [p for p in pending_list if p["slug"] == slug]

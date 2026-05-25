@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Analys – Project Vault{% endblock %}
+
+{% block content %}
+
+<div class="flex items-center justify-between mb-6">
+  <div class="flex items-center gap-3">
+    <h2 class="text-lg font-bold text-slate-800">Analys</h2>
+    {% if total_pending > 0 %}
+    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+      {{ total_pending }} väntande
+    </span>
+    {% endif %}
+  </div>
+  {% if is_admin %}
+  <button id="analyze-all-btn" data-analyze-all class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer">
+    Analysera alla ändrade
+  </button>
+  {% endif %}
+</div>
+
+{% if not project_list %}
+<div class="text-center py-16 bg-white border border-slate-200 rounded-lg">
+  <div class="text-4xl mb-3">&#128300;</div>
+  <h3 class="text-lg font-semibold text-slate-600 mb-1">Inga projekt</h3>
+</div>
+{% else %}
+
+<div class="space-y-3">
+  {% for p in project_list %}
+  {% set meta = p.meta %}
+  {% set slug = meta.slug %}
+  <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden
+              {% if p.changed_in_devwatch %}border-l-4 border-blue-400
+              {% elif p.has_pending %}border-l-4 border-amber-400
+              {% else %}border-l-4 border-slate-200{% endif %}">
+    <div class="px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <a href="/project/{{ slug }}" class="font-semibold text-sm text-slate-800 hover:text-blue-600 transition-colors">{{ meta.title or slug }}</a>
+        {% if p.changed_in_devwatch %}
+        <span class="inline-block px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-medium">Ändrad</span>
+        {% endif %}
+        {% if p.has_pending %}
+        <span class="inline-block px-1.5 py-0.5 rounded bg-amber-50 text-amber-700 text-xs font-medium">{{ p.pending_count }} förslag väntar</span>
+        {% endif %}
+      </div>
+      <div class="flex items-center gap-2">
+        {% if p.has_pending %}
+        <a href="/review?slug={{ slug }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 transition-colors">
+          Granska
+        </a>
+        {% endif %}
+        {% if is_admin %}
+        <button data-analyze-slug="{{ slug }}" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer">
+          Analysera
+        </button>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endif %}
+
+<script>
+  // Individual analyze buttons
+  document.querySelectorAll('[data-analyze-slug]').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const slug = btn.dataset.analyzeSlug;
+      btn.disabled = true;
+      btn.textContent = 'Analyserar...';
+      try {
+        const resp = await fetch(`/api/analyze/${slug}`, {method:'POST'});
+        const data = await resp.json();
+        if (data.status === 'ok') {
+          window.location.reload();
+        } else {
+          btn.textContent = 'Fel: ' + data.message;
+          btn.disabled = false;
+        }
+      } catch(err) {
+        btn.textContent = 'Nätverksfel';
+        btn.disabled = false;
+      }
+    });
+  });
+
+  // Analyze all button
+  const analyzeAllBtn = document.getElementById('analyze-all-btn');
+  if (analyzeAllBtn) {
+    analyzeAllBtn.addEventListener('click', async () => {
+      analyzeAllBtn.disabled = true;
+      analyzeAllBtn.textContent = 'Analyserar...';
+      try {
+        const resp = await fetch('/api/analyze/all', {method:'POST'});
+        const data = await resp.json();
+        if (data.status === 'ok') {
+          window.location.reload();
+        } else {
+          analyzeAllBtn.textContent = 'Fel: ' + (data.message || 'Okänt fel');
+          analyzeAllBtn.disabled = false;
+        }
+      } catch(err) {
+        analyzeAllBtn.textContent = 'Nätverksfel';
+        analyzeAllBtn.disabled = false;
+      }
+    });
+  }
+</script>
+
+{% endblock %}

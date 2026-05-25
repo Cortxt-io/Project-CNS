@@ -159,7 +159,10 @@
       <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ml-2 flex-shrink-0 {{ p.status|status_badge_class }}">{{ p.status|status_label }}</span>
     </div>
     {% if p.summary %}
-    <div class="text-xs text-slate-500 mb-3 line-clamp-2">{{ p.summary }}</div>
+    <div class="text-xs text-slate-500 mb-1 line-clamp-2">{{ p.summary }}</div>
+    {% endif %}
+    {% if p.family %}
+    <span class="text-[0.65rem] text-slate-400 block mb-2">{{ p.family|family_label }}</span>
     {% endif %}
     <div class="flex justify-between items-center text-xs text-slate-400">
       <span>{{ p.mvp_stage|stage_label }}</span>
@@ -168,10 +171,10 @@
     {% if p.url_repo or p.url_live %}
     <div class="flex items-center gap-1 mt-2" onclick="event.stopPropagation()">
       {% if p.url_repo %}
-      <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium">Repo</span>
+      <a href="{{ p.url_repo }}" target="_blank" rel="noopener" class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium">Repo</a>
       {% endif %}
       {% if p.url_live %}
-      <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium">Live</span>
+      <a href="{{ p.url_live }}" target="_blank" rel="noopener" class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium">Live</a>
       {% endif %}
     </div>
     {% endif %}

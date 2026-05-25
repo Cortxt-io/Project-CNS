@@ -28,6 +28,7 @@
       <span class="text-xs text-slate-400 ml-2">{{ item.analyzed_at }}</span>
     </div>
     <div class="flex items-center gap-2">
+      {% if is_admin %}
       <form method="post" action="/api/review/{{ item.slug }}/approve" class="inline">
         <button type="submit" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition-colors cursor-pointer">
           Godkänn
@@ -38,6 +39,7 @@
           Avvisa
         </button>
       </form>
+      {% endif %}
     </div>
   </div>
 

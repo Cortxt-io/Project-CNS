@@ -11,6 +11,11 @@
 </div>
 {% else %}
 
+<!-- Breadcrumb -->
+<div class="mb-4">
+  <a href="/" class="text-sm text-blue-600 hover:text-blue-800 font-medium">← Alla projekt</a>
+</div>
+
 <!-- Top zone: Frontmatter -->
 <div class="mb-6">
   <!-- Title + badges + actions -->
@@ -26,11 +31,13 @@
         Visa förslag
       </a>
       {% endif %}
+      {% if is_admin %}
       <form method="post" action="/api/analyze/{{ slug }}" class="inline">
         <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors cursor-pointer">
           Kör Analyze
         </button>
       </form>
+      {% endif %}
     </div>
   </div>
 
