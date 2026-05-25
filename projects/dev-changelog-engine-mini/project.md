@@ -68,6 +68,7 @@ A pipeline that ingests DocsWatch exports, scores changes by relevance, and rend
 - Medium: LLM summarization quality depends on prompt engineering
 - Low: Static output means no hosting complexity
 - **Technical** (score 3/5): LLM summarization quality depends on prompt engineering
+- **Technical** (score 3/5): LLM summarization quality depends on prompt engineering
 
 ## Timeline
 
