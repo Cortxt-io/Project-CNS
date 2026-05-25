@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-05-25T08:19:17Z",
-  "run_id": "20260525_081917",
+  "exported_at": "2026-05-25T08:35:30Z",
+  "run_id": "20260525_083530",
   "baseline": "2026-05-24T07:00:00",
   "events": [
     {
-      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "ai-ticket-triage",
         "name": "AI Ticket Triage",
@@ -21,8 +21,8 @@
         "ai-ticket-triage"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "ai-ticket-triage",
         "project_title": "AI Ticket Triage",
         "changed_fields": [
@@ -83,8 +83,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devwatch:319a90eeb1a55b05:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:cns-devwatch:319a90eeb1a55b05:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "cns-devwatch",
         "name": "CNS DevWatch",
@@ -104,8 +104,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "cns-devwatch",
         "project_title": "CNS DevWatch",
         "changed_fields": [
@@ -143,8 +143,8 @@
       }
     },
     {
-      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "cns-hosting-infra",
         "name": "CNS Hosting Infra",
@@ -163,8 +163,8 @@
         "static"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "cns-hosting-infra",
         "project_title": "CNS Hosting Infra",
         "changed_fields": [
@@ -225,8 +225,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine-mini:d916d25d44df7396:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:dev-changelog-engine-mini:d916d25d44df7396:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "dev-changelog-engine-mini",
         "name": "Dev Changelog Engine Mini",
@@ -245,8 +245,8 @@
         "typescript"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "dev-changelog-engine-mini",
         "project_title": "Dev Changelog Engine Mini",
         "changed_fields": [
@@ -283,8 +283,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "dev-changelog-engine",
         "name": "Dev Changelog Engine",
@@ -299,8 +299,8 @@
         "dev-changelog-engine"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "dev-changelog-engine",
         "project_title": "Dev Changelog Engine",
         "changed_fields": [
@@ -361,8 +361,8 @@
       }
     },
     {
-      "id": "devwatch:docs-watch:0e244806cfb8feee:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:docs-watch:0e244806cfb8feee:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "docs-watch",
         "name": "DocsWatch",
@@ -380,8 +380,8 @@
         "monitoring"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "docs-watch",
         "project_title": "DocsWatch",
         "changed_fields": [
@@ -420,8 +420,8 @@
       }
     },
     {
-      "id": "devwatch:project-vault-dashboard:2030d8e6a13bc685:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:project-vault-dashboard:2030d8e6a13bc685:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "project-vault-dashboard",
         "name": "Project Vault Dashboard",
@@ -441,8 +441,8 @@
         "static-site"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "project-vault-dashboard",
         "project_title": "Project Vault Dashboard",
         "changed_fields": [
@@ -541,8 +541,8 @@
       }
     },
     {
-      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "site-change-monitor",
         "name": "site-change-monitor",
@@ -557,8 +557,8 @@
         "site-change-monitor"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "site-change-monitor",
         "project_title": "site-change-monitor",
         "changed_fields": [],
@@ -605,8 +605,8 @@
       }
     },
     {
-      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "test-interactive",
         "name": "test-interactive",
@@ -621,8 +621,8 @@
         "test-interactive"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "test-interactive",
         "project_title": "test-interactive",
         "changed_fields": [],
@@ -656,8 +656,8 @@
       }
     },
     {
-      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260525T081917Z",
-      "detectedAt": "2026-05-25T08:19:17Z",
+      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260525T083530Z",
+      "detectedAt": "2026-05-25T08:35:30Z",
       "source": {
         "id": "webhook-router",
         "name": "Webhook Router",
@@ -676,8 +676,8 @@
         "webhooks"
       ],
       "meta": {
-        "run_id": "20260525_081917",
-        "run_timestamp": "20260525T081917Z",
+        "run_id": "20260525_083530",
+        "run_timestamp": "20260525T083530Z",
         "slug": "webhook-router",
         "project_title": "Webhook Router",
         "changed_fields": [
