@@ -6,3 +6,7 @@ requests==2.32.3
 python-dotenv==1.0.1
 rich==13.9.4
 watchdog==6.0.0
+flask>=3.0
+flask-httpauth>=4.8
+markdown>=3.6
+gunicorn>=21.2

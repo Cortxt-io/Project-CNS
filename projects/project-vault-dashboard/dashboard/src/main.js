@@ -156,6 +156,18 @@
         }
     }
 
+    // ===== Analyze-knappar (Railway API) =====
+    function setupAnalyzeButtons() {
+        document.addEventListener('click', function (e) {
+            var btn = e.target.closest('.analyze-btn');
+            if (!btn) return;
+            var slug = btn.dataset.analyzeSlug;
+            if (slug && window.PVD.overview && window.PVD.overview.tryRailwayAction) {
+                window.PVD.overview.tryRailwayAction(slug);
+            }
+        });
+    }
+
     // ===== Init =====
     function init() {
         refs();
@@ -168,6 +180,7 @@
         detail.setupDetailListeners();
         setupSort();
         setupEmptyStateClear();
+        setupAnalyzeButtons();
 
         // Ladda data
         data.fetchData().then(function () {

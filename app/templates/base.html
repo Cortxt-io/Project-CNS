@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Project Vault{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            accent: { DEFAULT: '#2563eb', hover: '#1d4ed8' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Markdown content styling */
+    .md-content h1 { font-size: 1.25rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; }
+    .md-content h2 { font-size: 1.1rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.25rem; }
+    .md-content h3 { font-size: 1rem; font-weight: 600; margin-top: 0.5rem; margin-bottom: 0.25rem; }
+    .md-content p { margin-bottom: 0.5rem; }
+    .md-content ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+    .md-content ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 0.5rem; }
+    .md-content li { margin-bottom: 0.15rem; }
+    .md-content code { background: #f1f5f9; padding: 0.1rem 0.3rem; border-radius: 0.25rem; font-size: 0.85em; }
+    .md-content pre { background: #f1f5f9; padding: 0.75rem; border-radius: 0.375rem; overflow-x: auto; margin-bottom: 0.75rem; }
+    .md-content pre code { background: transparent; padding: 0; }
+    .md-content strong { font-weight: 600; }
+    .md-content blockquote { border-left: 3px solid #cbd5e1; padding-left: 0.75rem; color: #64748b; margin-bottom: 0.5rem; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans max-w-[1000px] mx-auto px-6 py-8 leading-relaxed">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+    <div>
+      <h1 class="text-xl font-bold"><a href="/" class="hover:text-accent transition-colors">Project Vault</a></h1>
+      <p class="text-sm text-gray-500 mt-0.5">MVP-portfölj &mdash; idéer, prototyper och levererade projekt</p>
+    </div>
+  </header>
+
+  <!-- Nav -->
+  <nav class="flex gap-1 mb-6 border-b-2 border-gray-200">
+    <a href="/"
+       class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors
+              {% if request.path == '/' %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
+      Översikt
+    </a>
+    <a href="/review"
+       class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors
+              {% if '/review' in request.path %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
+      Granska
+    </a>
+  </nav>
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="mb-4 space-y-2">
+    {% for category, message in messages %}
+    <div class="flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium
+                {% if category == 'success' %}bg-emerald-50 text-emerald-800 border border-emerald-200{% endif %}
+                {% if category == 'danger' %}bg-rose-50 text-rose-800 border border-rose-200{% endif %}
+                {% if category == 'warning' %}bg-amber-50 text-amber-800 border border-amber-200{% endif %}
+                {% if category == 'info' %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+      <span>{{ message }}</span>
+      <button onclick="this.parentElement.remove()" class="ml-3 text-current opacity-60 hover:opacity-100">&times;</button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% endwith %}
+
+  <!-- Content -->
+  {% block content %}{% endblock %}
+
+</body>
+</html>

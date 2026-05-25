@@ -10,6 +10,49 @@
     var MAX_VISIBLE_TAGS = 6; // Visa max 6 tag-chips, resten bakom "+N fler"
     var tagsExpanded = false;
 
+    // Railway API integration – set RAILWAY_URL after deploy
+    var RAILWAY_URL = ''; // e.g. 'https://cns-vault.railway.app'
+
+    function tryRailwayAction(slug, action) {
+        if (!RAILWAY_URL) {
+            showRailwayModal();
+            return;
+        }
+        var endpoint = RAILWAY_URL + '/api/analyze/' + slug;
+        var username = prompt('Användarnamn för CNS Vault:');
+        if (!username) return;
+        var password = prompt('Lösenord:');
+        if (!password) return;
+        fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Authorization': 'Basic ' + btoa(username + ':' + password) }
+        }).then(function (r) { return r.json(); }).then(function (data) {
+            if (data.status === 'ok') {
+                alert('Analyze klar för ' + slug + ': ' + data.suggestions_count + ' förslag');
+            } else {
+                alert('Fel: ' + data.message);
+            }
+        }).catch(function () {
+            showRailwayModal();
+        });
+    }
+
+    function showRailwayModal() {
+        var overlay = document.createElement('div');
+        overlay.className = 'fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-8';
+        overlay.onclick = function (e) { if (e.target === overlay) overlay.remove(); };
+        var panel = document.createElement('div');
+        panel.className = 'bg-white border border-gray-200 rounded-md shadow-xl max-w-[480px] w-full p-6';
+        panel.innerHTML = '<h3 class="text-lg font-bold mb-2">CNS Vault krävs</h3>' +
+            '<p class="text-sm text-gray-600 mb-4">Denna funktion kräver att CNS Vault-appen körs. Ladda ner och kör lokalt, eller öppna Railway-appen.</p>' +
+            '<div class="flex gap-2">' +
+            '<a href="' + (RAILWAY_URL || '#') + '" target="_blank" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100">Öppna Vault</a>' +
+            '<button onclick="this.closest(\'.fixed\').remove()" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200">Stäng</button>' +
+            '</div>';
+        overlay.appendChild(panel);
+        document.body.appendChild(overlay);
+    }
+
     function refs() {
         if (!fmt) fmt = window.PVD.format;
         if (!data) data = window.PVD.data;
@@ -161,6 +204,7 @@
                 '<td class="px-3 py-2.5 text-sm text-slate-500">' + fmt.formatSEK(p.cost_sek) + '</td>' +
                 '<td class="px-3 py-2.5 text-sm text-slate-500">' + fmt.formatSEK(p.value_sek) + '</td>' +
                 '<td class="px-3 py-2.5">' + (tags || '<span class="text-slate-300">-</span>') + '</td>' +
+                '<td class="px-3 py-2.5"><button class="analyze-btn inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium" data-analyze-slug="' + p.slug + '" onclick="event.stopPropagation()">Analyze</button></td>' +
             '</tr>';
         }).join('');
     }
@@ -209,6 +253,7 @@
                     '<span class="font-bold ' + fmt.roiClass(p.roi_percent) + '">' + p.roi_percent + '% ROI</span>' +
                 '</div>' +
                 linksHtml +
+                '<div class="mt-1"><button class="analyze-btn inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium" data-analyze-slug="' + p.slug + '" onclick="event.stopPropagation()">Analyze</button></div>' +
             '</div>';
         }).join('');
     }
@@ -241,6 +286,7 @@
         renderCards: renderCards,
         updateSortIndicators: updateSortIndicators,
         expandTags: expandTags,
-        collapseTags: collapseTags
+        collapseTags: collapseTags,
+        tryRailwayAction: tryRailwayAction
     };
 })();

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Project Vault – Översikt{% endblock %}
+
+{% block content %}
+
+<!-- KPI cards -->
+<div class="flex flex-wrap gap-3 mb-6">
+  <div class="bg-white border border-gray-200 rounded-md px-5 py-3 text-center shadow-sm min-w-[90px]">
+    <div class="text-2xl font-bold leading-tight">{{ stats.total }}</div>
+    <div class="text-[0.7rem] text-gray-500 uppercase tracking-wide">Projekt</div>
+  </div>
+  <div class="bg-white border border-gray-200 rounded-md px-5 py-3 text-center shadow-sm min-w-[90px]">
+    <div class="text-2xl font-bold leading-tight">{{ stats.active }}</div>
+    <div class="text-[0.7rem] text-gray-500 uppercase tracking-wide">Aktiva</div>
+  </div>
+  <div class="bg-white border border-gray-200 rounded-md px-5 py-3 text-center shadow-sm min-w-[90px]">
+    <div class="text-2xl font-bold leading-tight">{{ stats.total_cost|format_sek }}</div>
+    <div class="text-[0.7rem] text-gray-500 uppercase tracking-wide">Kostnad (SEK)</div>
+  </div>
+  <div class="bg-white border border-gray-200 rounded-md px-5 py-3 text-center shadow-sm min-w-[90px]">
+    <div class="text-2xl font-bold leading-tight">{{ stats.total_value|format_sek }}</div>
+    <div class="text-[0.7rem] text-gray-500 uppercase tracking-wide">Värde (SEK)</div>
+  </div>
+  <div class="bg-white border border-gray-200 rounded-md px-5 py-3 text-center shadow-sm min-w-[90px]">
+    <div class="text-2xl font-bold leading-tight">{{ stats.avg_roi }}%</div>
+    <div class="text-[0.7rem] text-gray-500 uppercase tracking-wide">Snitt-ROI</div>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="mb-6 space-y-3">
+  <!-- Status chips -->
+  <div class="flex flex-wrap items-center gap-1.5">
+    <span class="text-xs font-medium text-gray-400 uppercase tracking-wide mr-1">Status</span>
+    {% for s in statuses %}
+    {% if s in status_filter %}
+    <a href="{{ url_for('index', status=status_filter|reject('eq', s)|join(','), tag=tag_filter|join(','), family=family_filter, q=search_query, sort=sort_field, dir=sort_dir, view=view_mode) }}"
+       class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-blue-100 text-blue-700 border border-blue-200 hover:bg-blue-200">
+      {{ s|status_label }}
+      <span class="text-blue-400 hover:text-blue-700 ml-0.5">&times;</span>
+    </a>
+    {% else %}
+    <a href="{{ url_for('index', status=(status_filter + [s])|join(','), tag=tag_filter|join(','), family=family_filter, q=search_query, sort=sort_field, dir=sort_dir, view=view_mode) }}"
+       class="px-2.5 py-1 rounded-full text-xs font-medium transition-colors bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100">
+      {{ s|status_label }}
+    </a>
+    {% endif %}
+    {% endfor %}
+  </div>
+
+  <!-- Family chips -->
+  <div class="flex flex-wrap items-center gap-1.5">
+    <span class="text-xs font-medium text-gray-400 uppercase tracking-wide mr-1">Family</span>
+    <a href="{{ url_for('index', status=status_filter|join(','), tag=tag_filter|join(','), family='', q=search_query, sort=sort_field, dir=sort_dir, view=view_mode) }}"
+       class="px-2.5 py-1 rounded-full text-xs font-medium transition-colors
+              {% if not family_filter %}bg-blue-100 text-blue-700 border border-blue-200{% else %}bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100{% endif %}">
+      Alla
+    </a>
+    {% for f in families %}
+    <a href="{{ url_for('index', status=status_filter|join(','), tag=tag_filter|join(','), family=f, q=search_query, sort=sort_field, dir=sort_dir, view=view_mode) }}"
+       class="px-2.5 py-1 rounded-full text-xs font-medium transition-colors
+              {% if family_filter == f %}bg-blue-100 text-blue-700 border border-blue-200{% else %}bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100{% endif %}">
+      {{ f|family_label }}
+    </a>
+    {% endfor %}
+  </div>
+
+  <!-- Search + View toggle -->
+  <div class="flex items-center justify-between gap-4">
+    <form method="get" action="{{ url_for('index') }}" class="flex-1 max-w-sm">
+      <input type="hidden" name="status" value="{{ status_filter|join(',') }}">
+      <input type="hidden" name="tag" value="{{ tag_filter|join(',') }}">
+      <input type="hidden" name="family" value="{{ family_filter }}">
+      <input type="hidden" name="sort" value="{{ sort_field }}">
+      <input type="hidden" name="dir" value="{{ sort_dir }}">
+      <input type="hidden" name="view" value="{{ view_mode }}">
+      <div class="relative">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+        <input type="text" name="q" value="{{ search_query }}" placeholder="Sök projekt..."
+               class="w-full pl-9 pr-3 py-2 bg-white border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-shadow">
+      </div>
+    </form>
+
+    <div class="flex gap-1">
+      <a href="{{ url_for('index', status=status_filter|join(','), tag=tag_filter|join(','), family=family_filter, q=search_query, sort=sort_field, dir=sort_dir, view='table') }}"
+         class="px-3 py-1.5 border rounded-md text-xs font-medium
+                {% if view_mode == 'table' %}bg-blue-50 text-blue-700 border-blue-200{% else %}bg-white text-slate-600 border-slate-200 hover:bg-slate-50{% endif %}">Tabell</a>
+      <a href="{{ url_for('index', status=status_filter|join(','), tag=tag_filter|join(','), family=family_filter, q=search_query, sort=sort_field, dir=sort_dir, view='cards') }}"
+         class="px-3 py-1.5 border rounded-md text-xs font-medium
+                {% if view_mode == 'cards' %}bg-blue-50 text-blue-700 border-blue-200{% else %}bg-white text-slate-600 border-slate-200 hover:bg-slate-50{% endif %}">Kort</a>
+    </div>
+  </div>
+</div>
+
+<!-- Table view -->
+{% if view_mode != 'cards' %}
+<div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+  <table class="w-full text-sm border-collapse">
+    <thead>
+      <tr class="bg-slate-50/80 border-b border-slate-200">
+        <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide">
+          <a href="{{ url_for('index', status=status_filter|join(','), tag=tag_filter|join(','), family=family_filter, q=search_query, sort='title', dir='asc' if sort_field != 'title' or sort_dir != 'asc' else 'desc', view=view_mode) }}">Namn</a>
+        </th>
+        <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide">Status</th>
+        <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide">MVP-steg</th>
+        <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide">
+          <a href="{{ url_for('index', status=status_filter|join(','), tag=tag_filter|join(','), family=family_filter, q=search_query, sort='roi_percent', dir='desc' if sort_field != 'roi_percent' or sort_dir != 'desc' else 'asc', view=view_mode) }}">ROI %</a>
+        </th>
+        <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide">Kostnad</th>
+        <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide">Värde</th>
+        <th class="text-left px-3 py-2.5 text-xs font-medium text-slate-500 uppercase tracking-wide">Taggar</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% if projects %}
+    {% for p in projects %}
+      <tr class="hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-100 last:border-0" onclick="window.location='/project/{{ p.slug }}'">
+        <td class="px-3 py-2.5">
+          <span class="font-semibold text-sm text-slate-800">{{ p.title }}</span>
+          {% if p.current_slice %}
+          <div class="text-[0.72rem] text-slate-400 mt-0.5 truncate max-w-[220px]">{{ p.current_slice[:80] }}{% if p.current_slice|length > 80 %}…{% endif %}</div>
+          {% endif %}
+        </td>
+        <td class="px-3 py-2.5">
+          <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium {{ p.status|status_badge_class }}">{{ p.status|status_label }}</span>
+        </td>
+        <td class="px-3 py-2.5 text-sm text-slate-600">{{ p.mvp_stage|stage_label }}</td>
+        <td class="px-3 py-2.5 text-sm {{ p.roi_percent|roi_class }}">{{ p.roi_percent }}%</td>
+        <td class="px-3 py-2.5 text-sm text-slate-500">{{ p.cost_sek|format_sek }}</td>
+        <td class="px-3 py-2.5 text-sm text-slate-500">{{ p.value_sek|format_sek }}</td>
+        <td class="px-3 py-2.5">
+          {% for tag in (p.tags or [])[:3] %}
+          <span class="inline-block px-1.5 py-0.5 rounded-full text-[0.65rem] bg-slate-100 text-slate-600 font-medium mr-0.5">{{ tag }}</span>
+          {% endfor %}
+        </td>
+      </tr>
+    {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="7" class="px-4 py-10 text-center text-sm text-slate-400">
+          Inga projekt matchar dina filter
+        </td>
+      </tr>
+    {% endif %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Cards view -->
+{% else %}
+{% if projects %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+  {% for p in projects %}
+  <a href="/project/{{ p.slug }}" class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm cursor-pointer hover:border-blue-400 hover:shadow-md transition-all block">
+    <div class="flex justify-between items-start mb-2">
+      <span class="font-semibold text-sm text-slate-800">{{ p.title }}</span>
+      <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ml-2 flex-shrink-0 {{ p.status|status_badge_class }}">{{ p.status|status_label }}</span>
+    </div>
+    {% if p.summary %}
+    <div class="text-xs text-slate-500 mb-3 line-clamp-2">{{ p.summary }}</div>
+    {% endif %}
+    <div class="flex justify-between items-center text-xs text-slate-400">
+      <span>{{ p.mvp_stage|stage_label }}</span>
+      <span class="font-bold {{ p.roi_percent|roi_class }}">{{ p.roi_percent }}% ROI</span>
+    </div>
+    {% if p.url_repo or p.url_live %}
+    <div class="flex items-center gap-1 mt-2" onclick="event.stopPropagation()">
+      {% if p.url_repo %}
+      <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-slate-100 text-slate-600 hover:bg-slate-200 font-medium">Repo</span>
+      {% endif %}
+      {% if p.url_live %}
+      <span class="inline-flex items-center px-2 py-0.5 rounded text-[0.65rem] bg-blue-50 text-blue-600 hover:bg-blue-100 font-medium">Live</span>
+      {% endif %}
+    </div>
+    {% endif %}
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-10 text-sm text-slate-400">
+  Inga projekt matchar dina filter
+</div>
+{% endif %}
+{% endif %}
+
+{% endblock %}
