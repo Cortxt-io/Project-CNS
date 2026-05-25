@@ -1,0 +1,25 @@
+{
+  "slug": "cns-analyst",
+  "analyzed_at": "2026-05-25",
+  "suggestions": {
+    "mvp_stage": "solution_test",
+    "status": "early_mvp",
+    "roi_percent": 400,
+    "value_sek": 25000,
+    "cost_sek": 5000,
+    "risks": [
+      {
+        "category": "technical",
+        "description": "LLM-output kan vara inkonsekvent – JSON-parsning måste vara robust med tydlig felhantering.",
+        "score": 3
+      },
+      {
+        "category": "ops",
+        "description": "OpenAI-anrop kostar pengar och tid – bör inte köras automatiskt, alltid manuellt triggat.",
+        "score": 2
+      }
+    ],
+    "summary": "AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och ROI-estimat per projekt.",
+    "updated_at": "2026-05-25"
+  }
+}
