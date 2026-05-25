@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-05-25T16:52:08Z",
-  "run_id": "20260525_165208",
+  "exported_at": "2026-05-25T17:45:51Z",
+  "run_id": "20260525_174551",
   "baseline": "2026-05-24T07:00:00",
   "events": [
     {
-      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "ai-ticket-triage",
         "name": "AI Ticket Triage",
@@ -14,15 +14,15 @@
         "url": null
       },
       "title": "ai-ticket-triage: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
-      "rawContent": "### assets/README.md\ndiff --git a/projects/ai-ticket-triage/assets/README.md b/projects/ai-ticket-triage/assets/README.md\nnew file mode 100644\nindex 0000000..d4b416f\n--- /dev/null\n+++ b/projects/ai-ticket-triage/assets/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / assets\n+\n+Add assets files here.\n\n\n### notes/README.md\ndiff --git a/projects/ai-ticket-triage/notes/README.md b/projects/ai-ticket-triage/notes/README.md\nnew file mode 100644\nindex 0000000..843e132\n--- /dev/null\n+++ b/projects/ai-ticket-triage/notes/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/projects/ai-ticket-triage/planning/decisions.md b/projects/ai-ticket-triage/planning/decisions.md\nnew file mode 100644\nindex 0000000..2b41feb\n--- /dev/null\n+++ b/projects/ai-ticket-triage/planning/decisions.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/ai-ticket-triage/planning/roadmap.md b/projects/ai-ticket-triage/planning/roadmap.md\nnew file mode 100644\nindex 0000000..8dd9814\n--- /dev/null\n+++ b/projects/ai-ticket-triage/planning/roadmap.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / roadmap\n\n\n### project.md\n## Problem\n+\n\n## Solution\n+\n\n## Target Audience\n+\n\n## Assumptions to Validate\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n\n## Cost Estimate\n+\n\n## Value Estimate\n+\n\n## ROI\n+\n\n## Risk Assessment\n+\n\n## Timeline\n+\n\n### research/market-notes.md\ndiff --git a/projects/ai-ticket-triage/research/market-notes.md b/projects/ai-ticket-triage/research/market-notes.md\nnew file mode 100644\nindex 0000000..5663191\n--- /dev/null\n+++ b/projects/ai-ticket-triage/research/market-notes.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / market notes\n\n\n### research/sources.md\ndiff --git a/projects/ai-ticket-triage/research/sources.md b/projects/ai-ticket-triage/research/sources.md\nnew file mode 100644\nindex 0000000..00e7ac7\n--- /dev/null\n+++ b/projects/ai-ticket-triage/research/sources.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / sources\n",
+      "rawContent": "### assets/README.md\ndiff --git a/projects/ai-ticket-triage/assets/README.md b/projects/ai-ticket-triage/assets/README.md\nnew file mode 100644\nindex 0000000..d4b416f\n--- /dev/null\n+++ b/projects/ai-ticket-triage/assets/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / assets\n+\n+Add assets files here.\n\n\n### notes/README.md\ndiff --git a/projects/ai-ticket-triage/notes/README.md b/projects/ai-ticket-triage/notes/README.md\nnew file mode 100644\nindex 0000000..843e132\n--- /dev/null\n+++ b/projects/ai-ticket-triage/notes/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/projects/ai-ticket-triage/planning/decisions.md b/projects/ai-ticket-triage/planning/decisions.md\nnew file mode 100644\nindex 0000000..2b41feb\n--- /dev/null\n+++ b/projects/ai-ticket-triage/planning/decisions.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/ai-ticket-triage/planning/roadmap.md b/projects/ai-ticket-triage/planning/roadmap.md\nnew file mode 100644\nindex 0000000..8dd9814\n--- /dev/null\n+++ b/projects/ai-ticket-triage/planning/roadmap.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / roadmap\n\n\n### project.md\n## Problem\n+\n\n## Solution\n+\n\n## Target Audience\n+\n\n## Assumptions to Validate\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n\n## Cost Estimate\n+\n\n## Value Estimate\n+\n\n## ROI\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.\n+- **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.\n+\n\n## Timeline\n+\n\n### research/market-notes.md\ndiff --git a/projects/ai-ticket-triage/research/market-notes.md b/projects/ai-ticket-triage/research/market-notes.md\nnew file mode 100644\nindex 0000000..5663191\n--- /dev/null\n+++ b/projects/ai-ticket-triage/research/market-notes.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / market notes\n\n\n### research/sources.md\ndiff --git a/projects/ai-ticket-triage/research/sources.md b/projects/ai-ticket-triage/research/sources.md\nnew file mode 100644\nindex 0000000..00e7ac7\n--- /dev/null\n+++ b/projects/ai-ticket-triage/research/sources.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / sources\n",
       "url": null,
       "kind": "changed",
       "tags": [
         "ai-ticket-triage"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "ai-ticket-triage",
         "project_title": "AI Ticket Triage",
         "changed_fields": [
@@ -85,8 +85,8 @@
       }
     },
     {
-      "id": "devwatch:cns-analyst:416bae0a33bfb0ff:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:cns-analyst:416bae0a33bfb0ff:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "cns-analyst",
         "name": "CNS Analyst",
@@ -105,8 +105,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "cns-analyst",
         "project_title": "CNS Analyst",
         "changed_fields": [
@@ -146,8 +146,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devlog:70843caca0b251d7:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:cns-devlog:70843caca0b251d7:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "cns-devlog",
         "name": "CNS DevLog",
@@ -167,8 +167,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "cns-devlog",
         "project_title": "CNS DevLog",
         "changed_fields": [
@@ -232,8 +232,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "cns-devwatch",
         "name": "CNS DevWatch",
@@ -253,8 +253,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "cns-devwatch",
         "project_title": "CNS DevWatch",
         "changed_fields": [
@@ -318,8 +318,8 @@
       }
     },
     {
-      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "cns-hosting-infra",
         "name": "CNS Hosting Infra",
@@ -338,8 +338,8 @@
         "static"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "cns-hosting-infra",
         "project_title": "CNS Hosting Infra",
         "changed_fields": [
@@ -403,8 +403,8 @@
       }
     },
     {
-      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "cns-vault-app",
         "name": "CNS Vault App",
@@ -424,8 +424,8 @@
         "web"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "cns-vault-app",
         "project_title": "CNS Vault App",
         "changed_fields": [
@@ -440,6 +440,7 @@
           "tags",
           "title",
           "updated",
+          "url_live",
           "url_repo",
           "value_sek"
         ],
@@ -490,8 +491,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine-mini:d916d25d44df7396:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:dev-changelog-engine-mini:d916d25d44df7396:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "dev-changelog-engine-mini",
         "name": "Dev Changelog Engine Mini",
@@ -510,8 +511,8 @@
         "typescript"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "dev-changelog-engine-mini",
         "project_title": "Dev Changelog Engine Mini",
         "changed_fields": [
@@ -552,8 +553,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "dev-changelog-engine",
         "name": "Dev Changelog Engine",
@@ -568,8 +569,8 @@
         "dev-changelog-engine"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "dev-changelog-engine",
         "project_title": "Dev Changelog Engine",
         "changed_fields": [
@@ -632,8 +633,8 @@
       }
     },
     {
-      "id": "devwatch:docs-watch:0e244806cfb8feee:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:docs-watch:0e244806cfb8feee:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "docs-watch",
         "name": "DocsWatch",
@@ -651,8 +652,8 @@
         "monitoring"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "docs-watch",
         "project_title": "DocsWatch",
         "changed_fields": [
@@ -694,8 +695,8 @@
       }
     },
     {
-      "id": "devwatch:project-vault-dashboard:2030d8e6a13bc685:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:project-vault-dashboard:2030d8e6a13bc685:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "project-vault-dashboard",
         "name": "Project Vault Dashboard",
@@ -715,8 +716,8 @@
         "static-site"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "project-vault-dashboard",
         "project_title": "Project Vault Dashboard",
         "changed_fields": [
@@ -819,8 +820,8 @@
       }
     },
     {
-      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "scoring-studio",
         "name": "Scoring Studio",
@@ -840,8 +841,8 @@
         "static-site"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "scoring-studio",
         "project_title": "Scoring Studio",
         "changed_fields": [
@@ -881,8 +882,8 @@
       }
     },
     {
-      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "site-change-monitor",
         "name": "site-change-monitor",
@@ -897,8 +898,8 @@
         "site-change-monitor"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "site-change-monitor",
         "project_title": "site-change-monitor",
         "changed_fields": [],
@@ -945,8 +946,8 @@
       }
     },
     {
-      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "test-interactive",
         "name": "test-interactive",
@@ -961,8 +962,8 @@
         "test-interactive"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "test-interactive",
         "project_title": "test-interactive",
         "changed_fields": [],
@@ -996,8 +997,8 @@
       }
     },
     {
-      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260525T165208Z",
-      "detectedAt": "2026-05-25T16:52:08Z",
+      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260525T174551Z",
+      "detectedAt": "2026-05-25T17:45:51Z",
       "source": {
         "id": "webhook-router",
         "name": "Webhook Router",
@@ -1016,8 +1017,8 @@
         "webhooks"
       ],
       "meta": {
-        "run_id": "20260525_165208",
-        "run_timestamp": "20260525T165208Z",
+        "run_id": "20260525_174551",
+        "run_timestamp": "20260525T174551Z",
         "slug": "webhook-router",
         "project_title": "Webhook Router",
         "changed_fields": [
