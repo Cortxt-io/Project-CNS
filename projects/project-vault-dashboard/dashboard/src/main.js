@@ -5,7 +5,7 @@
     'use strict';
     window.PVD = window.PVD || {};
 
-    var data, overview, analysis, detail, activity;
+    var data, overview, analysis, detail, activity, ai;
     var searchTimeout = null;
 
     function refs() {
@@ -14,6 +14,7 @@
         analysis = window.PVD.analysis;
         detail = window.PVD.detail;
         activity = window.PVD.activity;
+        ai = window.PVD.ai;
     }
 
     // Centralt re-render av översiktsvyn
@@ -37,8 +38,9 @@
         var nav = document.getElementById('main-nav');
         var sections = {
             overview: document.getElementById('section-overview'),
-            charts: document.getElementById('section-charts'),
-            activity: document.getElementById('section-activity')
+            flow: document.getElementById('section-flow'),
+            ai: document.getElementById('section-ai'),
+            portfolio: document.getElementById('section-portfolio')
         };
         nav.addEventListener('click', function (e) {
             var btn = e.target.closest('button[data-section]');
@@ -193,15 +195,24 @@
             analysis.renderRoiChart(data.state.projects);
             analysis.renderStatusDonut(data.state.projects);
 
-            // Hämta och rendera aktivitetsdata
+            // Hämta och rendera flödesdata
             Promise.all([
                 activity.fetchActivityData(),
                 activity.fetchDevlogData()
             ]).then(function (results) {
-                activity.renderActivity(results[0], results[1]);
+                activity.renderFlow(results[0], results[1]);
             }).catch(function () {
-                activity.renderActivityEmpty();
+                activity.renderFlowEmpty();
             });
+
+            // Hämta och rendera AI-fliken
+            ai.fetchPendingSuggestions()
+                .then(function (pending) {
+                    ai.renderAI(data.state.projects, pending);
+                })
+                .catch(function () {
+                    ai.renderAI(data.state.projects, []);
+                });
 
             // Footer
             var sourceLabel = data.state.dataSource === 'railway'

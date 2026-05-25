@@ -87,6 +87,11 @@ def is_admin() -> bool:
     return getattr(g, "role", "guest") == "admin"
 
 
+def _wants_json() -> bool:
+    """Return True when the caller prefers a JSON response (API clients)."""
+    return request.headers.get("Accept", "").startswith("application/json")
+
+
 ALLOWED_ORIGINS = [
     "https://rian010194.github.io",
     "http://localhost:5000",
@@ -664,6 +669,8 @@ def api_review_approve(slug):
     matching = [p for p in pending_list if p["slug"] == slug]
 
     if not matching:
+        if _wants_json():
+            return jsonify({"status": "error", "message": f"Inga väntande förslag för {slug}"}), 404
         flash(f"Inga väntande förslag för {slug}", "warning")
         return redirect(url_for("review", slug=slug))
 
@@ -694,15 +701,21 @@ def api_review_approve(slug):
         ok, msg = git_commit_and_push(
             f"cns-vault: apply analyze suggestions for {slug}"
         )
+        applied = list(suggestions.keys())
         if not ok:
+            if _wants_json():
+                return jsonify({"status": "ok", "message": f"Sparad lokalt men ej pustad: {msg}"})
             flash(f"Ändringar sparade lokalt men kunde inte pushas: {msg}", "danger")
         else:
-            applied = list(suggestions.keys())
+            if _wants_json():
+                return jsonify({"status": "ok", "suggestions_count": len(applied)})
             flash(f"Tillämpade {len(applied)} fält för {slug}", "success")
 
         return redirect(url_for("review", slug=slug))
 
     except Exception as exc:
+        if _wants_json():
+            return jsonify({"status": "error", "message": str(exc)}), 500
         flash(f"Fel vid tillämpning: {exc}", "danger")
         return redirect(url_for("review", slug=slug))
 
@@ -725,10 +738,16 @@ def api_review_reject(slug):
         # Commit the deletion to git
         ok, msg = git_commit_and_push(f"cns-vault: reject analyze for {slug}")
         if not ok:
+            if _wants_json():
+                return jsonify({"status": "ok", "message": f"Raderat lokalt men ej pustat: {msg}"})
             flash(f"Förslag raderat lokalt men kunde inte pushas: {msg}", "danger")
         else:
+            if _wants_json():
+                return jsonify({"status": "ok"})
             flash(f"Avvisade förslag för {slug}", "success")
     else:
+        if _wants_json():
+            return jsonify({"status": "error", "message": f"Inga väntande förslag för {slug}"}), 404
         flash(f"Inga väntande förslag för {slug}", "warning")
 
     return redirect(url_for("review", slug=slug))
@@ -748,6 +767,21 @@ def api_health():
         "status": "ok",
         "repo": os.getenv("GITHUB_REPO", "not configured"),
     })
+
+
+@app.route("/api/pending")
+def api_pending():
+    pending_list = load_pending_suggestions()
+    # Strip non-serializable Path objects before returning JSON
+    result = [
+        {
+            "slug": p["slug"],
+            "analyzed_at": p["analyzed_at"],
+            "suggestions": p["suggestions"],
+        }
+        for p in pending_list
+    ]
+    return jsonify({"pending": result})
 
 
 # ---------------------------------------------------------------------------

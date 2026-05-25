@@ -140,8 +140,8 @@
             });
     }
 
-    function renderActivityEmpty() {
-        var section = document.getElementById('section-activity');
+    function renderFlowEmpty() {
+        var section = document.getElementById('section-flow');
         section.innerHTML =
             '<div class="bg-white border border-slate-200 rounded-xl p-8 shadow-sm text-center">' +
                 '<div class="text-sm font-semibold text-slate-700 mb-1">Inga ändringar registrerade ännu.</div>' +
@@ -149,14 +149,14 @@
             '</div>';
     }
 
-    function renderActivity(data, devlogData) {
-        var section = document.getElementById('section-activity');
+    function renderFlow(data, devlogData) {
+        var section = document.getElementById('section-flow');
 
         var hasEvents = data && data.events && data.events.length > 0 && !(data.meta && data.meta.no_changes === true);
         var hasDevlog = devlogData && devlogData.content;
 
         if (!hasEvents && !hasDevlog) {
-            renderActivityEmpty();
+            renderFlowEmpty();
             return;
         }
 
@@ -249,7 +249,7 @@
     window.PVD.activity = {
         fetchActivityData: fetchActivityData,
         fetchDevlogData: fetchDevlogData,
-        renderActivity: renderActivity,
-        renderActivityEmpty: renderActivityEmpty
+        renderFlow: renderFlow,
+        renderFlowEmpty: renderFlowEmpty
     };
 })();
