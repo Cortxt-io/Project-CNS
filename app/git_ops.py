@@ -14,8 +14,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 def configure_git() -> None:
     """Set git user config and remote URL with token. Call at app startup."""
-    _run("git", "config", "user.email", "cns-vault@railway.app")
-    _run("git", "config", "user.name", "CNS Vault")
+    _run("git", "config", "--global", "user.email", "cns-vault@railway.app")
+    _run("git", "config", "--global", "user.name", "CNS Vault")
 
     token = os.getenv("GITHUB_TOKEN", "")
     repo = os.getenv("GITHUB_REPO", "")
