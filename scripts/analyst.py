@@ -180,7 +180,11 @@ def _build_user_prompt(context: str) -> str:
         f"och aktuellt ut, returnera null. Om det bör uppdateras, returnera "
         f"det nya värdet. Null betyder \"inget förslag\". Fälten title, slug, "
         f"created, tags, url_live, url_repo och family får INTE föreslås -- "
-        f"dessa är manuella fält."
+        f"dessa är manuella fält. "
+        f"För risks-fältet: returnera null om riskerna redan ser korrekta "
+        f"och aktuella ut. Föreslå bara om du har nya eller väsentligt "
+        f"ändrade risker att tillföra. Returnera aldrig exakt samma risker "
+        f"som redan finns i projektet."
     )
 
 
