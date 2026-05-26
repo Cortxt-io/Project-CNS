@@ -1,4 +1,4 @@
-"""cns-analyze: AI-driven analysis of project.md files via OpenAI."""
+"""cns-analyze: AI-driven analysis of project.md files via Anthropic Claude."""
 
 from __future__ import annotations
 
@@ -22,8 +22,8 @@ from scripts.validator import (
     VALID_STATUSES,
 )
 
-OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions"
-OPENAI_MODEL = "gpt-4o-mini"
+ANTHROPIC_ENDPOINT = "https://api.anthropic.com/v1/messages"
+ANTHROPIC_MODEL = "claude-sonnet-4-5"
 
 ALLOWED_FIELDS = {
     "mvp_stage", "status", "current_slice", "roi_percent",
@@ -40,53 +40,55 @@ console = Console()
 
 def _get_api_key() -> str:
     load_dotenv()
-    key = os.getenv("OPENAI_API_KEY", "")
+    key = os.getenv("ANTHROPIC_API_KEY", "")
     if not key or key == "your_key_here":
         raise RuntimeError(
-            "OpenAI API key not configured. "
-            "Add OPENAI_API_KEY to .env to use cns analyze."
+            "Anthropic API key not configured. "
+            "Add ANTHROPIC_API_KEY to .env to use cns analyze."
         )
     return key
 
 
 # ---------------------------------------------------------------------------
-# OpenAI caller
+# Anthropic Claude caller
 # ---------------------------------------------------------------------------
 
 
-def _call_openai(system_prompt: str, user_prompt: str) -> str:
+def _call_claude(system_prompt: str, user_prompt: str) -> str:
     api_key = _get_api_key()
 
     payload = {
-        "model": OPENAI_MODEL,
+        "model": ANTHROPIC_MODEL,
+        "max_tokens": 1024,
+        "system": system_prompt,
         "messages": [
-            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        "temperature": 0.3,
-        "max_tokens": 1024,
     }
 
     headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
     }
 
     try:
         resp = requests.post(
-            OPENAI_ENDPOINT, json=payload, headers=headers, timeout=60
+            ANTHROPIC_ENDPOINT, json=payload, headers=headers, timeout=60
         )
     except requests.RequestException as exc:
-        raise RuntimeError(f"OpenAI API request failed: {exc}")
+        raise RuntimeError(f"Anthropic API request failed: {exc}")
 
     if resp.status_code != 200:
-        raise RuntimeError(f"OpenAI API error {resp.status_code}: {resp.text}")
+        raise RuntimeError(
+            f"Anthropic API error {resp.status_code}: {resp.text}"
+        )
 
     data = resp.json()
     try:
-        content = data["choices"][0]["message"]["content"]
+        content = data["content"][0]["text"]
     except (KeyError, IndexError) as exc:
-        raise RuntimeError(f"Unexpected OpenAI response structure: {exc}")
+        raise RuntimeError(f"Unexpected Anthropic response structure: {exc}")
 
     content = content.strip()
 
@@ -95,7 +97,7 @@ def _call_openai(system_prompt: str, user_prompt: str) -> str:
     content = re.sub(r"\n?```\s*$", "", content)
 
     if not content:
-        raise RuntimeError("OpenAI returned empty content.")
+        raise RuntimeError("Anthropic returned empty content.")
 
     return content.strip()
 
@@ -244,7 +246,7 @@ def run_analyze(
     dry_run: bool = False,
     output_path: Path | None = None,
 ) -> bool:
-    """Analyze a project via OpenAI and apply suggested updates.
+    """Analyze a project via Anthropic Claude and apply suggested updates.
 
     Args:
         slug: Project slug.
@@ -261,7 +263,7 @@ def run_analyze(
     """
     meta, sections, raw = read_project(slug)
 
-    console.print(f"[bold]Analyzing [cyan]{slug}[/cyan] with {OPENAI_MODEL}...[/bold]")
+    console.print(f"[bold]Analyzing [cyan]{slug}[/cyan] with {ANTHROPIC_MODEL}...[/bold]")
 
     context = _read_project_context(slug)
 
@@ -271,7 +273,7 @@ def run_analyze(
     system_prompt = _build_system_prompt()
     user_prompt = _build_user_prompt(context)
 
-    ai_raw = _call_openai(system_prompt, user_prompt)
+    ai_raw = _call_claude(system_prompt, user_prompt)
     suggestions = _parse_response(ai_raw)
 
     if not suggestions:

@@ -689,7 +689,7 @@ def main() -> None:
     )
     sp_devlog.add_argument(
         "--dry-run", action="store_true", default=False,
-        help="Print prompt and skip OpenAI call + file write",
+        help="Print prompt and skip Claude call + file write",
     )
     sp_devlog.set_defaults(func=cmd_devlog)
 

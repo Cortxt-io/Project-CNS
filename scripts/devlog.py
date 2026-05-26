@@ -1,6 +1,6 @@
 """cns-devlog: AI-powered daily digest from cns-devwatch output.
 
-Reads exports/devwatch_YYYY-MM-DD.json, calls OpenAI for a Swedish summary,
+Reads exports/devwatch_YYYY-MM-DD.json, calls Anthropic Claude for a Swedish summary,
 and renders a self-contained static HTML page.
 """
 
@@ -30,15 +30,19 @@ EXPORTS_DIR = REPO_ROOT / "exports"
 console = Console()
 
 # ---------------------------------------------------------------------------
-# OpenAI config
+# Anthropic config
 # ---------------------------------------------------------------------------
 
-OPENAI_ENDPOINT = "https://api.openai.com/v1/chat/completions"
-OPENAI_MODEL = "gpt-4o-mini"
+ANTHROPIC_ENDPOINT = "https://api.anthropic.com/v1/messages"
+ANTHROPIC_MODEL = "claude-sonnet-4-5"
 
 SYSTEM_PROMPT = (
-    "Du är en erfaren produktchef som briefar sig själv. "
-    "Praktisk, direkt, ingen fluff. Svara på svenska."
+    "Du är en produktchef som skriver en daglig brief till sig själv. "
+    "Du jobbar ensam – inga team, inga intressenter, inga demos att planera. "
+    "Var konkret och kortfattad. Fokusera på faktiska framsteg och nästa steg. "
+    "Ignorera administrativa ändringar som datumfält och kostnadsestimat om "
+    "inget substantiellt innehåll ändrats. "
+    "Svara på svenska."
 )
 
 # ---------------------------------------------------------------------------
@@ -48,11 +52,11 @@ SYSTEM_PROMPT = (
 
 def _get_api_key() -> str:
     load_dotenv()
-    key = os.getenv("OPENAI_API_KEY", "")
+    key = os.getenv("ANTHROPIC_API_KEY", "")
     if not key or key == "your_key_here":
         raise RuntimeError(
-            "OpenAI API key not configured. "
-            "Add OPENAI_API_KEY to .env to use cns devlog."
+            "Anthropic API key not configured. "
+            "Add ANTHROPIC_API_KEY to .env to use cns devlog."
         )
     return key
 
@@ -144,6 +148,12 @@ def _build_prompt(events: list[dict]) -> str:
     parts.append("---\n\n")
     parts.append(
         "Skriv en daglig portföljbrief på svenska. Max 400 ord totalt.\n\n"
+        "Prioritering av ändringar (högst till lägst):\n"
+        "1. mvp_stage eller status ändrades – avgörande signal\n"
+        "2. ## MVP Steps eller ## Problem ändrades – strategisk signal\n"
+        "3. ## Solution, ## Risk Assessment, planning/ eller research/ ändrades\n"
+        "4. ## Notes eller ## Timeline ändrades – låg prioritet\n"
+        "5. Endast frontmatter-fält som cost_sek, roi_percent, updated – ignorera\n\n"
         "Regler:\n"
         "- Börja direkt med analysen. Upprepa inte listan ovan.\n"
         "- Ignorera projekt där bara README-filer eller scaffold-mappar ändrats – det är infrastruktur, inte progress.\n"
@@ -163,50 +173,51 @@ def _build_prompt(events: list[dict]) -> str:
 
 
 # ---------------------------------------------------------------------------
-# OpenAI caller
+# Anthropic Claude caller
 # ---------------------------------------------------------------------------
 
 
-def _call_openai(system_prompt: str, user_prompt: str) -> str:
-    """Call OpenAI chat completions and return the text content."""
+def _call_claude(system_prompt: str, user_prompt: str) -> str:
+    """Call Anthropic Claude Messages API and return the text content."""
     api_key = _get_api_key()
 
     payload = {
-        "model": OPENAI_MODEL,
+        "model": ANTHROPIC_MODEL,
+        "max_tokens": 800,
+        "temperature": 0.4,
+        "system": system_prompt,
         "messages": [
-            {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt},
         ],
-        "temperature": 0.4,
-        "max_tokens": 800,
     }
 
     headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
+        "x-api-key": api_key,
+        "anthropic-version": "2023-06-01",
+        "content-type": "application/json",
     }
 
     try:
         resp = requests.post(
-            OPENAI_ENDPOINT, json=payload, headers=headers, timeout=60
+            ANTHROPIC_ENDPOINT, json=payload, headers=headers, timeout=60
         )
     except requests.RequestException as exc:
-        raise RuntimeError(f"OpenAI API request failed: {exc}")
+        raise RuntimeError(f"Anthropic API request failed: {exc}")
 
     if resp.status_code != 200:
         raise RuntimeError(
-            f"OpenAI API error {resp.status_code}: {resp.text}"
+            f"Anthropic API error {resp.status_code}: {resp.text}"
         )
 
     data = resp.json()
     try:
-        content = data["choices"][0]["message"]["content"]
+        content = data["content"][0]["text"]
     except (KeyError, IndexError) as exc:
-        raise RuntimeError(f"Unexpected OpenAI response structure: {exc}")
+        raise RuntimeError(f"Unexpected Anthropic response structure: {exc}")
 
     content = content.strip()
     if not content:
-        raise RuntimeError("OpenAI returned empty content.")
+        raise RuntimeError("Anthropic returned empty content.")
 
     return content
 
@@ -568,7 +579,7 @@ def run_devlog(
             return html_path
 
         try:
-            ai_digest = _call_openai(SYSTEM_PROMPT, prompt)
+            ai_digest = _call_claude(SYSTEM_PROMPT, prompt)
         except RuntimeError as exc:
             console.print(f"[bold red]API Error:[/bold red] {exc}")
             sys.exit(1)
@@ -604,7 +615,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--dry-run", action="store_true", default=False,
-        help="Print prompt and skip OpenAI call + file write",
+        help="Print prompt and skip Claude call + file write",
     )
     args = parser.parse_args()
     run_devlog(input_path=args.input, output_path=args.output, dry_run=args.dry_run)
