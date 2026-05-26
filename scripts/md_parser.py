@@ -270,11 +270,8 @@ def apply_changes(
             risk_lines.append(
                 f"- **{risk['category'].title()}** (score {risk['score']}/5): {risk['description']}"
             )
-        existing = sections.get("Risk Assessment", "").strip()
         new_risks = "\n".join(risk_lines)
-        sections["Risk Assessment"] = (
-            f"{existing}\n{new_risks}".strip() if existing else new_risks
-        )
+        sections["Risk Assessment"] = new_risks
 
     # Notes append
     if changes.get("notes_append"):
