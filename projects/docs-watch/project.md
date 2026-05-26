@@ -70,9 +70,6 @@ Estimated ROI is 243%, based on 120,000 SEK in value and 35,000 SEK in cost.
 - **Market** (score 2/5): Dev teams may not pay for this as a product -- many solve it with ad-hoc scripts or ignore it entirely.
 - **Technical** (score 2/5): Some changelog pages are JS-rendered (React SPAs) and return empty HTML with plain fetch. Requires manual URL verification per target.
 - **Positioning** (score 3/5): Risk of blending into generic website monitoring in the market's eyes -- requires sharp messaging.
-- **Market** (score 2/5): Dev teams may not pay for this as a product -- many solve it with ad-hoc scripts or ignore it entirely.
-- **Technical** (score 2/5): Some changelog pages are JS-rendered (React SPAs) and return empty HTML with plain fetch. Requires manual URL verification per target.
-- **Positioning** (score 3/5): Risk of blending into generic website monitoring in the market's eyes -- requires sharp messaging.
 
 ## Timeline
 
