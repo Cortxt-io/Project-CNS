@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-25T23:20:03.240433",
+  "exported_at": "2026-05-26T05:32:13.866307",
   "version": "1.0",
   "projects": [
     {
@@ -257,7 +257,7 @@
         "digest"
       ],
       "created": "2026-05-05",
-      "updated": "2026-05-11",
+      "updated": "2026-05-25",
       "summary": "Omvandlar DocsWatch-data till prioriterade veckodigest i Markdown och HTML.",
       "family": "digest-pipeline",
       "url_live": "https://rian010194.github.io/dev-changelog-engine-mini/",
@@ -295,12 +295,12 @@
         "changelogs"
       ],
       "created": "2026-05-02",
-      "updated": "2026-05-02",
+      "updated": "2026-05-25",
       "summary": "CLI-verktyg som bevakar externa changelogs och docs för dev-team.",
       "family": "developer-tools",
       "url_live": "",
       "url_repo": "https://github.com/rian010194/docs-watch",
-      "current_slice": "Focused changelog/docs monitor via CLI, reusing Site Change Monitor core",
+      "current_slice": "Focused changelog/docs monitor via CLI, reusing Site Change Monitor",
       "problem": "Development teams depend on external APIs, platforms, and tools (Stripe, Vercel, Shopify, AWS, etc.) whose changelogs, release notes, and deprecation pages update without direct notification. Teams discover breaking changes, deprecations, or new versions too late -- often only when something breaks in production. Manually checking 5-15 changelog pages on a regular basis does not happen in practice.",
       "solution": "DocsWatch is a lightweight CLI tool that monitors external documentation pages, changelogs, and release notes for meaningful content changes. It fetches pages, extracts text, diffs against previous snapshots, filters noise, and generates a clear per-run report. Built specifically for dev teams who build against external APIs and platforms.",
       "primary_audience": " Developers and tech leads in small-to-mid teams (2-15 people) who build against external APIs and platforms and want to know when those change.",

@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-05-25T23:20:03Z",
-  "run_id": "20260525_232003",
-  "baseline": "2026-05-24T07:00:00",
+  "exported_at": "2026-05-26T05:32:14Z",
+  "run_id": "20260526_053214",
+  "baseline": "2026-05-25T07:00:00",
   "events": [
     {
-      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "ai-ticket-triage",
         "name": "AI Ticket Triage",
@@ -21,8 +21,8 @@
         "ai-ticket-triage"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "ai-ticket-triage",
         "project_title": "AI Ticket Triage",
         "changed_fields": [
@@ -85,8 +85,8 @@
       }
     },
     {
-      "id": "devwatch:cns-analyst:416bae0a33bfb0ff:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:cns-analyst:416bae0a33bfb0ff:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "cns-analyst",
         "name": "CNS Analyst",
@@ -105,8 +105,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "cns-analyst",
         "project_title": "CNS Analyst",
         "changed_fields": [
@@ -146,8 +146,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devlog:70843caca0b251d7:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:cns-devlog:70843caca0b251d7:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "cns-devlog",
         "name": "CNS DevLog",
@@ -167,8 +167,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "cns-devlog",
         "project_title": "CNS DevLog",
         "changed_fields": [
@@ -232,8 +232,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "cns-devwatch",
         "name": "CNS DevWatch",
@@ -253,8 +253,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "cns-devwatch",
         "project_title": "CNS DevWatch",
         "changed_fields": [
@@ -318,8 +318,8 @@
       }
     },
     {
-      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "cns-hosting-infra",
         "name": "CNS Hosting Infra",
@@ -338,8 +338,8 @@
         "static"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "cns-hosting-infra",
         "project_title": "CNS Hosting Infra",
         "changed_fields": [
@@ -403,8 +403,8 @@
       }
     },
     {
-      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "cns-vault-app",
         "name": "CNS Vault App",
@@ -424,8 +424,8 @@
         "web"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "cns-vault-app",
         "project_title": "CNS Vault App",
         "changed_fields": [
@@ -491,8 +491,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine-mini:d916d25d44df7396:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:dev-changelog-engine-mini:fc865bd5693d35c4:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "dev-changelog-engine-mini",
         "name": "Dev Changelog Engine Mini",
@@ -500,7 +500,7 @@
         "url": null
       },
       "title": "dev-changelog-engine-mini: project.md",
-      "rawContent": "### project.md\n## Problem\n+\n+Raw change data from DocsWatch is technical and unreadable for quick consumption. There is no automated way to turn monitored site changes into a concise, human-friendly weekly digest.\n+\n\n## Solution\n+\n+A pipeline that ingests DocsWatch exports, scores changes by relevance, and renders prioritized weekly digests in Markdown and static HTML.\n+\n\n## Target Audience\n+\n+- Myself (portfolio/learning project)\n+- Developers who follow documentation changes and want summarized updates\n+\n\n## Assumptions to Validate\n+\n+- DocsWatch export format is stable enough to build on\n+- Heuristic scoring provides useful prioritization without ML\n+- Weekly cadence is the right default for digests\n+\n\n## MVP Steps\n+\n+- [x] Repository skeleton & ChangeEvent schema\n+- [x] DocsWatch adapter (data ingestion)\n+- [x] Scoring heuristics (prioritize changes)\n+- [x] Markdown & HTML renderer\n+- [ ] LLM summarizer (concise descriptions)\n+- [ ] GitHub Pages publishing\n+\n\n## Cost Estimate\n+\n+~3000 SEK (development time, no infrastructure costs — runs locally with Node.js)\n+\n\n## Value Estimate\n+\n+~12000 SEK (portfolio value, automation of manual digest writing, reusable pipeline pattern)\n+\n\n## ROI\n+\n+(12000 - 3000) / 3000 = 300%\n+\n\n## Risk Assessment\n+\n+- Low: No external dependencies beyond DocsWatch exports\n+- Medium: LLM summarization quality depends on prompt engineering\n+- Low: Static output means no hosting complexity\n+\n\n## Notes\n+\n+- Consumes DocsWatch data but does NOT duplicate its monitoring\n+- Boundary: DocsWatch watches, this engine summarizes\n+- Tech stack: TypeScript, Commander.js, Node.js\n+- Design principle: \"AI is a component, not the product\"",
+      "rawContent": "### project.md\n## Problem\n+\n+Raw change data from DocsWatch is technical and unreadable for quick consumption. There is no automated way to turn monitored site changes into a concise, human-friendly weekly digest.\n+\n\n## Solution\n+\n+A pipeline that ingests DocsWatch exports, scores changes by relevance, and renders prioritized weekly digests in Markdown and static HTML.\n+\n\n## Target Audience\n+\n+- Myself (portfolio/learning project)\n+- Developers who follow documentation changes and want summarized updates\n+\n\n## Assumptions to Validate\n+\n+- DocsWatch export format is stable enough to build on\n+- Heuristic scoring provides useful prioritization without ML\n+- Weekly cadence is the right default for digests\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n+- [x] Repository skeleton & ChangeEvent schema\n+- [x] DocsWatch adapter (data ingestion)\n+- [x] Scoring heuristics (prioritize changes)\n+- [x] Markdown & HTML renderer\n+- [ ] LLM summarizer (concise descriptions)\n+- [ ] GitHub Pages publishing\n+\n\n## Cost Estimate\n+\n+~3000 SEK (development time, no infrastructure costs — runs locally with Node.js)\n+\n\n## Value Estimate\n+\n+~12000 SEK (portfolio value, automation of manual digest writing, reusable pipeline pattern)\n+\n\n## ROI\n+\n+(12000 - 3000) / 3000 = 300%\n+\n\n## Risk Assessment\n+\n+- Low: No external dependencies beyond DocsWatch exports\n+- Medium: LLM summarization quality depends on prompt engineering\n+- Low: Static output means no hosting complexity\n+- **Technical** (score 3/5): LLM summarization quality depends on prompt engineering\n+- **Technical** (score 3/5): LLM summarization quality depends on prompt engineering\n+\n\n## Timeline\n+\n\n## Notes\n+\n+- Consumes DocsWatch data but does NOT duplicate its monitoring\n+- Boundary: DocsWatch watches, this engine summarizes\n+- Tech stack: TypeScript, Commander.js, Node.js\n+- Design principle: \"AI is a component, not the product\"",
       "url": null,
       "kind": "changed",
       "tags": [
@@ -511,8 +511,8 @@
         "typescript"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "dev-changelog-engine-mini",
         "project_title": "Dev Changelog Engine Mini",
         "changed_fields": [
@@ -545,7 +545,9 @@
               "Risk Assessment",
               "Solution",
               "Target Audience",
-              "Value Estimate"
+              "Timeline",
+              "Value Estimate",
+              "Why Buy Instead of Build?"
             ]
           }
         ],
@@ -553,8 +555,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "dev-changelog-engine",
         "name": "Dev Changelog Engine",
@@ -569,8 +571,8 @@
         "dev-changelog-engine"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "dev-changelog-engine",
         "project_title": "Dev Changelog Engine",
         "changed_fields": [
@@ -633,8 +635,8 @@
       }
     },
     {
-      "id": "devwatch:docs-watch:0e244806cfb8feee:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:docs-watch:0e244806cfb8feee:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "docs-watch",
         "name": "DocsWatch",
@@ -642,7 +644,7 @@
         "url": null
       },
       "title": "docs-watch: project.md",
-      "rawContent": "### project.md\n## Problem\n+Development teams depend on external APIs, platforms, and tools (Stripe, Vercel, Shopify, AWS, etc.) whose changelogs, release notes, and deprecation pages update without direct notification. Teams discover breaking changes, deprecations, or new versions too late -- often only when something breaks in production. Manually checking 5-15 changelog pages on a regular basis does not happen in practice. \n+\n\n## Solution\n+DocsWatch is a lightweight CLI tool that monitors external documentation pages, changelogs, and release notes for meaningful content changes. It fetches pages, extracts text, diffs against previous snapshots, filters noise, and generates a clear per-run report. Built specifically for dev teams who build against external APIs and platforms.\n+\n\n## Target Audience\n+**Primary:** Developers and tech leads in small-to-mid teams (2-15 people) who build against external APIs and platforms and want to know when those change.\n+\n+**Secondary:** DevOps and platform engineers responsible for keeping a team's external dependencies current and who need systematic tracking of upstream changes.\n+\n\n## Assumptions to Validate\n+- Dev teams lack a simple method to watch changelogs/docs they depend on (and do it manually or not at all).\n+- Text-based diff of changelog pages gives meaningful enough information without JS rendering.\n+- Changelogs and docs pages change frequently enough (weekly/monthly) to create recurring value.\n+- Simple noise filtering heuristics (timestamps, whitespace, cookie banners) are sufficient to make output useful.\n+- A CLI report (HTML/JSON) is enough as delivery format for MVP -- notification\n...[truncated]\n\n## Why Buy Instead of Build?\n+- Eliminates the gap between \"we should track this\" and actually doing it, with zero custom scripting.\n+- Noise filtering means the output is actionable, not a wall of meaningless diffs.\n+- Pre-configured for common developer changelog pages, works out of the box in under a minute.\n+\n\n## MVP Steps\n+- Hypothesis: validate that dev teams want a focused tool to watch external changelogs and docs.\n+- Solution test: let 2-3 developers monitor their actual dependency changelogs and evaluate whether the reports are useful.\n+- Demand test: validate whether this is a daily/weekly habit or a nice-to-have.\n+- Launch: ship a narrow but reliable first version with clear diffs and useful default targets.\n+\n\n## Cost Estimate\n+Estimated first-year cost is 35,000 SEK. Low because the technical core (fetch, extract, snapshot, diff, report) already exists from Site Change Monitor. Remaining cost is repositioning, config, testing with real changelog pages, and minor adjustments.\n+\n\n## Value Estimate\n+Estimated first-year value is 120,000 SEK through earlier detection of API changes, deprecations, and breaking changes across external dependencies, reducing production incidents and wasted investigation time.\n+\n\n## ROI\n+Estimated ROI is 243%, based on 120,000 SEK in value and 35,000 SEK in cost.\n+\n\n## Risk Assessment\n+- **Market** (score 2/5): Dev teams may not pay for this as a product -- many solve it with ad-hoc scripts or ignore it entirely.\n+- **Technical** (score 2/5): Some changelog pages are JS-rendered (React SPAs) and return empty HTML with plain fetch. Requires manual URL verification per target.\n+- **Positioning** (score 3/5): Risk of blending into generic website monitoring in the market's eyes -- requires sharp messaging.\n+\n\n## Timeline\n+- Week 1-2: Create project. Copy code to new repo. Reposition naming and config. Test end-to-end with real changelog URLs.\n+- Week 3-4: Run 10-15 times against real targets. Evaluate: does the diff give meaningful info? Does noise filtering work? Which pages need JS rendering?\n+- Week 5-6: Adjust based on results. Fix obvious gaps. Create a demo run with report to show.\n+- Week 7-8: Validate with 2-3 other developers. Ask: \"Would you use this?\". Decide on further investment.\n+\n\n## Notes\n+This project reuses the complete technical core from Site Change Monitor (fetch, extract, snapshot, diff, JSON+HTML report). The difference is positioning: DocsWatch is exclusively for dev teams monitoring external docs, changelogs, and release notes. It does not cover pricing pages, competitor intel, policy monitoring, or general website change detection. The code lives in its own repo outside the CNS project directory.",
+      "rawContent": "### project.md\n## Problem\n+\n+Development teams depend on external APIs, platforms, and tools (Stripe, Vercel, Shopify, AWS, etc.) whose changelogs, release notes, and deprecation pages update without direct notification. Teams discover breaking changes, deprecations, or new versions too late -- often only when something breaks in production. Manually checking 5-15 changelog pages on a regular basis does not happen in practice.\n+\n\n## Solution\n+\n+DocsWatch is a lightweight CLI tool that monitors external documentation pages, changelogs, and release notes for meaningful content changes. It fetches pages, extracts text, diffs against previous snapshots, filters noise, and generates a clear per-run report. Built specifically for dev teams who build against external APIs and platforms.\n+\n\n## Target Audience\n+\n+**Primary:** Developers and tech leads in small-to-mid teams (2-15 people) who build against external APIs and platforms and want to know when those change.\n+\n+**Secondary:** DevOps and platform engineers responsible for keeping a team's external dependencies current and who need systematic tracking of upstream changes.\n+\n\n## Assumptions to Validate\n+\n+- Dev teams lack a simple method to watch changelogs/docs they depend on (and do it manually or not at all).\n+- Text-based diff of changelog pages gives meaningful enough information without JS rendering.\n+- Changelogs and docs pages change frequently enough (weekly/monthly) to create recurring value.\n+- Simple noise filtering heuristics (timestamps, whitespace, cookie banners) are sufficient to make output useful.\n+- A CLI report (HTML/JSON) is enough as delivery format for MVP -- notificati\n...[truncated]\n\n## Why Buy Instead of Build?\n+\n+- Eliminates the gap between \"we should track this\" and actually doing it, with zero custom scripting.\n+- Noise filtering means the output is actionable, not a wall of meaningless diffs.\n+- Pre-configured for common developer changelog pages, works out of the box in under a minute.\n+\n\n## MVP Steps\n+\n+- Hypothesis: validate that dev teams want a focused tool to watch external changelogs and docs.\n+- Solution test: let 2-3 developers monitor their actual dependency changelogs and evaluate whether the reports are useful.\n+- Demand test: validate whether this is a daily/weekly habit or a nice-to-have.\n+- Launch: ship a narrow but reliable first version with clear diffs and useful default targets.\n+\n\n## Cost Estimate\n+\n+Estimated first-year cost is 35,000 SEK. Low because the technical core (fetch, extract, snapshot, diff, report) already exists from Site Change Monitor. Remaining cost is repositioning, config, testing with real changelog pages, and minor adjustments.\n+\n\n## Value Estimate\n+\n+Estimated first-year value is 120,000 SEK through earlier detection of API changes, deprecations, and breaking changes across external dependencies, reducing production incidents and wasted investigation time.\n+\n\n## ROI\n+\n+Estimated ROI is 243%, based on 120,000 SEK in value and 35,000 SEK in cost.\n+\n\n## Risk Assessment\n+\n+- **Market** (score 2/5): Dev teams may not pay for this as a product -- many solve it with ad-hoc scripts or ignore it entirely.\n+- **Technical** (score 2/5): Some changelog pages are JS-rendered (React SPAs) and return empty HTML with plain fetch. Requires manual URL verification per target.\n+- **Positioning** (score 3/5): Risk of blending into generic website monitoring in the market's eyes -- requires sharp messaging.\n+- **Market** (score 2/5): Dev teams may not pay for this as a product \n...[truncated]\n\n## Timeline\n+\n+- Week 1-2: Create project. Copy code to new repo. Reposition naming and config. Test end-to-end with real changelog URLs.\n+- Week 3-4: Run 10-15 times against real targets. Evaluate: does the diff give meaningful info? Does noise filtering work? Which pages need JS rendering?\n+- Week 5-6: Adjust based on results. Fix obvious gaps. Create a demo run with report to show.\n+- Week 7-8: Validate with 2-3 other developers. Ask: \"Would you use this?\". Decide on further investment.\n+\n\n## Notes\n+\n+This project reuses the complete technical core from Site Change Monitor (fetch, extract, snapshot, diff, JSON+HTML report). The difference is positioning: DocsWatch is exclusively for dev teams monitoring external docs, changelogs, and release notes. It does not cover pricing pages, competitor intel, policy monitoring, or general website change detection. The code lives in its own repo outside the CNS project directory.",
       "url": null,
       "kind": "changed",
       "tags": [
@@ -652,8 +654,8 @@
         "monitoring"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "docs-watch",
         "project_title": "DocsWatch",
         "changed_fields": [
@@ -695,8 +697,8 @@
       }
     },
     {
-      "id": "devwatch:project-vault-dashboard:2030d8e6a13bc685:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:project-vault-dashboard:2030d8e6a13bc685:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "project-vault-dashboard",
         "name": "Project Vault Dashboard",
@@ -716,8 +718,8 @@
         "static-site"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "project-vault-dashboard",
         "project_title": "Project Vault Dashboard",
         "changed_fields": [
@@ -820,8 +822,8 @@
       }
     },
     {
-      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "scoring-studio",
         "name": "Scoring Studio",
@@ -841,8 +843,8 @@
         "static-site"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "scoring-studio",
         "project_title": "Scoring Studio",
         "changed_fields": [
@@ -882,8 +884,8 @@
       }
     },
     {
-      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "site-change-monitor",
         "name": "site-change-monitor",
@@ -898,8 +900,8 @@
         "site-change-monitor"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "site-change-monitor",
         "project_title": "site-change-monitor",
         "changed_fields": [],
@@ -946,8 +948,8 @@
       }
     },
     {
-      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "test-interactive",
         "name": "test-interactive",
@@ -962,8 +964,8 @@
         "test-interactive"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "test-interactive",
         "project_title": "test-interactive",
         "changed_fields": [],
@@ -997,8 +999,8 @@
       }
     },
     {
-      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260525T232003Z",
-      "detectedAt": "2026-05-25T23:20:03Z",
+      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260526T053214Z",
+      "detectedAt": "2026-05-26T05:32:14Z",
       "source": {
         "id": "webhook-router",
         "name": "Webhook Router",
@@ -1017,8 +1019,8 @@
         "webhooks"
       ],
       "meta": {
-        "run_id": "20260525_232003",
-        "run_timestamp": "20260525T232003Z",
+        "run_id": "20260526_053214",
+        "run_timestamp": "20260526T053214Z",
         "slug": "webhook-router",
         "project_title": "Webhook Router",
         "changed_fields": [
