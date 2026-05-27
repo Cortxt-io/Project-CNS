@@ -9,7 +9,7 @@ status: idea
 summary: AI-driven triagering av supportärenden – ännu ej specificerad.
 tags: []
 title: AI Ticket Triage
-updated: '2026-05-25'
+updated: '2026-05-27'
 value_sek: 750000
 ---
 
@@ -33,7 +33,6 @@ value_sek: 750000
 
 ## Risk Assessment
 
-- **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.
 - **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.
 
 ## Timeline
