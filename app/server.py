@@ -40,6 +40,7 @@ from app.git_ops import (  # noqa: E402
     push_file_immediately,
 )
 from scripts.analyst import load_pending_suggestions, run_analyze  # noqa: E402
+from scripts.portfolio_brief import run_portfolio_brief  # noqa: E402
 from scripts.json_exporter import export_json  # noqa: E402
 from scripts.md_parser import (  # noqa: E402
     SECTIONS,
@@ -831,6 +832,51 @@ def api_health():
     })
 
 
+@app.route("/api/brief")
+@auth.login_required
+def api_brief():
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Admin required"}), 403
+    try:
+        brief = run_portfolio_brief()
+        return jsonify({"status": "ok", "brief": brief, "generated_at": date.today().isoformat()})
+    except RuntimeError as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 502
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
+@app.route("/api/activity")
+def api_activity():
+    devwatch_path = _latest_export("devwatch_*.json")
+    devlog_path = _latest_export("devlog_*.html")
+
+    devwatch_events: list[dict[str, Any]] = []
+    devwatch_meta: dict[str, Any] = {}
+    devwatch_date = ""
+
+    if devwatch_path:
+        try:
+            data = json.loads(devwatch_path.read_text(encoding="utf-8"))
+            devwatch_events = data.get("events", [])
+            devwatch_meta = data.get("meta", {})
+            devwatch_date = data.get("exported_at", "")
+        except Exception:
+            pass
+
+    devlog_html = _extract_devlog_body(devlog_path)
+    devlog_date = devlog_path.stem.replace("devlog_", "") if devlog_path else ""
+
+    return jsonify({
+        "devwatch_events": devwatch_events,
+        "devwatch_meta": devwatch_meta,
+        "devwatch_date": devwatch_date,
+        "devlog_html": devlog_html,
+        "devlog_date": devlog_date,
+        "has_activity": bool(devwatch_events or devlog_html),
+    })
+
+
 @app.route("/api/pending")
 def api_pending():
     pending_list = load_pending_suggestions()
@@ -840,6 +886,8 @@ def api_pending():
             "slug": p["slug"],
             "analyzed_at": p["analyzed_at"],
             "suggestions": p["suggestions"],
+            "reasoning": p.get("reasoning", {}),
+            "overall": p.get("overall", ""),
         }
         for p in pending_list
     ]
@@ -882,6 +930,8 @@ def api_project_full(slug):
         pending_data = {
             "analyzed_at": pending["analyzed_at"],
             "suggestions": pending["suggestions"],
+            "reasoning": pending.get("reasoning", {}),
+            "overall": pending.get("overall", ""),
         }
 
     # Convert non-JSON-serializable meta values to strings

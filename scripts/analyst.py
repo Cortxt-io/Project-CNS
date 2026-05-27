@@ -54,12 +54,12 @@ def _get_api_key() -> str:
 # ---------------------------------------------------------------------------
 
 
-def _call_claude(system_prompt: str, user_prompt: str) -> str:
+def _call_claude(system_prompt: str, user_prompt: str, max_tokens: int = 1024) -> str:
     api_key = _get_api_key()
 
     payload = {
         "model": ANTHROPIC_MODEL,
-        "max_tokens": 1024,
+        "max_tokens": max_tokens,
         "system": system_prompt,
         "messages": [
             {"role": "user", "content": user_prompt},
@@ -144,27 +144,43 @@ def _read_project_context(slug: str) -> str:
 def _build_system_prompt() -> str:
     return (
         "Du är en erfaren produktchef som analyserar ett MVP-projekt. "
-        "Returnera ENDAST giltig JSON enligt det schema som specificeras. "
-        "Inga förklaringar, ingen löptext, inga markdown-backticks."
+        "Returnera ENDAST giltig JSON med tre toppnålar: "
+        "\"suggestions\" (fältförslag som tidigare), "
+        "\"reasoning\" (motivering per föreslaget fält), "
+        "\"overall\" (övergripande bedömning). "
+        "Inga förklaringar utanför JSON-strukturen, inga markdown-backticks."
     )
 
 
 def _build_user_prompt(context: str) -> str:
     schema = """{
-  "mvp_stage": "solution_test" | null,
-  "status": "early_mvp" | null,
-  "current_slice": "string" | null,
-  "roi_percent": 243 | null,
-  "value_sek": 120000 | null,
-  "cost_sek": 35000 | null,
-  "risks": [
-    {
-      "category": "technical",
-      "description": "string",
-      "score": 3
-    }
-  ] | null,
-  "summary": "string" | null
+  "suggestions": {
+    "mvp_stage": "solution_test" | null,
+    "status": "early_mvp" | null,
+    "current_slice": "string" | null,
+    "roi_percent": 243 | null,
+    "value_sek": 120000 | null,
+    "cost_sek": 35000 | null,
+    "risks": [
+      {
+        "category": "technical",
+        "description": "string",
+        "score": 3
+      }
+    ] | null,
+    "summary": "string" | null
+  },
+  "reasoning": {
+    "mvp_stage": "Motivering för ändringen..." | null,
+    "status": "Motivering för ändringen..." | null,
+    "current_slice": "Motivering..." | null,
+    "roi_percent": "Motivering..." | null,
+    "value_sek": "Motivering..." | null,
+    "cost_sek": "Motivering..." | null,
+    "risks": "Motivering..." | null,
+    "summary": "Motivering..." | null
+  },
+  "overall": "Övergripande bedömning av projektet."
 }"""
 
     return (
@@ -176,7 +192,7 @@ def _build_user_prompt(context: str) -> str:
         f"Giltiga mvp_stage-värden: {sorted(VALID_MVP_STAGES)}\n"
         f"Giltiga risk_categories: {sorted(VALID_RISK_CATEGORIES)}\n\n"
         f"Förväntat JSON-svar:\n{schema}\n\n"
-        f"Analysera projektet ovan. För varje fält: om det redan ser korrekt "
+        f"Analysera projektet ovan. För varje fält i \"suggestions\": om det redan ser korrekt "
         f"och aktuellt ut, returnera null. Om det bör uppdateras, returnera "
         f"det nya värdet. Null betyder \"inget förslag\". Fälten title, slug, "
         f"created, tags, url_live, url_repo och family får INTE föreslås -- "
@@ -184,7 +200,9 @@ def _build_user_prompt(context: str) -> str:
         f"För risks-fältet: returnera null om riskerna redan ser korrekta "
         f"och aktuella ut. Föreslå bara om du har nya eller väsentligt "
         f"ändrade risker att tillföra. Returnera aldrig exakt samma risker "
-        f"som redan finns i projektet."
+        f"som redan finns i projektet.\n\n"
+        f"I \"reasoning\": ge en kort motivering för varje föreslaget fält (null för fälten du inte föreslår). "
+        f"I \"overall\": ge en övergripande bedömning av projektets status och nästa steg."
     )
 
 
@@ -193,7 +211,14 @@ def _build_user_prompt(context: str) -> str:
 # ---------------------------------------------------------------------------
 
 
-def _parse_response(raw: str) -> dict[str, Any]:
+def _parse_response(raw: str) -> tuple[dict[str, Any], dict[str, str], str]:
+    """Parse Claude response into (suggestions, reasoning, overall).
+
+    Returns:
+        suggestions: dict of non-null field suggestions (validated)
+        reasoning: dict of per-field motivation strings
+        overall: overall assessment string
+    """
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as exc:
@@ -202,26 +227,34 @@ def _parse_response(raw: str) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise RuntimeError(f"LLM response is not a JSON object: {type(data)}")
 
-    # Validate keys
-    for key in data:
+    # Extract the three top-level keys
+    suggestions_raw = data.get("suggestions", {})
+    reasoning_raw = data.get("reasoning", {})
+    overall_raw = data.get("overall", "")
+
+    # Validate suggestions
+    if not isinstance(suggestions_raw, dict):
+        raise RuntimeError(f"'suggestions' must be a dict, got {type(suggestions_raw)}")
+
+    for key in suggestions_raw:
         if key not in ALLOWED_FIELDS:
-            raise RuntimeError(f"Unexpected field in LLM response: '{key}'")
+            raise RuntimeError(f"Unexpected field in suggestions: '{key}'")
 
-    # Validate enum fields
-    if data.get("mvp_stage") is not None and data["mvp_stage"] not in VALID_MVP_STAGES:
+    # Validate enum fields in suggestions
+    if suggestions_raw.get("mvp_stage") is not None and suggestions_raw["mvp_stage"] not in VALID_MVP_STAGES:
         raise RuntimeError(
-            f"Invalid mvp_stage '{data['mvp_stage']}'. Valid: {sorted(VALID_MVP_STAGES)}"
+            f"Invalid mvp_stage '{suggestions_raw['mvp_stage']}'. Valid: {sorted(VALID_MVP_STAGES)}"
         )
 
-    if data.get("status") is not None and data["status"] not in VALID_STATUSES:
+    if suggestions_raw.get("status") is not None and suggestions_raw["status"] not in VALID_STATUSES:
         raise RuntimeError(
-            f"Invalid status '{data['status']}'. Valid: {sorted(VALID_STATUSES)}"
+            f"Invalid status '{suggestions_raw['status']}'. Valid: {sorted(VALID_STATUSES)}"
         )
 
-    if data.get("risks") is not None:
-        if not isinstance(data["risks"], list):
+    if suggestions_raw.get("risks") is not None:
+        if not isinstance(suggestions_raw["risks"], list):
             raise RuntimeError("'risks' must be a list")
-        for i, risk in enumerate(data["risks"]):
+        for i, risk in enumerate(suggestions_raw["risks"]):
             if not isinstance(risk, dict):
                 raise RuntimeError(f"Risk at index {i} is not an object")
             if risk.get("category") not in VALID_RISK_CATEGORIES:
@@ -235,8 +268,26 @@ def _parse_response(raw: str) -> dict[str, Any]:
             if not isinstance(score, (int, float)) or score < 1 or score > 5:
                 raise RuntimeError(f"Risk at index {i} has invalid score: {score}")
 
-    # Filter null values
-    return {k: v for k, v in data.items() if v is not None}
+    # Validate reasoning
+    if not isinstance(reasoning_raw, dict):
+        raise RuntimeError(f"'reasoning' must be a dict, got {type(reasoning_raw)}")
+
+    for key in reasoning_raw:
+        if key not in ALLOWED_FIELDS:
+            raise RuntimeError(f"Unexpected field in reasoning: '{key}'")
+        if reasoning_raw[key] is not None and not isinstance(reasoning_raw[key], str):
+            raise RuntimeError(f"Reasoning for '{key}' must be a string or null")
+
+    # Validate overall
+    if overall_raw is not None and not isinstance(overall_raw, str):
+        raise RuntimeError(f"'overall' must be a string or null, got {type(overall_raw)}")
+
+    # Filter null values from suggestions
+    suggestions = {k: v for k, v in suggestions_raw.items() if v is not None}
+    reasoning = {k: v for k, v in reasoning_raw.items() if v is not None and isinstance(v, str)}
+    overall = overall_raw if isinstance(overall_raw, str) else ""
+
+    return suggestions, reasoning, overall
 
 
 # ---------------------------------------------------------------------------
@@ -278,7 +329,7 @@ def run_analyze(
     user_prompt = _build_user_prompt(context)
 
     ai_raw = _call_claude(system_prompt, user_prompt)
-    suggestions = _parse_response(ai_raw)
+    suggestions, reasoning, overall = _parse_response(ai_raw)
 
     if not suggestions:
         console.print("[dim]No suggestions -- project looks up to date.[/dim]")
@@ -295,6 +346,8 @@ def run_analyze(
             "slug": slug,
             "analyzed_at": date.today().isoformat(),
             "suggestions": suggestions,
+            "reasoning": reasoning,
+            "overall": overall,
         }
         output_path.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
         console.print(f"[cns analyze] Saved suggestions for {slug} -> {output_path}")
@@ -342,6 +395,8 @@ def load_pending_suggestions() -> list[dict]:
             "slug": data.get("slug", ""),
             "analyzed_at": data.get("analyzed_at", ""),
             "suggestions": data.get("suggestions", {}),
+            "reasoning": data.get("reasoning", {}),
+            "overall": data.get("overall", ""),
         })
 
     pending.sort(key=lambda x: x["analyzed_at"])
