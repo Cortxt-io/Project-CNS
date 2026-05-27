@@ -38,6 +38,7 @@ from app.git_ops import (  # noqa: E402
     git_commit_and_push,
     git_pull,
     push_file_immediately,
+    read_file_from_github,
 )
 from scripts.analyst import load_pending_suggestions, run_analyze  # noqa: E402
 from scripts.portfolio_brief import run_portfolio_brief  # noqa: E402
@@ -279,6 +280,22 @@ def _latest_export(pattern: str) -> Path | None:
     return matches[-1] if matches else None
 
 
+def _extract_devlog_body_from_string(html: str) -> str:
+    """Extract inner HTML from <main> or <body> of a devlog HTML string.
+
+    Returns empty string if unparsable.
+    """
+    # Try <main> first
+    m = re.search(r"<main[^>]*>(.*?)</main>", html, re.DOTALL | re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+    # Fallback to <body>
+    m = re.search(r"<body[^>]*>(.*?)</body>", html, re.DOTALL | re.IGNORECASE)
+    if m:
+        return m.group(1).strip()
+    return ""
+
+
 def _extract_devlog_body(html_path: Path | None) -> str:
     """Extract inner HTML from <main> or <body> of a devlog HTML file.
 
@@ -288,14 +305,7 @@ def _extract_devlog_body(html_path: Path | None) -> str:
         return ""
     try:
         html = html_path.read_text(encoding="utf-8")
-        # Try <main> first
-        m = re.search(r"<main[^>]*>(.*?)</main>", html, re.DOTALL | re.IGNORECASE)
-        if m:
-            return m.group(1).strip()
-        # Fallback to <body>
-        m = re.search(r"<body[^>]*>(.*?)</body>", html, re.DOTALL | re.IGNORECASE)
-        if m:
-            return m.group(1).strip()
+        return _extract_devlog_body_from_string(html)
     except Exception:
         pass
     return ""
@@ -479,17 +489,18 @@ def review():
 def activity():
     git_pull()
 
-    devwatch_path = _latest_export("devwatch_*.json")
-    devlog_path = _latest_export("devlog_*.html")
-
     devwatch_events: list[dict[str, Any]] = []
     devwatch_meta: dict[str, Any] = {}
     devwatch_date = ""
     no_activity = True
 
-    if devwatch_path:
+    # Read devwatch from GitHub
+    devwatch_raw = read_file_from_github(
+        "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+    )
+    if devwatch_raw:
         try:
-            data = json.loads(devwatch_path.read_text(encoding="utf-8"))
+            data = json.loads(devwatch_raw)
             devwatch_events = data.get("events", [])
             devwatch_meta = data.get("meta", {})
             devwatch_date = data.get("exported_at", "")
@@ -497,7 +508,14 @@ def activity():
         except Exception:
             pass
 
-    devlog_html = _extract_devlog_body(devlog_path)
+    # Read devlog from GitHub
+    devlog_html = ""
+    devlog_raw = read_file_from_github(
+        "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+    )
+    if devlog_raw:
+        devlog_html = _extract_devlog_body_from_string(devlog_raw)
+        no_activity = no_activity and not devlog_html
 
     return render_template(
         "activity.html",
@@ -846,26 +864,75 @@ def api_brief():
         return jsonify({"status": "error", "message": str(exc)}), 500
 
 
+@app.route("/api/planning/quest", methods=["POST"])
+@auth.login_required
+def api_planning_quest():
+    """Append a quest suggestion to projects/<slug>/planning/quests.md"""
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Admin required"}), 403
+
+    data = request.get_json()
+    slug = data.get("slug")
+    quest = data.get("quest")  # { title, description, estimated_impact, source, created_at }
+
+    if not slug or not quest:
+        return jsonify({"status": "error", "message": "slug and quest required"}), 400
+
+    # Read or create quests.md
+    quests_path = project_path(slug).parent / "planning" / "quests.md"
+    quests_path.parent.mkdir(parents=True, exist_ok=True)
+
+    existing = quests_path.read_text(encoding="utf-8") if quests_path.exists() else f"# {slug} / quests\n\n"
+
+    # Append new quest
+    entry = (
+        f"\n## {quest['created_at']} — {quest['title']}\n\n"
+        f"**Beskrivning:** {quest['description']}\n\n"
+        f"**Impact:** {quest['estimated_impact']}\n\n"
+        f"**Status:** föreslagen\n\n"
+        f"**Källa:** {quest.get('source', 'portfolio-brief')}\n\n"
+        f"---\n"
+    )
+    quests_path.write_text(existing + entry, encoding="utf-8")
+
+    # Push to GitHub immediately
+    ok, msg = push_file_immediately(quests_path, f"cns-vault: add quest for {slug}")
+
+    if not ok:
+        return jsonify({"status": "error", "message": f"Saved locally but push failed: {msg}"}), 500
+
+    return jsonify({"status": "ok", "path": str(quests_path.relative_to(REPO_ROOT))})
+
+
 @app.route("/api/activity")
 def api_activity():
-    devwatch_path = _latest_export("devwatch_*.json")
-    devlog_path = _latest_export("devlog_*.html")
-
     devwatch_events: list[dict[str, Any]] = []
     devwatch_meta: dict[str, Any] = {}
     devwatch_date = ""
+    devlog_html = ""
+    devlog_date = ""
 
-    if devwatch_path:
+    # Read devwatch from GitHub
+    devwatch_raw = read_file_from_github(
+        "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+    )
+    if devwatch_raw:
         try:
-            data = json.loads(devwatch_path.read_text(encoding="utf-8"))
+            data = json.loads(devwatch_raw)
             devwatch_events = data.get("events", [])
             devwatch_meta = data.get("meta", {})
             devwatch_date = data.get("exported_at", "")
         except Exception:
             pass
 
-    devlog_html = _extract_devlog_body(devlog_path)
-    devlog_date = devlog_path.stem.replace("devlog_", "") if devlog_path else ""
+    # Read devlog from GitHub
+    devlog_raw = read_file_from_github(
+        "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+    )
+    if devlog_raw:
+        devlog_html = _extract_devlog_body_from_string(devlog_raw)
+        m = re.search(r"CNS DevLog — (\d{4}-\d{2}-\d{2})", devlog_raw)
+        devlog_date = m.group(1) if m else ""
 
     return jsonify({
         "devwatch_events": devwatch_events,

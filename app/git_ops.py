@@ -64,6 +64,38 @@ def git_pull() -> tuple[bool, str]:
     return True, "ok"
 
 
+def read_file_from_github(rel_path: str) -> str | None:
+    """Read a file's content from GitHub via REST API.
+
+    Args:
+        rel_path: Path relative to repo root, e.g.
+                  'projects/project-vault-dashboard/dashboard/data/devwatch_latest.json'
+
+    Returns:
+        File content as string, or None if not found.
+    """
+    token, repo = _get_config()
+    if not token or not repo:
+        return None
+
+    headers = _headers(token)
+    url = f"{GITHUB_API}/repos/{repo}/contents/{rel_path}"
+
+    try:
+        resp = requests.get(url, headers=headers, timeout=15)
+        if resp.status_code == 404:
+            return None
+        if resp.status_code != 200:
+            logger.warning("GitHub read failed for %s: %s", rel_path, resp.status_code)
+            return None
+        data = resp.json()
+        content = base64.b64decode(data["content"].replace("\n", "")).decode("utf-8")
+        return content
+    except Exception as exc:
+        logger.warning("GitHub read exception for %s: %s", rel_path, exc)
+        return None
+
+
 def git_commit_and_push(message: str) -> tuple[bool, str]:
     """Sync recently changed files under projects/ and exports/ to GitHub.
 

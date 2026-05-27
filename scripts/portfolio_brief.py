@@ -34,6 +34,7 @@ def _build_portfolio_context(
     projects: list[tuple[dict, dict]],
     devwatch_events: list[dict],
     pending: list[dict],
+    devlog_text: str = "",
 ) -> str:
     """Build compressed portfolio context string for Claude."""
     lines: list[str] = []
@@ -86,6 +87,14 @@ def _build_portfolio_context(
             )
         lines.append("")
 
+    # Devlog summary
+    lines.append("## Senaste devlog (AI-sammanfattning av gårdagens arbete)")
+    if devlog_text:
+        lines.append(devlog_text)
+    else:
+        lines.append("*Ingen devlog tillgänglig.*")
+    lines.append("")
+
     # Pending suggestions summary
     if pending:
         lines.append("## Väntande AI-förslag")
@@ -104,10 +113,11 @@ def _build_portfolio_context(
 
 
 BRIEF_SYSTEM = (
-    "Du är en produktstrateg som analyserar en hel projektportfölj. "
-    "Du ser beroenden, flaskhalsar och prioriteringar som ägaren missar i det dagliga arbetet. "
-    "Returnera ENDAST giltig JSON enligt det schema som specificeras. "
-    "Inga förklaringar utanför JSON-strukturen."
+    "Du är en senior produktchef som analyserar din egen projektportfölj. "
+    "Du jobbar ensam. Fokusera på vad som faktiskt hände igår (från devlog och devwatch), "
+    "vad som är nästa konkreta steg idag, och vilket quest ger mest värde just nu. "
+    "Undvik generella portföljobservationer — ge specifika handlingsbara beslut. "
+    "Returnera ENDAST giltig JSON enligt det schema som specificeras."
 )
 
 BRIEF_SCHEMA = """{
@@ -138,13 +148,19 @@ BRIEF_SCHEMA = """{
 
 def _build_brief_user_prompt(context: str) -> str:
     return (
-        f"Här är din projektportfölj:\n\n"
+        f"Här är din projektportfölj och vad som hänt:\n\n"
         f"---\n{context}\n---\n\n"
         f"Förväntat JSON-svar:\n{BRIEF_SCHEMA}\n\n"
-        f"Analysera portföljen. Identifiera de 3 viktigaste prioriteringarna, "
-        f"eventuella blockers, och föreslå en quest som ger mest värde idag. "
-        f"Om det finns väntande AI-förslag, ge en rekommendation om vilka "
-        f"som bör godkännas eller avvisas."
+        f"Regler:\n"
+        f"- situation: Basera på devlog och devwatch-data, inte bara statiska projekt-fält. "
+        f"Om devlog finns: sammanfatta vad som faktiskt gjordes igår.\n"
+        f"- priorities: Välj projekt där faktisk aktivitet skett eller där ett konkret nästa steg är tydligt. "
+        f"Undvik projekt som bara har 'idea'-status utan aktivitet.\n"
+        f"- quest_suggestion: Föreslå ett quest som kan genomföras idag. "
+        f"Basera på senaste aktivitet och pending förslag. Var specifik.\n"
+        f"- pending_recommendation: Om pending finns, rekommendera specifikt vilka slugs som bör godkännas "
+        f"och varför (baserat på aktivitet), och vilka som kan vänta.\n"
+        f"- Inga generella portföljobservationer. Varje punkt ska vara handlingsbar."
     )
 
 
@@ -228,21 +244,35 @@ def run_portfolio_brief(output_path: Path | None = None) -> dict:
     if not projects:
         raise RuntimeError("No projects in portfolio — cannot generate brief.")
 
-    # 2. Read latest devwatch
+    # 2. Read latest devwatch from GitHub
+    from app.git_ops import read_file_from_github
+
     devwatch_events: list[dict] = []
-    devwatch_path = _latest_export("devwatch_*.json")
-    if devwatch_path:
+    devwatch_raw = read_file_from_github(
+        "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+    )
+    if devwatch_raw:
         try:
-            data = json.loads(devwatch_path.read_text(encoding="utf-8"))
+            data = json.loads(devwatch_raw)
             devwatch_events = data.get("events", [])
         except Exception:
             pass
 
-    # 3. Read pending suggestions
+    # 3. Read latest devlog from GitHub
+    devlog_raw = read_file_from_github(
+        "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+    )
+    devlog_text = ""
+    if devlog_raw:
+        import re
+        stripped = re.sub(r"<[^>]+>", " ", devlog_raw)
+        devlog_text = re.sub(r"\s+", " ", stripped).strip()[:2000]
+
+    # 4. Read pending suggestions
     pending = load_pending_suggestions()
 
-    # 4. Build portfolio context
-    context = _build_portfolio_context(projects, devwatch_events, pending)
+    # 5. Build portfolio context
+    context = _build_portfolio_context(projects, devwatch_events, pending, devlog_text)
 
     # 5. Call Claude
     system_prompt = BRIEF_SYSTEM
