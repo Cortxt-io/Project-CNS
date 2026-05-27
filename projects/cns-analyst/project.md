@@ -1,20 +1,21 @@
 ---
-title: CNS Analyst
-slug: cns-analyst
-status: idea
-mvp_stage: hypothesis
-family: cns-core
-summary: AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och ROI-estimat per projekt.
 cost_sek: 5000
-value_sek: 25000
+created: '2026-05-25'
+family: cns-core
+mvp_stage: solution_test
 roi_percent: 400
+slug: cns-analyst
+status: early_mvp
+summary: AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och
+  ROI-estimat per projekt.
 tags:
 - python
 - openai
 - cns-core
 - analysis
-created: '2026-05-25'
-updated: '2026-05-25'
+title: CNS Analyst
+updated: '2026-05-27'
+value_sek: 25000
 ---
 
 ## Problem
