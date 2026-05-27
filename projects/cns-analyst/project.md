@@ -1,6 +1,7 @@
 ---
 cost_sek: 5000
 created: '2026-05-25'
+current_slice: Evaluate JSON consistency and field accuracy across 3-5 real CNS projects
 family: cns-core
 mvp_stage: solution_test
 roi_percent: 400
@@ -61,6 +62,7 @@ cns analyze <slug> skickar hela project.md till OpenAI och returnerar strukturer
 
 - **Technical** (score 3/5): LLM-output kan vara inkonsekvent – JSON-parsning måste vara robust med tydlig felhantering.
 - **Ops** (score 2/5): OpenAI-anrop kostar pengar och tid – bör inte köras automatiskt, alltid manuellt triggat.
+- **Adoption** (score 3/5): Risk att verktyget blir en one-off utility istället för att integreras i regelbunden workflow – kräver att förslagen faktiskt är tillräckligt värdefulla för att accepteras.
 
 ## Timeline
 
