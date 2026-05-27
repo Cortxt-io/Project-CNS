@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-26T05:57:44.049459",
+  "exported_at": "2026-05-27T07:50:13.478866",
   "version": "1.0",
   "projects": [
     {
@@ -220,6 +220,86 @@
       "top_risk": "**Technical** (score 3/5): Git pull/push som synkmekanism kan ge konflikter om lokala och Railway-ändringar sker samtidigt."
     },
     {
+      "slug": "cortxt-dashboard-app",
+      "title": "Cortxt Dashboard App",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
+      "cost_sek": 8000,
+      "value_sek": 35000,
+      "roi_percent": 338,
+      "tags": [
+        "react",
+        "vite",
+        "tailwind",
+        "reactflow",
+        "cloudflare-pages",
+        "dashboard"
+      ],
+      "created": "2026-05-27",
+      "updated": "2026-05-27",
+      "summary": "React SPA på app.cortxt.io som visualiserar CNS-portföljen via Railway Flask API. Portföljgrid, projektdetaljer och Reactflow graph-overlay.",
+      "family": "cns-core",
+      "url_live": "https://app.cortxt.io",
+      "url_repo": "https://github.com/rian010194/cortxt",
+      "current_slice": "",
+      "problem": "CNS-portföljen lever i Markdown och CLI. Det finns ingen visuell webbapp där man kan navigera projekt, läsa fullständig projektdata och se portföljstrukturen som en graf. Den befintliga vanilla JS-dashboarden på GitHub Pages är skrivskyddad och statisk utan projektsidor eller graph-vy.",
+      "solution": "En React SPA byggd med Vite, Tailwind och Reactflow som konsumerar Railway Flask API (/api/projects, /api/project/<slug>/full). Tre vyer: portföljgrid med filter på status och family, projektdetaljsida med renderad Markdown och projektfiler, samt Reactflow graph-overlay grupperad per produktfamilj. HashRouter för statisk hosting. Deployas till app.cortxt.io via Cloudflare Pages från cortxt-repot (apps/dashboard/).",
+      "primary_audience": " Mig själv — portföljägare som vill navigera och läsa projektdata från webbläsaren utan att öppna terminalen.",
+      "assumptions": [
+        "Railway Flask API exponerar tillräckligt med data för att göra appen användbar utan extra endpoints.",
+        "Reactflow graph-vyn ger faktiskt ett mervärde jämfört med kortgriden för att förstå portföljstrukturen.",
+        "app.cortxt.io används faktiskt som primär ingång till portföljen istället för terminalen eller vanilla JS-dashboarden.",
+        "HashRouter fungerar utan problem på Cloudflare Pages."
+      ],
+      "mvp_steps": [
+        "[x] Hypothesis: Railway API exponerar rätt data för att driva en React-dashboard.",
+        "[ ] Solution test: deploya apps/dashboard/, verifiera att portföljgrid, projektdetalj och graph-overlay fungerar mot live API.",
+        "[ ] Demand test: används app.cortxt.io faktiskt som primär ingång istället för terminalen?",
+        "[ ] Launch: stabil deploy, family-enum migrerad, app.cortxt.io custom domain aktiv."
+      ],
+      "top_risk": "**Technical** (score 2/5): Reactflow GroupNode-layout kräver manuell positionering — kan bli komplex om antalet projekt växer snabbt."
+    },
+    {
+      "slug": "cortxt-landing",
+      "title": "Cortxt Landing",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
+      "cost_sek": 6000,
+      "value_sek": 30000,
+      "roi_percent": 400,
+      "tags": [
+        "react",
+        "vite",
+        "tailwind",
+        "reactflow",
+        "cloudflare-pages",
+        "marketing"
+      ],
+      "created": "2026-05-27",
+      "updated": "2026-05-27",
+      "summary": "Statisk landningssida för Cortxt på cortxt.io. Förklarar produkten, visar pipeline-diagram och samlar waitlist-intresse.",
+      "family": "cns-core",
+      "url_live": "https://cortxt.io",
+      "url_repo": "https://github.com/rian010194/cortxt",
+      "current_slice": "",
+      "problem": "Cortxt saknar en publik webbyta som förklarar vad produkten är, vilket problem den löser och varför en utvecklare ska bry sig. Utan landningssida finns ingen möjlighet att samla intresse, testa budskap eller länka till portföljen.",
+      "solution": "En statisk React-app byggd med Vite, Tailwind och Reactflow. Sektioner: Hero, CNS-förklaring, Pipeline-diagram (Reactflow), Builder-sektion, Stack, Vision och Waitlist-formulär. Deployas till cortxt.io via Cloudflare Pages från cortxt-repot (apps/landing/).",
+      "primary_audience": " Utvecklare och tech leads som söker strukturerade verktyg för AI-assisterad produktutveckling. Potentiella tidiga användare av Cortxt.",
+      "assumptions": [
+        "Budskapet \"Copilot skriver din kod, Cortxt bestämmer vad som är värt att bygga\" resonerar med målgruppen.",
+        "Waitlist-formuläret genererar reella intresseanmälningar från rätt personer.",
+        "Pipeline-diagrammet (Reactflow) kommunicerar systemets komplexitet utan att förvirra.",
+        "cortxt.io som domän upplevs som professionell och minnesvärd."
+      ],
+      "mvp_steps": [
+        "[x] Hypothesis: finns det ett budskap som förklarar Cortxt på ett sätt som resonerar?",
+        "[x] Solution test: bygg och deploya landningssidan, verifiera att den laddas korrekt på cortxt.io.",
+        "[ ] Demand test: samla 10+ waitlist-anmälningar från verkliga utvecklare.",
+        "[ ] Launch: polera copy, lägg till analytics, länka från GitHub-profil och relevanta communities."
+      ],
+      "top_risk": "**Market** (score 2/5): Budskapet kanske inte resonerar med målgruppen — waitlist-anmälningar validerar detta."
+    },
+    {
       "slug": "dev-changelog-engine",
       "title": "Dev Changelog Engine",
       "status": "idea",
@@ -295,7 +375,7 @@
         "changelogs"
       ],
       "created": "2026-05-02",
-      "updated": "2026-05-25",
+      "updated": "2026-05-26",
       "summary": "CLI-verktyg som bevakar externa changelogs och docs för dev-team.",
       "family": "developer-tools",
       "url_live": "",
@@ -322,27 +402,28 @@
     {
       "slug": "project-vault-dashboard",
       "title": "Project Vault Dashboard",
-      "status": "solution_test",
-      "mvp_stage": "early_mvp",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
       "cost_sek": 4500,
       "value_sek": 20000,
       "roi_percent": 344,
       "tags": [
         "portfolio",
         "dashboard",
-        "static-site",
-        "dataviz",
+        "react",
+        "vite",
+        "cloudflare-pages",
         "cns"
       ],
       "created": "2026-05-11",
-      "updated": "2026-05-11",
-      "summary": "Statisk portföljdashboard som visualiserar alla CNS-projekt via JSON-export.",
+      "updated": "2026-05-27",
+      "summary": "React SPA på Cloudflare Pages som visualiserar CNS-portföljen via Railway Flask API. Ersätter vanilla JS GitHub Pages-dashboarden.",
       "family": "cns-core",
-      "url_live": "https://rian010194.github.io/Project-CNS/",
-      "url_repo": "https://github.com/rian010194/Project-CNS",
+      "url_live": "https://cortxt.io",
+      "url_repo": "https://github.com/rian010194/cortxt",
       "current_slice": "",
       "problem": "CNS och Project Vault lever i Markdown och CLI. Det finns ingen lättöverskådlig vy för en utomstående (eller framtida Rikard) att snabbt se vad som byggts, vad det kostat i tid, och vilket värde det levererat. Portföljöversikten kräver idag att man kör terminalkommandon och läser raw-filer.",
-      "solution": "En statisk HTML-dashboard som läser JSON exporterad från CNS och presenterar alla projekt med status, MVP-steg, kostnad/värde/ROI och visuella indikatorer -- utan backend, utan ramverk.",
+      "solution": "En React SPA byggd med Vite, Tailwind och Reactflow som konsumerar Railway Flask API (`/api/projects`, `/api/project/<slug>/full`). Tre vyer: portföljgrid med filter, projektdetalj med renderad Markdown, och Reactflow graph-overlay grupperad per produktfamilj. Deployas till Cloudflare Pages på `cortxt.io` och `app.cortxt.io`. Ersätter den ursprungliga vanilla JS-dashboarden på GitHub Pages.",
       "primary_audience": "",
       "assumptions": [
         "CNS kan exportera ren JSON som är stabil nog att vara enda datakälla.",
