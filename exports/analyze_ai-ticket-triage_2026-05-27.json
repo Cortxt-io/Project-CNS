@@ -1,0 +1,33 @@
+{
+  "slug": "ai-ticket-triage",
+  "analyzed_at": "2026-05-27",
+  "suggestions": {
+    "mvp_stage": "problem_interviews",
+    "status": "idea",
+    "current_slice": "Validera att supportteam faktiskt har problem med manuell triagering och kvantifiera tidsbesparingen",
+    "risks": [
+      {
+        "category": "technical",
+        "description": "AI-modellens noggrannhet vid triagering av varierande ärendetyper och språk kan vara otillräcklig",
+        "score": 3
+      },
+      {
+        "category": "adoption",
+        "description": "Supportteam kan vara skeptiska till AI-beslut och fortsätta manuellt granska alla ärenden",
+        "score": 4
+      },
+      {
+        "category": "market",
+        "description": "Oklar betalningsvilja - triagering uppfattas möjligen som en basfunktion snarare än premiumfunktion",
+        "score": 3
+      },
+      {
+        "category": "ops",
+        "description": "Integration med olika ticketsystem (Zendesk, Freshdesk, Jira etc.) kräver betydande underhåll",
+        "score": 3
+      }
+    ],
+    "summary": "AI-driven automatisk triagering och kategorisering av supportärenden för att minska manuell handläggningstid och förbättra svarstider",
+    "updated_at": "2026-05-27"
+  }
+}
