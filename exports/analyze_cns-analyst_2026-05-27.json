@@ -1,0 +1,14 @@
+{
+  "slug": "cns-analyst",
+  "analyzed_at": "2026-05-27",
+  "suggestions": {
+    "mvp_stage": "hypothesis",
+    "status": "idea",
+    "current_slice": "Verifiera att GPT-4o-mini kan returnera strukturerad JSON med meningsfulla förslag på mvp_stage, risker och ROI genom att testa på ett verkligt CNS-projekt",
+    "roi_percent": 400,
+    "value_sek": 25000,
+    "cost_sek": 5000,
+    "summary": "AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och ROI-estimat per projekt",
+    "updated_at": "2026-05-27"
+  }
+}
