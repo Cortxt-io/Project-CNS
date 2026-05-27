@@ -1,14 +1,13 @@
 # cns-analyst / quests
 
+## 2026-05-27 — Förbättra riskschema med sannolikhet × påverkan
 
-## 2026-05-27 — Validera CNS Analyze med pending-förslag
+**Beskrivning:** Uppdatera CNS-schemat så att risker har `probability`, `impact`, `score` (probability × impact) och `mitigation` istället för en enkel 1-5 score. Uppdatera `project_schema.json`, `validator.py`, `md_parser.py` och `analyst.py`-prompten så Claude returnerar risker i det nya formatet. Uppdatera dashboard för att visa riskpoäng i projektdetaljsidan och Metrics-vyn.
 
-**Beskrivning:** Använd den nyimplementerade 'cns analyze <slug>' för att processa pending förslag för scoring-studio (9 förslag), ai-ticket-triage (6 förslag) och cns-devwatch (5 förslag). Dokumentera hur väl automatiken hanterar bulk-förslag och justera om nödvändigt.
+**Impact:** Gör riskbedömningar meningsfulla och jämförbara mellan projekt. Claude kan ge skarpare riskförslag med motivering. Metrics-vyn kan visa total riskexponering per projekt. Baserat på befintlig Excel-modell (Sannolikhet × Påverkan = Riskpoäng).
 
-**Impact:** Validerar gårdagens implementation och kan potentiellt automatisera granskningsarbetet för 45+ pending förslag över portföljen, vilket sparar flera timmars manuellt arbete
+**Status:** backlog
 
-**Status:** föreslagen
-
-**Källa:** portfolio-brief
+**Källa:** manuell — diskussion om risk-schema 2026-05-27
 
 ---
