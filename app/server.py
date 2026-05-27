@@ -124,7 +124,7 @@ def add_cors_headers(response):
     origin = request.headers.get("Origin", "")
     if origin in ALLOWED_ORIGINS:
         response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+        response.headers["Access-Control-Allow-Methods"] = "GET, POST, PATCH, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
         response.headers["Access-Control-Allow-Credentials"] = "true"
     return response
@@ -1015,6 +1015,54 @@ def api_project_full(slug):
         "project_files": project_files,
         "pending": pending_data,
     })
+
+
+@app.route("/api/project/<slug>", methods=["PATCH"])
+@auth.login_required
+def api_project_update(slug):
+    """Directly update specific fields in a project.md file."""
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Admin required"}), 403
+
+    data = request.get_json()
+    fields = data.get("fields", {})
+
+    if not fields:
+        return jsonify({"status": "error", "message": "fields required"}), 400
+
+    EDITABLE_FIELDS = {
+        "status", "mvp_stage", "current_slice", "summary",
+        "cost_sek", "value_sek", "roi_percent", "url_live", "url_repo", "tags"
+    }
+
+    invalid = set(fields.keys()) - EDITABLE_FIELDS
+    if invalid:
+        return jsonify({"status": "error", "message": f"Fields not editable: {invalid}"}), 400
+
+    try:
+        meta, sections, _ = read_project(slug)
+        new_meta = meta.copy()
+
+        for field, value in fields.items():
+            new_meta[field] = value
+
+        new_meta["updated"] = date.today().isoformat()
+        write_project(slug, new_meta, sections)
+
+        project_md_path = project_path(slug)
+        ok, msg = push_file_immediately(
+            project_md_path,
+            f"cns-vault: update {', '.join(fields.keys())} for {slug}"
+        )
+        if not ok:
+            app.logger.warning("Failed to push project.md for %s: %s", slug, msg)
+
+        return jsonify({"status": "ok", "updated_fields": list(fields.keys())})
+
+    except FileNotFoundError:
+        return jsonify({"status": "error", "message": f"Project '{slug}' not found"}), 404
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
 
 
 # ---------------------------------------------------------------------------

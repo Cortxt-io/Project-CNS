@@ -331,6 +331,23 @@ def run_analyze(
     ai_raw = _call_claude(system_prompt, user_prompt)
     suggestions, reasoning, overall = _parse_response(ai_raw)
 
+    # After parsing suggestions, filter out no-op suggestions
+    try:
+        meta, sections, _ = read_project(slug)
+        filtered_suggestions = {}
+        filtered_reasoning = {}
+        for field, proposed_value in suggestions.items():
+            current_value = meta.get(field)
+            if str(proposed_value).strip() != str(current_value or '').strip():
+                filtered_suggestions[field] = proposed_value
+                if reasoning and field in reasoning:
+                    filtered_reasoning[field] = reasoning[field]
+        suggestions = filtered_suggestions
+        if reasoning:
+            reasoning = filtered_reasoning
+    except Exception:
+        pass  # If we can't read the project, keep all suggestions
+
     if not suggestions:
         console.print("[dim]No suggestions -- project looks up to date.[/dim]")
         return False
