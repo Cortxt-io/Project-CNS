@@ -1,0 +1,32 @@
+{
+  "slug": "cortxt-graph-view",
+  "analyzed_at": "2026-05-27",
+  "suggestions": {
+    "mvp_stage": "solution_test",
+    "current_slice": "Implementera depends_on-fält i CNS-schemat och validera att beroendedata kan läsas in korrekt i dashboard-appen. Verifiera att family-enum-migration är komplett innan graph-layouten byggs.",
+    "risks": [
+      {
+        "category": "technical",
+        "description": "Reactflow automatisk layout med GroupNodes och edges kräver dagre eller liknande layout-algoritm, vilket är icke-trivialt med family-gruppering",
+        "score": 3
+      },
+      {
+        "category": "ops",
+        "description": "Lever i befintligt cortxt-repo, ingen ny infrastruktur krävs",
+        "score": 1
+      },
+      {
+        "category": "adoption",
+        "description": "Osäkert om graph-vyn faktiskt används för att förstå portföljen eller om kortgriden förblir primär navigationsmetod",
+        "score": 2
+      }
+    ],
+    "updated_at": "2026-05-27"
+  },
+  "reasoning": {
+    "mvp_stage": "Projektet bör flyttas från 'hypothesis' till 'solution_test'. Beslutsdokumentet visar att graph-vyn är parkerad tills förutsättningar uppfylls, men MVP-stegen inkluderar 'Solution test: bygg graph-vy med edges'. Detta indikerar att hypotesen (depends_on-fält fungerar) bör valideras först, men nästa naturliga steg är att bygga och testa själva lösningen.",
+    "current_slice": "Projektet saknar current_slice-fält trots att det finns tydliga förutsättningar och beroenden (family-enum-migration, depends_on-schema). En current_slice hjälper till att fokusera på nästa konkreta steg som måste göras innan graph-vyn kan byggas.",
+    "risks": "Lade till 'adoption'-risk eftersom projektet nämner i MVP-stegen 'Demand test: används graph-vyn faktiskt för att förstå portföljen?' Detta är en legitim osäkerhet. Behöll technical och ops från originalet men omformulerade dem för att passa risk-strukturen."
+  },
+  "overall": "Projektet är väl strukturerat med tydliga förutsättningar och avgränsningar. Beslutet att parkera graph-vyn tills depends_on-fält och family-enum-migration är klara är sunt. Nästa steg bör vara att validera depends_on-schemat i CNS (hypothesis-fasen), därefter bygga en första version av graph-vyn med edges (solution_test). ROI på 300% är ambitiös men rimlig för ett visualiseringsverktyg som kan förbättra portföljförståelse. Huvudrisken är adoption – kommer graph-vyn faktiskt användas eller förblir kortgriden primär? Teknisk risk kring layout-algoritm är realistiskt uppskattat på 3/5."
+}
