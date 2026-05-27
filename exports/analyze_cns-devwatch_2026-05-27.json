@@ -1,0 +1,27 @@
+{
+  "slug": "cns-devwatch",
+  "analyzed_at": "2026-05-27",
+  "suggestions": {
+    "mvp_stage": "solution_test",
+    "status": "early_mvp",
+    "current_slice": "Kör skriptet dagligen i en vecka, utvärdera om output speglar faktiskt arbete och är konsumerbart av cns-devlog",
+    "risks": [
+      {
+        "category": "technical",
+        "description": "Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal. Kräver disciplin att committa project.md-ändringar regelbundet",
+        "score": 2
+      },
+      {
+        "category": "ops",
+        "description": "Skriptet måste köras dagligen för att ge värde. Om det inte automatiseras tidigt faller det i glömska",
+        "score": 3
+      },
+      {
+        "category": "adoption",
+        "description": "Output-format måste vara stabilt och användbart – annars konsumeras det aldrig av cns-devlog eller portföljägaren",
+        "score": 2
+      }
+    ],
+    "updated_at": "2026-05-27"
+  }
+}
