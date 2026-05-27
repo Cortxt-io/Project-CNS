@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-05-27T08:01:04Z",
-  "run_id": "20260527_080104",
+  "exported_at": "2026-05-27T10:49:44Z",
+  "run_id": "20260527_104944",
   "baseline": "2026-05-26T07:00:00",
   "events": [
     {
-      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "ai-ticket-triage",
         "name": "AI Ticket Triage",
@@ -14,15 +14,15 @@
         "url": null
       },
       "title": "ai-ticket-triage: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
-      "rawContent": "### assets/README.md\ndiff --git a/projects/ai-ticket-triage/assets/README.md b/projects/ai-ticket-triage/assets/README.md\nnew file mode 100644\nindex 0000000..d4b416f\n--- /dev/null\n+++ b/projects/ai-ticket-triage/assets/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / assets\n+\n+Add assets files here.\n\n\n### notes/README.md\ndiff --git a/projects/ai-ticket-triage/notes/README.md b/projects/ai-ticket-triage/notes/README.md\nnew file mode 100644\nindex 0000000..843e132\n--- /dev/null\n+++ b/projects/ai-ticket-triage/notes/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/projects/ai-ticket-triage/planning/decisions.md b/projects/ai-ticket-triage/planning/decisions.md\nnew file mode 100644\nindex 0000000..2b41feb\n--- /dev/null\n+++ b/projects/ai-ticket-triage/planning/decisions.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/ai-ticket-triage/planning/roadmap.md b/projects/ai-ticket-triage/planning/roadmap.md\nnew file mode 100644\nindex 0000000..8dd9814\n--- /dev/null\n+++ b/projects/ai-ticket-triage/planning/roadmap.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / roadmap\n\n\n### project.md\n## Problem\n+\n\n## Solution\n+\n\n## Target Audience\n+\n\n## Assumptions to Validate\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n\n## Cost Estimate\n+\n\n## Value Estimate\n+\n\n## ROI\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.\n+- **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.\n+\n\n## Timeline\n+\n\n### research/market-notes.md\ndiff --git a/projects/ai-ticket-triage/research/market-notes.md b/projects/ai-ticket-triage/research/market-notes.md\nnew file mode 100644\nindex 0000000..5663191\n--- /dev/null\n+++ b/projects/ai-ticket-triage/research/market-notes.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / market notes\n\n\n### research/sources.md\ndiff --git a/projects/ai-ticket-triage/research/sources.md b/projects/ai-ticket-triage/research/sources.md\nnew file mode 100644\nindex 0000000..00e7ac7\n--- /dev/null\n+++ b/projects/ai-ticket-triage/research/sources.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / sources\n",
+      "rawContent": "### assets/README.md\ndiff --git a/projects/ai-ticket-triage/assets/README.md b/projects/ai-ticket-triage/assets/README.md\nnew file mode 100644\nindex 0000000..d4b416f\n--- /dev/null\n+++ b/projects/ai-ticket-triage/assets/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / assets\n+\n+Add assets files here.\n\n\n### notes/README.md\ndiff --git a/projects/ai-ticket-triage/notes/README.md b/projects/ai-ticket-triage/notes/README.md\nnew file mode 100644\nindex 0000000..843e132\n--- /dev/null\n+++ b/projects/ai-ticket-triage/notes/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/projects/ai-ticket-triage/planning/decisions.md b/projects/ai-ticket-triage/planning/decisions.md\nnew file mode 100644\nindex 0000000..2b41feb\n--- /dev/null\n+++ b/projects/ai-ticket-triage/planning/decisions.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/ai-ticket-triage/planning/roadmap.md b/projects/ai-ticket-triage/planning/roadmap.md\nnew file mode 100644\nindex 0000000..8dd9814\n--- /dev/null\n+++ b/projects/ai-ticket-triage/planning/roadmap.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / roadmap\n\n\n### project.md\n## Problem\n+\n\n## Solution\n+\n\n## Target Audience\n+\n\n## Assumptions to Validate\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n\n## Cost Estimate\n+\n\n## Value Estimate\n+\n\n## ROI\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.\n+\n\n## Timeline\n+\n\n### research/market-notes.md\ndiff --git a/projects/ai-ticket-triage/research/market-notes.md b/projects/ai-ticket-triage/research/market-notes.md\nnew file mode 100644\nindex 0000000..5663191\n--- /dev/null\n+++ b/projects/ai-ticket-triage/research/market-notes.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / market notes\n\n\n### research/sources.md\ndiff --git a/projects/ai-ticket-triage/research/sources.md b/projects/ai-ticket-triage/research/sources.md\nnew file mode 100644\nindex 0000000..00e7ac7\n--- /dev/null\n+++ b/projects/ai-ticket-triage/research/sources.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / sources\n",
       "url": null,
       "kind": "changed",
       "tags": [
         "ai-ticket-triage"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "ai-ticket-triage",
         "project_title": "AI Ticket Triage",
         "changed_fields": [
@@ -85,8 +85,8 @@
       }
     },
     {
-      "id": "devwatch:cns-analyst:416bae0a33bfb0ff:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:cns-analyst:416bae0a33bfb0ff:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "cns-analyst",
         "name": "CNS Analyst",
@@ -105,8 +105,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "cns-analyst",
         "project_title": "CNS Analyst",
         "changed_fields": [
@@ -146,8 +146,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devlog:70843caca0b251d7:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:cns-devlog:70843caca0b251d7:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "cns-devlog",
         "name": "CNS DevLog",
@@ -167,8 +167,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "cns-devlog",
         "project_title": "CNS DevLog",
         "changed_fields": [
@@ -232,8 +232,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "cns-devwatch",
         "name": "CNS DevWatch",
@@ -253,8 +253,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "cns-devwatch",
         "project_title": "CNS DevWatch",
         "changed_fields": [
@@ -318,8 +318,8 @@
       }
     },
     {
-      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "cns-hosting-infra",
         "name": "CNS Hosting Infra",
@@ -338,8 +338,8 @@
         "static"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "cns-hosting-infra",
         "project_title": "CNS Hosting Infra",
         "changed_fields": [
@@ -403,8 +403,8 @@
       }
     },
     {
-      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "cns-vault-app",
         "name": "CNS Vault App",
@@ -424,8 +424,8 @@
         "web"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "cns-vault-app",
         "project_title": "CNS Vault App",
         "changed_fields": [
@@ -491,8 +491,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-dashboard-app:0239f3e51785a17b:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:cortxt-dashboard-app:0239f3e51785a17b:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "cortxt-dashboard-app",
         "name": "Cortxt Dashboard App",
@@ -513,8 +513,8 @@
         "vite"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "cortxt-dashboard-app",
         "project_title": "Cortxt Dashboard App",
         "changed_fields": [
@@ -584,8 +584,98 @@
       }
     },
     {
-      "id": "devwatch:cortxt-landing:498ce1c031868aa2:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:cortxt-graph-view:280a57239e090835:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
+      "source": {
+        "id": "cortxt-graph-view",
+        "name": "Cortxt Graph View",
+        "type": "devwatch",
+        "url": null
+      },
+      "title": "cortxt-graph-view: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+      "rawContent": "### assets/README.md\ndiff --git a/projects/cortxt-graph-view/assets/README.md b/projects/cortxt-graph-view/assets/README.md\nnew file mode 100644\nindex 0000000..b25c6cb\n--- /dev/null\n+++ b/projects/cortxt-graph-view/assets/README.md\n@@ -0,0 +1,3 @@\n+# assets\n+\n+Assets for cortxt-graph-view.\n\n\n### notes/README.md\ndiff --git a/projects/cortxt-graph-view/notes/README.md b/projects/cortxt-graph-view/notes/README.md\nnew file mode 100644\nindex 0000000..1221625\n--- /dev/null\n+++ b/projects/cortxt-graph-view/notes/README.md\n@@ -0,0 +1,3 @@\n+# notes\n+\n+Project notes for cortxt-graph-view.\n\n\n### planning/decisions.md\n## 2026-05-27 — Graph-vy parkerad tills förutsättningar är uppfyllda\n+\n+**Beslut:** Graph-overlayet i cortxt-dashboard-app visar \"Coming soon\" tills depends_on-fält och family-enum-migration är på plats.\n+\n+**Skäl:** En halvfärdig graf utan edges och med trunkerade family-rubriker ger sämre intryck än ingen graf. Förutsättningarna är tydliga och avgränsade.\n\n### planning/roadmap.md\n## v0 — Coming Soon (nu)\n+- Graph-overlay finns i cortxt-dashboard-app\n+- Visar \"Coming soon\"-text med förklaring\n+- Knappen i Nav är synlig men grafen är inte byggd\n+\n\n## v1 — Planerat\n+- depends_on-fält i CNS-schemat\n+- Edges i Reactflow baserade på depends_on\n+- Family-rubriker synliga och icke-trunkerade\n+- Klickbara noder navigerar till projektdetaljsida\n+\n\n## v2 — Framtida\n+- Automatisk layout med dagre eller liknande\n+- Filter i graph-vyn (per family, per status)\n+- Animerade edges för aktiva pipelines\n\n### project.md\n## Problem\n+\n+Kortgriden i cortxt-dashboard-app visar projekt platt utan kontext om hur de hänger ihop. Beroenden som docs-watch → dev-changelog-engine-mini → github-pages är osynliga. Det finns ingen vy som kommunicerar portföljens arkitektur och flöden på ett visuellt sätt.\n+\n\n## Solution\n+\n+En Reactflow-graf i graph-overlayet i cortxt-dashboard-app. Noder grupperade per family, edges baserade på beroendedata i project.md. Klick på nod navigerar till projektdetaljsidan. Kräver att beroenden är maskinläsbara i project.md-schemat och att family-enum-migrationen är klar.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv — för att förstå portföljens struktur och beroenden på ett ögonblick.\n+\n+**Secondary:** Besökare på app.cortxt.io som vill förstå hur projekten hänger ihop.\n+\n\n## Assumptions to Validate\n+\n+- Beroenden i project.md kan representeras som ett enkelt fält (depends_on: [slug1, slug2]) utan att det blir för komplext att underhålla.\n+- Reactflow GroupNode med edges ger faktiskt ett mervärde jämfört med kortgriden för att förstå portföljstrukturen.\n+- Family-enum-migrationen är klar innan graph-vyn byggs ut.\n+\n\n## Why Buy Instead of Build?\n+\n+- En beroendegraf kommunicerar systemarkitektur på ett sätt som text och kortgrid inte kan.\n+- Visualiserar pipelines (docs-watch → changelog-engine → github-pages) på ett sätt som är omedelbart begripligt.\n+\n\n## MVP Steps\n+\n+- [ ] Hypothesis: lägg till depends_on-fält i project.md-schemat och validera att det fungerar i CNS.\n+- [ ] Solution test: bygg graph-vy med edges baserade på depends_on, verifiera att beroendepilarna stämmer.\n+- [ ] Demand test: används graph-vyn faktiskt för att förstå portföljen?\n+- [ ] Launch: stabil graph-vy med edges, family-rubriker synliga, klickbara noder.\n+\n\n## Cost Estimate\n+\n+5 000 SEK (ca 20h x 250 kr/h) — Reactflow edge-implementation, depends_on-schema, layout-algoritm.\n+\n\n## Value Estimate\n+\n+20 000 SEK — visuell kommunikation av portföljarkitektur, professionell presentation, bättre förståelse av beroenden.\n+\n\n## ROI\n+\n+(20 000 - 5 000) / 5 000 = 300%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 3/5): Reactflow automatisk layout med edges kräver en layout-algoritm (dagre eller liknande) — inte trivialt med GroupNodes.\n+- **Ops** (score 1/5): Lever i befintligt cortxt-repo, ingen ny infrastruktur.\n+\n\n## Timeline\n+\n+- Förutsättning 1: family-enum-migration klar i alla project.md-filer.\n+- Förutsättning 2: depends_on-fält tillagt i CNS-schemat och validator.py.\n+- Vecka 1: edges i graph-vy baserade på depends_on.\n+- Vecka 2: layout-algoritm, rubrik-fix, polish.\n+\n\n## Notes\n+\n+Graph-vyn i cortxt-dashboard-app visar idag \"Coming soon\" i overlayet. Byggs ut när förutsättningarna ovan är uppfyllda. Koden för grundläggande Reactflow-overlay finns redan i apps/dashboard/src/components/GraphView.jsx.\n\n### research/README.md\ndiff --git a/projects/cortxt-graph-view/research/README.md b/projects/cortxt-graph-view/research/README.md\nnew file mode 100644\nindex 0000000..9241437\n--- /dev/null\n+++ b/projects/cortxt-graph-view/research/README.md\n@@ -0,0 +1,3 @@\n+# research\n+\n+Research for cortxt-graph-view.\n",
+      "url": null,
+      "kind": "changed",
+      "tags": [
+        "cortxt-graph-view",
+        "dashboard",
+        "graph",
+        "react",
+        "reactflow",
+        "visualization"
+      ],
+      "meta": {
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
+        "slug": "cortxt-graph-view",
+        "project_title": "Cortxt Graph View",
+        "changed_fields": [
+          "cost_sek",
+          "created",
+          "family",
+          "mvp_stage",
+          "roi_percent",
+          "slug",
+          "status",
+          "summary",
+          "tags",
+          "title",
+          "updated",
+          "url_live",
+          "url_repo",
+          "value_sek"
+        ],
+        "changed_files": [
+          {
+            "file": "assets/README.md",
+            "sections": []
+          },
+          {
+            "file": "notes/README.md",
+            "sections": []
+          },
+          {
+            "file": "planning/decisions.md",
+            "sections": [
+              "2026-05-27 — Graph-vy parkerad tills förutsättningar är uppfyllda"
+            ]
+          },
+          {
+            "file": "planning/roadmap.md",
+            "sections": [
+              "v0 — Coming Soon (nu)",
+              "v1 — Planerat",
+              "v2 — Framtida"
+            ]
+          },
+          {
+            "file": "project.md",
+            "sections": [
+              "Assumptions to Validate",
+              "Cost Estimate",
+              "MVP Steps",
+              "Notes",
+              "Problem",
+              "ROI",
+              "Risk Assessment",
+              "Solution",
+              "Target Audience",
+              "Timeline",
+              "Value Estimate",
+              "Why Buy Instead of Build?"
+            ]
+          },
+          {
+            "file": "research/README.md",
+            "sections": []
+          }
+        ],
+        "noise_filtered": false
+      }
+    },
+    {
+      "id": "devwatch:cortxt-landing:498ce1c031868aa2:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "cortxt-landing",
         "name": "Cortxt Landing",
@@ -606,8 +696,8 @@
         "vite"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "cortxt-landing",
         "project_title": "Cortxt Landing",
         "changed_fields": [
@@ -676,8 +766,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine-mini:fc865bd5693d35c4:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:dev-changelog-engine-mini:fc865bd5693d35c4:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "dev-changelog-engine-mini",
         "name": "Dev Changelog Engine Mini",
@@ -696,8 +786,8 @@
         "typescript"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "dev-changelog-engine-mini",
         "project_title": "Dev Changelog Engine Mini",
         "changed_fields": [
@@ -740,8 +830,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "dev-changelog-engine",
         "name": "Dev Changelog Engine",
@@ -756,8 +846,8 @@
         "dev-changelog-engine"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "dev-changelog-engine",
         "project_title": "Dev Changelog Engine",
         "changed_fields": [
@@ -820,8 +910,8 @@
       }
     },
     {
-      "id": "devwatch:docs-watch:0e244806cfb8feee:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:docs-watch:0e244806cfb8feee:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "docs-watch",
         "name": "DocsWatch",
@@ -839,8 +929,8 @@
         "monitoring"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "docs-watch",
         "project_title": "DocsWatch",
         "changed_fields": [
@@ -882,8 +972,8 @@
       }
     },
     {
-      "id": "devwatch:project-vault-dashboard:ca1a1ad4d2156141:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:project-vault-dashboard:ca1a1ad4d2156141:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "project-vault-dashboard",
         "name": "Project Vault Dashboard",
@@ -904,8 +994,8 @@
         "vite"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "project-vault-dashboard",
         "project_title": "Project Vault Dashboard",
         "changed_fields": [
@@ -1018,8 +1108,8 @@
       }
     },
     {
-      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "scoring-studio",
         "name": "Scoring Studio",
@@ -1039,8 +1129,8 @@
         "static-site"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "scoring-studio",
         "project_title": "Scoring Studio",
         "changed_fields": [
@@ -1080,8 +1170,8 @@
       }
     },
     {
-      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "site-change-monitor",
         "name": "site-change-monitor",
@@ -1096,8 +1186,8 @@
         "site-change-monitor"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "site-change-monitor",
         "project_title": "site-change-monitor",
         "changed_fields": [],
@@ -1144,8 +1234,8 @@
       }
     },
     {
-      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "test-interactive",
         "name": "test-interactive",
@@ -1160,8 +1250,8 @@
         "test-interactive"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "test-interactive",
         "project_title": "test-interactive",
         "changed_fields": [],
@@ -1195,8 +1285,8 @@
       }
     },
     {
-      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260527T080104Z",
-      "detectedAt": "2026-05-27T08:01:04Z",
+      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260527T104944Z",
+      "detectedAt": "2026-05-27T10:49:44Z",
       "source": {
         "id": "webhook-router",
         "name": "Webhook Router",
@@ -1215,8 +1305,8 @@
         "webhooks"
       ],
       "meta": {
-        "run_id": "20260527_080104",
-        "run_timestamp": "20260527T080104Z",
+        "run_id": "20260527_104944",
+        "run_timestamp": "20260527T104944Z",
         "slug": "webhook-router",
         "project_title": "Webhook Router",
         "changed_fields": [
@@ -1340,9 +1430,9 @@
     }
   ],
   "meta": {
-    "projects_scanned": 14,
-    "projects_changed": 16,
-    "events_exported": 16,
+    "projects_scanned": 15,
+    "projects_changed": 17,
+    "events_exported": 17,
     "noise_filtered": 0,
     "no_changes": false
   }

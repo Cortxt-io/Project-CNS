@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-27T08:01:04.216575",
+  "exported_at": "2026-05-27T10:49:44.057035",
   "version": "1.0",
   "projects": [
     {
@@ -12,7 +12,7 @@
       "roi_percent": 257,
       "tags": [],
       "created": "2026-05-02",
-      "updated": "2026-05-25",
+      "updated": "2026-05-27",
       "summary": "AI-driven triagering av supportärenden – ännu ej specificerad.",
       "family": "ideas",
       "url_live": "",
@@ -28,8 +28,8 @@
     {
       "slug": "cns-analyst",
       "title": "CNS Analyst",
-      "status": "idea",
-      "mvp_stage": "hypothesis",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
       "cost_sek": 5000,
       "value_sek": 25000,
       "roi_percent": 400,
@@ -40,7 +40,7 @@
         "analysis"
       ],
       "created": "2026-05-25",
-      "updated": "2026-05-25",
+      "updated": "2026-05-27",
       "summary": "AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och ROI-estimat per projekt.",
       "family": "cns-core",
       "url_live": "",
@@ -258,6 +258,44 @@
         "[ ] Launch: stabil deploy, family-enum migrerad, app.cortxt.io custom domain aktiv."
       ],
       "top_risk": "**Technical** (score 2/5): Reactflow GroupNode-layout kräver manuell positionering — kan bli komplex om antalet projekt växer snabbt."
+    },
+    {
+      "slug": "cortxt-graph-view",
+      "title": "Cortxt Graph View",
+      "status": "idea",
+      "mvp_stage": "hypothesis",
+      "cost_sek": 5000,
+      "value_sek": 20000,
+      "roi_percent": 300,
+      "tags": [
+        "react",
+        "reactflow",
+        "dashboard",
+        "graph",
+        "visualization"
+      ],
+      "created": "2026-05-27",
+      "updated": "2026-05-27",
+      "summary": "Interaktiv Reactflow-graf i cortxt-dashboard-app som visualiserar projektberoenden och familjestrukturer med edges och hierarkisk layout.",
+      "family": "cns-core",
+      "url_live": "https://app.cortxt.io",
+      "url_repo": "https://github.com/rian010194/cortxt",
+      "current_slice": "",
+      "problem": "Kortgriden i cortxt-dashboard-app visar projekt platt utan kontext om hur de hänger ihop. Beroenden som docs-watch → dev-changelog-engine-mini → github-pages är osynliga. Det finns ingen vy som kommunicerar portföljens arkitektur och flöden på ett visuellt sätt.",
+      "solution": "En Reactflow-graf i graph-overlayet i cortxt-dashboard-app. Noder grupperade per family, edges baserade på beroendedata i project.md. Klick på nod navigerar till projektdetaljsidan. Kräver att beroenden är maskinläsbara i project.md-schemat och att family-enum-migrationen är klar.",
+      "primary_audience": " Mig själv — för att förstå portföljens struktur och beroenden på ett ögonblick.",
+      "assumptions": [
+        "Beroenden i project.md kan representeras som ett enkelt fält (depends_on: [slug1, slug2]) utan att det blir för komplext att underhålla.",
+        "Reactflow GroupNode med edges ger faktiskt ett mervärde jämfört med kortgriden för att förstå portföljstrukturen.",
+        "Family-enum-migrationen är klar innan graph-vyn byggs ut."
+      ],
+      "mvp_steps": [
+        "[ ] Hypothesis: lägg till depends_on-fält i project.md-schemat och validera att det fungerar i CNS.",
+        "[ ] Solution test: bygg graph-vy med edges baserade på depends_on, verifiera att beroendepilarna stämmer.",
+        "[ ] Demand test: används graph-vyn faktiskt för att förstå portföljen?",
+        "[ ] Launch: stabil graph-vy med edges, family-rubriker synliga, klickbara noder."
+      ],
+      "top_risk": "**Technical** (score 3/5): Reactflow automatisk layout med edges kräver en layout-algoritm (dagre eller liknande) — inte trivialt med GroupNodes."
     },
     {
       "slug": "cortxt-landing",
