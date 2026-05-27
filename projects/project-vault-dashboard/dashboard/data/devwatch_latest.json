@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-05-27T10:49:44Z",
-  "run_id": "20260527_104944",
+  "exported_at": "2026-05-27T16:42:35Z",
+  "run_id": "20260527_164235",
   "baseline": "2026-05-26T07:00:00",
   "events": [
     {
-      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "ai-ticket-triage",
         "name": "AI Ticket Triage",
@@ -21,8 +21,8 @@
         "ai-ticket-triage"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "ai-ticket-triage",
         "project_title": "AI Ticket Triage",
         "changed_fields": [
@@ -85,16 +85,16 @@
       }
     },
     {
-      "id": "devwatch:cns-analyst:416bae0a33bfb0ff:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:cns-analyst:69bb069003ee96ec:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "cns-analyst",
         "name": "CNS Analyst",
         "type": "devwatch",
         "url": null
       },
-      "title": "cns-analyst: project.md",
-      "rawContent": "### project.md\n## Problem\n+\n+CNS-projektfiler uppdateras manuellt och analyseras aldrig automatiskt. MVP-steg, riskbedömningar och ROI-estimat blir inaktuella tyst utan att någon märker det.\n+\n\n## Solution\n+\n+cns analyze <slug> skickar hela project.md till OpenAI och returnerar strukturerade förslag på mvp_stage, current_slice, roi_percent, value_sek, cost_sek, risker och summary. Användaren godkänner eller avvisar i terminalen.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv – portföljägare som vill ha AI-assisterad genomgång av projektfiler utan att lämna terminalen.\n+\n\n## Assumptions to Validate\n+\n+- OpenAI returnerar strukturerad JSON tillräckligt konsekvent för att vara användbar utan manuell korrigering.\n+- Förslag på mvp_stage och risker är meningsfulla nog att faktiskt accepteras, inte bara avvisas.\n+- Flödet känns snabbt nog (< 10 sek) för att användas regelbundet.\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n+- Hypothesis: verifiera att GPT-4o-mini returnerar användbara förslag på ett verkligt projekt.\n+- Solution test: kör cns analyze på 3–5 projekt, utvärdera träffsäkerhet per fält.\n+- Demand test: används analyze faktiskt regelbundet eller är det en one-off?\n+- Launch: stabil implementation med felhantering, ingår i normal CNS-workflow.\n+\n\n## Cost Estimate\n+\n+5 000 SEK – Python-skript, prompt-engineering, felhantering. OpenAI API-kostnad försumbar (< 10 SEK/månad vid manuell användning).\n+\n\n## Value Estimate\n+\n+25 000 SEK – sparad tid från manuell projektanalys, bättre kvalitet på MVP-steg och riskbedömningar, driver bättre prioriteringar.\n+\n\n## ROI\n+\n+(25 000 - 5 000) / 5 000 = 400%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 3/5): LLM-output kan vara inkonsekvent – JSON-parsning måste vara robust med tydlig felhantering.\n+- **Ops** (score 2/5): OpenAI-anrop kostar pengar och tid – bör inte köras automatiskt, alltid manuellt triggat.\n+\n\n## Timeline\n+\n\n## Notes\n+\n+Koden lever i scripts/analyst.py och scripts/file_watcher.py. Inga egna repos. Samma OpenAI-nyckel som devlog.py. Designprincip: AI föreslår, användaren bestämmer.",
+      "title": "cns-analyst: planning/quests.md, project.md",
+      "rawContent": "### planning/quests.md\n## 2026-05-27 — Validera CNS Analyze med pending-förslag\n+\n+**Beskrivning:** Använd den nyimplementerade 'cns analyze <slug>' för att processa pending förslag för scoring-studio (9 förslag), ai-ticket-triage (6 förslag) och cns-devwatch (5 förslag). Dokumentera hur väl automatiken hanterar bulk-förslag och justera om nödvändigt.\n+\n+**Impact:** Validerar gårdagens implementation och kan potentiellt automatisera granskningsarbetet för 45+ pending förslag över portföljen, vilket sparar flera timmars manuellt arbete\n+\n+**Status:** föreslagen\n+\n+**Källa:**\n...[truncated]\n\n### project.md\n## Problem\n+\n+CNS-projektfiler uppdateras manuellt och analyseras aldrig automatiskt. MVP-steg, riskbedömningar och ROI-estimat blir inaktuella tyst utan att någon märker det.\n+\n\n## Solution\n+\n+cns analyze <slug> skickar hela project.md till OpenAI och returnerar strukturerade förslag på mvp_stage, current_slice, roi_percent, value_sek, cost_sek, risker och summary. Användaren godkänner eller avvisar i terminalen.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv – portföljägare som vill ha AI-assisterad genomgång av projektfiler utan att lämna terminalen.\n+\n\n## Assumptions to Validate\n+\n+- OpenAI returnerar strukturerad JSON tillräckligt konsekvent för att vara användbar utan manuell korrigering.\n+- Förslag på mvp_stage och risker är meningsfulla nog att faktiskt accepteras, inte bara avvisas.\n+- Flödet känns snabbt nog (< 10 sek) för att användas regelbundet.\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n+- Hypothesis: verifiera att GPT-4o-mini returnerar användbara förslag på ett verkligt projekt.\n+- Solution test: kör cns analyze på 3–5 projekt, utvärdera träffsäkerhet per fält.\n+- Demand test: används analyze faktiskt regelbundet eller är det en one-off?\n+- Launch: stabil implementation med felhantering, ingår i normal CNS-workflow.\n+\n\n## Cost Estimate\n+\n+5 000 SEK – Python-skript, prompt-engineering, felhantering. OpenAI API-kostnad försumbar (< 10 SEK/månad vid manuell användning).\n+\n\n## Value Estimate\n+\n+25 000 SEK – sparad tid från manuell projektanalys, bättre kvalitet på MVP-steg och riskbedömningar, driver bättre prioriteringar.\n+\n\n## ROI\n+\n+(25 000 - 5 000) / 5 000 = 400%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 3/5): LLM-output kan vara inkonsekvent – JSON-parsning måste vara robust med tydlig felhantering.\n+- **Ops** (score 2/5): OpenAI-anrop kostar pengar och tid – bör inte köras automatiskt, alltid manuellt triggat.\n+\n\n## Timeline\n+\n\n## Notes\n+\n+Koden lever i scripts/analyst.py och scripts/file_watcher.py. Inga egna repos. Samma OpenAI-nyckel som devlog.py. Designprincip: AI föreslår, användaren bestämmer.",
       "url": null,
       "kind": "changed",
       "tags": [
@@ -105,8 +105,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "cns-analyst",
         "project_title": "CNS Analyst",
         "changed_fields": [
@@ -124,6 +124,12 @@
           "value_sek"
         ],
         "changed_files": [
+          {
+            "file": "planning/quests.md",
+            "sections": [
+              "2026-05-27 — Validera CNS Analyze med pending-förslag"
+            ]
+          },
           {
             "file": "project.md",
             "sections": [
@@ -146,8 +152,90 @@
       }
     },
     {
-      "id": "devwatch:cns-devlog:70843caca0b251d7:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:cns-brief:5da14ce4dad5b771:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
+      "source": {
+        "id": "cns-brief",
+        "name": "CNS Brief",
+        "type": "devwatch",
+        "url": null
+      },
+      "title": "cns-brief: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+      "rawContent": "### assets/README.md\ndiff --git a/projects/cns-brief/assets/README.md b/projects/cns-brief/assets/README.md\nnew file mode 100644\nindex 0000000..258bc9b\n--- /dev/null\n+++ b/projects/cns-brief/assets/README.md\n@@ -0,0 +1,3 @@\n+# Assets\n+\n+Design assets, screenshots, and other files for CNS Brief.\n\n\n### notes/README.md\ndiff --git a/projects/cns-brief/notes/README.md b/projects/cns-brief/notes/README.md\nnew file mode 100644\nindex 0000000..6e1d244\n--- /dev/null\n+++ b/projects/cns-brief/notes/README.md\n@@ -0,0 +1,3 @@\n+# Notes\n+\n+Implementation notes for CNS Brief.\n\n\n### planning/decisions.md\ndiff --git a/projects/cns-brief/planning/decisions.md b/projects/cns-brief/planning/decisions.md\nnew file mode 100644\nindex 0000000..e7fc8d1\n--- /dev/null\n+++ b/projects/cns-brief/planning/decisions.md\n@@ -0,0 +1,3 @@\n+# Decisions\n+\n+Key technical and product decisions for CNS Brief.\n\n\n### planning/roadmap.md\n## Current\n+- [x] Basic brief generation with portfolio context\n+- [x] Integration with cortxt dashboard\n+- [x] Devwatch + devlog context from GitHub\n+- [x] Push quest to planning\n+\n\n## Next\n+- [ ] Daily usage tracking\n+- [ ] MCP integration for agent consumption\n+- [ ] Historical brief archive\n\n### project.md\n## Problem\n+\n+Portföljen har många projekt men inget system för att varje morgon veta vad som är viktigast att göra. Beslut fattas intuitivt utan att ta hänsyn till beroenden, pending förslag eller vad som faktiskt hände igår.\n+\n\n## Solution\n+\n+portfolio_brief.py konsumerar hela portföljens data (project.md-filer, senaste devwatch-events, devlog-sammanfattning och pending AI-förslag) och skickar det till Claude som returnerar en strukturerad brief med situation, prioriteringar, blockers och ett konkret questförslag. Exponeras via /api/brief i Flask och visas som startsida i cortxt-dashboard-appen.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv — portföljägare som vill starta varje dag med ett tydligt beslut istället för att orientera sig manuellt.\n+\n\n## Assumptions to Validate\n+\n+- Claude kan ge meningsfulla handlingsbara prioriteringar baserat på portföljdata + devwatch + devlog.\n+- Quest-förslagen är relevanta nog att faktiskt användas som underlag för Qoder-prompts.\n+- \"Visa underlag\"-funktionen ger tillräcklig transparens för att lita på brief:en.\n+- Daglig användning av brief:en minskar tid på orientering och ökar fokus på execution.\n+\n\n## Why Buy Instead of Build?\n+\n+- En AI-driven portföljbrief kan se beroenden och mönster som är svåra att se manuellt.\n+- Eliminerar den dagliga orienteringsfasen — direkt till beslut och execution.\n+- Grunden för framtida MCP-integration där agenter kan konsumera brief:en direkt.\n+\n\n## MVP Steps\n+\n+- [x] Hypothesis: portfolio_brief.py kan generera en brief med situation, prioriteringar och questförslag.\n+- [x] Solution test: brief:en visas som startsida i cortxt-dashboard och genereras on-demand.\n+- [ ] Demand test: används brief:en faktiskt varje morgon för att fatta beslut?\n+- [ ] Launch: brief:en inkluderar devlog + devwatch som kontext, push-till-planning fungerar, underlag visas.\n+\n\n## Cost Estimate\n+\n+3 000 SEK (ca 12h × 250 kr/h) — portfolio_brief.py\n\n### research/README.md\ndiff --git a/projects/cns-brief/research/README.md b/projects/cns-brief/research/README.md\nnew file mode 100644\nindex 0000000..21cf325\n--- /dev/null\n+++ b/projects/cns-brief/research/README.md\n@@ -0,0 +1,3 @@\n+# Research\n+\n+Research and references for CNS Brief.\n",
+      "url": null,
+      "kind": "changed",
+      "tags": [
+        "claude",
+        "cns-brief",
+        "dashboard",
+        "decision-support",
+        "portfolio",
+        "python"
+      ],
+      "meta": {
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
+        "slug": "cns-brief",
+        "project_title": "CNS Brief",
+        "changed_fields": [
+          "cost_sek",
+          "created",
+          "family",
+          "mvp_stage",
+          "roi_percent",
+          "slug",
+          "status",
+          "summary",
+          "tags",
+          "title",
+          "updated",
+          "url_live",
+          "url_repo",
+          "value_sek"
+        ],
+        "changed_files": [
+          {
+            "file": "assets/README.md",
+            "sections": []
+          },
+          {
+            "file": "notes/README.md",
+            "sections": []
+          },
+          {
+            "file": "planning/decisions.md",
+            "sections": []
+          },
+          {
+            "file": "planning/roadmap.md",
+            "sections": [
+              "Current",
+              "Next"
+            ]
+          },
+          {
+            "file": "project.md",
+            "sections": [
+              "Assumptions to Validate",
+              "Cost Estimate",
+              "MVP Steps",
+              "Problem",
+              "Solution",
+              "Target Audience",
+              "Why Buy Instead of Build?"
+            ]
+          },
+          {
+            "file": "research/README.md",
+            "sections": []
+          }
+        ],
+        "noise_filtered": false
+      }
+    },
+    {
+      "id": "devwatch:cns-devlog:70843caca0b251d7:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "cns-devlog",
         "name": "CNS DevLog",
@@ -167,8 +255,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "cns-devlog",
         "project_title": "CNS DevLog",
         "changed_fields": [
@@ -232,8 +320,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "cns-devwatch",
         "name": "CNS DevWatch",
@@ -241,7 +329,7 @@
         "url": null
       },
       "title": "cns-devwatch: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
-      "rawContent": "### assets/README.md\ndiff --git a/projects/cns-devwatch/assets/README.md b/projects/cns-devwatch/assets/README.md\nnew file mode 100644\nindex 0000000..1c5aed1\n--- /dev/null\n+++ b/projects/cns-devwatch/assets/README.md\n@@ -0,0 +1,3 @@\n+# cns-devwatch / assets\n+\n+Add assets files here.\n\n\n### notes/README.md\ndiff --git a/projects/cns-devwatch/notes/README.md b/projects/cns-devwatch/notes/README.md\nnew file mode 100644\nindex 0000000..8ab4519\n--- /dev/null\n+++ b/projects/cns-devwatch/notes/README.md\n@@ -0,0 +1,3 @@\n+# cns-devwatch / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/projects/cns-devwatch/planning/decisions.md b/projects/cns-devwatch/planning/decisions.md\nnew file mode 100644\nindex 0000000..66d747a\n--- /dev/null\n+++ b/projects/cns-devwatch/planning/decisions.md\n@@ -0,0 +1 @@\n+# cns-devwatch / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/cns-devwatch/planning/roadmap.md b/projects/cns-devwatch/planning/roadmap.md\nnew file mode 100644\nindex 0000000..4fbad38\n--- /dev/null\n+++ b/projects/cns-devwatch/planning/roadmap.md\n@@ -0,0 +1 @@\n+# cns-devwatch / roadmap\n\n\n### project.md\n## Problem\n+\n+CNS har ingen automatisk vy över vad som ändrats i egna project.md-filer dag för dag.\n+\n\n## Solution\n+\n+Git diff-baserad bevakning av project.md-filer som detekterar och exporterar portföljändringar dagligen.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv - portföljägare som vill ha intern monitoring utan manuell genomgång.\n+\n\n## Assumptions to Validate\n+\n+- Git diff på project.md-filer ger tillräcklig signal om vad som faktiskt förändrats i portföljarbetet.\n+- Daglig körning är rätt kadens – varken för frekvent (brus) eller för sällan (förlorad kontext).\n+- Diff-output är strukturerad nog att cns-devlog kan konsumera den utan manuell bearbetning.\n+- En portföljägare med 5–10 aktiva projekt behöver inte mer än filnivå-diff för att förstå vad som hänt.\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n+- Hypothesis: verifiera att git log + diff på projects/-mappen ger meningsfull daglig signal.\n+- Solution test: kör skriptet dagligen i en vecka, utvärdera om output speglar vad som faktiskt gjordes.\n+- Demand test: kontrollera om output faktiskt används som input till cns-devlog eller ignoreras.\n+- Launch: schemalägg via GitHub Actions eller cron, integrera med cns-devlog-pipeline.\n+\n\n## Cost Estimate\n+\n+Uppskattat till 3 000 SEK – enbart utvecklingstid för ett internt Python-skript. Ingen infrastruktur, inga licenser.\n+\n\n## Value Estimate\n+\n+Uppskattat till 10 000 SEK – sparad tid från manuell genomgång av projektfiler, plus ökad synlighet som driver bättre prioriteringar.\n+\n\n## ROI\n+\n+(10 000 - 3 000) / 3 000 = 233%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal. Kräver disciplin att committa project.md-ändringar regelbundet.\n+- **Ops** (score 3/5): Skriptet måste köras dagligen för att ge värde. Om det inte automatiseras tidigt faller det i glömska.\n+- **Ops** (score 2/5): Output-format måste vara stabilt från dag ett – annars bryts cns-devlog-integrationen vid minsta ändring.\n+\n\n## Timeline\n+\n+- Vecka 1: Implementera git diff-logik, filtrera på projects/-mappen, exportera till JSON.\n+- Vecka 2: Kör dagligen manuellt, utvärdera signal vs brus. Justera filter.\n+- Vecka 3: Koppla output till cns-devlog (även om devlog inte är klar – definiera kontraktet).\n+- Vecka 4: Automatisera via cron eller GitHub Actions. Dokumentera i Notes.\n+\n\n## Notes\n+\n+Koden lever i prompt-cns/scripts/ tills vidare – inget eget repo. Hårt beroende: CNS-repot måste vara ett git-repo med regelbunden commit-historik på project.md-filer. Utan commits ingen diff, utan diff inget värde.\n+\n+Testar att lägga till en rad\n\n### research/market-notes.md\ndiff --git a/projects/cns-devwatch/research/market-notes.md b/projects/cns-devwatch/research/market-notes.md\nnew file mode 100644\nindex 0000000..ca3fe13\n--- /dev/null\n+++ b/projects/cns-devwatch/research/market-notes.md\n@@ -0,0 +1 @@\n+# cns-devwatch / market notes\n\n\n### research/sources.md\ndiff --git a/projects/cns-devwatch/research/sources.md b/projects/cns-devwatch/research/sources.md\nnew file mode 100644\nindex 0000000..f3e0770\n--- /dev/null\n+++ b/projects/cns-devwatch/research/sources.md\n@@ -0,0 +1 @@\n+# cns-devwatch / sources\n",
+      "rawContent": "### assets/README.md\ndiff --git a/projects/cns-devwatch/assets/README.md b/projects/cns-devwatch/assets/README.md\nnew file mode 100644\nindex 0000000..1c5aed1\n--- /dev/null\n+++ b/projects/cns-devwatch/assets/README.md\n@@ -0,0 +1,3 @@\n+# cns-devwatch / assets\n+\n+Add assets files here.\n\n\n### notes/README.md\ndiff --git a/projects/cns-devwatch/notes/README.md b/projects/cns-devwatch/notes/README.md\nnew file mode 100644\nindex 0000000..8ab4519\n--- /dev/null\n+++ b/projects/cns-devwatch/notes/README.md\n@@ -0,0 +1,3 @@\n+# cns-devwatch / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/projects/cns-devwatch/planning/decisions.md b/projects/cns-devwatch/planning/decisions.md\nnew file mode 100644\nindex 0000000..66d747a\n--- /dev/null\n+++ b/projects/cns-devwatch/planning/decisions.md\n@@ -0,0 +1 @@\n+# cns-devwatch / decisions\n\n\n### planning/roadmap.md\ndiff --git a/projects/cns-devwatch/planning/roadmap.md b/projects/cns-devwatch/planning/roadmap.md\nnew file mode 100644\nindex 0000000..4fbad38\n--- /dev/null\n+++ b/projects/cns-devwatch/planning/roadmap.md\n@@ -0,0 +1 @@\n+# cns-devwatch / roadmap\n\n\n### project.md\n## Problem\n+\n+CNS har ingen automatisk vy över vad som ändrats i egna project.md-filer dag för dag.\n+\n\n## Solution\n+\n+Git diff-baserad bevakning av project.md-filer som detekterar och exporterar portföljändringar dagligen.\n+\n\n## Target Audience\n+\n+**Primary:** Mig själv - portföljägare som vill ha intern monitoring utan manuell genomgång.\n+\n\n## Assumptions to Validate\n+\n+- Git diff på project.md-filer ger tillräcklig signal om vad som faktiskt förändrats i portföljarbetet.\n+- Daglig körning är rätt kadens – varken för frekvent (brus) eller för sällan (förlorad kontext).\n+- Diff-output är strukturerad nog att cns-devlog kan konsumera den utan manuell bearbetning.\n+- En portföljägare med 5–10 aktiva projekt behöver inte mer än filnivå-diff för att förstå vad som hänt.\n+\n\n## Why Buy Instead of Build?\n+\n\n## MVP Steps\n+\n+- Hypothesis: verifiera att git log + diff på projects/-mappen ger meningsfull daglig signal.\n+- Solution test: kör skriptet dagligen i en vecka, utvärdera om output speglar vad som faktiskt gjordes.\n+- Demand test: kontrollera om output faktiskt används som input till cns-devlog eller ignoreras.\n+- Launch: schemalägg via GitHub Actions eller cron, integrera med cns-devlog-pipeline.\n+\n\n## Cost Estimate\n+\n+Uppskattat till 3 000 SEK – enbart utvecklingstid för ett internt Python-skript. Ingen infrastruktur, inga licenser.\n+\n\n## Value Estimate\n+\n+Uppskattat till 10 000 SEK – sparad tid från manuell genomgång av projektfiler, plus ökad synlighet som driver bättre prioriteringar.\n+\n\n## ROI\n+\n+(10 000 - 3 000) / 3 000 = 233%\n+\n\n## Risk Assessment\n+\n+- **Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal.\n+- **Ops** (score 3/5): Skriptet måste köras dagligen för att ge värde. Om det inte automatiseras tidigt faller det i glömska.\n+- **Ops** (score 2/5): Output-format måste vara stabilt från dag ett – annars bryts cns-devlog-integrationen vid minsta ändring.\n+\n\n## Timeline\n+\n+- Vecka 1: Implementera git diff-logik, filtrera på projects/-mappen, exportera till JSON.\n+- Vecka 2: Kör dagligen manuellt, utvärdera signal vs brus. Justera filter.\n+- Vecka 3: Koppla output till cns-devlog (även om devlog inte är klar – definiera kontraktet).\n+- Vecka 4: Automatisera via cron eller GitHub Actions. Dokumentera i Notes.\n+\n\n## Notes\n+\n+Koden lever i prompt-cns/scripts/ tills vidare – inget eget repo. Hårt beroende: CNS-repot måste vara ett git-repo med regelbunden commit-historik på project.md-filer. Utan commits ingen diff, utan diff inget värde.\n+\n+Testar att lägga till en rad\n\n### research/market-notes.md\ndiff --git a/projects/cns-devwatch/research/market-notes.md b/projects/cns-devwatch/research/market-notes.md\nnew file mode 100644\nindex 0000000..ca3fe13\n--- /dev/null\n+++ b/projects/cns-devwatch/research/market-notes.md\n@@ -0,0 +1 @@\n+# cns-devwatch / market notes\n\n\n### research/sources.md\ndiff --git a/projects/cns-devwatch/research/sources.md b/projects/cns-devwatch/research/sources.md\nnew file mode 100644\nindex 0000000..f3e0770\n--- /dev/null\n+++ b/projects/cns-devwatch/research/sources.md\n@@ -0,0 +1 @@\n+# cns-devwatch / sources\n",
       "url": null,
       "kind": "changed",
       "tags": [
@@ -253,13 +341,14 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "cns-devwatch",
         "project_title": "CNS DevWatch",
         "changed_fields": [
           "cost_sek",
           "created",
+          "current_slice",
           "family",
           "mvp_stage",
           "roi_percent",
@@ -318,8 +407,8 @@
       }
     },
     {
-      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "cns-hosting-infra",
         "name": "CNS Hosting Infra",
@@ -338,8 +427,8 @@
         "static"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "cns-hosting-infra",
         "project_title": "CNS Hosting Infra",
         "changed_fields": [
@@ -403,8 +492,8 @@
       }
     },
     {
-      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "cns-vault-app",
         "name": "CNS Vault App",
@@ -424,8 +513,8 @@
         "web"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "cns-vault-app",
         "project_title": "CNS Vault App",
         "changed_fields": [
@@ -491,8 +580,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-dashboard-app:0239f3e51785a17b:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:cortxt-dashboard-app:0239f3e51785a17b:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "cortxt-dashboard-app",
         "name": "Cortxt Dashboard App",
@@ -513,8 +602,8 @@
         "vite"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "cortxt-dashboard-app",
         "project_title": "Cortxt Dashboard App",
         "changed_fields": [
@@ -584,8 +673,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-graph-view:280a57239e090835:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:cortxt-graph-view:280a57239e090835:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "cortxt-graph-view",
         "name": "Cortxt Graph View",
@@ -605,8 +694,8 @@
         "visualization"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "cortxt-graph-view",
         "project_title": "Cortxt Graph View",
         "changed_fields": [
@@ -674,8 +763,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-landing:498ce1c031868aa2:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:cortxt-landing:498ce1c031868aa2:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "cortxt-landing",
         "name": "Cortxt Landing",
@@ -696,8 +785,8 @@
         "vite"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "cortxt-landing",
         "project_title": "Cortxt Landing",
         "changed_fields": [
@@ -766,8 +855,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine-mini:fc865bd5693d35c4:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:dev-changelog-engine-mini:fc865bd5693d35c4:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "dev-changelog-engine-mini",
         "name": "Dev Changelog Engine Mini",
@@ -786,8 +875,8 @@
         "typescript"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "dev-changelog-engine-mini",
         "project_title": "Dev Changelog Engine Mini",
         "changed_fields": [
@@ -830,8 +919,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "dev-changelog-engine",
         "name": "Dev Changelog Engine",
@@ -846,8 +935,8 @@
         "dev-changelog-engine"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "dev-changelog-engine",
         "project_title": "Dev Changelog Engine",
         "changed_fields": [
@@ -910,8 +999,8 @@
       }
     },
     {
-      "id": "devwatch:docs-watch:0e244806cfb8feee:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:docs-watch:0e244806cfb8feee:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "docs-watch",
         "name": "DocsWatch",
@@ -929,8 +1018,8 @@
         "monitoring"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "docs-watch",
         "project_title": "DocsWatch",
         "changed_fields": [
@@ -972,8 +1061,8 @@
       }
     },
     {
-      "id": "devwatch:project-vault-dashboard:ca1a1ad4d2156141:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:project-vault-dashboard:ca1a1ad4d2156141:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "project-vault-dashboard",
         "name": "Project Vault Dashboard",
@@ -994,8 +1083,8 @@
         "vite"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "project-vault-dashboard",
         "project_title": "Project Vault Dashboard",
         "changed_fields": [
@@ -1108,8 +1197,8 @@
       }
     },
     {
-      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "scoring-studio",
         "name": "Scoring Studio",
@@ -1129,8 +1218,8 @@
         "static-site"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "scoring-studio",
         "project_title": "Scoring Studio",
         "changed_fields": [
@@ -1170,8 +1259,8 @@
       }
     },
     {
-      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "site-change-monitor",
         "name": "site-change-monitor",
@@ -1186,8 +1275,8 @@
         "site-change-monitor"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "site-change-monitor",
         "project_title": "site-change-monitor",
         "changed_fields": [],
@@ -1234,8 +1323,8 @@
       }
     },
     {
-      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "test-interactive",
         "name": "test-interactive",
@@ -1250,8 +1339,8 @@
         "test-interactive"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "test-interactive",
         "project_title": "test-interactive",
         "changed_fields": [],
@@ -1285,8 +1374,8 @@
       }
     },
     {
-      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260527T104944Z",
-      "detectedAt": "2026-05-27T10:49:44Z",
+      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260527T164235Z",
+      "detectedAt": "2026-05-27T16:42:35Z",
       "source": {
         "id": "webhook-router",
         "name": "Webhook Router",
@@ -1305,8 +1394,8 @@
         "webhooks"
       ],
       "meta": {
-        "run_id": "20260527_104944",
-        "run_timestamp": "20260527T104944Z",
+        "run_id": "20260527_164235",
+        "run_timestamp": "20260527T164235Z",
         "slug": "webhook-router",
         "project_title": "Webhook Router",
         "changed_fields": [
@@ -1430,9 +1519,9 @@
     }
   ],
   "meta": {
-    "projects_scanned": 15,
-    "projects_changed": 17,
-    "events_exported": 17,
+    "projects_scanned": 16,
+    "projects_changed": 18,
+    "events_exported": 18,
     "noise_filtered": 0,
     "no_changes": false
   }

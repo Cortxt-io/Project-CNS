@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-27T10:49:44.057035",
+  "exported_at": "2026-05-27T16:42:35.614942",
   "version": "1.0",
   "projects": [
     {
@@ -63,10 +63,49 @@
       "top_risk": "**Technical** (score 3/5): LLM-output kan vara inkonsekvent – JSON-parsning måste vara robust med tydlig felhantering."
     },
     {
+      "slug": "cns-brief",
+      "title": "CNS Brief",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
+      "cost_sek": 3000,
+      "value_sek": 20000,
+      "roi_percent": 567,
+      "tags": [
+        "python",
+        "claude",
+        "portfolio",
+        "decision-support",
+        "dashboard"
+      ],
+      "created": "2026-05-27",
+      "updated": "2026-05-27",
+      "summary": "AI-driven portföljbrief som analyserar hela portföljen och föreslår dagens quest och prioriteringar baserat på devwatch, devlog och pending AI-förslag.",
+      "family": "cns-core",
+      "url_live": "https://app.cortxt.io",
+      "url_repo": "https://github.com/rian010194/Project-CNS",
+      "current_slice": "",
+      "problem": "Portföljen har många projekt men inget system för att varje morgon veta vad som är viktigast att göra. Beslut fattas intuitivt utan att ta hänsyn till beroenden, pending förslag eller vad som faktiskt hände igår.",
+      "solution": "portfolio_brief.py konsumerar hela portföljens data (project.md-filer, senaste devwatch-events, devlog-sammanfattning och pending AI-förslag) och skickar det till Claude som returnerar en strukturerad brief med situation, prioriteringar, blockers och ett konkret questförslag. Exponeras via /api/brief i Flask och visas som startsida i cortxt-dashboard-appen.",
+      "primary_audience": " Mig själv — portföljägare som vill starta varje dag med ett tydligt beslut istället för att orientera sig manuellt.",
+      "assumptions": [
+        "Claude kan ge meningsfulla handlingsbara prioriteringar baserat på portföljdata + devwatch + devlog.",
+        "Quest-förslagen är relevanta nog att faktiskt användas som underlag för Qoder-prompts.",
+        "\"Visa underlag\"-funktionen ger tillräcklig transparens för att lita på brief:en.",
+        "Daglig användning av brief:en minskar tid på orientering och ökar fokus på execution."
+      ],
+      "mvp_steps": [
+        "[x] Hypothesis: portfolio_brief.py kan generera en brief med situation, prioriteringar och questförslag.",
+        "[x] Solution test: brief:en visas som startsida i cortxt-dashboard och genereras on-demand.",
+        "[ ] Demand test: används brief:en faktiskt varje morgon för att fatta beslut?",
+        "[ ] Launch: brief:en inkluderar devlog + devwatch som kontext, push-till-planning fungerar, underlag visas."
+      ],
+      "top_risk": ""
+    },
+    {
       "slug": "cns-devlog",
       "title": "CNS DevLog",
-      "status": "idea",
-      "mvp_stage": "hypothesis",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
       "cost_sek": 4000,
       "value_sek": 15000,
       "roi_percent": 275,
@@ -78,7 +117,7 @@
         "python"
       ],
       "created": "2026-05-20",
-      "updated": "2026-05-20",
+      "updated": "2026-05-27",
       "summary": "Genererar daglig AI-sammanfattning av portföljförändringar, publicerad som statisk sida.",
       "family": "internal-monitoring",
       "url_live": "",
@@ -104,8 +143,8 @@
     {
       "slug": "cns-devwatch",
       "title": "CNS DevWatch",
-      "status": "idea",
-      "mvp_stage": "hypothesis",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
       "cost_sek": 3000,
       "value_sek": 10000,
       "roi_percent": 233,
@@ -117,12 +156,12 @@
         "python"
       ],
       "created": "2026-05-20",
-      "updated": "2026-05-20",
+      "updated": "2026-05-27",
       "summary": "Bevakar dagliga git-ändringar i project.md-filer och exporterar dem som ChangeEvents.",
       "family": "internal-monitoring",
       "url_live": "",
       "url_repo": "",
-      "current_slice": "",
+      "current_slice": "Kör skriptet dagligen i en vecka och utvärdera signal vs brus.",
       "problem": "CNS har ingen automatisk vy över vad som ändrats i egna project.md-filer dag för dag.",
       "solution": "Git diff-baserad bevakning av project.md-filer som detekterar och exporterar portföljändringar dagligen.",
       "primary_audience": " Mig själv - portföljägare som vill ha intern monitoring utan manuell genomgång.",
@@ -138,7 +177,7 @@
         "Demand test: kontrollera om output faktiskt används som input till cns-devlog eller ignoreras.",
         "Launch: schemalägg via GitHub Actions eller cron, integrera med cns-devlog-pipeline."
       ],
-      "top_risk": "**Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal. Kräver disciplin att committa project.md-ändringar regelbundet."
+      "top_risk": "**Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal."
     },
     {
       "slug": "cns-hosting-infra",
