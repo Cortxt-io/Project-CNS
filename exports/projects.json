@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-27T10:49:53.984608",
+  "exported_at": "2026-05-27T10:57:54.877017",
   "version": "1.0",
   "projects": [
     {
@@ -104,8 +104,8 @@
     {
       "slug": "cns-devwatch",
       "title": "CNS DevWatch",
-      "status": "idea",
-      "mvp_stage": "hypothesis",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
       "cost_sek": 3000,
       "value_sek": 10000,
       "roi_percent": 233,
@@ -117,12 +117,12 @@
         "python"
       ],
       "created": "2026-05-20",
-      "updated": "2026-05-20",
+      "updated": "2026-05-27",
       "summary": "Bevakar dagliga git-ändringar i project.md-filer och exporterar dem som ChangeEvents.",
       "family": "internal-monitoring",
       "url_live": "",
       "url_repo": "",
-      "current_slice": "",
+      "current_slice": "Kör skriptet dagligen i en vecka och utvärdera signal vs brus.",
       "problem": "CNS har ingen automatisk vy över vad som ändrats i egna project.md-filer dag för dag.",
       "solution": "Git diff-baserad bevakning av project.md-filer som detekterar och exporterar portföljändringar dagligen.",
       "primary_audience": " Mig själv - portföljägare som vill ha intern monitoring utan manuell genomgång.",
@@ -138,7 +138,7 @@
         "Demand test: kontrollera om output faktiskt används som input till cns-devlog eller ignoreras.",
         "Launch: schemalägg via GitHub Actions eller cron, integrera med cns-devlog-pipeline."
       ],
-      "top_risk": "**Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal. Kräver disciplin att committa project.md-ändringar regelbundet."
+      "top_risk": "**Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal."
     },
     {
       "slug": "cns-hosting-infra",
