@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-27T10:38:14.192111",
+  "exported_at": "2026-05-27T10:49:53.984608",
   "version": "1.0",
   "projects": [
     {
@@ -12,7 +12,7 @@
       "roi_percent": 257,
       "tags": [],
       "created": "2026-05-02",
-      "updated": "2026-05-25",
+      "updated": "2026-05-27",
       "summary": "AI-driven triagering av supportärenden – ännu ej specificerad.",
       "family": "ideas",
       "url_live": "",
@@ -28,8 +28,8 @@
     {
       "slug": "cns-analyst",
       "title": "CNS Analyst",
-      "status": "idea",
-      "mvp_stage": "hypothesis",
+      "status": "early_mvp",
+      "mvp_stage": "solution_test",
       "cost_sek": 5000,
       "value_sek": 25000,
       "roi_percent": 400,
@@ -40,7 +40,7 @@
         "analysis"
       ],
       "created": "2026-05-25",
-      "updated": "2026-05-25",
+      "updated": "2026-05-27",
       "summary": "AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och ROI-estimat per projekt.",
       "family": "cns-core",
       "url_live": "",
