@@ -1,30 +1,31 @@
 ---
 cost_sek: 4500
 created: '2026-05-11'
-mvp_stage: early_mvp
+mvp_stage: solution_test
 roi_percent: 344
 slug: project-vault-dashboard
-status: solution_test
+status: early_mvp
 tags:
 - portfolio
 - dashboard
-- static-site
-- dataviz
+- react
+- vite
+- cloudflare-pages
 - cns
 title: Project Vault Dashboard
-updated: '2026-05-11'
+updated: '2026-05-27'
 value_sek: 20000
-summary: Statisk portföljdashboard som visualiserar alla CNS-projekt via JSON-export.
+summary: React SPA på Cloudflare Pages som visualiserar CNS-portföljen via Railway Flask API. Ersätter vanilla JS GitHub Pages-dashboarden.
 family: cns-core
-url_repo: https://github.com/rian010194/Project-CNS
-url_live: https://rian010194.github.io/Project-CNS/
+url_repo: https://github.com/rian010194/cortxt
+url_live: https://cortxt.io
 ---
 
 ## Problem
 CNS och Project Vault lever i Markdown och CLI. Det finns ingen lättöverskådlig vy för en utomstående (eller framtida Rikard) att snabbt se vad som byggts, vad det kostat i tid, och vilket värde det levererat. Portföljöversikten kräver idag att man kör terminalkommandon och läser raw-filer.
 
 ## Solution
-En statisk HTML-dashboard som läser JSON exporterad från CNS och presenterar alla projekt med status, MVP-steg, kostnad/värde/ROI och visuella indikatorer -- utan backend, utan ramverk.
+En React SPA byggd med Vite, Tailwind och Reactflow som konsumerar Railway Flask API (`/api/projects`, `/api/project/<slug>/full`). Tre vyer: portföljgrid med filter, projektdetalj med renderad Markdown, och Reactflow graph-overlay grupperad per produktfamilj. Deployas till Cloudflare Pages på `cortxt.io` och `app.cortxt.io`. Ersätter den ursprungliga vanilla JS-dashboarden på GitHub Pages.
 
 ## Target Audience
 **Primärt:** Framtida arbetsgivare och kunder som besöker portföljen och vill se vad som byggts, till vilken kostnad, och med vilket resultat.
@@ -95,4 +96,4 @@ Primära risker:
 - Vecka 3: Detaljvy + README + deploy.
 
 ## Notes
-Fokusera på att dashboarden är ett lättviktigt fönster mot CNS-datan -- inte en ny produkt. Håll stacken minimal: ingen bundler, inget ramverk, ingen server. JSON-filen genereras av CNS och kopieras till dashboardens public-mapp vid deploy.
+Dashboarden lever i `cortxt`-repot under `apps/dashboard/`. Koden är helt separerad från `prompt-cns` — enda kopplingen är Railway API:et. Vanilla JS-versionen på `rian010194.github.io/Project-CNS/` behålls tills React-versionen är verifierad i produktion. Family-enum migreras separat — `labels.js` mappar både gamla och nya värden parallellt.
