@@ -98,41 +98,43 @@
       <p class="subtitle">2026-05-27</p>
       <div class="meta">
         <p><span>Antal händelser:</span> 18</p>
-        <p><span>Källa:</span> devwatch_2026-05-27.json (20260527_171137)</p>
+        <p><span>Källa:</span> devwatch_2026-05-27.json (20260527_171442)</p>
       </div>
     </header>
 
     <section class="card">
   <h2>Dagens sammanfattning</h2>
   <div class="digest-content">
-<h2>Daglig portföljbrief – 28 maj 2026</h2>
+<h2>Daglig portföljbrief – 27 maj 2026</h2>
 <h3>Vad hände igår</h3>
 <p><strong>CNS Analyst</strong></p>
-<p>Ny quest skapad för att validera `cns analyze` med pending-förslag från tre projekt (scoring-studio: 9, ai-ticket-triage: 6, cns-devwatch: 5). Detta testar bulk-hantering av automatisk analys – en kritisk validering av gårdagens implementation.</p>
+<p>Ny quest skapad för att validera `cns analyze` med pending-förslag från tre projekt (scoring-studio: 9, ai-ticket-triage: 6, cns-devwatch: 5). Detta testar bulk-hantering av automatisk analys – första riktiga användningen av gårdagens implementation.</p>
 <p><strong>Cortxt Dashboard App</strong></p>
-<p>Fyra arkitekturbeslut dokumenterade: Railway REST API som datakälla (ingen MCP i v1), HashRouter för GitHub Pages-kompatibilitet, family-enum dual-mapping för flexibilitet, och inga edges i Reactflow graph v1 för att förenkla MVP. Tydlig avgränsning mot överdesign.</p>
+<p>Fyra designbeslut dokumenterade: family-enum dual-mapping, HashRouter istället för BrowserRouter, inga edges i Reactflow v1, Railway REST API som datakälla (ingen MCP i v1). Roadmap uppdaterad med v1 MVP pågående och v2 planerad.</p>
 <p><strong>Cortxt Graph View</strong></p>
-<p>Parkerad explicit via beslut: &quot;Graph-vy parkerad tills förutsättningar är uppfyllda&quot;. Väntar på att Dashboard App ska leverera stabil datakälla först.</p>
+<p>Parkerad med tydligt beslut: &quot;Graph-vy parkerad tills förutsättningar är uppfyllda&quot;. Roadmap justerad till v0 Coming Soon.</p>
 <p><strong>Cortxt Landing</strong></p>
-<p>Tre tekniska beslut: React + Vite istället för statisk HTML, Cloudflare Pages istället för GitHub Pages, DNS flyttad till Cloudflare. Modernare stack, enklare deployment.</p>
+<p>Tre tekniska beslut: React + Vite istället för statisk HTML, Cloudflare Pages istället för GitHub Pages, DNS flyttad till Cloudflare. Roadmap visar v1 MVP pågående.</p>
 <p><strong>Project Vault Dashboard</strong></p>
-<p>Omfattande dokumentation tillagd: API-schema definierat, fyra dashboard-vyer specificerade (Portfolio Overview, ROI &amp; Metrics, Project Detail, Status Filter), fem arkitekturbeslut dokumenterade (Cloudflare Pages, dual domains, HashRouter, family-mapping, ingen MCP i v1). Roadmap uppdaterad med v0 (klar), v1 (pågår), v2 (planerat).</p>
+<p>Omfattande dokumentation tillagd: API-schema, dashboard-views (Portfolio Overview, ROI &amp; Metrics, Project Detail), designbeslut om Cloudflare Pages, family-enum mapping, HashRouter. Roadmap visar v0 klar, v1 React SPA pågår.</p>
+<p><strong>Site Change Monitor</strong></p>
+<p>Detaljerad README med noise reduction heuristics, snapshot-format, config-format. Planning-dokumentation kompletterad med MVP-scope, report-review-checklist, beslut.</p>
 <p><strong>Webhook Router</strong></p>
-<p>Ompositionering från intern infra till extern produkt dokumenterad. Tre strategiska beslut: self-hosted som differentiator, replay som killer feature, Python + SQLite som teknikval. Arkitektur- och integrationsguider tillagda. Tydlig produktvision etablerad.</p>
+<p>Omfattande dokumentation: architecture.md (dataflöde, komponenter), configuration.md (miljövariabler, routing-regler), integration-guide.md (exempel med Site Change Monitor). Tre strategiska beslut från 2026-05-07 dokumenterade: ompositionering från intern infra till extern produkt, replay som killer feature, self-hosted som differentiator.</p>
 <h3>Vad är kvar</h3>
-<p><strong>CNS Analyst:</strong> Köra quest – processa 20 pending-förslag och dokumentera resultat.</p>
-<p><strong>Cortxt Dashboard App:</strong> Implementera Railway API-integration och rendera första projektkorten.</p>
-<p><strong>Project Vault Dashboard:</strong> Bygga React-komponenter för Portfolio Overview-vyn.</p>
-<p><strong>Webhook Router:</strong> Implementera core routing-logik och SQLite event store.</p>
+<p><strong>CNS Analyst</strong>: Köra quest-valideringen med 20 pending-förslag, dokumentera resultat och justera om nödvändigt.</p>
+<p><strong>Cortxt Dashboard App</strong>: Slutföra v1 MVP – implementera Railway REST API-integration och Reactflow-graf utan edges.</p>
+<p><strong>Project Vault Dashboard</strong>: Slutföra v1 React SPA – implementera de tre vyerna enligt dashboard-views.md.</p>
+<p><strong>Webhook Router</strong>: Bygga MVP – Python + SQLite implementation med routing-regler och replay-funktion.</p>
 <h3>Nästa steg idag</h3>
-<h3><strong>Kör CNS Analyst quest</strong> – validera bulk-analys med riktiga pending-förslag</h3>
-<h3><strong>Fortsätt Cortxt Dashboard</strong> – börja hämta data från Railway API</h3>
-<h3><strong>Webhook Router MVP</strong> – implementera första routing-regel och event persistence</h3>
+<h3><strong>Kör CNS Analyst quest</strong> – processa 20 pending-förslag och dokumentera hur bulk-analysen fungerar</h3>
+<h3><strong>Fortsätt Project Vault Dashboard v1</strong> – implementera Portfolio Overview-vyn</h3>
+<h3><strong>Starta Webhook Router MVP</strong> – sätt upp grundläggande Python-struktur med SQLite</h3>
   </div>
 </section>
 
     <footer>
-      <p>Genererad av cns-devlog &middot; 2026-05-27 17:11 UTC</p>
+      <p>Genererad av cns-devlog &middot; 2026-05-27 17:15 UTC</p>
     </footer>
   </main>
 </body>
