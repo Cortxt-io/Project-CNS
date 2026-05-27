@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CNS DevLog — 2026-05-26</title>
+  <title>CNS DevLog — 2026-05-27</title>
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -95,45 +95,44 @@
   <main>
     <header>
       <h1>CNS DevLog</h1>
-      <p class="subtitle">2026-05-26</p>
+      <p class="subtitle">2026-05-27</p>
       <div class="meta">
-        <p><span>Antal händelser:</span> 14</p>
-        <p><span>Källa:</span> devwatch_2026-05-26.json (20260526_055744)</p>
+        <p><span>Antal händelser:</span> 18</p>
+        <p><span>Källa:</span> devwatch_2026-05-27.json (20260527_171137)</p>
       </div>
     </header>
 
     <section class="card">
   <h2>Dagens sammanfattning</h2>
   <div class="digest-content">
+<h2>Daglig portföljbrief – 28 maj 2026</h2>
 <h3>Vad hände igår</h3>
-<p><strong>AI Ticket Triage</strong>: Innehållet i projekt.md har uppdaterats med nya antaganden, kostnadsberäkningar och en ny riskbedömning. Detaljer kring problemet och ROI har också reviderats för att bättre reflektera projektets mål.</p>
-<p><strong>CNS Analyst</strong>: Projekt.md har fått en ny lösning där cns analyze &lt;slug&gt; nu automatiskt skickar data till OpenAI för att generera förslag på mvp_stage, current_slice, och andra viktiga parametrar. Detta ska minska den manuella hanteringen av projektfiler.</p>
-<p><strong>CNS DevLog</strong>: Innehållet i projekt.md har reviderats med fokus på MVP-steg och riskbedömningar. Detaljer kring problem och lösningar har också uppdaterats för att säkerställa att de är aktuella.</p>
-<p><strong>CNS DevWatch</strong>: Liksom DevLog har projekt.md uppdaterats med nya MVP-steg och riskbedömningar. Problemformuleringen har också reviderats för att bättre spegla aktuella utmaningar.</p>
-<p><strong>CNS Hosting Infra</strong>: Projekt.md har reviderats med nya antaganden och kostnadsberäkningar. Det finns nu en tydligare struktur för hur projektet ska fortskrida.</p>
-<p><strong>CNS Vault App</strong>: Innehållet i projekt.md har uppdaterats med nya kostnads- och värdeberäkningar samt en revidering av problem och lösningar.</p>
-<p><strong>Dev Changelog Engine Mini</strong>: Projekt.md har fått en ny problemformulering och lösning som syftar till att skapa en pipeline för att bearbeta data och generera rapporter.</p>
-<p><strong>DocsWatch</strong>: Projekt.md har reviderats med fokus på problem och lösningar för att bättre hantera externa API:er och deras uppdateringar.</p>
-<p><strong>Project Vault Dashboard</strong>: Innehållet i projekt.md har uppdaterats med nya MVP-steg och en revidering av problembeskrivningen.</p>
+<p><strong>CNS Analyst</strong></p>
+<p>Ny quest skapad för att validera `cns analyze` med pending-förslag från tre projekt (scoring-studio: 9, ai-ticket-triage: 6, cns-devwatch: 5). Detta testar bulk-hantering av automatisk analys – en kritisk validering av gårdagens implementation.</p>
+<p><strong>Cortxt Dashboard App</strong></p>
+<p>Fyra arkitekturbeslut dokumenterade: Railway REST API som datakälla (ingen MCP i v1), HashRouter för GitHub Pages-kompatibilitet, family-enum dual-mapping för flexibilitet, och inga edges i Reactflow graph v1 för att förenkla MVP. Tydlig avgränsning mot överdesign.</p>
+<p><strong>Cortxt Graph View</strong></p>
+<p>Parkerad explicit via beslut: &quot;Graph-vy parkerad tills förutsättningar är uppfyllda&quot;. Väntar på att Dashboard App ska leverera stabil datakälla först.</p>
+<p><strong>Cortxt Landing</strong></p>
+<p>Tre tekniska beslut: React + Vite istället för statisk HTML, Cloudflare Pages istället för GitHub Pages, DNS flyttad till Cloudflare. Modernare stack, enklare deployment.</p>
+<p><strong>Project Vault Dashboard</strong></p>
+<p>Omfattande dokumentation tillagd: API-schema definierat, fyra dashboard-vyer specificerade (Portfolio Overview, ROI &amp; Metrics, Project Detail, Status Filter), fem arkitekturbeslut dokumenterade (Cloudflare Pages, dual domains, HashRouter, family-mapping, ingen MCP i v1). Roadmap uppdaterad med v0 (klar), v1 (pågår), v2 (planerat).</p>
+<p><strong>Webhook Router</strong></p>
+<p>Ompositionering från intern infra till extern produkt dokumenterad. Tre strategiska beslut: self-hosted som differentiator, replay som killer feature, Python + SQLite som teknikval. Arkitektur- och integrationsguider tillagda. Tydlig produktvision etablerad.</p>
 <h3>Vad är kvar</h3>
-<p><strong>AI Ticket Triage</strong>: Fortsätta med att implementera föreslagna förändringar och validera antaganden.</p>
-<p><strong>CNS Analyst</strong>: Testa och validera den automatiserade analyslösningen.</p>
-<p><strong>CNS DevLog</strong>: Slutföra MVP-stegen och dokumentera resultaten.</p>
-<p><strong>CNS DevWatch</strong>: Implementera de reviderade MVP-stegen och genomföra riskbedömningar.</p>
-<p><strong>CNS Hosting Infra</strong>: Fortsätta med utvecklingen baserat på de nya antagandena.</p>
-<p><strong>CNS Vault App</strong>: Genomföra tester av de nya lösningarna och utvärdera ROI.</p>
-<p><strong>Dev Changelog Engine Mini</strong>: Utveckla pipeline och testa dess funktionalitet.</p>
-<p><strong>DocsWatch</strong>: Implementera de reviderade lösningarna och utvärdera effektiviteten.</p>
-<p><strong>Project Vault Dashboard</strong>: Slutföra de återstående MVP-stegen och förbereda för lansering.</p>
+<p><strong>CNS Analyst:</strong> Köra quest – processa 20 pending-förslag och dokumentera resultat.</p>
+<p><strong>Cortxt Dashboard App:</strong> Implementera Railway API-integration och rendera första projektkorten.</p>
+<p><strong>Project Vault Dashboard:</strong> Bygga React-komponenter för Portfolio Overview-vyn.</p>
+<p><strong>Webhook Router:</strong> Implementera core routing-logik och SQLite event store.</p>
 <h3>Nästa steg idag</h3>
-<h3>Fokusera på att implementera automatiseringen i CNS Analyst.</h3>
-<h3>Genomföra tester av MVP-stegen i CNS DevLog och CNS DevWatch.</h3>
-<h3>Utvärdera och justera projektplaner baserat på de senaste ändringarna.</h3>
+<h3><strong>Kör CNS Analyst quest</strong> – validera bulk-analys med riktiga pending-förslag</h3>
+<h3><strong>Fortsätt Cortxt Dashboard</strong> – börja hämta data från Railway API</h3>
+<h3><strong>Webhook Router MVP</strong> – implementera första routing-regel och event persistence</h3>
   </div>
 </section>
 
     <footer>
-      <p>Genererad av cns-devlog &middot; 2026-05-26 05:58 UTC</p>
+      <p>Genererad av cns-devlog &middot; 2026-05-27 17:11 UTC</p>
     </footer>
   </main>
 </body>

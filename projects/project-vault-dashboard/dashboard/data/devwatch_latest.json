@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-05-27T17:08:12Z",
-  "run_id": "20260527_170812",
+  "exported_at": "2026-05-27T17:11:37Z",
+  "run_id": "20260527_171137",
   "baseline": "2026-05-26T07:00:00",
   "events": [
     {
-      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:ai-ticket-triage:fb67576053f72b9c:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "ai-ticket-triage",
         "name": "AI Ticket Triage",
@@ -21,8 +21,8 @@
         "ai-ticket-triage"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "ai-ticket-triage",
         "project_title": "AI Ticket Triage",
         "changed_fields": [
@@ -85,8 +85,8 @@
       }
     },
     {
-      "id": "devwatch:cns-analyst:69bb069003ee96ec:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:cns-analyst:69bb069003ee96ec:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "cns-analyst",
         "name": "CNS Analyst",
@@ -105,8 +105,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "cns-analyst",
         "project_title": "CNS Analyst",
         "changed_fields": [
@@ -152,8 +152,8 @@
       }
     },
     {
-      "id": "devwatch:cns-brief:5da14ce4dad5b771:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:cns-brief:5da14ce4dad5b771:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "cns-brief",
         "name": "CNS Brief",
@@ -173,8 +173,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "cns-brief",
         "project_title": "CNS Brief",
         "changed_fields": [
@@ -234,8 +234,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devlog:70843caca0b251d7:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:cns-devlog:70843caca0b251d7:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "cns-devlog",
         "name": "CNS DevLog",
@@ -255,8 +255,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "cns-devlog",
         "project_title": "CNS DevLog",
         "changed_fields": [
@@ -320,8 +320,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:cns-devwatch:4c9ab33c7298c990:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "cns-devwatch",
         "name": "CNS DevWatch",
@@ -341,8 +341,8 @@
         "python"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "cns-devwatch",
         "project_title": "CNS DevWatch",
         "changed_fields": [
@@ -407,8 +407,8 @@
       }
     },
     {
-      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:cns-hosting-infra:e5e4b8c56dd4c2a5:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "cns-hosting-infra",
         "name": "CNS Hosting Infra",
@@ -427,8 +427,8 @@
         "static"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "cns-hosting-infra",
         "project_title": "CNS Hosting Infra",
         "changed_fields": [
@@ -492,8 +492,8 @@
       }
     },
     {
-      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:cns-vault-app:9a68142ef10fffc4:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "cns-vault-app",
         "name": "CNS Vault App",
@@ -513,8 +513,8 @@
         "web"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "cns-vault-app",
         "project_title": "CNS Vault App",
         "changed_fields": [
@@ -580,8 +580,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-dashboard-app:0239f3e51785a17b:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:cortxt-dashboard-app:0239f3e51785a17b:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "cortxt-dashboard-app",
         "name": "Cortxt Dashboard App",
@@ -602,8 +602,8 @@
         "vite"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "cortxt-dashboard-app",
         "project_title": "Cortxt Dashboard App",
         "changed_fields": [
@@ -673,8 +673,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-graph-view:280a57239e090835:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:cortxt-graph-view:280a57239e090835:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "cortxt-graph-view",
         "name": "Cortxt Graph View",
@@ -694,8 +694,8 @@
         "visualization"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "cortxt-graph-view",
         "project_title": "Cortxt Graph View",
         "changed_fields": [
@@ -763,8 +763,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-landing:498ce1c031868aa2:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:cortxt-landing:498ce1c031868aa2:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "cortxt-landing",
         "name": "Cortxt Landing",
@@ -785,8 +785,8 @@
         "vite"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "cortxt-landing",
         "project_title": "Cortxt Landing",
         "changed_fields": [
@@ -855,8 +855,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine-mini:fc865bd5693d35c4:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:dev-changelog-engine-mini:fc865bd5693d35c4:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "dev-changelog-engine-mini",
         "name": "Dev Changelog Engine Mini",
@@ -875,8 +875,8 @@
         "typescript"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "dev-changelog-engine-mini",
         "project_title": "Dev Changelog Engine Mini",
         "changed_fields": [
@@ -919,8 +919,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:dev-changelog-engine:7440bc1d36e57a26:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "dev-changelog-engine",
         "name": "Dev Changelog Engine",
@@ -935,8 +935,8 @@
         "dev-changelog-engine"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "dev-changelog-engine",
         "project_title": "Dev Changelog Engine",
         "changed_fields": [
@@ -999,8 +999,8 @@
       }
     },
     {
-      "id": "devwatch:docs-watch:0e244806cfb8feee:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:docs-watch:0e244806cfb8feee:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "docs-watch",
         "name": "DocsWatch",
@@ -1018,8 +1018,8 @@
         "monitoring"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "docs-watch",
         "project_title": "DocsWatch",
         "changed_fields": [
@@ -1061,8 +1061,8 @@
       }
     },
     {
-      "id": "devwatch:project-vault-dashboard:ca1a1ad4d2156141:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:project-vault-dashboard:ca1a1ad4d2156141:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "project-vault-dashboard",
         "name": "Project Vault Dashboard",
@@ -1083,8 +1083,8 @@
         "vite"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "project-vault-dashboard",
         "project_title": "Project Vault Dashboard",
         "changed_fields": [
@@ -1197,8 +1197,8 @@
       }
     },
     {
-      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:scoring-studio:1e2e1a2186c38f7a:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "scoring-studio",
         "name": "Scoring Studio",
@@ -1218,8 +1218,8 @@
         "static-site"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "scoring-studio",
         "project_title": "Scoring Studio",
         "changed_fields": [
@@ -1259,8 +1259,8 @@
       }
     },
     {
-      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "site-change-monitor",
         "name": "site-change-monitor",
@@ -1275,8 +1275,8 @@
         "site-change-monitor"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "site-change-monitor",
         "project_title": "site-change-monitor",
         "changed_fields": [],
@@ -1323,8 +1323,8 @@
       }
     },
     {
-      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:test-interactive:d81a0f0e5646d663:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "test-interactive",
         "name": "test-interactive",
@@ -1339,8 +1339,8 @@
         "test-interactive"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "test-interactive",
         "project_title": "test-interactive",
         "changed_fields": [],
@@ -1374,8 +1374,8 @@
       }
     },
     {
-      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260527T170812Z",
-      "detectedAt": "2026-05-27T17:08:12Z",
+      "id": "devwatch:webhook-router:cfcc75d3b94f94e8:20260527T171137Z",
+      "detectedAt": "2026-05-27T17:11:37Z",
       "source": {
         "id": "webhook-router",
         "name": "Webhook Router",
@@ -1394,8 +1394,8 @@
         "webhooks"
       ],
       "meta": {
-        "run_id": "20260527_170812",
-        "run_timestamp": "20260527T170812Z",
+        "run_id": "20260527_171137",
+        "run_timestamp": "20260527T171137Z",
         "slug": "webhook-router",
         "project_title": "Webhook Router",
         "changed_fields": [
