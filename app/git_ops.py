@@ -142,6 +142,7 @@ def delete_file_on_github(file_path: Path, message: str) -> tuple[bool, str]:
     headers = _headers(token)
 
     try:
+        file_path = Path(file_path).resolve()
         rel_path = file_path.relative_to(REPO_ROOT).as_posix()
         get_url = f"{GITHUB_API}/repos/{repo}/contents/{rel_path}"
 
@@ -182,6 +183,7 @@ def _push_file(
     errors: list[str],
 ) -> None:
     try:
+        file_path = Path(file_path).resolve()
         rel_path = file_path.relative_to(REPO_ROOT).as_posix()
         content = file_path.read_bytes()
         encoded = base64.b64encode(content).decode("utf-8")
