@@ -1,0 +1,25 @@
+{
+  "slug": "cortxt-graph-view",
+  "analyzed_at": "2026-05-27",
+  "suggestions": {
+    "current_slice": "Väntar på förutsättningar: depends_on-schema i CNS + family-enum-migration",
+    "risks": [
+      {
+        "category": "technical",
+        "description": "Reactflow automatisk layout med GroupNodes och edges kräver dagre eller liknande — komplex integration som kan behöva mer än budgeterad tid",
+        "score": 3
+      },
+      {
+        "category": "adoption",
+        "description": "Oklart om graph-vyn faktiskt används för portföljförståelse eller om kortgriden räcker — demand test saknas helt",
+        "score": 3
+      },
+      {
+        "category": "ops",
+        "description": "Underhåll av depends_on-fält i varje project.md kan bli glömt eller förbises vid nya projekt",
+        "score": 2
+      }
+    ],
+    "updated_at": "2026-05-27"
+  }
+}
