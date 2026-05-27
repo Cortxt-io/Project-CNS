@@ -14,7 +14,7 @@ tags:
 - docswatch
 - digest
 title: Dev Changelog Engine Mini
-updated: '2026-05-25'
+updated: '2026-05-27'
 url_live: https://rian010194.github.io/dev-changelog-engine-mini/
 url_repo: https://github.com/rian010194/dev-changelog-engine-mini
 value_sek: 12000
@@ -64,10 +64,6 @@ A pipeline that ingests DocsWatch exports, scores changes by relevance, and rend
 
 ## Risk Assessment
 
-- Low: No external dependencies beyond DocsWatch exports
-- Medium: LLM summarization quality depends on prompt engineering
-- Low: Static output means no hosting complexity
-- **Technical** (score 3/5): LLM summarization quality depends on prompt engineering
 - **Technical** (score 3/5): LLM summarization quality depends on prompt engineering
 
 ## Timeline
