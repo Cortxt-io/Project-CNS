@@ -106,6 +106,69 @@ def git_commit_and_push(message: str) -> tuple[bool, str]:
 
 
 # ---------------------------------------------------------------------------
+# Targeted push/delete helpers (Railway-safe, no file-scan)
+# ---------------------------------------------------------------------------
+
+
+def push_file_immediately(file_path: Path, message: str) -> tuple[bool, str]:
+    """Push a single file to GitHub immediately via REST API.
+
+    Use this instead of git_commit_and_push when you need guaranteed
+    delivery — e.g. after write_project() on Railway ephemeral disk.
+    """
+    token, repo = _get_config()
+    if not token or not repo:
+        return False, "CNS_GITHUB_TOKEN or GITHUB_REPO not configured"
+
+    headers = _headers(token)
+    pushed: list[str] = []
+    errors: list[str] = []
+
+    _push_file(file_path, repo, headers, message, pushed, errors)
+
+    if errors:
+        return False, errors[0]
+    if pushed:
+        return True, f"Pushed {file_path.name}"
+    return False, "Nothing pushed"
+
+
+def delete_file_on_github(file_path: Path, message: str) -> tuple[bool, str]:
+    """Delete a single file from GitHub via REST API."""
+    token, repo = _get_config()
+    if not token or not repo:
+        return False, "CNS_GITHUB_TOKEN or GITHUB_REPO not configured"
+
+    headers = _headers(token)
+
+    try:
+        rel_path = file_path.relative_to(REPO_ROOT).as_posix()
+        get_url = f"{GITHUB_API}/repos/{repo}/contents/{rel_path}"
+
+        get_resp = requests.get(get_url, headers=headers, timeout=10)
+        if get_resp.status_code == 404:
+            return True, "File not on GitHub, nothing to delete"
+        if get_resp.status_code != 200:
+            return False, f"GET failed {get_resp.status_code}"
+
+        sha = get_resp.json().get("sha")
+
+        delete_resp = requests.delete(
+            get_url,
+            headers=headers,
+            json={"message": message, "sha": sha, "branch": BRANCH},
+            timeout=30,
+        )
+
+        if delete_resp.status_code in (200, 204):
+            return True, f"Deleted {file_path.name}"
+        return False, f"DELETE failed {delete_resp.status_code} {delete_resp.text[:100]}"
+
+    except Exception as exc:
+        return False, str(exc)
+
+
+# ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
 

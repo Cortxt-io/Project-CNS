@@ -32,13 +32,20 @@ from flask import (  # noqa: E402
 )
 from flask_httpauth import HTTPBasicAuth  # noqa: E402
 
-from app.git_ops import configure_git, git_commit_and_push, git_pull  # noqa: E402
+from app.git_ops import (  # noqa: E402
+    configure_git,
+    delete_file_on_github,
+    git_commit_and_push,
+    git_pull,
+    push_file_immediately,
+)
 from scripts.analyst import load_pending_suggestions, run_analyze  # noqa: E402
 from scripts.json_exporter import export_json  # noqa: E402
 from scripts.md_parser import (  # noqa: E402
     SECTIONS,
     apply_changes,
     project_dir,
+    project_path,
     read_all_projects,
     read_project,
     write_project,
@@ -627,10 +634,13 @@ def api_analyze(slug):
             data = json.loads(output_path.read_text(encoding="utf-8"))
             count = len(data.get("suggestions", {}))
 
-            # Commit the analyze JSON to git so it survives redeploy
-            ok, msg = git_commit_and_push(f"cns-vault: analyze {slug}")
+            # Push the analyze JSON immediately — bypasses Railway ephemeral disk
+            ok, msg = push_file_immediately(
+                output_path,
+                f"cns-vault: analyze {slug}",
+            )
             if not ok:
-                app.logger.warning("Failed to commit analyze JSON: %s", msg)
+                app.logger.warning("Failed to push analyze JSON for %s: %s", slug, msg)
 
             return jsonify({"status": "ok", "suggestions_count": count})
         else:
@@ -683,17 +693,18 @@ def api_analyze_all():
 
             if result and output_path.exists():
                 analyzed.append(slug)
+                push_ok, push_msg = push_file_immediately(
+                    output_path,
+                    f"cns-vault: analyze {slug}",
+                )
+                if not push_ok:
+                    app.logger.warning("Failed to push analyze JSON for %s: %s", slug, push_msg)
             else:
                 analyzed.append(slug)
         except FileNotFoundError:
             errors[slug] = f"Project '{slug}' not found"
         except Exception as exc:
             errors[slug] = str(exc)
-
-    if analyzed:
-        ok, msg = git_commit_and_push("cns-vault: analyze all changed projects")
-        if not ok:
-            app.logger.warning("Failed to commit analyze-all JSONs: %s", msg)
 
     return jsonify({"status": "ok", "analyzed": analyzed, "errors": errors})
 
@@ -735,23 +746,31 @@ def api_review_approve(slug):
 
         write_project(slug, new_meta, new_sections)
 
+        # Push project.md immediately — bypasses Railway ephemeral disk
+        project_md_path = project_path(slug)
+        ok, msg = push_file_immediately(
+            project_md_path,
+            f"cns-vault: apply analyze suggestions for {slug}",
+        )
+        if not ok:
+            app.logger.warning("Failed to push project.md for %s: %s", slug, msg)
+
         # Delete the JSON file
         if pending_path.exists():
             pending_path.unlink()
 
-        # Commit and push
-        ok, msg = git_commit_and_push(
-            f"cns-vault: apply analyze suggestions for {slug}"
+        # Delete pending JSON from GitHub immediately
+        delete_ok, delete_msg = delete_file_on_github(
+            pending_path,
+            f"cns-vault: remove pending suggestions for {slug}",
         )
+        if not delete_ok:
+            app.logger.warning("Failed to delete pending JSON on GitHub for %s: %s", slug, delete_msg)
+
         applied = list(suggestions.keys())
-        if not ok:
-            if _wants_json():
-                return jsonify({"status": "ok", "message": f"Sparad lokalt men ej pustad: {msg}"})
-            flash(f"Ändringar sparade lokalt men kunde inte pushas: {msg}", "danger")
-        else:
-            if _wants_json():
-                return jsonify({"status": "ok", "suggestions_count": len(applied)})
-            flash(f"Tillämpade {len(applied)} fält för {slug}", "success")
+        if _wants_json():
+            return jsonify({"status": "ok", "suggestions_count": len(applied)})
+        flash(f"Tillämpade {len(applied)} fält för {slug}", "success")
 
         return redirect(url_for("review", slug=slug))
 
@@ -777,16 +796,17 @@ def api_review_reject(slug):
         if pending_path.exists():
             pending_path.unlink()
 
-        # Commit the deletion to git
-        ok, msg = git_commit_and_push(f"cns-vault: reject analyze for {slug}")
-        if not ok:
-            if _wants_json():
-                return jsonify({"status": "ok", "message": f"Raderat lokalt men ej pustat: {msg}"})
-            flash(f"Förslag raderat lokalt men kunde inte pushas: {msg}", "danger")
-        else:
-            if _wants_json():
-                return jsonify({"status": "ok"})
-            flash(f"Avvisade förslag för {slug}", "success")
+        # Delete pending JSON from GitHub immediately
+        delete_ok, delete_msg = delete_file_on_github(
+            pending_path,
+            f"cns-vault: reject analyze for {slug}",
+        )
+        if not delete_ok:
+            app.logger.warning("Failed to delete pending JSON on GitHub for %s: %s", slug, delete_msg)
+
+        if _wants_json():
+            return jsonify({"status": "ok"})
+        flash(f"Avvisade förslag för {slug}", "success")
     else:
         if _wants_json():
             return jsonify({"status": "error", "message": f"Inga väntande förslag för {slug}"}), 404
