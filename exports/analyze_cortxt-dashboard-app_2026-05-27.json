@@ -1,0 +1,30 @@
+{
+  "slug": "cortxt-dashboard-app",
+  "analyzed_at": "2026-05-27",
+  "suggestions": {
+    "current_slice": "Verifiera att portföljgrid, projektdetalj och graph-overlay fungerar mot live Railway API på app.cortxt.io",
+    "risks": [
+      {
+        "category": "technical",
+        "description": "Reactflow GroupNode-layout kräver manuell positionering — kan bli komplex om antalet projekt växer snabbt",
+        "score": 2
+      },
+      {
+        "category": "market",
+        "description": "Personligt verktyg, låg extern marknadsrisk",
+        "score": 1
+      },
+      {
+        "category": "ops",
+        "description": "Cloudflare Pages är stabilt, Railway API kör redan",
+        "score": 1
+      },
+      {
+        "category": "adoption",
+        "description": "Oklart om app.cortxt.io faktiskt kommer användas som primär ingång istället för terminal eller vanilla JS-dashboard",
+        "score": 2
+      }
+    ],
+    "updated_at": "2026-05-27"
+  }
+}
