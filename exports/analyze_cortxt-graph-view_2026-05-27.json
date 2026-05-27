@@ -6,17 +6,17 @@
     "risks": [
       {
         "category": "technical",
-        "description": "Reactflow automatisk layout med GroupNodes och edges kräver dagre eller liknande — komplex integration som kan behöva mer än budgeterad tid",
-        "score": 3
-      },
-      {
-        "category": "adoption",
-        "description": "Oklart om graph-vyn faktiskt används för portföljförståelse eller om kortgriden räcker — demand test saknas helt",
+        "description": "Reactflow automatisk layout med edges och GroupNodes kräver layout-algoritm (dagre) — icke-trivial implementation",
         "score": 3
       },
       {
         "category": "ops",
-        "description": "Underhåll av depends_on-fält i varje project.md kan bli glömt eller förbises vid nya projekt",
+        "description": "Lever i befintligt cortxt-repo, ingen ny infrastruktur krävs",
+        "score": 1
+      },
+      {
+        "category": "adoption",
+        "description": "Okänt om graph-vy faktiskt används för att förstå portföljen — kräver demand test",
         "score": 2
       }
     ],
