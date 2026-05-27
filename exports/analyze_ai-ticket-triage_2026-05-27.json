@@ -4,30 +4,30 @@
   "suggestions": {
     "mvp_stage": "problem_interviews",
     "status": "idea",
-    "current_slice": "Validera att supportteam faktiskt har problem med manuell triagering och kvantifiera tidsbesparingen",
+    "current_slice": "Genomför problemintervjuer med supportteam för att validera smärtpunkter kring ärendetriagering",
     "risks": [
       {
         "category": "technical",
-        "description": "AI-modellens noggrannhet vid triagering av varierande ärendetyper och språk kan vara otillräcklig",
-        "score": 3
-      },
-      {
-        "category": "adoption",
-        "description": "Supportteam kan vara skeptiska till AI-beslut och fortsätta manuellt granska alla ärenden",
+        "description": "AI-modellens noggrannhet vid triagering kan vara otillräcklig för komplexa supportärenden, kräver omfattande träningsdata",
         "score": 4
       },
       {
-        "category": "market",
-        "description": "Oklar betalningsvilja - triagering uppfattas möjligen som en basfunktion snarare än premiumfunktion",
+        "category": "adoption",
+        "description": "Supportteam kan vara skeptiska till AI-driven triagering och föredra manuell kontroll, särskilt för kritiska ärenden",
         "score": 3
       },
       {
         "category": "ops",
-        "description": "Integration med olika ticketsystem (Zendesk, Freshdesk, Jira etc.) kräver betydande underhåll",
+        "description": "Integration med befintliga ticketsystem (Zendesk, Jira, etc.) kan vara komplex och kräva kontinuerligt underhåll",
         "score": 3
+      },
+      {
+        "category": "market",
+        "description": "Etablerade ticketsystem börjar integrera egna AI-funktioner, kan minska efterfrågan på standalone-lösning",
+        "score": 4
       }
     ],
-    "summary": "AI-driven automatisk triagering och kategorisering av supportärenden för att minska manuell handläggningstid och förbättra svarstider",
+    "summary": "AI-driven triagering av supportärenden för att automatisera kategorisering, prioritering och routing till rätt team",
     "updated_at": "2026-05-27"
   }
 }
