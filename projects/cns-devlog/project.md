@@ -1,10 +1,13 @@
 ---
 cost_sek: 4000
 created: '2026-05-20'
-mvp_stage: hypothesis
+family: internal-monitoring
+mvp_stage: solution_test
 roi_percent: 275
 slug: cns-devlog
-status: idea
+status: early_mvp
+summary: Genererar daglig AI-sammanfattning av portföljförändringar, publicerad som
+  statisk sida.
 tags:
 - devtools
 - openai
@@ -12,10 +15,8 @@ tags:
 - internal
 - python
 title: CNS DevLog
-updated: '2026-05-20'
+updated: '2026-05-27'
 value_sek: 15000
-summary: Genererar daglig AI-sammanfattning av portföljförändringar, publicerad som statisk sida.
-family: internal-monitoring
 ---
 
 ## Problem
