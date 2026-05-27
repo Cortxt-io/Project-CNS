@@ -1,10 +1,13 @@
 ---
 cost_sek: 3000
 created: '2026-05-20'
-mvp_stage: hypothesis
+current_slice: Kör skriptet dagligen i en vecka och utvärdera signal vs brus.
+family: internal-monitoring
+mvp_stage: solution_test
 roi_percent: 233
 slug: cns-devwatch
-status: idea
+status: early_mvp
+summary: Bevakar dagliga git-ändringar i project.md-filer och exporterar dem som ChangeEvents.
 tags:
 - devtools
 - monitoring
@@ -12,10 +15,8 @@ tags:
 - git
 - python
 title: CNS DevWatch
-updated: '2026-05-20'
+updated: '2026-05-27'
 value_sek: 10000
-summary: Bevakar dagliga git-ändringar i project.md-filer och exporterar dem som ChangeEvents.
-family: internal-monitoring
 ---
 
 ## Problem
@@ -60,7 +61,7 @@ Uppskattat till 10 000 SEK – sparad tid från manuell genomgång av projektfil
 
 ## Risk Assessment
 
-- **Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal. Kräver disciplin att committa project.md-ändringar regelbundet.
+- **Technical** (score 2/5): Git-historik kan saknas eller vara glesa commits – diff ger då ingen signal.
 - **Ops** (score 3/5): Skriptet måste köras dagligen för att ge värde. Om det inte automatiseras tidigt faller det i glömska.
 - **Ops** (score 2/5): Output-format måste vara stabilt från dag ett – annars bryts cns-devlog-integrationen vid minsta ändring.
 
