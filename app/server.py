@@ -66,10 +66,20 @@ USERNAME = os.getenv("CNS_USERNAME", "admin")
 PASSWORD = os.getenv("CNS_ADMIN_PASSWORD", "")
 GUEST_USERNAME = os.getenv("CNS_GUEST_USERNAME", "guest")
 GUEST_PASSWORD = os.getenv("CNS_GUEST_PASSWORD", "")
+API_TOKEN = os.getenv("CNS_API_TOKEN", "")
 
 
 @auth.verify_password
 def verify_password(username: str, password: str) -> bool:
+    # Bearer token check (for React dashboard)
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]
+        if API_TOKEN and token == API_TOKEN:
+            g.role = "admin"
+            return True
+
+    # Existing Basic Auth logic (unchanged)
     if not PASSWORD:
         # Dev mode – no password set, allow all
         g.role = "admin"
@@ -112,7 +122,6 @@ def add_cors_headers(response):
 
 
 @app.route("/api/<path:path>", methods=["OPTIONS"])
-@auth.login_required
 def handle_options(path):
     response = app.make_default_options_response()
     return add_cors_headers(response)
@@ -558,6 +567,38 @@ def analyze():
 # ---------------------------------------------------------------------------
 # Routes – API
 # ---------------------------------------------------------------------------
+
+
+@app.route("/api/analyze")
+@auth.login_required
+def api_analyze_list():
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Admin required"}), 403
+
+    all_projects = read_all_projects()
+    pending_list = load_pending_suggestions()
+    pending_by_slug = {p["slug"]: p for p in pending_list}
+
+    project_list = []
+    for meta, _ in all_projects:
+        slug = meta.get("slug", "")
+        pending = pending_by_slug.get(slug)
+        project_list.append({
+            "slug": slug,
+            "title": meta.get("title", slug),
+            "status": meta.get("status", ""),
+            "updated": meta.get("updated", ""),
+            "has_pending": pending is not None,
+            "pending_count": len(pending["suggestions"]) if pending else 0,
+            "last_analyzed": pending.get("analyzed_at") if pending else None,
+        })
+
+    project_list.sort(key=lambda p: (
+        not p["has_pending"],
+        (p["title"] or "").lower()
+    ))
+
+    return jsonify({"projects": project_list})
 
 
 @app.route("/api/analyze/<slug>", methods=["POST"])
