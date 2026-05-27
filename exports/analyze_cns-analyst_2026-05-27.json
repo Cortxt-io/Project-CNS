@@ -2,13 +2,24 @@
   "slug": "cns-analyst",
   "analyzed_at": "2026-05-27",
   "suggestions": {
-    "mvp_stage": "hypothesis",
-    "status": "idea",
-    "current_slice": "Verifiera att GPT-4o-mini kan returnera strukturerad JSON med meningsfulla förslag på mvp_stage, risker och ROI genom att testa på ett verkligt CNS-projekt",
-    "roi_percent": 400,
-    "value_sek": 25000,
-    "cost_sek": 5000,
-    "summary": "AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och ROI-estimat per projekt",
+    "current_slice": "Evaluate JSON consistency and field accuracy across 3-5 real CNS projects",
+    "risks": [
+      {
+        "category": "technical",
+        "description": "LLM-output kan vara inkonsekvent – JSON-parsning måste vara robust med tydlig felhantering.",
+        "score": 3
+      },
+      {
+        "category": "ops",
+        "description": "OpenAI-anrop kostar pengar och tid – bör inte köras automatiskt, alltid manuellt triggat.",
+        "score": 2
+      },
+      {
+        "category": "adoption",
+        "description": "Risk att verktyget blir en one-off utility istället för att integreras i regelbunden workflow – kräver att förslagen faktiskt är tillräckligt värdefulla för att accepteras.",
+        "score": 3
+      }
+    ],
     "updated_at": "2026-05-27"
   }
 }
