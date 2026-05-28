@@ -1088,10 +1088,12 @@ def _check_git_available() -> bool:
         return False
 
 
-@app.route("/api/devwatch/run", methods=["POST"])
-@auth.login_required
+@app.route("/api/devwatch/run", methods=["POST", "OPTIONS"])
 def api_devwatch_run():
-    """Run devwatch and push results to GitHub."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    if not auth.current_user():
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
@@ -1140,10 +1142,12 @@ def api_devwatch_run():
         return jsonify({"status": "error", "message": str(exc)}), 500
 
 
-@app.route("/api/devlog/run", methods=["POST"])
-@auth.login_required
+@app.route("/api/devlog/run", methods=["POST", "OPTIONS"])
 def api_devlog_run():
-    """Run devlog and push results to GitHub."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    if not auth.current_user():
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
@@ -1187,10 +1191,12 @@ def api_devlog_run():
         return jsonify({"status": "error", "message": str(exc)}), 500
 
 
-@app.route("/api/update/run", methods=["POST"])
-@auth.login_required
+@app.route("/api/update/run", methods=["POST", "OPTIONS"])
 def api_update_run():
-    """Run full update: devwatch + devlog + export projects.json."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    if not auth.current_user():
+        return jsonify({"status": "error", "message": "Unauthorized"}), 401
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
