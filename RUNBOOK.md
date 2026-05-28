@@ -128,6 +128,27 @@ Kor `export json` igen nar du andrat projekt via CNS for att synka datan.
 
 ---
 
+## MCP Server Setup
+
+### Lokal användning (Claude Desktop / Qoder)
+
+1. Installera dependencies: `pip install -r requirements.txt`
+2. Lägg till i Claude Desktop config (~/.claude/claude_desktop_config.json):
+```json
+{
+  "mcpServers": {
+    "cortxt": {
+      "command": "python",
+      "args": ["C:/Users/rikar/OneDrive/prompt-cns/app/mcp_server.py"]
+    }
+  }
+}
+```
+3. Starta om Claude Desktop
+4. Tools tillgängliga: cortxt_list_active_quests, cortxt_get_quest, cortxt_complete_quest, cortxt_list_projects, cortxt_get_project
+
+---
+
 ## Typiskt arbetsflode (alla fyra)
 
 ```bash

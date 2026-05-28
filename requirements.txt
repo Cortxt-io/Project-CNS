@@ -10,3 +10,4 @@ flask>=3.0
 flask-httpauth>=4.8
 markdown>=3.6
 gunicorn>=21.2
+mcp>=1.0
