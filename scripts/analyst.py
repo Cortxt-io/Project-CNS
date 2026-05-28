@@ -107,6 +107,88 @@ def _call_claude(system_prompt: str, user_prompt: str, max_tokens: int = 1024) -
 # ---------------------------------------------------------------------------
 
 
+def _get_devwatch_context(slug: str) -> str:
+    """Get recent devwatch events for a specific project slug.
+
+    First tries GitHub (for Railway/production), falls back to local exports/.
+    Returns formatted string of recent changes, or empty string if none found.
+    """
+    devwatch_data = None
+
+    # Try GitHub first (production environment)
+    try:
+        from app.git_ops import read_file_from_github
+
+        raw = read_file_from_github(
+            "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+        )
+        if raw:
+            devwatch_data = json.loads(raw)
+    except Exception:
+        pass
+
+    # Fall back to local exports/
+    if devwatch_data is None:
+        exports_dir = Path("exports")
+        local_files = (
+            sorted(exports_dir.glob("devwatch_*.json"))
+            if exports_dir.exists()
+            else []
+        )
+        if local_files:
+            try:
+                devwatch_data = json.loads(
+                    local_files[-1].read_text(encoding="utf-8")
+                )
+            except Exception:
+                pass
+
+    if not devwatch_data:
+        return ""
+
+    # Filter events for this slug
+    events = devwatch_data.get("events", [])
+    slug_events = [e for e in events if e.get("meta", {}).get("slug") == slug]
+
+    if not slug_events:
+        return ""
+
+    # Format the most recent event
+    event = slug_events[-1]
+    meta = event.get("meta", {})
+    parts: list[str] = []
+
+    exported_at = devwatch_data.get("exported_at", "")
+    if exported_at:
+        parts.append(f"Senaste devwatch-körning: {exported_at[:10]}")
+
+    changed_fields = meta.get("changed_fields", [])
+    if changed_fields:
+        parts.append(f"Ändrade frontmatter-fält: {', '.join(changed_fields)}")
+
+    changed_files = meta.get("changed_files", [])
+    if changed_files:
+        file_names = [cf.get("file", "") for cf in changed_files]
+        parts.append(f"Ändrade filer: {', '.join(file_names)}")
+
+        # Include section changes from each file
+        for cf in changed_files:
+            sections = cf.get("sections", [])
+            if sections:
+                parts.append(
+                    f"  {cf['file']}: ändrade sektioner: {', '.join(sections)}"
+                )
+
+    raw_content = event.get("rawContent", "")
+    if raw_content:
+        # Truncate to avoid token overflow
+        if len(raw_content) > 1000:
+            raw_content = raw_content[:1000] + "\n...[truncated]"
+        parts.append(f"\nDiff-innehåll:\n{raw_content}")
+
+    return "\n".join(parts)
+
+
 def _read_project_context(slug: str) -> str:
     """Read and concatenate all project Markdown files as context."""
     from scripts.md_parser import project_dir
@@ -144,15 +226,18 @@ def _read_project_context(slug: str) -> str:
 def _build_system_prompt() -> str:
     return (
         "Du är en erfaren produktchef som analyserar ett MVP-projekt. "
-        "Returnera ENDAST giltig JSON med tre toppnålar: "
-        "\"suggestions\" (fältförslag som tidigare), "
-        "\"reasoning\" (motivering per föreslaget fält), "
-        "\"overall\" (övergripande bedömning). "
+        "Om devwatch-aktivitet finns tillgänglig: basera PRIMÄRT dina förslag på vad som "
+        "faktiskt hänt nyligen, inte på statiskt projektinnehåll. "
+        "Föreslå bara ändringar som är välmotiverade av faktisk aktivitet eller tydliga gap. "
+        "Returnera ENDAST giltig JSON med tre toppnycklar: "
+        "\"suggestions\" (fältförslag), "
+        "\"reasoning\" (motivering per föreslaget fält — MÅSTE referera till specifik aktivitet), "
+        "\"overall\" (övergripande bedömning baserad på faktisk aktivitet). "
         "Inga förklaringar utanför JSON-strukturen, inga markdown-backticks."
     )
 
 
-def _build_user_prompt(context: str) -> str:
+def _build_user_prompt(context: str, devwatch_context: str = "") -> str:
     schema = """{
   "suggestions": {
     "mvp_stage": "solution_test" | null,
@@ -183,11 +268,22 @@ def _build_user_prompt(context: str) -> str:
   "overall": "Övergripande bedömning av projektet."
 }"""
 
+    devwatch_section = ""
+    if devwatch_context:
+        devwatch_section = (
+            f"\n\n## Senaste faktiska aktivitet (från devwatch)\n"
+            f"Detta är vad som faktiskt ändrades i projektet nyligen:\n\n"
+            f"{devwatch_context}\n\n"
+            f"Basera dina förslag primärt på denna aktivitet — det är mer reliable än "
+            f"att gissa från statiskt innehåll."
+        )
+
     return (
         f"Här är ett MVP-projekt:\n\n"
-        f"---\n{context}\n---\n\n"
+        f"---\n{context}\n---"
+        f"{devwatch_section}\n\n"
         f"Du har tillgång till hela projektmappen ovan, inklusive planning-, notes- och research-filer. "
-        f"Basera dina förslag på allt material, inte bara project.md.\n\n"
+        f"Basera dina förslag på allt material, men prioritera devwatch-aktiviteten om den finns.\n\n"
         f"Giltiga status-värden: {sorted(VALID_STATUSES)}\n"
         f"Giltiga mvp_stage-värden: {sorted(VALID_MVP_STAGES)}\n"
         f"Giltiga risk_categories: {sorted(VALID_RISK_CATEGORIES)}\n\n"
@@ -321,12 +417,15 @@ def run_analyze(
     console.print(f"[bold]Analyzing [cyan]{slug}[/cyan] with {ANTHROPIC_MODEL}...[/bold]")
 
     context = _read_project_context(slug)
+    devwatch_context = _get_devwatch_context(slug)
 
     if dry_run:
         console.print(f"[dim]Context length: {len(context)} characters[/dim]")
+        if devwatch_context:
+            console.print(f"[dim]Devwatch context length: {len(devwatch_context)} characters[/dim]")
 
     system_prompt = _build_system_prompt()
-    user_prompt = _build_user_prompt(context)
+    user_prompt = _build_user_prompt(context, devwatch_context)
 
     ai_raw = _call_claude(system_prompt, user_prompt)
     suggestions, reasoning, overall = _parse_response(ai_raw)

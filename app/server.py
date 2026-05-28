@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 from datetime import date
 from pathlib import Path
@@ -43,6 +45,8 @@ from app.git_ops import (  # noqa: E402
 from scripts.analyst import load_pending_suggestions, run_analyze  # noqa: E402
 from scripts.portfolio_brief import run_portfolio_brief  # noqa: E402
 from scripts.json_exporter import export_json  # noqa: E402
+from scripts.devwatch import run_devwatch  # noqa: E402
+from scripts.devlog import run_devlog  # noqa: E402
 from scripts.md_parser import (  # noqa: E402
     SECTIONS,
     apply_changes,
@@ -1063,6 +1067,205 @@ def api_project_update(slug):
         return jsonify({"status": "error", "message": f"Project '{slug}' not found"}), 404
     except Exception as exc:
         return jsonify({"status": "error", "message": str(exc)}), 500
+
+
+# ---------------------------------------------------------------------------
+# Devwatch / Devlog / Update endpoints
+# ---------------------------------------------------------------------------
+
+
+def _check_git_available() -> bool:
+    """Check if git subprocess is available (required for devwatch)."""
+    try:
+        subprocess.run(
+            ["git", "--version"],
+            capture_output=True,
+            timeout=5,
+            check=True,
+        )
+        return True
+    except (FileNotFoundError, subprocess.SubprocessError):
+        return False
+
+
+@app.route("/api/devwatch/run", methods=["POST"])
+@auth.login_required
+def api_devwatch_run():
+    """Run devwatch and push results to GitHub."""
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Admin required"}), 403
+
+    if not _check_git_available():
+        return jsonify({
+            "status": "error",
+            "message": "git is not available in this environment. Devwatch requires git to run git diff.",
+        }), 503
+
+    try:
+        output_path = Path("exports") / f"devwatch_{date.today().isoformat()}.json"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        result_path = run_devwatch(output=str(output_path))
+
+        # Read result to get event count
+        data = json.loads(result_path.read_text(encoding="utf-8"))
+        event_count = len(data.get("events", []))
+
+        # Push devwatch JSON to GitHub
+        ok, msg = push_file_immediately(
+            result_path,
+            f"cns-vault: devwatch run {date.today().isoformat()}",
+        )
+
+        # Also update the latest symlink file
+        latest_path = Path(
+            "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+        )
+        latest_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(result_path, latest_path)
+
+        push_file_immediately(
+            latest_path,
+            f"cns-vault: update devwatch_latest {date.today().isoformat()}",
+        )
+
+        return jsonify({
+            "status": "ok",
+            "events": event_count,
+            "output": str(result_path),
+            "pushed": ok,
+        })
+
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
+@app.route("/api/devlog/run", methods=["POST"])
+@auth.login_required
+def api_devlog_run():
+    """Run devlog and push results to GitHub."""
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Admin required"}), 403
+
+    try:
+        output_path = Path("exports") / f"devlog_{date.today().isoformat()}.html"
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+        run_devlog(output_path=output_path)
+
+        if not output_path.exists():
+            return jsonify({
+                "status": "error",
+                "message": "Devlog produced no output",
+            }), 500
+
+        # Push devlog HTML to GitHub
+        ok, msg = push_file_immediately(
+            output_path,
+            f"cns-vault: devlog run {date.today().isoformat()}",
+        )
+
+        # Also update the latest file
+        latest_path = Path(
+            "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+        )
+        latest_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(output_path, latest_path)
+
+        push_file_immediately(
+            latest_path,
+            f"cns-vault: update devlog_latest {date.today().isoformat()}",
+        )
+
+        return jsonify({
+            "status": "ok",
+            "output": str(output_path),
+            "pushed": ok,
+        })
+
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
+@app.route("/api/update/run", methods=["POST"])
+@auth.login_required
+def api_update_run():
+    """Run full update: devwatch + devlog + export projects.json."""
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Admin required"}), 403
+
+    if not _check_git_available():
+        return jsonify({
+            "status": "error",
+            "message": "git is not available in this environment. Devwatch requires git to run git diff.",
+        }), 503
+
+    results: dict[str, Any] = {}
+
+    # Step 1: devwatch
+    try:
+        dw_path = Path("exports") / f"devwatch_{date.today().isoformat()}.json"
+        dw_path.parent.mkdir(parents=True, exist_ok=True)
+        result_path = run_devwatch(output=str(dw_path))
+        data = json.loads(result_path.read_text(encoding="utf-8"))
+        results["devwatch"] = {
+            "status": "ok",
+            "events": len(data.get("events", [])),
+        }
+
+        push_file_immediately(
+            result_path,
+            f"cns-vault: devwatch {date.today().isoformat()}",
+        )
+
+        latest_dw = Path(
+            "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+        )
+        latest_dw.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy(result_path, latest_dw)
+        push_file_immediately(
+            latest_dw, "cns-vault: update devwatch_latest"
+        )
+
+    except Exception as exc:
+        results["devwatch"] = {"status": "error", "message": str(exc)}
+
+    # Step 2: devlog
+    try:
+        dl_path = Path("exports") / f"devlog_{date.today().isoformat()}.html"
+        run_devlog(output_path=dl_path)
+        results["devlog"] = {"status": "ok"}
+
+        if dl_path.exists():
+            push_file_immediately(
+                dl_path, f"cns-vault: devlog {date.today().isoformat()}"
+            )
+            latest_dl = Path(
+                "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+            )
+            latest_dl.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(dl_path, latest_dl)
+            push_file_immediately(
+                latest_dl, "cns-vault: update devlog_latest"
+            )
+
+    except Exception as exc:
+        results["devlog"] = {"status": "error", "message": str(exc)}
+
+    # Step 3: export projects.json
+    try:
+        json_path = export_json()
+        push_file_immediately(json_path, "cns-vault: export projects.json")
+        results["projects_json"] = {"status": "ok"}
+    except Exception as exc:
+        results["projects_json"] = {"status": "error", "message": str(exc)}
+
+    overall = (
+        "ok"
+        if all(r.get("status") == "ok" for r in results.values())
+        else "partial"
+    )
+    return jsonify({"status": overall, "results": results})
 
 
 # ---------------------------------------------------------------------------
