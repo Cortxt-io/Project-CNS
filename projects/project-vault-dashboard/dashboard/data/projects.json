@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-05-28T06:12:14.534525",
+  "exported_at": "2026-05-28T06:37:12.232672",
   "version": "1.0",
   "projects": [
     {
@@ -28,8 +28,8 @@
     {
       "slug": "cns-analyst",
       "title": "CNS Analyst",
-      "status": "early_mvp",
-      "mvp_stage": "solution_test",
+      "status": "mvp",
+      "mvp_stage": "demand_test",
       "cost_sek": 5000,
       "value_sek": 25000,
       "roi_percent": 400,
@@ -40,12 +40,12 @@
         "analysis"
       ],
       "created": "2026-05-25",
-      "updated": "2026-05-27",
+      "updated": "2026-05-28",
       "summary": "AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och ROI-estimat per projekt.",
       "family": "cns-core",
       "url_live": "",
       "url_repo": "",
-      "current_slice": "Evaluate JSON consistency and field accuracy across 3-5 real CNS projects",
+      "current_slice": "Run bulk analysis on scoring-studio, ai-ticket-triage, and cns-devwatch to validate precision and usability",
       "problem": "CNS-projektfiler uppdateras manuellt och analyseras aldrig automatiskt. MVP-steg, riskbedömningar och ROI-estimat blir inaktuella tyst utan att någon märker det.",
       "solution": "cns analyze <slug> skickar hela project.md till OpenAI och returnerar strukturerade förslag på mvp_stage, current_slice, roi_percent, value_sek, cost_sek, risker och summary. Användaren godkänner eller avvisar i terminalen.",
       "primary_audience": " Mig själv – portföljägare som vill ha AI-assisterad genomgång av projektfiler utan att lämna terminalen.",
