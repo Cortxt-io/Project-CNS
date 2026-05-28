@@ -20,7 +20,25 @@ REQUIRED_FM_FIELDS = [
 VALID_STATUSES = {"idea", "early_mvp", "mvp", "live", "shelved"}
 VALID_MVP_STAGES = {"hypothesis", "problem_interviews", "solution_test", "demand_test", "launch"}
 VALID_RISK_CATEGORIES = {"technical", "market", "legal", "ops", "competition", "positioning", "adoption"}
-VALID_FAMILIES = {"developer-tools", "digest-pipeline", "internal-monitoring", "cns-core", "ideas"}
+
+VALID_LAYERS = {
+    "pipeline",
+    "infrastructure",
+    "interface",
+    "concept",
+}
+
+VALID_PIPELINES = {
+    "pipeline-intern",
+    "pipeline-extern",
+    "pipeline-review",
+}
+
+# Behåll för bakåtkompatibilitet
+VALID_FAMILIES = {
+    "developer-tools", "digest-pipeline", "internal-monitoring",
+    "cns-core", "ideas", "cns-platform", "monitoring-pipeline",
+}
 
 # Required sections (must exist as ## headings)
 from scripts.md_parser import SECTIONS as REQUIRED_SECTIONS
@@ -78,6 +96,20 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
     if family is not None and family not in VALID_FAMILIES:
         errors.append(
             f"Invalid family '{family}'. Allowed: {', '.join(sorted(VALID_FAMILIES))}"
+        )
+
+    # 2c. Layer enum check
+    layer = meta.get("layer")
+    if layer is not None and layer not in VALID_LAYERS:
+        errors.append(
+            f"Invalid layer '{layer}'. Allowed: {', '.join(sorted(VALID_LAYERS))}"
+        )
+
+    # 2d. Pipeline enum check
+    pipeline = meta.get("pipeline")
+    if pipeline is not None and pipeline not in VALID_PIPELINES:
+        errors.append(
+            f"Invalid pipeline '{pipeline}'. Allowed: {', '.join(sorted(VALID_PIPELINES))}"
         )
 
     # 3. Required sections

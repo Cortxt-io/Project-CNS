@@ -4,20 +4,22 @@ slug: cns-vault-app
 status: idea
 mvp_stage: hypothesis
 family: cns-core
-summary: Flask-webapplikation som exponerar CNS via webb med portföljöversikt, projektsidor och AI-review i webbläsaren.
+summary: Flask-webapplikation som exponerar CNS via webb med portföljöversikt, projektsidor
+  och AI-review i webbläsaren.
 cost_sek: 8000
 value_sek: 40000
 roi_percent: 400
 tags:
-  - python
-  - flask
-  - railway
-  - web
-  - cns-core
+- python
+- flask
+- railway
+- web
+- cns-core
 url_repo: https://github.com/rian010194/Project-CNS
 url_live: https://project-cns-production.up.railway.app
 created: '2026-05-25'
 updated: '2026-05-25'
+layer: infrastructure
 ---
 
 ## Problem

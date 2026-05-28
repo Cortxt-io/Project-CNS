@@ -21,4 +21,13 @@ def load_config(config_path: Path) -> dict:
     cfg["filters"].setdefault("ignore_whitespace_only", True)
     cfg["filters"].setdefault("ignore_timestamp_patterns", True)
 
+    # Redis store configuration (optional)
+    cfg.setdefault("redis", {})
+    cfg["redis"].setdefault("enabled", False)
+    cfg["redis"].setdefault("host", "localhost")
+    cfg["redis"].setdefault("port", 6379)
+    cfg["redis"].setdefault("db", 0)
+    cfg["redis"].setdefault("snapshot_ttl_seconds", 7 * 24 * 3600)  # 7 days
+    cfg["redis"].setdefault("max_history", 100)
+
     return cfg

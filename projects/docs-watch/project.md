@@ -16,6 +16,8 @@ title: DocsWatch
 updated: '2026-05-26'
 url_repo: https://github.com/rian010194/docs-watch
 value_sek: 120000
+layer: pipeline
+pipeline: pipeline-extern
 ---
 
 ## Problem

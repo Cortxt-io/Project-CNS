@@ -18,6 +18,8 @@ updated: '2026-05-27'
 url_live: https://rian010194.github.io/dev-changelog-engine-mini/
 url_repo: https://github.com/rian010194/dev-changelog-engine-mini
 value_sek: 12000
+layer: pipeline
+pipeline: pipeline-extern
 ---
 
 ## Problem

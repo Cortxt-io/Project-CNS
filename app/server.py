@@ -61,6 +61,13 @@ from scripts.validator import (  # noqa: E402
     VALID_MVP_STAGES,
     VALID_STATUSES,
 )
+from scripts.quest_manager import (  # noqa: E402
+    create_quest as qm_create_quest,
+    get_quest as qm_get_quest,
+    list_quests as qm_list_quests,
+    update_quest as qm_update_quest,
+    transition_quest as qm_transition_quest,
+)
 
 # ---------------------------------------------------------------------------
 # Flask app
@@ -908,6 +915,221 @@ def api_planning_quest():
     return jsonify({"status": "ok", "path": str(quests_path.relative_to(REPO_ROOT))})
 
 
+# ---------------------------------------------------------------------------
+# Quest lifecycle API
+# ---------------------------------------------------------------------------
+
+
+def _require_bearer_admin():
+    """Check Bearer token auth for quest mutation endpoints.
+
+    Returns an error response tuple if unauthorized, or None if OK.
+    """
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]
+        if API_TOKEN and token == API_TOKEN:
+            g.role = "admin"
+            return None
+        else:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    else:
+        return jsonify({"status": "error", "message": "Bearer token required"}), 401
+
+
+@app.route("/api/quests")
+def api_quests_list():
+    """List quests, optionally filtered by ?status=&slug=."""
+    status = request.args.get("status")
+    slug = request.args.get("slug")
+    quests = qm_list_quests(status=status, slug=slug)
+    return jsonify({"quests": quests})
+
+
+@app.route("/api/quests/<quest_id>")
+def api_quests_get(quest_id):
+    """Get a single quest by ID."""
+    quest = qm_get_quest(quest_id)
+    if quest is None:
+        return jsonify({"status": "error", "message": "Quest not found"}), 404
+    return jsonify({"quest": quest})
+
+
+@app.route("/api/quests", methods=["POST", "OPTIONS"])
+def api_quests_create():
+    """Create a new quest."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    auth_err = _require_bearer_admin()
+    if auth_err:
+        return auth_err
+
+    data = request.get_json()
+    slug = data.get("slug")
+    title = data.get("title")
+    description = data.get("description", "")
+    estimated_impact = data.get("estimated_impact", "")
+    source = data.get("source", "manual")
+
+    if not slug or not title:
+        return jsonify({"status": "error", "message": "slug and title required"}), 400
+
+    quest = qm_create_quest(
+        slug=slug,
+        title=title,
+        description=description,
+        estimated_impact=estimated_impact,
+        source=source,
+    )
+
+    # Push to GitHub
+    from scripts.quest_manager import QUESTS_DIR
+    quest_path = QUESTS_DIR / f"{quest['id']}.json"
+    push_file_immediately(quest_path, f"cns-vault: create quest {quest['id']}")
+
+    return jsonify({"quest": quest}), 201
+
+
+@app.route("/api/quests/<quest_id>", methods=["PATCH", "OPTIONS"])
+def api_quests_update(quest_id):
+    """Update arbitrary fields on a quest."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    auth_err = _require_bearer_admin()
+    if auth_err:
+        return auth_err
+
+    quest = qm_get_quest(quest_id)
+    if quest is None:
+        return jsonify({"status": "error", "message": "Quest not found"}), 404
+
+    data = request.get_json()
+    allowed_fields = {"title", "description", "estimated_impact", "result_summary"}
+    fields = {k: v for k, v in data.items() if k in allowed_fields}
+
+    if not fields:
+        return jsonify({"status": "error", "message": "No valid fields to update"}), 400
+
+    try:
+        quest = qm_update_quest(quest_id, **fields)
+    except FileNotFoundError:
+        return jsonify({"status": "error", "message": "Quest not found"}), 404
+
+    from scripts.quest_manager import QUESTS_DIR
+    quest_path = QUESTS_DIR / f"{quest['id']}.json"
+    push_file_immediately(quest_path, f"cns-vault: update quest {quest_id}")
+
+    return jsonify({"quest": quest})
+
+
+@app.route("/api/quests/<quest_id>/activate", methods=["POST", "OPTIONS"])
+def api_quests_activate(quest_id):
+    """Transition quest: suggested -> active."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    auth_err = _require_bearer_admin()
+    if auth_err:
+        return auth_err
+
+    try:
+        quest = qm_transition_quest(quest_id, "active")
+    except FileNotFoundError:
+        return jsonify({"status": "error", "message": "Quest not found"}), 404
+    except ValueError as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+    from scripts.quest_manager import QUESTS_DIR
+    quest_path = QUESTS_DIR / f"{quest['id']}.json"
+    push_file_immediately(quest_path, f"cns-vault: activate quest {quest_id}")
+
+    return jsonify({"quest": quest})
+
+
+@app.route("/api/quests/<quest_id>/complete", methods=["POST", "OPTIONS"])
+def api_quests_complete(quest_id):
+    """Transition quest: * -> completed. Accepts optional result_summary."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    auth_err = _require_bearer_admin()
+    if auth_err:
+        return auth_err
+
+    try:
+        quest = qm_transition_quest(quest_id, "completed")
+    except FileNotFoundError:
+        return jsonify({"status": "error", "message": "Quest not found"}), 404
+    except ValueError as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+    # Optionally update result_summary
+    data = request.get_json(silent=True) or {}
+    result_summary = data.get("result_summary")
+    if result_summary:
+        quest = qm_update_quest(quest_id, result_summary=result_summary)
+
+    from scripts.quest_manager import QUESTS_DIR
+    quest_path = QUESTS_DIR / f"{quest['id']}.json"
+    push_file_immediately(quest_path, f"cns-vault: complete quest {quest_id}")
+
+    return jsonify({"quest": quest})
+
+
+@app.route("/api/quests/<quest_id>/archive", methods=["POST", "OPTIONS"])
+def api_quests_archive(quest_id):
+    """Transition quest: * -> archived."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    auth_err = _require_bearer_admin()
+    if auth_err:
+        return auth_err
+
+    try:
+        quest = qm_transition_quest(quest_id, "archived")
+    except FileNotFoundError:
+        return jsonify({"status": "error", "message": "Quest not found"}), 404
+    except ValueError as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
+    from scripts.quest_manager import QUESTS_DIR
+    quest_path = QUESTS_DIR / f"{quest['id']}.json"
+    push_file_immediately(quest_path, f"cns-vault: archive quest {quest_id}")
+
+    return jsonify({"quest": quest})
+
+
+@app.route("/api/quests/from-brief", methods=["POST", "OPTIONS"])
+def api_quests_from_brief():
+    """Create a quest from the brief's quest_suggestion."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    auth_err = _require_bearer_admin()
+    if auth_err:
+        return auth_err
+
+    data = request.get_json()
+    slug = data.get("slug")
+    title = data.get("title")
+    description = data.get("description", "")
+    estimated_impact = data.get("estimated_impact", "")
+
+    if not slug or not title:
+        return jsonify({"status": "error", "message": "slug and title required"}), 400
+
+    quest = qm_create_quest(
+        slug=slug,
+        title=title,
+        description=description,
+        estimated_impact=estimated_impact,
+        source="portfolio-brief",
+    )
+
+    from scripts.quest_manager import QUESTS_DIR
+    quest_path = QUESTS_DIR / f"{quest['id']}.json"
+    push_file_immediately(quest_path, f"cns-vault: create quest {quest['id']} from brief")
+
+    return jsonify({"quest": quest}), 201
+
+
 @app.route("/api/activity")
 def api_activity():
     devwatch_events: list[dict[str, Any]] = []
@@ -1092,8 +1314,16 @@ def _check_git_available() -> bool:
 def api_devwatch_run():
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
-    if not auth.current_user():
-        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    # Manual Bearer token check (same logic as verify_password)
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]
+        if API_TOKEN and token == API_TOKEN:
+            g.role = "admin"
+        else:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    else:
+        return jsonify({"status": "error", "message": "Bearer token required"}), 401
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
@@ -1146,8 +1376,15 @@ def api_devwatch_run():
 def api_devlog_run():
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
-    if not auth.current_user():
-        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]
+        if API_TOKEN and token == API_TOKEN:
+            g.role = "admin"
+        else:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    else:
+        return jsonify({"status": "error", "message": "Bearer token required"}), 401
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
@@ -1195,8 +1432,15 @@ def api_devlog_run():
 def api_update_run():
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
-    if not auth.current_user():
-        return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:]
+        if API_TOKEN and token == API_TOKEN:
+            g.role = "admin"
+        else:
+            return jsonify({"status": "error", "message": "Unauthorized"}), 401
+    else:
+        return jsonify({"status": "error", "message": "Bearer token required"}), 401
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 

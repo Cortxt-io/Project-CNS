@@ -8,16 +8,19 @@ cost_sek: 3000
 value_sek: 20000
 roi_percent: 567
 tags:
-  - python
-  - claude
-  - portfolio
-  - decision-support
-  - dashboard
+- python
+- claude
+- portfolio
+- decision-support
+- dashboard
 url_repo: https://github.com/rian010194/Project-CNS
 url_live: https://app.cortxt.io
 created: '2026-05-27'
 updated: '2026-05-27'
-summary: AI-driven portföljbrief som analyserar hela portföljen och föreslår dagens quest och prioriteringar baserat på devwatch, devlog och pending AI-förslag.
+summary: AI-driven portföljbrief som analyserar hela portföljen och föreslår dagens
+  quest och prioriteringar baserat på devwatch, devlog och pending AI-förslag.
+layer: pipeline
+pipeline: pipeline-intern
 ---
 
 ## Problem

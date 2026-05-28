@@ -8,17 +8,19 @@ cost_sek: 6000
 value_sek: 30000
 roi_percent: 400
 tags:
-  - react
-  - vite
-  - tailwind
-  - reactflow
-  - cloudflare-pages
-  - marketing
+- react
+- vite
+- tailwind
+- reactflow
+- cloudflare-pages
+- marketing
 url_repo: https://github.com/rian010194/cortxt
 url_live: https://cortxt.io
 created: '2026-05-27'
 updated: '2026-05-27'
-summary: Statisk landningssida för Cortxt på cortxt.io. Förklarar produkten, visar pipeline-diagram och samlar waitlist-intresse.
+summary: Statisk landningssida för Cortxt på cortxt.io. Förklarar produkten, visar
+  pipeline-diagram och samlar waitlist-intresse.
+layer: interface
 ---
 
 ## Problem

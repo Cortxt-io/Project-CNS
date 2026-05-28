@@ -18,6 +18,8 @@ tags:
 title: CNS Analyst
 updated: '2026-05-28'
 value_sek: 25000
+layer: pipeline
+pipeline: pipeline-review
 ---
 
 ## Problem

@@ -17,6 +17,8 @@ tags:
 title: CNS DevWatch
 updated: '2026-05-27'
 value_sek: 10000
+layer: pipeline
+pipeline: pipeline-intern
 ---
 
 ## Problem

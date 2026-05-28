@@ -22,6 +22,7 @@ updated: '2026-05-27'
 url_live: https://app.cortxt.io
 url_repo: https://github.com/rian010194/cortxt
 value_sek: 20000
+layer: interface
 ---
 
 ## Problem

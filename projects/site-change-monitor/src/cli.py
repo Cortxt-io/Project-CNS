@@ -14,6 +14,7 @@ from .config import load_config
 from .fetcher import fetch_html
 from .extractor import extract_text
 from .snapshot import save_snapshot, load_latest_snapshots, load_latest_snapshot_paths
+from .redis_store import RedisSnapshotStore
 from .differ import compute_diff
 from .reporter import generate_report
 from .html_report import generate_html_report
@@ -68,6 +69,16 @@ def main():
     filters = cfg["filters"]
     urls = cfg["urls"]
 
+    # Initialize Redis store if configured (optional backend)
+    redis_store = RedisSnapshotStore.from_config(cfg.get("redis"))
+    use_redis = False
+    if redis_store:
+        if redis_store.ping():
+            use_redis = True
+            print("  Redis store: connected")
+        else:
+            print("  Redis store: configured but unreachable, falling back to files")
+
     print(f"Site Change Monitor - checking {len(urls)} URL(s)...")
 
     results = []
@@ -86,22 +97,36 @@ def main():
 
         text = extract_text(html)
 
-        # Load previous snapshot before saving new one
-        previous = load_latest_snapshots(data_dir, url, count=1)
-        old_text = previous[0]["text"] if previous else None
+        # Load previous snapshot -- prefer Redis for O(1) lookup
+        old_text = None
+        if use_redis:
+            prev_snap = redis_store.load_latest_snapshot(url)
+            if prev_snap:
+                old_text = prev_snap.get("text")
+        else:
+            previous = load_latest_snapshots(data_dir, url, count=1)
+            old_text = previous[0]["text"] if previous else None
 
-        # Track previous snapshot path (before saving the new one)
+        # Track previous snapshot path (file-based, for report generation)
         prev_paths = load_latest_snapshot_paths(data_dir, url, count=1)
         prev_snapshot_paths[url] = prev_paths[0] if prev_paths else None
 
-        # Save current snapshot
+        # Save current snapshot to both file system (for reports) and Redis
         snap_path = save_snapshot(data_dir, url, label, text)
         snapshot_paths[url] = snap_path
         print(f"  Saved snapshot: {snap_path}")
 
+        if use_redis:
+            redis_store.save_snapshot(url, label, text)
+            print(f"  Saved to Redis store")
+
         # Compute diff
         diff_result = compute_diff(url, label, old_text, text, filters)
         results.append(diff_result)
+
+        # Record change in Redis stats
+        if use_redis and diff_result.is_meaningful:
+            redis_store.record_change(url)
 
     # Print summary
     print(f"\n\n{'#'*60}")
@@ -124,6 +149,19 @@ def main():
         print(f"\nReports saved:")
         print(f"  JSON: {run_dir / 'report.json'}")
         print(f"  HTML: {html_path}")
+
+    # Show Redis stats summary if available
+    if use_redis:
+        print(f"\n  Redis Statistics:")
+        for entry in urls:
+            stats = redis_store.get_stats(entry["url"])
+            if stats:
+                print(f"    {entry['label']}: "
+                      f"{stats.get('check_count', 0)} checks, "
+                      f"{stats.get('change_count', 0)} changes")
+            history = redis_store.load_snapshot_history(entry["url"], count=3)
+            if history:
+                print(f"      Recent snapshots: {', '.join(history)}")
 
 
 if __name__ == "__main__":

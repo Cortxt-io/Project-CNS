@@ -15,10 +15,12 @@ tags:
 title: Project Vault Dashboard
 updated: '2026-05-27'
 value_sek: 20000
-summary: React SPA på Cloudflare Pages som visualiserar CNS-portföljen via Railway Flask API. Ersätter vanilla JS GitHub Pages-dashboarden.
+summary: React SPA på Cloudflare Pages som visualiserar CNS-portföljen via Railway
+  Flask API. Ersätter vanilla JS GitHub Pages-dashboarden.
 family: cns-core
 url_repo: https://github.com/rian010194/cortxt
 url_live: https://cortxt.io
+layer: interface
 ---
 
 ## Problem

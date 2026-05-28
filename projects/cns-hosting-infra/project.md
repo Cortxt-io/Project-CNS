@@ -13,9 +13,11 @@ tags:
 title: CNS Hosting Infra
 updated: '2026-05-19'
 value_sek: 15000
-summary: GitHub Actions-infrastruktur som kör hela CNS-pipelinen automatiskt utan lokal dator.
+summary: GitHub Actions-infrastruktur som kör hela CNS-pipelinen automatiskt utan
+  lokal dator.
 family: cns-core
 url_repo: https://github.com/rian010194/Project-CNS
+layer: infrastructure
 ---
 
 ## Problem

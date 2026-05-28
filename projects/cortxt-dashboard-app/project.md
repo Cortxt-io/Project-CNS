@@ -8,17 +8,19 @@ cost_sek: 8000
 value_sek: 35000
 roi_percent: 338
 tags:
-  - react
-  - vite
-  - tailwind
-  - reactflow
-  - cloudflare-pages
-  - dashboard
+- react
+- vite
+- tailwind
+- reactflow
+- cloudflare-pages
+- dashboard
 url_repo: https://github.com/rian010194/cortxt
 url_live: https://app.cortxt.io
 created: '2026-05-27'
 updated: '2026-05-27'
-summary: React SPA på app.cortxt.io som visualiserar CNS-portföljen via Railway Flask API. Portföljgrid, projektdetaljer och Reactflow graph-overlay.
+summary: React SPA på app.cortxt.io som visualiserar CNS-portföljen via Railway Flask
+  API. Portföljgrid, projektdetaljer och Reactflow graph-overlay.
+layer: interface
 ---
 
 ## Problem

@@ -1,6 +1,6 @@
 ---
-title: "Dev Changelog Engine"
-slug: "dev-changelog-engine"
+title: Dev Changelog Engine
+slug: dev-changelog-engine
 status: idea
 tags: []
 cost_sek: 125000
@@ -11,6 +11,8 @@ created: 2026-05-02
 updated: 2026-05-02
 summary: Fullskalig pipeline för changelog-digest – ännu ej specificerad.
 family: digest-pipeline
+layer: pipeline
+pipeline: pipeline-extern
 ---
 
 ## Problem

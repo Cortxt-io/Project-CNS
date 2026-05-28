@@ -25,3 +25,16 @@ filters:
   min_change_chars: 10          # Ignore diffs shorter than this
   ignore_whitespace_only: true  # Skip whitespace-only changes
   ignore_timestamp_patterns: true  # Strip common date/time patterns before comparing
+
+# Redis snapshot store (optional -- disabled by default)
+# When enabled, provides O(1) latest-snapshot lookups, a change-history
+# timeline, and atomic check/change counters. Falls back to file-based
+# storage if Redis is unreachable.
+redis:
+  enabled: false                # Set to true to enable
+  host: localhost
+  port: 6379
+  db: 0
+  # password: "your-secret"     # Uncomment if auth is required
+  snapshot_ttl_seconds: 604800  # 7 days -- auto-expire old snapshots
+  max_history: 100              # Max history entries per URL

@@ -11,6 +11,7 @@ tags: []
 title: AI Ticket Triage
 updated: '2026-05-27'
 value_sek: 750000
+layer: concept
 ---
 
 ## Problem

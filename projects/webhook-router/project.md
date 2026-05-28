@@ -15,6 +15,7 @@ updated: '2026-05-07'
 current_slice: Self-hosted webhook audit log -- log, inspect, replay inkommande webhooks
 summary: Self-hosted proxy som loggar, söker och replayer inkommande webhooks.
 family: developer-tools
+layer: infrastructure
 ---
 
 ## Problem
