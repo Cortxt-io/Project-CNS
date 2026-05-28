@@ -1,23 +1,27 @@
 ---
-title: Cortxt Graph View
+cost_sek: 5000
+created: '2026-05-27'
+current_slice: Implementera depends_on-fält i CNS-schemat och validera att beroendedata
+  kan läsas in korrekt i dashboard-appen. Verifiera att family-enum-migration är komplett
+  innan graph-layouten byggs.
+family: cns-core
+mvp_stage: solution_test
+roi_percent: 300
 slug: cortxt-graph-view
 status: idea
-mvp_stage: hypothesis
-family: cns-core
-cost_sek: 5000
-value_sek: 20000
-roi_percent: 300
+summary: Interaktiv Reactflow-graf i cortxt-dashboard-app som visualiserar projektberoenden
+  och familjestrukturer med edges och hierarkisk layout.
 tags:
-  - react
-  - reactflow
-  - dashboard
-  - graph
-  - visualization
-url_repo: https://github.com/rian010194/cortxt
-url_live: https://app.cortxt.io
-created: '2026-05-27'
+- react
+- reactflow
+- dashboard
+- graph
+- visualization
+title: Cortxt Graph View
 updated: '2026-05-27'
-summary: Interaktiv Reactflow-graf i cortxt-dashboard-app som visualiserar projektberoenden och familjestrukturer med edges och hierarkisk layout.
+url_live: https://app.cortxt.io
+url_repo: https://github.com/rian010194/cortxt
+value_sek: 20000
 ---
 
 ## Problem
@@ -66,8 +70,9 @@ En Reactflow-graf i graph-overlayet i cortxt-dashboard-app. Noder grupperade per
 
 ## Risk Assessment
 
-- **Technical** (score 3/5): Reactflow automatisk layout med edges kräver en layout-algoritm (dagre eller liknande) — inte trivialt med GroupNodes.
-- **Ops** (score 1/5): Lever i befintligt cortxt-repo, ingen ny infrastruktur.
+- **Technical** (score 3/5): Reactflow automatisk layout med GroupNodes och edges kräver dagre eller liknande layout-algoritm, vilket är icke-trivialt med family-gruppering
+- **Ops** (score 1/5): Lever i befintligt cortxt-repo, ingen ny infrastruktur krävs
+- **Adoption** (score 2/5): Osäkert om graph-vyn faktiskt används för att förstå portföljen eller om kortgriden förblir primär navigationsmetod
 
 ## Timeline
 

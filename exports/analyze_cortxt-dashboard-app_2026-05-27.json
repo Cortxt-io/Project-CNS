@@ -1,8 +1,0 @@
-{
-  "slug": "cortxt-dashboard-app",
-  "analyzed_at": "2026-05-27",
-  "suggestions": {
-    "current_slice": "Deploy apps/dashboard/ till Cloudflare Pages, verifiera att portföljgrid, projektdetalj och Reactflow graph-overlay fungerar mot Railway Flask API live",
-    "updated_at": "2026-05-27"
-  }
-}
