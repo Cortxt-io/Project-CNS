@@ -1,12 +1,13 @@
 ---
 cost_sek: 5000
 created: '2026-05-25'
-current_slice: Evaluate JSON consistency and field accuracy across 3-5 real CNS projects
+current_slice: Run bulk analysis on scoring-studio, ai-ticket-triage, and cns-devwatch
+  to validate precision and usability
 family: cns-core
-mvp_stage: solution_test
+mvp_stage: demand_test
 roi_percent: 400
 slug: cns-analyst
-status: early_mvp
+status: mvp
 summary: AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och
   ROI-estimat per projekt.
 tags:
@@ -15,7 +16,7 @@ tags:
 - cns-core
 - analysis
 title: CNS Analyst
-updated: '2026-05-27'
+updated: '2026-05-28'
 value_sek: 25000
 ---
 
@@ -63,6 +64,7 @@ cns analyze <slug> skickar hela project.md till OpenAI och returnerar strukturer
 - **Technical** (score 3/5): LLM-output kan vara inkonsekvent – JSON-parsning måste vara robust med tydlig felhantering.
 - **Ops** (score 2/5): OpenAI-anrop kostar pengar och tid – bör inte köras automatiskt, alltid manuellt triggat.
 - **Adoption** (score 3/5): Risk att verktyget blir en one-off utility istället för att integreras i regelbunden workflow – kräver att förslagen faktiskt är tillräckligt värdefulla för att accepteras.
+- **Technical** (score 2/5): Bulk-analys av flera projekt samtidigt kan leda till rate limiting eller timeout-problem vid API-anrop – kräver retry-logik och progress tracking.
 
 ## Timeline
 
