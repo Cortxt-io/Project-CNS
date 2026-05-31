@@ -4,10 +4,10 @@
   "title": "Implementera sannolikhet×påverkan riskmodell",
   "description": "Uppdatera CNS Analyst risk-schema från enkel kategorisering till probability (0-100%) × impact (1-5) modell. Uppdatera: schema.json, validator, parser och system-prompt. Testa med 5 exempel från pending-listan.",
   "estimated_impact": "Ger omedelbart bättre riskbedömningar för de 20 pending förslagen och skapar grund för bulk-validering. CNS Analyst är i demand_test vilket betyder att förbättrad kvalitet direkt påverkar produktens trovärdighet.",
-  "status": "suggested",
+  "status": "active",
   "source": "portfolio-brief",
   "created_at": "2026-05-28",
-  "started_at": null,
+  "started_at": "2026-05-31T17:20:53",
   "completed_at": null,
   "result_summary": null
 }
