@@ -149,6 +149,41 @@ Kor `export json` igen nar du andrat projekt via CNS for att synka datan.
 
 ---
 
+## GitHub Webhook Setup
+
+CNS-servern tar emot GitHub-webhooks på `POST /api/webhook/github` och uppdaterar
+quests automatiskt utifrån vad som händer i kopplade repos.
+
+### Setup
+
+1. Sätt env-var i Railway:
+   ```
+   CNS_WEBHOOK_SECRET=<din hemlighet>
+   ```
+2. GitHub → repo → Settings → Webhooks → Add webhook:
+   - **Payload URL:** `https://project-cns-production.up.railway.app/api/webhook/github`
+   - **Content type:** `application/json`
+   - **Secret:** samma som `CNS_WEBHOOK_SECRET`
+   - **Which events?** → "Let me select individual events" och bocka i:
+     - **Push** – auto-completar quests vars projektfiler ändrats
+     - **Pull requests** – startar/avslutar quests vid PR-händelser
+     - **Workflow runs** – sätter CI-status (grön/röd) på quests
+
+### Hanterade events
+
+| Event | Trigger | Effekt på quest |
+|-------|---------|-----------------|
+| `push` | Commits pushade | Filer under `projects/<slug>/` → matchande `in_progress`-quests blir `completed` |
+| `pull_request` (opened/reopened) | PR öppnad | `active`-quests vars slug nämns i PR-titel/body/branch → `in_progress` |
+| `pull_request` (closed + merged) | PR merge:ad | Matchande `in_progress`-quests → `completed` |
+| `workflow_run` (completed) | CI-körning klar | `ci_status` sätts till `passing`/`failing` på matchande `in_progress`-quests |
+
+**Slug-matchning:** `push` matchar via filsökväg (`projects/<slug>/...`). `pull_request`
+och `workflow_run` saknar fillista i sin payload — de matchar istället quests vars
+`slug` nämns som text i PR-titel/body/branch respektive workflow-titel/branch.
+
+---
+
 ## Typiskt arbetsflode (alla fyra)
 
 ```bash
