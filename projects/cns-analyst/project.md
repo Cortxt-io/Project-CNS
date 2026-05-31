@@ -5,7 +5,7 @@ current_slice: Validera bulk-analys på scoring-studio (9), ai-ticket-triage (6)
   cns-devwatch (5) förslag – mät precision, false positives och performance
 family: cns-core
 layer: pipeline
-mvp_stage: solution_test
+mvp_stage: demand_test
 pipeline: pipeline-review
 roi_percent: 400
 slug: cns-analyst
