@@ -36,7 +36,7 @@
     {% for event in devwatch_events %}
     {% set slug = event.meta.slug %}
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4">
-      <div class="flex items-start justify-between mb-2">
+      <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
         <div>
           <a href="/project/{{ slug }}" class="font-semibold text-sm text-slate-800 hover:text-blue-600 transition-colors">{{ event.meta.project_title or slug }}</a>
           <span class="text-xs text-slate-400 ml-2">{{ event.detectedAt }}</span>

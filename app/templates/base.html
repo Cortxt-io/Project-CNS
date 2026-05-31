@@ -32,7 +32,7 @@
     .md-content blockquote { border-left: 3px solid #cbd5e1; padding-left: 0.75rem; color: #64748b; margin-bottom: 0.5rem; }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans max-w-[1000px] mx-auto px-6 py-8 leading-relaxed">
+<body class="bg-gray-50 text-gray-900 font-sans max-w-[1000px] mx-auto px-4 py-6 sm:px-6 sm:py-8 leading-relaxed">
 
   <!-- Header -->
   <header class="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
@@ -43,29 +43,29 @@
   </header>
 
   <!-- Nav -->
-  <nav class="flex gap-1 mb-6 border-b-2 border-gray-200">
+  <nav class="flex flex-wrap gap-y-1 gap-x-0 mb-6 border-b-2 border-gray-200">
     <a href="/"
-       class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
               {% if request.path == '/' %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Översikt
     </a>
     <a href="/activity"
-       class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
               {% if request.path == '/activity' %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Aktivitet
     </a>
     <a href="/analyze"
-       class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
               {% if request.path == '/analyze' %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Analys
     </a>
     <a href="/review"
-       class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
               {% if '/review' in request.path %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Granska
     </a>
     <a href="/brief"
-       class="px-4 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
               {% if request.path == '/brief' %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Brief
     </a>
