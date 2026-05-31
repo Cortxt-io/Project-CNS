@@ -68,6 +68,7 @@ def create_quest(
         "started_at": None,
         "completed_at": None,
         "result_summary": None,
+        "ci_status": None,
     }
     _quest_path(quest_id).write_text(
         json.dumps(quest, ensure_ascii=False, indent=2), encoding="utf-8"

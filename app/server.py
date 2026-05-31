@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import json
 import os
 import re
@@ -1542,9 +1544,97 @@ def api_update_run():
 GITHUB_WEBHOOK_SECRET = os.getenv("CNS_WEBHOOK_SECRET", "")
 
 
+def _slugs_from_pushed_files(payload: dict) -> set[str]:
+    """Return project slugs touched by a push event's commits."""
+    changed_files: set[str] = set()
+    for commit in payload.get("commits", []):
+        changed_files.update(commit.get("added", []))
+        changed_files.update(commit.get("modified", []))
+        changed_files.update(commit.get("removed", []))
+
+    slugs: set[str] = set()
+    for f in changed_files:
+        parts = Path(f).parts
+        if len(parts) >= 2 and parts[0] == "projects":
+            slugs.add(parts[1])
+    return slugs
+
+
+def _slugs_from_text(*texts: str) -> set[str]:
+    """Match known project slugs mentioned in free text (PR title/body/branch).
+
+    Used for events that don't carry a file list (pull_request, workflow_run).
+    A slug matches if it appears as a whole token in any of the given texts.
+    """
+    haystack = " ".join(t for t in texts if t).lower()
+    if not haystack:
+        return set()
+    known = {q.get("slug") for q in qm_list_quests() if q.get("slug")}
+    return {slug for slug in known if slug and slug.lower() in haystack}
+
+
+def _complete_quests_for_slugs(slugs: set[str], summary: str) -> dict[str, str]:
+    """Auto-complete in_progress quests for the given slugs. Returns id->result."""
+    results: dict[str, str] = {}
+    for slug in slugs:
+        for quest in qm_list_quests(status="in_progress", slug=slug):
+            try:
+                qm_transition_quest(quest["id"], "completed")
+                qm_update_quest(quest["id"], result_summary=summary)
+                quest_path = QUESTS_DIR / f"{quest['id']}.json"
+                push_file_immediately(
+                    quest_path, f"cns-vault: auto-complete quest {quest['id']}"
+                )
+                results[quest["id"]] = "auto-completed"
+            except Exception as exc:
+                results[quest["id"]] = f"error: {exc}"
+    return results
+
+
+def _start_quests_for_slugs(slugs: set[str]) -> dict[str, str]:
+    """Move active quests to in_progress for the given slugs. Returns id->result."""
+    results: dict[str, str] = {}
+    for slug in slugs:
+        for quest in qm_list_quests(status="active", slug=slug):
+            try:
+                qm_transition_quest(quest["id"], "in_progress")
+                quest_path = QUESTS_DIR / f"{quest['id']}.json"
+                push_file_immediately(
+                    quest_path, f"cns-vault: auto-start quest {quest['id']}"
+                )
+                results[quest["id"]] = "in_progress"
+            except Exception as exc:
+                results[quest["id"]] = f"error: {exc}"
+    return results
+
+
+def _set_ci_status_for_slugs(slugs: set[str], ci_status: str) -> dict[str, str]:
+    """Record CI status on in_progress quests for the given slugs.
+
+    Stores the latest CI conclusion on the quest so the dashboard can show a
+    build badge. Persisted but not committed per-event to avoid commit churn.
+    """
+    results: dict[str, str] = {}
+    for slug in slugs:
+        for quest in qm_list_quests(status="in_progress", slug=slug):
+            try:
+                qm_update_quest(quest["id"], ci_status=ci_status)
+                results[quest["id"]] = ci_status
+            except Exception as exc:
+                results[quest["id"]] = f"error: {exc}"
+    return results
+
+
 @app.route("/api/webhook/github", methods=["POST", "OPTIONS"])
 def api_webhook_github():
-    """Receive GitHub push webhooks and auto-complete in_progress quests."""
+    """Receive GitHub webhooks and update quests.
+
+    Handled events:
+      - push: auto-complete in_progress quests for slugs whose files changed
+      - pull_request: opened/reopened -> start matching quests (in_progress);
+        closed+merged -> auto-complete matching quests
+      - workflow_run: record CI conclusion (success/failure) on matching quests
+    """
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
 
@@ -1561,50 +1651,61 @@ def api_webhook_github():
 
     payload = request.get_json(silent=True) or {}
     event = request.headers.get("X-GitHub-Event", "")
+    repo = payload.get("repository", {}).get("full_name", "")
 
-    if event != "push":
-        return jsonify({"status": "ok", "message": f"Ignored event: {event}"})
-
-    # Extract changed files from commits
-    changed_files: set[str] = set()
-    for commit in payload.get("commits", []):
-        changed_files.update(commit.get("added", []))
-        changed_files.update(commit.get("modified", []))
-        changed_files.update(commit.get("removed", []))
-
-    # Find affected project slugs
     affected_slugs: set[str] = set()
-    for f in changed_files:
-        parts = Path(f).parts
-        if len(parts) >= 2 and parts[0] == "projects":
-            affected_slugs.add(parts[1])
-
     results: dict[str, str] = {}
 
-    # Auto-complete in_progress quests for affected slugs
-    for slug in affected_slugs:
-        in_progress = qm_list_quests(status="in_progress", slug=slug)
-        for quest in in_progress:
-            try:
-                repo = payload.get("repository", {}).get("full_name", "")
-                ref = payload.get("ref", "")
-                commit_msg = payload.get("head_commit", {}).get("message", "")
-                auto_summary = (
-                    f"Auto-completed via GitHub push to {repo} ({ref}). "
-                    f"Commit: {commit_msg[:100]}"
-                )
+    if event == "push":
+        affected_slugs = _slugs_from_pushed_files(payload)
+        ref = payload.get("ref", "")
+        commit_msg = payload.get("head_commit", {}).get("message", "")
+        summary = (
+            f"Auto-completed via GitHub push to {repo} ({ref}). "
+            f"Commit: {commit_msg[:100]}"
+        )
+        results = _complete_quests_for_slugs(affected_slugs, summary)
 
-                qm_transition_quest(quest["id"], "completed")
-                qm_update_quest(quest["id"], result_summary=auto_summary)
+    elif event == "pull_request":
+        action = payload.get("action", "")
+        pr = payload.get("pull_request", {})
+        title = pr.get("title", "")
+        body = pr.get("body", "") or ""
+        branch = pr.get("head", {}).get("ref", "")
+        affected_slugs = _slugs_from_text(title, body, branch)
 
-                quest_path = QUESTS_DIR / f"{quest['id']}.json"
-                push_file_immediately(
-                    quest_path, f"cns-vault: auto-complete quest {quest['id']}"
-                )
+        if action in ("opened", "reopened"):
+            results = _start_quests_for_slugs(affected_slugs)
+        elif action == "closed" and pr.get("merged"):
+            number = pr.get("number", "")
+            summary = (
+                f"Auto-completed via merged PR #{number} in {repo}: "
+                f"{title[:100]}"
+            )
+            results = _complete_quests_for_slugs(affected_slugs, summary)
+        else:
+            return jsonify({
+                "status": "ok",
+                "message": f"Ignored pull_request action: {action}",
+            })
 
-                results[quest["id"]] = "auto-completed"
-            except Exception as exc:
-                results[quest["id"]] = f"error: {exc}"
+    elif event == "workflow_run":
+        run = payload.get("workflow_run", {})
+        # Only act on finished runs
+        if payload.get("action") != "completed":
+            return jsonify({
+                "status": "ok",
+                "message": f"Ignored workflow_run action: {payload.get('action')}",
+            })
+        conclusion = run.get("conclusion", "")  # success, failure, cancelled...
+        title = run.get("display_title", "") or run.get("name", "")
+        branch = run.get("head_branch", "")
+        affected_slugs = _slugs_from_text(title, branch)
+        ci_status = "passing" if conclusion == "success" else "failing"
+        results = _set_ci_status_for_slugs(affected_slugs, ci_status)
+
+    else:
+        return jsonify({"status": "ok", "message": f"Ignored event: {event}"})
 
     return jsonify({
         "status": "ok",
