@@ -4,10 +4,10 @@
   "title": "Implementera probability × impact riskschema i CNS Analyst",
   "description": "Uppdatera risk-modellen från enkel 1-5 skala till sannolikhet × påverkan-matris: (1) definiera JSON-schema med probability/impact-fält, (2) uppdatera validator och parser, (3) justera Claude-prompt för att generera båda dimensioner, (4) testa med 5 existerande förslag.",
   "estimated_impact": "Aktivt quest med tydlig spec redan definierad, ger bättre riskvärdering för alla 3 pending + 20 bulk-förslag som väntar på validering. Bygger direkt på gårdagens quest-definition och låser upp bulk-analys-validering.",
-  "status": "active",
+  "status": "completed",
   "source": "portfolio-brief",
   "created_at": "2026-05-31",
   "started_at": "2026-05-31T11:07:54",
-  "completed_at": null,
+  "completed_at": "2026-05-31T11:07:58",
   "result_summary": null
 }
