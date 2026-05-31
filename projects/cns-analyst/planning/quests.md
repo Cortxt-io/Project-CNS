@@ -23,3 +23,15 @@
 **Källa:** portfolio-brief
 
 ---
+
+## 2026-05-31 — Implementera nytt riskschema i CNS Analyst
+
+**Beskrivning:** Uppgradera riskvärdering från 1-5-skala till sannolikhet × påverkan-matris med mitigation-plan. Uppdatera schema/project-schema.ts, validators, parser och Claude-prompt enligt gårdagens quest-spec.
+
+**Impact:** Direkt förbättring av analysverktyget som används aktivt (mvp-stage). Etablerar bättre riskbedömning för hela portföljen (400% ROI). Kan genomföras idag eftersom spec redan är definierad i gårdagens quest.
+
+**Status:** föreslagen
+
+**Källa:** portfolio-brief
+
+---
