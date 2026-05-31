@@ -98,37 +98,36 @@
       <p class="subtitle">2026-05-31</p>
       <div class="meta">
         <p><span>Antal händelser:</span> 18</p>
-        <p><span>Källa:</span> devwatch_2026-05-31.json (20260531_102630)</p>
+        <p><span>Källa:</span> devwatch_2026-05-31.json (20260531_110413)</p>
       </div>
     </header>
 
     <section class="card">
   <h2>Dagens sammanfattning</h2>
   <div class="digest-content">
-<h2>Daglig portföljbrief 2026-05-27</h2>
 <h3>Vad hände igår</h3>
-<p><strong>CNS Analyst</strong> fick ett nytt quest: förbättra riskschemat med sannolikhet × påverkan istället för enkel 1-5 skala. Kräver uppdateringar i schema, validator, parser och Claude-prompt. Ett annat quest validerar bulk-analys med 20 pending förslag.</p>
-<p><strong>Cortxt Dashboard App</strong> fick fyra designbeslut dokumenterade: family-enum dual-mapping, HashRouter istället för BrowserRouter, inga edges i Reactflow v1, och Railway REST API som datakälla (ingen MCP i v1). Roadmap uppdaterad med v1 MVP pågår, v2 planerat.</p>
-<p><strong>Cortxt Graph View</strong> parkerades officiellt – beslut dokumenterat att graph-vy väntar tills förutsättningar är uppfyllda. Roadmap omstrukturerad till v0 Coming Soon, v1 Planerat, v2 Framtida.</p>
-<p><strong>Cortxt Landing</strong> fick tre tekniska beslut: Cloudflare Pages istället för GitHub Pages, DNS flyttad till Cloudflare, React + Vite istället för statisk HTML. Roadmap visar v1 MVP pågår.</p>
-<p><strong>Project Vault Dashboard</strong> fick omfattande dokumentation: API-schema, dashboard-views (Portfolio Overview, ROI &amp; Metrics, Project Detail), fem designbeslut inklusive Cloudflare Pages-migration och family-enum dual-mapping. Roadmap: v0 klar (Vanilla JS), v1 pågår (React SPA), v2 planerat.</p>
-<p><strong>Site Change Monitor</strong> fick fullständig README med noise reduction heuristics, snapshot-format, config-format och rapport-struktur. Planning-dokument för MVP scope, report review checklist och roadmap tillagda.</p>
-<p><strong>Webhook Router</strong> fick komplett dokumentation: architecture.md, configuration.md, integration-guide.md. Tre designbeslut från 2026-05-07 dokumenterade: ompositionering från intern infra till extern produkt, Python + SQLite som teknikval, replay som killer feature.</p>
+<p><strong>CNS Analyst</strong> fick ett nytt quest: förbättra riskschemat från enkel 1–5-skala till sannolikhet × påverkan med mitigation-plan. Uppdatering krävs i schema, validator, parser och Claude-prompt. Ytterligare quest: validera bulk-analys med 20 pending förslag.</p>
+<p><strong>Cortxt Graph View</strong> parkerades officiellt – beslut taget att vänta tills förutsättningar är uppfyllda. Roadmap omstrukturerad till v0 &quot;Coming Soon&quot;, v1 och v2.</p>
+<p><strong>Project Vault Dashboard</strong> fick omfattande dokumentation: API-schema, dashboard-views (Portfolio Overview, ROI &amp; Metrics, Project Detail), beslut om Cloudflare Pages med två custom domains, HashRouter istället för BrowserRouter, ingen MCP i v1. Family-enum dual-mapping dokumenterad.</p>
+<p><strong>Cortxt Dashboard App</strong> fick samma arkitekturbeslut: Railway REST API som datakälla (ingen MCP i v1), HashRouter, inga edges i Reactflow v1, family-enum dual-mapping.</p>
+<p><strong>Webhook Router</strong> fick omfattande dokumentation: architecture.md, configuration.md, integration-guide.md. Ompositionering från intern infra till extern produkt dokumenterad – self-hosted med replay som killer feature. Integration-guide för Site Change Monitor klar.</p>
+<p><strong>Site Change Monitor</strong> fick komplett README med noise reduction heuristics, snapshot-format, report-review-checklist och roadmap.</p>
+<p><strong>Scoring Studio</strong> definierat: lös problemet med hårdkodade vikter i Changelog Engine Mini genom interaktiv viktjustering med live preview.</p>
 <h3>Vad är kvar</h3>
-<p><strong>CNS Analyst</strong>: Implementera nytt riskschema, köra bulk-analys på 20 förslag.</p>
-<p><strong>Cortxt Dashboard/Landing/Graph View</strong>: Fortsätt React-implementering enligt roadmap.</p>
-<p><strong>Project Vault Dashboard</strong>: Färdigställ React SPA v1.</p>
-<p><strong>Site Change Monitor</strong>: Köra 5-10 körningar enligt review checklist.</p>
-<p><strong>Webhook Router</strong>: Bygga MVP enligt architecture.md.</p>
+<p><strong>CNS Analyst</strong>: Implementera nytt riskschema, kör bulk-validering med 20 förslag.</p>
+<p><strong>Project Vault Dashboard</strong>: Bygga React SPA med tre vyer enligt spec, implementera family-enum dual-mapping.</p>
+<p><strong>Cortxt Dashboard App</strong>: Samma som ovan – implementera Railway REST-integration, Reactflow utan edges.</p>
+<p><strong>Webhook Router</strong>: Bygga MVP – routing-engine, SQLite-lagring, replay-funktion.</p>
+<p><strong>Scoring Studio</strong>: Definiera MVP-scope, börja bygga interaktiv viktjusterare.</p>
 <h3>Nästa steg idag</h3>
-<h3>Implementera CNS Analyst riskschema-uppdatering – påverkar hela CNS-familjen</h3>
-<h3>Fortsätt React-implementation för Cortxt Dashboard – blockerar graph view</h3>
-<h3>Kör första Site Change Monitor-körningen – validera noise reduction</h3>
+<h3><strong>Implementera nytt riskschema i CNS Analyst</strong> – uppdatera schema, validator och parser först, sedan Claude-prompt</h3>
+<h3><strong>Börja React SPA för Project Vault Dashboard</strong> – sätt upp routing, implementera Portfolio Overview-vyn</h3>
+<h3><strong>Definiera MVP-scope för Scoring Studio</strong> – vilka vikter ska vara justerbara, hur visualiseras effekten?</h3>
   </div>
 </section>
 
     <footer>
-      <p>Genererad av cns-devlog &middot; 2026-05-31 10:26 UTC</p>
+      <p>Genererad av cns-devlog &middot; 2026-05-31 11:04 UTC</p>
     </footer>
   </main>
 </body>
