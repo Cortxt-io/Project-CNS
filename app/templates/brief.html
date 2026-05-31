@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block title %}Brief – Project Vault{% endblock %}
+
+{% block content %}
+
+<div id="brief-loading" class="text-center py-20 text-sm text-gray-500">
+  <div class="inline-block w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+  <div>Genererar brief...</div>
+</div>
+
+<div id="brief-error" class="hidden text-center py-20">
+  <div class="text-rose-600 font-semibold text-base mb-2">Kunde inte generera brief</div>
+  <div id="brief-error-msg" class="text-sm text-rose-500 mb-4"></div>
+  <button id="brief-retry-btn"
+          class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors">
+    Försök igen
+  </button>
+</div>
+
+<div id="brief-content" class="hidden space-y-4">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-2">
+    <h2 class="text-lg font-bold text-slate-800">Daglig brief</h2>
+    <div class="flex items-center gap-3">
+      <span id="brief-date" class="text-xs text-slate-400"></span>
+      <button id="brief-refresh-btn"
+              class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-50 text-slate-600 border border-slate-200 hover:bg-slate-100 transition-colors">
+        Uppdatera
+      </button>
+    </div>
+  </div>
+
+  <!-- Situation -->
+  <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Läge</h3>
+    <p id="brief-situation" class="text-sm text-slate-700 leading-relaxed"></p>
+  </div>
+
+  <!-- Priorities -->
+  <div class="bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-3">Prioriteringar</h3>
+    <div id="brief-priorities" class="space-y-3"></div>
+  </div>
+
+  <!-- Quest suggestion -->
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-5 shadow-sm">
+    <h3 class="text-xs font-semibold text-blue-500 uppercase tracking-wide mb-3">Dagens quest</h3>
+    <div id="brief-quest" class="space-y-1"></div>
+    <div class="mt-4" id="brief-quest-actions"></div>
+  </div>
+
+  <!-- Blockers -->
+  <div id="brief-blockers-section" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-5 shadow-sm">
+    <h3 class="text-xs font-semibold text-amber-600 uppercase tracking-wide mb-3">Blockers</h3>
+    <div id="brief-blockers" class="space-y-2"></div>
+  </div>
+
+  <!-- Pending recommendation -->
+  <div id="brief-pending-section" class="hidden bg-white border border-slate-200 rounded-lg p-5 shadow-sm">
+    <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">Pending-rekommendation</h3>
+    <p id="brief-pending" class="text-sm text-slate-700 leading-relaxed"></p>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  var loadingEl = document.getElementById('brief-loading');
+  var errorEl = document.getElementById('brief-error');
+  var errorMsgEl = document.getElementById('brief-error-msg');
+  var contentEl = document.getElementById('brief-content');
+  var retryBtn = document.getElementById('brief-retry-btn');
+  var refreshBtn = document.getElementById('brief-refresh-btn');
+
+  function showLoading() {
+    loadingEl.classList.remove('hidden');
+    errorEl.classList.add('hidden');
+    contentEl.classList.add('hidden');
+  }
+
+  function showError(msg) {
+    loadingEl.classList.add('hidden');
+    errorMsgEl.textContent = msg || 'Okänt fel';
+    errorEl.classList.remove('hidden');
+    contentEl.classList.add('hidden');
+  }
+
+  function esc(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
+  function renderBrief(brief) {
+    loadingEl.classList.add('hidden');
+    errorEl.classList.add('hidden');
+    contentEl.classList.remove('hidden');
+
+    document.getElementById('brief-date').textContent =
+      'Genererad: ' + (brief.generated_at || '');
+
+    // Situation
+    document.getElementById('brief-situation').textContent =
+      brief.situation || '';
+
+    // Priorities
+    var priEl = document.getElementById('brief-priorities');
+    priEl.innerHTML = '';
+    (brief.priorities || []).forEach(function (p, i) {
+      priEl.innerHTML +=
+        '<div class="border-l-4 border-blue-400 pl-3 py-1">' +
+          '<div class="flex items-center gap-2 mb-0.5">' +
+            '<span class="text-xs font-bold text-blue-600">' + (i + 1) + '</span>' +
+            '<span class="text-sm font-semibold text-slate-800">' + esc(p.title || p.slug) + '</span>' +
+            '<span class="text-xs text-slate-400">' + esc(p.slug) + '</span>' +
+          '</div>' +
+          '<p class="text-xs text-slate-600 mb-0.5">' + esc(p.reason) + '</p>' +
+          '<p class="text-xs font-medium text-blue-700">&rarr; ' + esc(p.action) + '</p>' +
+        '</div>';
+    });
+
+    // Quest
+    var qs = brief.quest_suggestion || {};
+    var questEl = document.getElementById('brief-quest');
+    questEl.innerHTML =
+      '<div class="text-base font-bold text-slate-800 mb-1">' + esc(qs.title || '') + '</div>' +
+      '<p class="text-sm text-slate-600 mb-1">' + esc(qs.description || '') + '</p>' +
+      '<div class="text-xs text-slate-400">Projekt: <span class="font-medium text-slate-600">' + esc(qs.target_slug || '') + '</span></div>' +
+      '<p class="text-xs text-blue-600 mt-1">' + esc(qs.estimated_impact || '') + '</p>';
+
+    // Quest create button
+    var questActionsEl = document.getElementById('brief-quest-actions');
+    questActionsEl.innerHTML = '';
+    if (qs.title) {
+      questActionsEl.innerHTML =
+        '<button id="create-quest-btn" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors">' +
+          'Skapa quest i planeraren' +
+        '</button>';
+      document.getElementById('create-quest-btn').addEventListener('click', function () {
+        createQuestFromBrief(qs);
+      });
+    }
+
+    // Blockers
+    var blockers = brief.blockers || [];
+    var blockersSection = document.getElementById('brief-blockers-section');
+    if (blockers.length > 0) {
+      blockersSection.classList.remove('hidden');
+      var blockersEl = document.getElementById('brief-blockers');
+      blockersEl.innerHTML = '';
+      blockers.forEach(function (b) {
+        blockersEl.innerHTML +=
+          '<div class="flex gap-2 text-sm">' +
+            '<span class="font-medium text-amber-700 flex-shrink-0">' + esc(b.slug) + ':</span>' +
+            '<span class="text-slate-700">' + esc(b.blocker) + '</span>' +
+          '</div>';
+      });
+    } else {
+      blockersSection.classList.add('hidden');
+    }
+
+    // Pending recommendation
+    var pendingRec = brief.pending_recommendation;
+    var pendingSection = document.getElementById('brief-pending-section');
+    if (pendingRec && pendingRec.trim()) {
+      pendingSection.classList.remove('hidden');
+      document.getElementById('brief-pending').textContent = pendingRec;
+    } else {
+      pendingSection.classList.add('hidden');
+    }
+  }
+
+  function loadBrief() {
+    showLoading();
+    fetch('/api/brief', {
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function (r) {
+      if (!r.ok) {
+        return r.json().then(function (d) {
+          throw new Error(d.message || 'HTTP ' + r.status);
+        }).catch(function (e) {
+          if (e.message) throw e;
+          throw new Error('HTTP ' + r.status);
+        });
+      }
+      return r.json();
+    })
+    .then(function (data) {
+      if (data.status === 'error') {
+        showError(data.message);
+      } else {
+        renderBrief(data.brief || data);
+      }
+    })
+    .catch(function (err) {
+      showError(err.message || 'Failed to fetch');
+    });
+  }
+
+  function createQuestFromBrief(qs) {
+    var btn = document.getElementById('create-quest-btn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Skapar...'; }
+    fetch('/api/quests/from-brief', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ quest_suggestion: qs })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (d.status === 'ok' || d.id) {
+        if (btn) { btn.textContent = 'Quest skapat!'; }
+      } else {
+        if (btn) { btn.disabled = false; btn.textContent = 'Skapa quest i planeraren'; }
+        alert('Fel: ' + (d.message || 'Okänt fel'));
+      }
+    })
+    .catch(function () {
+      if (btn) { btn.disabled = false; btn.textContent = 'Skapa quest i planeraren'; }
+      alert('Nätverksfel vid skapande av quest');
+    });
+  }
+
+  retryBtn.addEventListener('click', loadBrief);
+  refreshBtn.addEventListener('click', loadBrief);
+
+  loadBrief();
+})();
+</script>
+
+{% endblock %}

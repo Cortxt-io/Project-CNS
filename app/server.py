@@ -862,6 +862,12 @@ def api_health():
     })
 
 
+@app.route("/brief")
+@auth.login_required
+def brief_page():
+    return render_template("brief.html", is_admin=is_admin())
+
+
 @app.route("/api/brief")
 @auth.login_required
 def api_brief():
@@ -1631,82 +1637,4 @@ if not PASSWORD:
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
-    event = request.headers.get("X-GitHub-Event", "")
-
-    if event != "push":
-        return jsonify({"status": "ok", "message": f"Ignored event: {event}"})
-
-    # Extract changed files from commits
-    changed_files: set[str] = set()
-    for commit in payload.get("commits", []):
-        changed_files.update(commit.get("added", []))
-        changed_files.update(commit.get("modified", []))
-        changed_files.update(commit.get("removed", []))
-
-    # Find affected project slugs
-    affected_slugs: set[str] = set()
-    for f in changed_files:
-        parts = Path(f).parts
-        if len(parts) >= 2 and parts[0] == "projects":
-            affected_slugs.add(parts[1])
-
-    results: dict[str, str] = {}
-
-    # Auto-complete in_progress quests for affected slugs
-    for slug in affected_slugs:
-        in_progress = qm_list_quests(status="in_progress", slug=slug)
-        for quest in in_progress:
-            try:
-                repo = payload.get("repository", {}).get("full_name", "")
-                ref = payload.get("ref", "")
-                commit_msg = payload.get("head_commit", {}).get("message", "")
-                auto_summary = f"Auto-completed via GitHub push to {repo} ({ref}). Commit: {commit_msg[:100]}"
-
-                qm_transition_quest(quest["id"], "completed")
-                qm_update_quest(quest["id"], result_summary=auto_summary)
-
-                quest_path = QUESTS_DIR / f"{quest['id']}.json"
-                push_file_immediately(quest_path, f"cns-vault: auto-complete quest {quest['id']}")
-
-                results[quest["id"]] = "auto-completed"
-            except Exception as exc:
-                results[quest["id"]] = f"error: {exc}"
-
-    return jsonify({
-        "status": "ok",
-        "event": event,
-        "affected_slugs": list(affected_slugs),
-        "quest_results": results,
-    })
-
-
-# ---------------------------------------------------------------------------
-# Startup
-# ---------------------------------------------------------------------------
-
-_configured = False
-
-
-@app.before_request
-def _setup() -> None:
-    global _configured
-    if not _configured:
-        configure_git()
-        _configured = True
-
-
-if not PASSWORD:
-    app.logger.warning(
-        "CNS_ADMIN_PASSWORD not set – running in dev mode (no auth). "
-        "Set CNS_PASSWORD for production."
-    )
-
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
     app.run(host="0.0.0.0", port=port, debug=True)
