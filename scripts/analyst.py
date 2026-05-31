@@ -54,7 +54,7 @@ def _get_api_key() -> str:
 # ---------------------------------------------------------------------------
 
 
-def _call_claude(system_prompt: str, user_prompt: str, max_tokens: int = 1024) -> str:
+def _call_claude(system_prompt: str, user_prompt: str, max_tokens: int = 4096) -> str:
     api_key = _get_api_key()
 
     payload = {
