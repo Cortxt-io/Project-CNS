@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CNS DevLog — 2026-05-30</title>
+  <title>CNS DevLog — 2026-05-31</title>
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -95,41 +95,38 @@
   <main>
     <header>
       <h1>CNS DevLog</h1>
-      <p class="subtitle">2026-05-30</p>
+      <p class="subtitle">2026-05-31</p>
       <div class="meta">
         <p><span>Antal händelser:</span> 18</p>
-        <p><span>Källa:</span> devwatch_2026-05-30.json (20260530_090959)</p>
+        <p><span>Källa:</span> devwatch_2026-05-31.json (20260531_094323)</p>
       </div>
     </header>
 
     <section class="card">
   <h2>Dagens sammanfattning</h2>
   <div class="digest-content">
-<h2>Daglig portföljbrief</h2>
+<h2>Daglig portföljbrief 2026-05-27</h2>
 <h3>Vad hände igår</h3>
-<p><strong>CNS Analyst</strong> fick ett nytt quest: förbättra riskschemat med sannolikhet × påverkan istället för enkel 1-5 score. Kräver uppdateringar i schema, validator, parser och Claude-prompt. Ytterligare quest: validera bulk-analys med 20 pending förslag.</p>
-<p><strong>Cortxt Dashboard App</strong> fick fyra arkitekturbeslut dokumenterade: family-enum dual-mapping, HashRouter istället för BrowserRouter, inga edges i Reactflow v1, Railway REST API som datakälla (ingen MCP i v1). Roadmap uppdaterad med v1 MVP pågående och v2 planerad.</p>
-<p><strong>Cortxt Graph View</strong> parkerades formellt – beslut dokumenterat att graph-vyn väntar tills förutsättningar är uppfyllda. Roadmap omstrukturerad till v0 &quot;Coming Soon&quot;.</p>
-<p><strong>Cortxt Landing</strong> fick tre tekniska beslut: Cloudflare Pages istället för GitHub Pages, DNS flyttad till Cloudflare, React + Vite istället för statisk HTML. Roadmap visar v1 MVP pågående.</p>
-<p><strong>Project Vault Dashboard</strong> fick omfattande dokumentation: API-schema, dashboard-views (Portfolio Overview, ROI &amp; Metrics, Project Detail), fem arkitekturbeslut (Cloudflare Pages, dual domains, family-mapping, HashRouter, ingen MCP v1). Roadmap visar v0 klar, v1 React SPA pågående.</p>
-<p><strong>Webhook Router</strong> fick komplett dokumentation: architecture.md, configuration.md, integration-guide.md. Tre strategiska beslut från 2026-05-07: ompositionering från intern infra till extern produkt, Python + SQLite som teknikval, replay som killer feature, self-hosted som differentiator. Market-notes och sources tillagda.</p>
-<p><strong>Site Change Monitor</strong> fick utökad README med noise reduction heuristics, report review checklist, och tydligare MVP-scope.</p>
-<p><strong>Dev Changelog Engine Mini</strong> fick komplett problem/solution/target audience definierat – pipeline som gör DocsWatch-data läsbar.</p>
+<p><strong>CNS Analyst</strong> fick förbättrat riskschema med sannolikhet × påverkan istället för enkel 1-5 skala. Ny quest skapad för att uppdatera schema, validator, parser och Claude-prompt. Bulk-analys av 20 pending förslag planerad för validering.</p>
+<p><strong>Cortxt Graph View</strong> parkerades formellt. Decision loggad: väntar på att Dashboard App och CNS Analyst ska vara stabila innan graph-vy blir relevant. Status fortfarande &quot;coming soon&quot; men roadmap omstrukturerad till v0/v1/v2.</p>
+<p><strong>Project Vault Dashboard</strong> fick omfattande planering: API-schema dokumenterat, tre huvudvyer specificerade (Portfolio Overview, ROI &amp; Metrics, Project Detail), och tekniska beslut fattade (Cloudflare Pages, HashRouter, ingen MCP i v1). Family-enum dual-mapping beslutad för att hantera både CNS och Cortxt.</p>
+<p><strong>Cortxt Dashboard App</strong> följde samma tekniska beslut som Vault Dashboard – family-mapping, HashRouter, Railway REST API som datakälla. Roadmap strukturerad i v1 (MVP pågår) och v2.</p>
+<p><strong>Webhook Router</strong> ompositionerades från intern infra till extern produkt. Replay identifierat som killer feature, self-hosted som differentiator. Omfattande marknadsanalys och konkurrentlandskap dokumenterat.</p>
+<p><strong>Site Change Monitor</strong> fick polerad README med tydlig beskrivning av noise reduction heuristics och report review checklist.</p>
 <h3>Vad är kvar</h3>
-<p><strong>CNS Analyst</strong>: Implementera nytt riskschema med probability/impact/score/mitigation. Köra bulk-validering på 20 förslag.</p>
-<p><strong>Cortxt Dashboard/Landing</strong>: Färdigställa React SPA deployment på Cloudflare Pages.</p>
-<p><strong>Project Vault Dashboard</strong>: Implementera React SPA med de tre definierade vyerna.</p>
-<p><strong>Webhook Router</strong>: Bygga MVP med routing-engine, SQLite-lagring och replay-funktion.</p>
-<p><strong>Dev Changelog Engine Mini</strong>: Bygga scoring-pipeline och digest-rendering.</p>
+<p><strong>CNS Analyst</strong>: Implementera nytt riskschema (uppdatera schema, validator, parser, prompt). Köra bulk-analys på 20 pending förslag.</p>
+<p><strong>Project Vault Dashboard</strong>: Bygga React SPA med tre huvudvyer, implementera projects.json-generering från CNS.</p>
+<p><strong>Cortxt Dashboard App</strong>: Implementera Railway REST API-integration, bygga grundläggande UI.</p>
+<p><strong>Webhook Router</strong>: Bygga Python + SQLite MVP med routing-engine och replay-funktion.</p>
 <h3>Nästa steg idag</h3>
-<h3><strong>Implementera CNS Analyst riskschema</strong> – påverkar alla projekt som använder CNS-schemat, blockerar bulk-validering</h3>
-<h3><strong>Deploy Cortxt Landing på Cloudflare Pages</strong> – första synliga produkt, validerar deployment-setup</h3>
-<h3><strong>Börja Webhook Router MVP</strong> – kritisk infra för Site Change Monitor integration</h3>
+<h3><strong>Implementera CNS Analyst riskschema</strong> – börja med schema-uppdatering, sedan validator och parser</h3>
+<h3><strong>Starta Project Vault Dashboard React SPA</strong> – sätt upp Vite-projekt och grundläggande routing</h3>
+<h3><strong>Dokumentera Webhook Router API-spec</strong> – definiera webhook-format och routing-regelstruktur innan implementation</h3>
   </div>
 </section>
 
     <footer>
-      <p>Genererad av cns-devlog &middot; 2026-05-30 09:10 UTC</p>
+      <p>Genererad av cns-devlog &middot; 2026-05-31 09:43 UTC</p>
     </footer>
   </main>
 </body>
