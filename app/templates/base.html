@@ -43,29 +43,29 @@
   </header>
 
   <!-- Nav -->
-  <nav class="flex flex-wrap gap-y-1 gap-x-0 mb-6 border-b-2 border-gray-200">
+  <nav class="flex overflow-x-auto mb-4 sm:mb-6 border-b-2 border-gray-200 -mx-4 px-4 sm:mx-0 sm:px-0" style="scrollbar-width:none">
     <a href="/"
-       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap flex-shrink-0
               {% if request.path == '/' %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Översikt
     </a>
     <a href="/activity"
-       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap flex-shrink-0
               {% if request.path == '/activity' %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Aktivitet
     </a>
     <a href="/analyze"
-       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap flex-shrink-0
               {% if request.path == '/analyze' %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Analys
     </a>
     <a href="/review"
-       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap flex-shrink-0
               {% if '/review' in request.path %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Granska
     </a>
     <a href="/brief"
-       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap
+       class="px-3 py-2 text-sm font-semibold border-b-2 -mb-[2px] transition-colors whitespace-nowrap flex-shrink-0
               {% if request.path == '/brief' %}text-blue-600 border-blue-600{% else %}text-gray-500 border-transparent hover:text-gray-700{% endif %}">
       Brief
     </a>
