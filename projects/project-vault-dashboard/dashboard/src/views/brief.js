@@ -10,18 +10,15 @@
 
     // ── Helpers ──────────────────────────────────────────────────
 
-    function getCredentials() {
+    function getStoredCredentials() {
         var u = sessionStorage.getItem('cns_username');
         var p = sessionStorage.getItem('cns_password');
-        if (!u || !p) {
-            u = prompt('CNS Vault användarnamn:');
-            if (!u) return null;
-            p = prompt('CNS Vault lösenord:');
-            if (!p) return null;
-            sessionStorage.setItem('cns_username', u);
-            sessionStorage.setItem('cns_password', p);
-        }
-        return { username: u, password: p };
+        return (u && p) ? { username: u, password: p } : null;
+    }
+
+    function clearCredentials() {
+        sessionStorage.removeItem('cns_username');
+        sessionStorage.removeItem('cns_password');
     }
 
     function authHeaders(creds) {
@@ -140,6 +137,19 @@
         return html;
     }
 
+    function renderLoginForm(msg) {
+        return '<div class="max-w-sm mx-auto py-16 px-4">' +
+            '<h2 class="text-base font-bold text-slate-800 mb-1">Logga in</h2>' +
+            '<p class="text-sm text-slate-500 mb-4">Briefen kräver CNS Vault-inloggning (admin).</p>' +
+            (msg ? '<div class="text-sm text-rose-500 mb-3">' + esc(msg) + '</div>' : '') +
+            '<input id="brief-user" type="text" autocomplete="username" placeholder="Användarnamn" ' +
+                'class="w-full mb-3 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">' +
+            '<input id="brief-pass" type="password" autocomplete="current-password" placeholder="Lösenord" ' +
+                'class="w-full mb-4 px-3 py-2 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">' +
+            '<button id="brief-login-btn" class="w-full px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors">Logga in &amp; hämta brief</button>' +
+        '</div>';
+    }
+
     // ── Main render ───────────────────────────────────────────────
 
     function renderBriefSection(state) {
@@ -148,6 +158,27 @@
 
         if (state === 'loading') {
             section.innerHTML = renderLoading();
+            return;
+        }
+
+        if (state && state.login) {
+            section.innerHTML = renderLoginForm(state.message);
+            var userInp = document.getElementById('brief-user');
+            var passInp = document.getElementById('brief-pass');
+            var loginBtn = document.getElementById('brief-login-btn');
+            function submitLogin() {
+                var u = (userInp.value || '').trim();
+                var p = passInp.value || '';
+                if (!u || !p) return;
+                sessionStorage.setItem('cns_username', u);
+                sessionStorage.setItem('cns_password', p);
+                loadBrief();
+            }
+            if (loginBtn) loginBtn.addEventListener('click', submitLogin);
+            if (passInp) passInp.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') submitLogin();
+            });
+            if (userInp) userInp.focus();
             return;
         }
 
@@ -178,9 +209,9 @@
     }
 
     function loadBrief() {
-        var creds = getCredentials();
+        var creds = getStoredCredentials();
         if (!creds) {
-            renderBriefSection({ error: 'Autentisering krävs' });
+            renderBriefSection({ login: true });
             return;
         }
 
@@ -192,10 +223,10 @@
             BRIEF_TIMEOUT_MS
         )
         .then(function (r) {
-            if (r.status === 401) {
-                sessionStorage.removeItem('cns_username');
-                sessionStorage.removeItem('cns_password');
-                throw new Error('Fel användarnamn eller lösenord');
+            if (r.status === 401 || r.status === 403) {
+                clearCredentials();
+                renderBriefSection({ login: true, message: 'Fel användarnamn eller lösenord' });
+                return null;
             }
             if (!r.ok) {
                 return r.json().then(function (d) {
@@ -208,6 +239,7 @@
             return r.json();
         })
         .then(function (data) {
+            if (!data) return;  // already handled (login form shown)
             if (data.status === 'error') {
                 renderBriefSection({ error: data.message });
             } else {
@@ -223,8 +255,8 @@
     }
 
     function createQuestFromBrief(qs, btn) {
-        var creds = getCredentials();
-        if (!creds) return;
+        var creds = getStoredCredentials();
+        if (!creds) { renderBriefSection({ login: true }); return; }
         btn.disabled = true;
         btn.textContent = 'Skapar...';
         fetch(RAILWAY_URL + '/api/quests/from-brief', {
