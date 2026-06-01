@@ -1,6 +1,16 @@
-"""Cortxt MCP Server – exposes Cortxt data as tools for Qoder/Claude Desktop.
+"""Cortxt MCP Server – exposes Cortxt data as tools over Streamable HTTP.
 
-Communicates via MCP protocol over stdio. Provides 5 tools:
+Remote MCP server built on FastMCP 2.x. Mounted into the Flask app via the
+ASGI entrypoint (``app/asgi.py``) and served at ``/mcp`` so it can be added as
+a remote Custom Connector in claude.ai (telefon/web/desktop).
+
+Auth: OAuth 2.1. claude.ai's connector UI only supports OAuth — it has no
+field for a static Bearer token or custom headers — so ``/mcp`` is gated by an
+OAuth flow (GitHub by default), NOT the ``CNS_API_TOKEN`` used by the REST API.
+When the OAuth env vars are unset the server starts unauthenticated, which is
+intended only for local development / Claude Desktop.
+
+Provides 5 tools:
   - cortxt_list_active_quests
   - cortxt_get_quest
   - cortxt_complete_quest
@@ -20,9 +30,40 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 os.chdir(REPO_ROOT)
 
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 
-mcp = FastMCP("cortxt")
+
+def _build_auth():
+    """Build the OAuth provider for /mcp from environment, or None for dev.
+
+    claude.ai requires OAuth (no static-Bearer option in its connector UI), so
+    in production set:
+      - MCP_GITHUB_CLIENT_ID / MCP_GITHUB_CLIENT_SECRET  (a GitHub OAuth app)
+      - MCP_BASE_URL  (public origin, e.g. https://<app>.up.railway.app)
+
+    FastMCP's GitHubProvider wraps an OAuth proxy that advertises the metadata
+    and Dynamic Client Registration that claude.ai's connector relies on.
+
+    Returns None when the vars are missing → unauthenticated server, intended
+    only for local development / Claude Desktop over stdio.
+    """
+    client_id = os.getenv("MCP_GITHUB_CLIENT_ID")
+    client_secret = os.getenv("MCP_GITHUB_CLIENT_SECRET")
+    base_url = os.getenv("MCP_BASE_URL")
+    if not (client_id and client_secret and base_url):
+        return None
+
+    from fastmcp.server.auth.providers.github import GitHubProvider
+
+    return GitHubProvider(
+        client_id=client_id,
+        client_secret=client_secret,
+        base_url=base_url,
+        required_scopes=["read:user"],
+    )
+
+
+mcp = FastMCP("cortxt", auth=_build_auth())
 
 
 @mcp.tool()
@@ -106,4 +147,6 @@ def cortxt_get_project(slug: str) -> dict:
 
 
 if __name__ == "__main__":
+    # Local development fallback: stdio transport for Claude Desktop.
+    # The production deployment serves Streamable HTTP via app/asgi.py instead.
     mcp.run()

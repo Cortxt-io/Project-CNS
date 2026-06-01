@@ -10,4 +10,6 @@ flask>=3.0
 flask-httpauth>=4.8
 markdown>=3.6
 gunicorn>=21.2
-mcp>=1.0
+fastmcp>=2.14,<3
+uvicorn[standard]>=0.30
+a2wsgi>=1.10

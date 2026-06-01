@@ -130,7 +130,52 @@ Kor `export json` igen nar du andrat projekt via CNS for att synka datan.
 
 ## MCP Server Setup
 
-### Lokal användning (Claude Desktop / Qoder)
+MCP-servern (`app/mcp_server.py`) körs i två lägen: **remote Streamable HTTP**
+på Railway (huvudleveransen, nåbar från telefon/web via claude.ai) och **lokal
+stdio** som fallback för Claude Desktop. Samma 5 tools i båda:
+`cortxt_list_active_quests`, `cortxt_get_quest`, `cortxt_complete_quest`,
+`cortxt_list_projects`, `cortxt_get_project`.
+
+### Remote (claude.ai Custom Connector) – huvudleverans
+
+MCP-servern monteras i den befintliga appen via ASGI (`app/asgi.py`) och nås på
+`https://<railway-domän>/mcp`. Den körs alltså under **samma domän** som
+REST-API:t, men servern startas som ASGI (uvicorn-worker), inte sync-WSGI.
+
+**Auth (viktigt):** claude.ai:s connector-UI stödjer **bara OAuth** — det finns
+inget fält för statisk Bearer-token eller egna headers. Därför skyddas `/mcp`
+med ett **OAuth-flöde**, INTE `CNS_API_TOKEN` (som fortsatt gäller för resten av
+API:t). Vi använder FastMCP:s GitHub-provider, som sköter den OAuth-metadata +
+Dynamic Client Registration som claude.ai kräver.
+
+**Engångssetup – GitHub OAuth-app:**
+1. GitHub → Settings → Developer settings → OAuth Apps → New OAuth App
+   - **Homepage URL:** `https://<railway-domän>`
+   - **Authorization callback URL:** `https://<railway-domän>/auth/callback`
+2. Sätt env-vars i Railway (service → Variables):
+   ```
+   MCP_GITHUB_CLIENT_ID=<client id>
+   MCP_GITHUB_CLIENT_SECRET=<client secret>
+   MCP_BASE_URL=https://<railway-domän>
+   ```
+   Saknas dessa startar servern **utan auth** (endast avsett för lokal dev).
+3. Deploya. Verifiera att `https://<railway-domän>/mcp` svarar `401` med en
+   `WWW-Authenticate`-header (pekar på OAuth-metadata) innan inloggning.
+
+**Lägg till i claude.ai:**
+1. Settings → Connectors → **Add custom connector**
+2. URL: `https://<railway-domän>/mcp`
+3. Genomför GitHub-inloggningen (OAuth). De 5 verktygen ska nu listas.
+4. Testa från en konversation (även på telefon): "lista mina CNS-projekt" →
+   `cortxt_list_projects`.
+
+> **⚠️ Härda innan du litar på den:** GitHub-providern släpper in *vilken*
+> GitHub-användare som helst som loggar in — och `cortxt_complete_quest`
+> muterar data och pushar till GitHub. Innan servern exponeras på riktigt,
+> begränsa åtkomsten till din egen GitHub-användare (t.ex. en
+> allowlist-middleware på `mcp` som matchar inloggat användarnamn).
+
+### Lokal användning (Claude Desktop, stdio-fallback)
 
 1. Installera dependencies: `pip install -r requirements.txt`
 2. Lägg till i Claude Desktop config (~/.claude/claude_desktop_config.json):
@@ -139,13 +184,13 @@ Kor `export json` igen nar du andrat projekt via CNS for att synka datan.
   "mcpServers": {
     "cortxt": {
       "command": "python",
-      "args": ["C:/Users/rikar/OneDrive/prompt-cns/app/mcp_server.py"]
+      "args": ["<absolut sökväg>/app/mcp_server.py"]
     }
   }
 }
 ```
-3. Starta om Claude Desktop
-4. Tools tillgängliga: cortxt_list_active_quests, cortxt_get_quest, cortxt_complete_quest, cortxt_list_projects, cortxt_get_project
+   (Utan OAuth-env-vars kör `mcp_server.py` stdio-transporten oförändrad.)
+3. Starta om Claude Desktop.
 
 ---
 
