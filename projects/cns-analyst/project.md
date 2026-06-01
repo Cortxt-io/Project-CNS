@@ -1,10 +1,12 @@
 ---
 cost_sek: 5000
 created: '2026-05-25'
-current_slice: Run bulk analysis on scoring-studio, ai-ticket-triage, and cns-devwatch
-  to validate precision and usability
+current_slice: Validera bulk-analys på scoring-studio (9), ai-ticket-triage (6) och
+  cns-devwatch (5) förslag – mät precision, false positives och performance
 family: cns-core
+layer: pipeline
 mvp_stage: demand_test
+pipeline: pipeline-review
 roi_percent: 400
 slug: cns-analyst
 status: mvp
@@ -16,10 +18,8 @@ tags:
 - cns-core
 - analysis
 title: CNS Analyst
-updated: '2026-05-28'
+updated: '2026-05-31'
 value_sek: 25000
-layer: pipeline
-pipeline: pipeline-review
 ---
 
 ## Problem

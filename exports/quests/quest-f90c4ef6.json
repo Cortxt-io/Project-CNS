@@ -1,0 +1,14 @@
+{
+  "id": "quest-f90c4ef6",
+  "slug": "cns-analyst",
+  "title": "Bulk-validera 20 pending förslag i CNS Analyst",
+  "description": "Genomför den bulk-validering av 20 pending förslag som lades till som quest igår. Detta rensar decision backlog och validerar att det nya analysflödet fungerar i praktiken.",
+  "estimated_impact": "Igår skapades detta quest explicit. Att genomföra det idag validerar både befintlig funktionalitet och skapar användardata för att testa det nya riskschemat. CNS Analyst är i mvp-fas med 400% ROI – validering av pending förslag är kritiskt nästa steg.",
+  "status": "archived",
+  "source": "portfolio-brief",
+  "created_at": "2026-05-31",
+  "started_at": "2026-05-31T18:14:46",
+  "completed_at": "2026-05-31T18:15:26",
+  "result_summary": "Validerade det enda kvarstående pending-förslaget för cns-analyst (analyze_cns-analyst_2026-05-28.json). OBS: questets titel sa '20 förslag' men de syftade på framtida bulk-analys av scoring-studio (9) + ai-ticket-triage (6) + cns-devwatch (5) — den körningen kräver AI-analysmotorn och gjordes inte här. Beslut på det faktiska pending-setet (3 fält): current_slice godkänd (svensk, specifik slice), updated → 2026-05-31, mvp_stage AVVISAD (förslaget solution_test var regressivt; project.md står kvar på demand_test). Pending-filen konsumerad/borttagen → decision-backlog rensad.",
+  "ci_status": null
+}

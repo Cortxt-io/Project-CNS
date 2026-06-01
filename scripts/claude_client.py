@@ -54,7 +54,7 @@ def send_update_request(
     try:
         response = client.messages.create(
             model=MODEL,
-            max_tokens=1024,
+            max_tokens=4096,
             system=system_prompt,
             messages=[{"role": "user", "content": user_message}],
         )

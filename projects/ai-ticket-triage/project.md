@@ -1,17 +1,20 @@
 ---
 cost_sek: 210000
 created: 2026-05-02
+current_slice: Genomföra problemintervjuer med supportteam för att validera smärtpunkter
+  kring manuell triagering
 family: ideas
-mvp_stage: hypothesis
+layer: concept
+mvp_stage: problem_interviews
 roi_percent: 257
 slug: ai-ticket-triage
 status: idea
-summary: AI-driven triagering av supportärenden – ännu ej specificerad.
+summary: AI-driven triagering och automatisk kategorisering av supportärenden för
+  att minska manuell handläggningstid och förbättra svarstider
 tags: []
 title: AI Ticket Triage
-updated: '2026-05-27'
+updated: '2026-05-31'
 value_sek: 750000
-layer: concept
 ---
 
 ## Problem
@@ -34,7 +37,10 @@ layer: concept
 
 ## Risk Assessment
 
-- **Technical** (score 3/5): Potential challenges in AI model accuracy and integration with existing systems.
+- **Technical** (score 4/5): AI-modellens precision vid triagering kan vara otillräcklig för kritiska ärenden, vilket riskerar felbedömningar och missnöjda kunder
+- **Adoption** (score 3/5): Supportteam kan vara skeptiska till AI-driven triagering och sakna förtroende för systemets bedömningar
+- **Ops** (score 3/5): Integration med befintliga ticketsystem (Zendesk, Freshdesk etc.) kan kräva omfattande anpassningar och underhåll
+- **Market** (score 3/5): Konkurrens från etablerade supportplattformar som redan bygger in AI-triagering som standardfunktion
 
 ## Timeline
 

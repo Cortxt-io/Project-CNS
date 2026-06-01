@@ -19,34 +19,70 @@ Run with an ASGI server (uvicorn worker), NOT plain sync-WSGI gunicorn:
 
 from __future__ import annotations
 
+import os
+
 from a2wsgi import WSGIMiddleware
+from starlette.applications import Starlette
 from starlette.middleware import Middleware
 from starlette.middleware.cors import CORSMiddleware
-from starlette.routing import Mount
+from starlette.responses import JSONResponse
+from starlette.routing import Mount, Route
 
 from app.mcp_server import mcp
 from app.server import app as flask_app
 
-# CORS for browser-based MCP clients. Scoped to Claude origins so it never
-# double-sets headers on the Flask routes (which manage their own CORS).
-# Exposing Mcp-Session-Id is required for the Streamable HTTP handshake.
-_cors = Middleware(
-    CORSMiddleware,
-    allow_origins=["https://claude.ai", "https://claude.com"],
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
-    expose_headers=["Mcp-Session-Id"],
-)
+# The Flask (WSGI) app is the fall-through for every path the MCP/OAuth routes
+# don't own. Wrapped once here so both code paths below reuse it.
+_flask_fallthrough = Mount("/", app=WSGIMiddleware(flask_app))
 
-# stateless_http=True avoids per-session affinity, so the server stays correct
-# even if Railway runs more than one worker (no shared session store needed).
-mcp_app = mcp.http_app(path="/mcp", stateless_http=True, middleware=[_cors])
+# Fail closed: only expose /mcp when an OAuth provider is configured (or when a
+# developer explicitly opts into an unauthenticated server locally). Otherwise a
+# deploy without the OAuth env vars would publish an OPEN, data-mutating MCP
+# endpoint (cortxt_complete_quest pushes to GitHub). Better to serve 503 there.
+_auth_configured = mcp.auth is not None
+_allow_insecure = os.getenv("MCP_ALLOW_INSECURE") == "1"
 
-# Mount the existing Flask (WSGI) app as the fall-through for all other paths.
-# Appended after the MCP/OAuth routes so it has lowest matching priority.
-mcp_app.router.routes.append(Mount("/", app=WSGIMiddleware(flask_app)))
+if _auth_configured or _allow_insecure:
+    # CORS for browser-based MCP clients. Scoped to Claude origins so it never
+    # double-sets headers on the Flask routes (which manage their own CORS).
+    # Exposing Mcp-Session-Id is required for the Streamable HTTP handshake.
+    _cors = Middleware(
+        CORSMiddleware,
+        allow_origins=["https://claude.ai", "https://claude.com"],
+        allow_methods=["GET", "POST", "OPTIONS"],
+        allow_headers=["*"],
+        expose_headers=["Mcp-Session-Id"],
+    )
 
-# Lifespan comes from mcp_app (StarletteWithLifespan) and initialises the
-# Streamable HTTP session manager — required, or requests fail with
-# "Task group is not initialized".
-asgi_app = mcp_app
+    # stateless_http=True avoids per-session affinity, so the server stays
+    # correct even if Railway runs more than one worker (no shared store).
+    mcp_app = mcp.http_app(path="/mcp", stateless_http=True, middleware=[_cors])
+
+    # Append Flask after the MCP/OAuth routes so it has lowest match priority.
+    mcp_app.router.routes.append(_flask_fallthrough)
+
+    # Lifespan comes from mcp_app (StarletteWithLifespan) and initialises the
+    # Streamable HTTP session manager — required, or requests fail with
+    # "Task group is not initialized".
+    asgi_app = mcp_app
+else:
+    async def _mcp_unconfigured(request):
+        return JSONResponse(
+            {
+                "error": "mcp_not_configured",
+                "detail": (
+                    "MCP server is disabled because OAuth is not configured. "
+                    "Set MCP_GITHUB_CLIENT_ID, MCP_GITHUB_CLIENT_SECRET and "
+                    "MCP_BASE_URL (or MCP_ALLOW_INSECURE=1 for local dev)."
+                ),
+            },
+            status_code=503,
+        )
+
+    # Flask still works; /mcp is parked on a 503 stub instead of an open server.
+    asgi_app = Starlette(
+        routes=[
+            Route("/mcp", _mcp_unconfigured, methods=["GET", "POST"]),
+            _flask_fallthrough,
+        ]
+    )

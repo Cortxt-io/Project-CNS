@@ -128,6 +128,40 @@ Kor `export json` igen nar du andrat projekt via CNS for att synka datan.
 
 ---
 
+## API-nycklar
+
+CNS läser API-nycklar från miljön (via `python-dotenv`) — de finns aldrig i koden.
+
+| Nyckel | Driver | Krävs för |
+|--------|--------|-----------|
+| `ANTHROPIC_API_KEY` | Anthropic Claude | `cns analyze` (CNS Analyst), devlog AI-sammanfattningar |
+| `PERPLEXITY_API_KEY` | Perplexity | `cns update --mode api` (lokalt/connector-läge kräver ingen nyckel) |
+
+### Lokalt
+```bash
+cp .env.example .env
+# Fyll i nycklarna i .env (filen är gitignorad — läcker aldrig till repot)
+```
+
+### Railway (produktion)
+Service → fliken **Variables** → lägg till `ANTHROPIC_API_KEY=...` (samma ställe som `CNS_WEBHOOK_SECRET`).
+
+### Claude Code on the web
+Moln-ikonen (miljönamnet) → **Edit environment** (eller **Add environment** om ingen finns) →
+fältet **Environment variables**. Format: `.env`, en `KEY=value` per rad, **inga citattecken**:
+```
+ANTHROPIC_API_KEY=...
+```
+- `api.anthropic.com` ligger redan på default-allowlistan (**Trusted**), så ingen extra
+  network-config behövs.
+- **OBS:** web-miljöns env-variabler är inte en säker secret-store — de lagras i klartext,
+  synliga för alla som kan redigera miljön. Använd helst en nyckel med begränsad budget/scope.
+- Görs i webbläsaren (claude.ai/code), inte i mobilappen.
+
+Verifiera med `python cns.py doctor`.
+
+---
+
 ## MCP Server Setup
 
 MCP-servern (`app/mcp_server.py`) körs i två lägen: **remote Streamable HTTP**
@@ -158,7 +192,9 @@ Dynamic Client Registration som claude.ai kräver.
    MCP_GITHUB_CLIENT_SECRET=<client secret>
    MCP_BASE_URL=https://<railway-domän>
    ```
-   Saknas dessa startar servern **utan auth** (endast avsett för lokal dev).
+   Saknas någon av dessa är `/mcp` **avstängd** (svarar `503`) — servern
+   exponeras aldrig oautentiserad av misstag. För en oautentiserad server
+   lokalt: sätt `MCP_ALLOW_INSECURE=1` (endast lokal dev).
 3. Deploya. Verifiera att `https://<railway-domän>/mcp` svarar `401` med en
    `WWW-Authenticate`-header (pekar på OAuth-metadata) innan inloggning.
 
