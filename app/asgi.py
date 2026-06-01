@@ -23,8 +23,6 @@ import os
 
 from a2wsgi import WSGIMiddleware
 from starlette.applications import Starlette
-from starlette.middleware import Middleware
-from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import JSONResponse
 from starlette.routing import Mount, Route
 
@@ -43,20 +41,16 @@ _auth_configured = mcp.auth is not None
 _allow_insecure = os.getenv("MCP_ALLOW_INSECURE") == "1"
 
 if _auth_configured or _allow_insecure:
-    # CORS for browser-based MCP clients. Scoped to Claude origins so it never
-    # double-sets headers on the Flask routes (which manage their own CORS).
-    # Exposing Mcp-Session-Id is required for the Streamable HTTP handshake.
-    _cors = Middleware(
-        CORSMiddleware,
-        allow_origins=["https://claude.ai", "https://claude.com"],
-        allow_methods=["GET", "POST", "OPTIONS"],
-        allow_headers=["*"],
-        expose_headers=["Mcp-Session-Id"],
-    )
-
+    # NOTE: no global CORS middleware here. Starlette's CORSMiddleware hijacks
+    # ALL preflight OPTIONS requests, so attaching it to this app (which also
+    # serves the Flask routes via the fallthrough below) would 400 the
+    # dashboard's cross-origin API preflights before they reach Flask's own
+    # CORS handling. claude.ai calls /mcp server-side (no browser CORS needed),
+    # so MCP doesn't require it. Flask keeps managing CORS for its own routes.
+    #
     # stateless_http=True avoids per-session affinity, so the server stays
     # correct even if Railway runs more than one worker (no shared store).
-    mcp_app = mcp.http_app(path="/mcp", stateless_http=True, middleware=[_cors])
+    mcp_app = mcp.http_app(path="/mcp", stateless_http=True)
 
     # Append Flask after the MCP/OAuth routes so it has lowest match priority.
     mcp_app.router.routes.append(_flask_fallthrough)
