@@ -31,6 +31,9 @@ if str(REPO_ROOT) not in sys.path:
 os.chdir(REPO_ROOT)
 
 from fastmcp import FastMCP
+from fastmcp.exceptions import ToolError
+from fastmcp.server.dependencies import get_access_token
+from fastmcp.server.middleware import Middleware
 
 
 def _build_auth():
@@ -63,7 +66,52 @@ def _build_auth():
     )
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def _allowed_github_users() -> set[str]:
+    """GitHub logins allowed to call tools, from MCP_ALLOWED_GITHUB_USERS
+    (comma-separated, case-insensitive). Empty set = no restriction."""
+    raw = os.getenv("MCP_ALLOWED_GITHUB_USERS", "")
+    return {u.strip().lower() for u in raw.split(",") if u.strip()}
+
+
+class GitHubAllowlistMiddleware(Middleware):
+    """Reject tool calls from GitHub users not on the allowlist.
+
+    The authenticated user's GitHub login comes from the OAuth access-token
+    claims (GitHubProvider stores it under "login"). Applied to every tool
+    call, so reading project data and mutating quests are both gated — without
+    this, any GitHub account that completes the OAuth flow could run the tools.
+    """
+
+    def __init__(self, allowed_logins: set[str]) -> None:
+        self._allowed = allowed_logins
+
+    async def on_call_tool(self, context, call_next):
+        token = get_access_token()
+        login = token.claims.get("login") if token and token.claims else None
+        if not login or login.lower() not in self._allowed:
+            raise ToolError(
+                "Access denied: your GitHub account is not authorized for this server."
+            )
+        return await call_next(context)
+
+
 mcp = FastMCP("cortxt", auth=_build_auth())
+
+# Lock tool access to specific GitHub users when an allowlist is configured.
+_allowlist = _allowed_github_users()
+if _allowlist:
+    mcp.add_middleware(GitHubAllowlistMiddleware(_allowlist))
+elif mcp.auth is not None:
+    logger.warning(
+        "MCP OAuth is configured but MCP_ALLOWED_GITHUB_USERS is empty — "
+        "ANY GitHub user who logs in can call the tools. Set it to lock "
+        "access to your own account."
+    )
 
 
 @mcp.tool()
