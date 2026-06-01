@@ -5,7 +5,7 @@
     'use strict';
     window.PVD = window.PVD || {};
 
-    var data, overview, analysis, detail, activity, ai;
+    var data, overview, analysis, detail, activity, ai, brief;
     var searchTimeout = null;
 
     function refs() {
@@ -15,6 +15,7 @@
         detail = window.PVD.detail;
         activity = window.PVD.activity;
         ai = window.PVD.ai;
+        brief = window.PVD.brief;
     }
 
     // Centralt re-render av översiktsvyn
@@ -40,7 +41,8 @@
         overview: 'Din produktportf\u00f6lj \u2013 projekt fr\u00e5n id\u00e9 till lansering. Klicka p\u00e5 ett projekt f\u00f6r att se detaljer, status och ROI.',
         flow: 'Vad h\u00e4nde senast i portf\u00f6ljen? Git-\u00e4ndringar, AI-digest och projektuppdateringar samlade p\u00e5 ett st\u00e4lle.',
         ai: 'Analysera och uppdatera projekt med AI. Granska f\u00f6rslag innan de appliceras p\u00e5 dina projektfiler.',
-        portfolio: 'Nyckeltal och visualiseringar \u00f6ver hela portf\u00f6ljen \u2013 ROI per projekt, statusf\u00f6rdelning och ekonomisk \u00f6versikt.'
+        portfolio: 'Nyckeltal och visualiseringar \u00f6ver hela portf\u00f6ljen \u2013 ROI per projekt, statusf\u00f6rdelning och ekonomisk \u00f6versikt.',
+        brief: 'AI-genererad daglig brief \u2013 vad h\u00e4nde ig\u00e5r, vad ska prioriteras idag och vilket quest ger mest v\u00e4rde just nu.'
     };
 
     function updateTabDescription(section) {
@@ -49,12 +51,15 @@
         el.textContent = TAB_DESCRIPTIONS[section] || '';
     }
 
+    var _briefLoaded = false;
+
     function setupNav() {
         var nav = document.getElementById('main-nav');
         var sections = {
             overview: document.getElementById('section-overview'),
             flow: document.getElementById('section-flow'),
             ai: document.getElementById('section-ai'),
+            brief: document.getElementById('section-brief'),
             portfolio: document.getElementById('section-portfolio')
         };
         nav.addEventListener('click', function (e) {
@@ -64,9 +69,13 @@
             btn.classList.remove('text-gray-500', 'border-transparent');
             btn.classList.add('text-blue-600', 'border-blue-600');
             Object.keys(sections).forEach(function (k) {
-                sections[k].classList.toggle('hidden', k !== btn.dataset.section);
+                if (sections[k]) sections[k].classList.toggle('hidden', k !== btn.dataset.section);
             });
             updateTabDescription(btn.dataset.section);
+            if (btn.dataset.section === 'brief' && !_briefLoaded) {
+                _briefLoaded = true;
+                brief.loadBrief();
+            }
         });
     }
 
