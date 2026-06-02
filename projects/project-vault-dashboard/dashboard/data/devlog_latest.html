@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CNS DevLog — 2026-06-01</title>
+  <title>CNS DevLog — 2026-06-02</title>
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -95,38 +95,39 @@
   <main>
     <header>
       <h1>CNS DevLog</h1>
-      <p class="subtitle">2026-06-01</p>
+      <p class="subtitle">2026-06-02</p>
       <div class="meta">
         <p><span>Antal händelser:</span> 18</p>
-        <p><span>Källa:</span> devwatch_2026-06-01.json (20260601_123013)</p>
+        <p><span>Källa:</span> devwatch_2026-06-02.json (20260602_111239)</p>
       </div>
     </header>
 
     <section class="card">
   <h2>Dagens sammanfattning</h2>
   <div class="digest-content">
-<h2>Daglig portföljbrief 2026-05-27</h2>
+<h2>Daglig brief – 28 maj 2026</h2>
 <h3>Vad hände igår</h3>
-<p><strong>CNS Analyst</strong> fick ett nytt riskschema med sannolikhet × påverkan istället för enkel 1-5 skala. Två quests skapade: validera bulk-analys med 20 pending förslag och implementera den nya riskmodellen i både schema och prompt.</p>
-<p><strong>Cortxt Graph View</strong> parkerades formellt. Decision loggad: väntar på att förutsättningar uppfylls (troligen bättre datakvalitet eller tydligare use case).</p>
-<p><strong>Project Vault Dashboard</strong> fick omfattande dokumentation: API-schema, dashboard-views (Portfolio Overview, ROI &amp; Metrics, Project Detail), design-idéer och beslut om Cloudflare Pages + dual domains. Roadmap uppdaterad med v0 (klar), v1 (React SPA pågår), v2 (planerat).</p>
-<p><strong>Webhook Router</strong> ompositionerades från intern infra till extern produkt. Beslut: Python + SQLite, self-hosted, replay som killer feature. Omfattande dokumentation tillkom: arkitektur, konfiguration, integrationsguide. MVP-scope definierad med Site Change Monitor som primär konsument.</p>
-<p><strong>Scoring Studio</strong> specificerades: GUI för att justera scoring-vikter i Changelog Engine Mini utan att röra kod. Problemet är att vikterna är hårdkodade och kräver flera justeringar under drift.</p>
-<p><strong>DocsWatch</strong> och <strong>Dev Changelog Engine Mini</strong> fick tydligare problembeskrivningar och målgrupper. DocsWatch ska bevaka externa changelogs, Mini ska göra rådata läsbar.</p>
+<p><strong>CNS Analyst</strong> fick ett nytt riskschema med sannolikhet × påverkan istället för enkel 1–5-skala. Två quests skapades: validera bulk-analys med 20 pending förslag (27 maj) och implementera det nya riskschemat i både validator och analyst-prompt (31 maj). Detta är första gången risker får strukturerad mitigation-planering.</p>
+<p><strong>Webhook Router</strong> ompositionerades från intern infra till extern produkt. Tre beslut dokumenterades: self-hosted som differentiator, replay som killer feature, och Python + SQLite som teknikval. Integration-guide och arkitekturdokumentation skrevs klart. MVP-scope definierades med Site Change Monitor som primär konsument.</p>
+<p><strong>Site Change Monitor</strong> fick komplett dokumentation: noise reduction heuristics, snapshot-format, och en report-review-checklist för att utvärdera efter 5–10 körningar. Roadmap och beslutsdokumentation uppdaterades.</p>
+<p><strong>DocsWatch</strong> och <strong>Dev Changelog Engine Mini</strong> fick tydligare problemdefinitioner och målgrupper. DocsWatch fokuserar på att fånga breaking changes innan de når produktion. Changelog Engine Mini ska göra DocsWatch-data läsbar som veckodigest.</p>
+<p><strong>Scoring Studio</strong> skapades som nytt projekt för att göra viktjustering i Changelog Engine Mini visuell och interaktiv – hårdkodade vikter i TypeScript är inte hållbart när filtret behöver justeras varje vecka.</p>
+<p><strong>Cortxt Graph View</strong> parkerades tills förutsättningar är uppfyllda (beslut dokumenterat).</p>
 <h3>Vad är kvar</h3>
-<p><strong>CNS Analyst</strong>: Implementera sannolikhet×påverkan-modellen i schema, parser och prompt. Validera med 20 pending förslag.</p>
-<p><strong>Project Vault Dashboard</strong>: Färdigställa React SPA v1, deploya till Cloudflare Pages med dual domains.</p>
-<p><strong>Webhook Router</strong>: Bygga MVP med routing-engine, SQLite-lagring och replay-funktion. Integrera med Site Change Monitor.</p>
-<p><strong>Scoring Studio</strong>: Definiera MVP-scope och UI-mockup för viktjustering.</p>
+<p><strong>CNS Analyst</strong>: Validera bulk-analys med 20 pending förslag (27 maj), sedan implementera nytt riskschema i validator + prompt (31 maj).</p>
+<p><strong>Webhook Router</strong>: Implementera routing-engine, SQLite-lagring, och replay-funktion. Integrera med Site Change Monitor.</p>
+<p><strong>Site Change Monitor</strong>: Köra 5–10 gånger och utvärdera enligt review-checklist.</p>
+<p><strong>Scoring Studio</strong>: Definiera MVP-scope och första UI-mockup.</p>
+<p><strong>DocsWatch</strong>: Validera att ändringsdetektering fungerar mot 5–10 changelog-sidor.</p>
 <h3>Nästa steg idag</h3>
-<h3><strong>CNS Analyst</strong>: Uppdatera `project_schema.json` med nya riskfält (probability, impact, score, mitigation)</h3>
-<h3><strong>Webhook Router</strong>: Skapa grundläggande routing-engine och SQLite-schema</h3>
-<h3><strong>Project Vault Dashboard</strong>: Testa deployment-flow till Cloudflare Pages</h3>
+<h3><strong>Kör CNS Analyst bulk-analys</strong> mot 20 pending förslag – validera att nya riskschemat ger bättre beslutsunderlag</h3>
+<h3><strong>Starta Webhook Router routing-engine</strong> – få första event från Site Change Monitor till dummy-endpoint</h3>
+<h3><strong>Definiera Scoring Studio MVP</strong> – vilka vikter ska vara justerbara, hur ska preview fungera?</h3>
   </div>
 </section>
 
     <footer>
-      <p>Genererad av cns-devlog &middot; 2026-06-01 12:30 UTC</p>
+      <p>Genererad av cns-devlog &middot; 2026-06-02 11:13 UTC</p>
     </footer>
   </main>
 </body>
