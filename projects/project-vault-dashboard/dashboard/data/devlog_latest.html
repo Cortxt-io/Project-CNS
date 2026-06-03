@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CNS DevLog — 2026-06-02</title>
+  <title>CNS DevLog — 2026-06-03</title>
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -95,10 +95,10 @@
   <main>
     <header>
       <h1>CNS DevLog</h1>
-      <p class="subtitle">2026-06-02</p>
+      <p class="subtitle">2026-06-03</p>
       <div class="meta">
         <p><span>Antal händelser:</span> 18</p>
-        <p><span>Källa:</span> devwatch_2026-06-02.json (20260602_111239)</p>
+        <p><span>Källa:</span> devwatch_2026-06-03.json (20260603_115037)</p>
       </div>
     </header>
 
@@ -107,27 +107,25 @@
   <div class="digest-content">
 <h2>Daglig brief – 28 maj 2026</h2>
 <h3>Vad hände igår</h3>
-<p><strong>CNS Analyst</strong> fick ett nytt riskschema med sannolikhet × påverkan istället för enkel 1–5-skala. Två quests skapades: validera bulk-analys med 20 pending förslag (27 maj) och implementera det nya riskschemat i både validator och analyst-prompt (31 maj). Detta är första gången risker får strukturerad mitigation-planering.</p>
-<p><strong>Webhook Router</strong> ompositionerades från intern infra till extern produkt. Tre beslut dokumenterades: self-hosted som differentiator, replay som killer feature, och Python + SQLite som teknikval. Integration-guide och arkitekturdokumentation skrevs klart. MVP-scope definierades med Site Change Monitor som primär konsument.</p>
-<p><strong>Site Change Monitor</strong> fick komplett dokumentation: noise reduction heuristics, snapshot-format, och en report-review-checklist för att utvärdera efter 5–10 körningar. Roadmap och beslutsdokumentation uppdaterades.</p>
-<p><strong>DocsWatch</strong> och <strong>Dev Changelog Engine Mini</strong> fick tydligare problemdefinitioner och målgrupper. DocsWatch fokuserar på att fånga breaking changes innan de når produktion. Changelog Engine Mini ska göra DocsWatch-data läsbar som veckodigest.</p>
-<p><strong>Scoring Studio</strong> skapades som nytt projekt för att göra viktjustering i Changelog Engine Mini visuell och interaktiv – hårdkodade vikter i TypeScript är inte hållbart när filtret behöver justeras varje vecka.</p>
-<p><strong>Cortxt Graph View</strong> parkerades tills förutsättningar är uppfyllda (beslut dokumenterat).</p>
+<p><strong>CNS Analyst</strong> fick ett nytt riskschema med sannolikhet × påverkan. Två quests skapades: en för att validera bulk-analys med 20 pending förslag (27 maj), en annan för att implementera det nya riskschemat (31 maj). Detta är en substantiell förbättring av hur risker modelleras och presenteras.</p>
+<p><strong>Cortxt Graph View</strong> parkerades officiellt. Ett beslut dokumenterades: graph-vyn väntar tills förutsättningar är uppfyllda. Roadmapen uppdaterades med &quot;Coming Soon&quot; som v0-status. Projektet är inte nedlagt, men aktivt pausat.</p>
+<p><strong>Project Vault Dashboard</strong> fick omfattande dokumentation: API-schema, dashboard-views (Portfolio Overview, ROI &amp; Metrics, Project Detail), designidéer och beslut om Cloudflare Pages-hosting med två custom domains. Roadmapen visar v0 klar (Vanilla JS), v1 pågår (React SPA). Detta är en tydlig signal om att dashboarden går från prototyp till produkt.</p>
+<p><strong>Webhook Router</strong> fick komplett dokumentation: arkitektur, konfigurationsguide, integrationsguide med Site Change Monitor som exempel. Projektet ompositionerades från intern infra till extern produkt med replay som killer feature och self-hosted som differentiator. MVP-scope och roadmap är nu tydligt definierade.</p>
+<p><strong>DocsWatch</strong>, <strong>Dev Changelog Engine Mini</strong> och <strong>Scoring Studio</strong> fick alla sina Problem- och Solution-sektioner skrivna. Scoring Studio adresserar det konkreta problemet att viktjusteringar i Changelog Engine Mini är hårdkodade – varje justering kräver code commit.</p>
 <h3>Vad är kvar</h3>
-<p><strong>CNS Analyst</strong>: Validera bulk-analys med 20 pending förslag (27 maj), sedan implementera nytt riskschema i validator + prompt (31 maj).</p>
-<p><strong>Webhook Router</strong>: Implementera routing-engine, SQLite-lagring, och replay-funktion. Integrera med Site Change Monitor.</p>
-<p><strong>Site Change Monitor</strong>: Köra 5–10 gånger och utvärdera enligt review-checklist.</p>
-<p><strong>Scoring Studio</strong>: Definiera MVP-scope och första UI-mockup.</p>
-<p><strong>DocsWatch</strong>: Validera att ändringsdetektering fungerar mot 5–10 changelog-sidor.</p>
+<p><strong>CNS Analyst</strong>: Köra bulk-analys på 20 pending förslag (27 maj), sedan implementera sannolikhet×påverkan-modellen (31 maj).</p>
+<p><strong>Project Vault Dashboard</strong>: Slutföra React SPA-migrering (v1), deploya till Cloudflare Pages med custom domains.</p>
+<p><strong>Webhook Router</strong>: Bygga MVP med routing-engine, SQLite-lagring och replay-funktion. Integrera med Site Change Monitor.</p>
+<p><strong>Scoring Studio</strong>: Definiera MVP – troligen ett UI för att justera vikter och förhandsgranska effekten på befintliga ändringar.</p>
 <h3>Nästa steg idag</h3>
-<h3><strong>Kör CNS Analyst bulk-analys</strong> mot 20 pending förslag – validera att nya riskschemat ger bättre beslutsunderlag</h3>
-<h3><strong>Starta Webhook Router routing-engine</strong> – få första event från Site Change Monitor till dummy-endpoint</h3>
-<h3><strong>Definiera Scoring Studio MVP</strong> – vilka vikter ska vara justerbara, hur ska preview fungera?</h3>
+<h3><strong>Kör CNS Analyst bulk-analys</strong> på 20 pending förslag – validera att det nya riskschemat fungerar i praktiken</h3>
+<h3><strong>Deploya Project Vault Dashboard v1</strong> till Cloudflare Pages – verifiera att custom domains fungerar</h3>
+<h3><strong>Börja bygga Webhook Router MVP</strong> – fokusera på routing-engine och SQLite-lagring först</h3>
   </div>
 </section>
 
     <footer>
-      <p>Genererad av cns-devlog &middot; 2026-06-02 11:13 UTC</p>
+      <p>Genererad av cns-devlog &middot; 2026-06-03 11:50 UTC</p>
     </footer>
   </main>
 </body>
