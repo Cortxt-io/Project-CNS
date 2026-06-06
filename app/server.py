@@ -47,7 +47,7 @@ from app.git_ops import (  # noqa: E402
 from scripts.analyst import load_pending_suggestions, run_analyze  # noqa: E402
 from scripts.portfolio_brief import run_portfolio_brief  # noqa: E402
 from scripts.json_exporter import export_json  # noqa: E402
-from scripts.devwatch import run_devwatch  # noqa: E402
+from scripts.devwatch import run_devwatch, DevwatchError  # noqa: E402
 from scripts.devlog import run_devlog  # noqa: E402
 from scripts.md_parser import (  # noqa: E402
     SECTIONS,
@@ -1346,12 +1346,6 @@ def api_devwatch_run():
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
-    if not _check_git_available():
-        return jsonify({
-            "status": "error",
-            "message": "git is not available in this environment. Devwatch requires git to run git diff.",
-        }), 503
-
     try:
         output_path = Path("exports") / f"devwatch_{date.today().isoformat()}.json"
         output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -1387,6 +1381,8 @@ def api_devwatch_run():
             "pushed": ok,
         })
 
+    except DevwatchError as exc:
+        return jsonify({"status": "skipped", "reason": str(exc)}), 200
     except Exception as exc:
         return jsonify({"status": "error", "message": str(exc)}), 500
 
@@ -1463,12 +1459,6 @@ def api_update_run():
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
-    if not _check_git_available():
-        return jsonify({
-            "status": "error",
-            "message": "git is not available in this environment. Devwatch requires git to run git diff.",
-        }), 503
-
     results: dict[str, Any] = {}
 
     # Step 1: devwatch
@@ -1496,6 +1486,8 @@ def api_update_run():
             latest_dw, "cns-vault: update devwatch_latest"
         )
 
+    except DevwatchError as exc:
+        results["devwatch"] = {"status": "skipped", "reason": str(exc)}
     except Exception as exc:
         results["devwatch"] = {"status": "error", "message": str(exc)}
 
@@ -1529,9 +1521,11 @@ def api_update_run():
     except Exception as exc:
         results["projects_json"] = {"status": "error", "message": str(exc)}
 
+    non_devwatch = {k: v for k, v in results.items() if k != "devwatch"}
     overall = (
         "ok"
-        if all(r.get("status") == "ok" for r in results.values())
+        if all(r.get("status") == "ok" for r in non_devwatch.values())
+           and results.get("devwatch", {}).get("status") in ("ok", "skipped")
         else "partial"
     )
     return jsonify({"status": overall, "results": results})

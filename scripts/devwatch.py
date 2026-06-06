@@ -21,6 +21,10 @@ from rich.table import Table
 
 from scripts.md_parser import read_project, list_project_files
 
+
+class DevwatchError(RuntimeError):
+    """Raised when devwatch cannot run (e.g. git unavailable)."""
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -341,7 +345,7 @@ def run_devwatch(
     if not _git_available():
         console.print("[bold red]Error:[/bold red] git is not available or this is not a git repo.")
         console.print("cns-devwatch requires the CNS repo to be tracked by git.")
-        sys.exit(1)
+        raise DevwatchError("git is not available or this is not a git repo")
 
     now = datetime.now(timezone.utc)
     run_id = now.strftime("%Y%m%d_%H%M%S")
@@ -502,4 +506,8 @@ if __name__ == "__main__":
         help="Print detected changes without writing output files",
     )
     args = parser.parse_args()
-    run_devwatch(output=args.output, since=args.since, dry_run=args.dry_run)
+    try:
+        run_devwatch(output=args.output, since=args.since, dry_run=args.dry_run)
+    except DevwatchError as exc:
+        console.print(f"[bold red]{exc}[/bold red]")
+        sys.exit(1)
