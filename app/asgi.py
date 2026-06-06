@@ -48,8 +48,10 @@ if _auth_configured or _allow_insecure:
     # CORS handling. claude.ai calls /mcp server-side (no browser CORS needed),
     # so MCP doesn't require it. Flask keeps managing CORS for its own routes.
     #
-    # stateless_http=True avoids per-session affinity, so the server stays
-    # correct even if Railway runs more than one worker (no shared store).
+    # stateless_http=True avoids per-session affinity. This is safe because
+    # token state (JTI→user mapping) is persisted in Redis via client_storage,
+    # and the JWT signing key is stable across restarts — so any worker can
+    # validate any request regardless of which worker issued the token.
     mcp_app = mcp.http_app(path="/mcp", stateless_http=True)
 
     # Append Flask after the MCP/OAuth routes so it has lowest match priority.

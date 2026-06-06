@@ -39,16 +39,14 @@ from fastmcp.server.middleware import Middleware
 def _build_auth():
     """Build the OAuth provider for /mcp from environment, or None for dev.
 
-    claude.ai requires OAuth (no static-Bearer option in its connector UI), so
-    in production set:
-      - MCP_GITHUB_CLIENT_ID / MCP_GITHUB_CLIENT_SECRET  (a GitHub OAuth app)
-      - MCP_BASE_URL  (public origin, e.g. https://<app>.up.railway.app)
+    Production requires (in addition to the GitHub OAuth app):
+      - MCP_BASE_URL              public origin
+      - JWT_SIGNING_KEY           stable signing key (else tokens die on restart)
+      - STORAGE_ENCRYPTION_KEY    Fernet key for encrypting stored tokens
+      - REDIS_URL                 Redis connection (Railway Redis plugin)
 
-    FastMCP's GitHubProvider wraps an OAuth proxy that advertises the metadata
-    and Dynamic Client Registration that claude.ai's connector relies on.
-
-    Returns None when the vars are missing → unauthenticated server, intended
-    only for local development / Claude Desktop over stdio.
+    Without REDIS_URL we fall back to in-memory storage (dev/Claude Desktop),
+    which does NOT survive worker restarts — that's the bug this fixes for prod.
     """
     client_id = os.getenv("MCP_GITHUB_CLIENT_ID")
     client_secret = os.getenv("MCP_GITHUB_CLIENT_SECRET")
@@ -58,12 +56,43 @@ def _build_auth():
 
     from fastmcp.server.auth.providers.github import GitHubProvider
 
-    return GitHubProvider(
+    jwt_signing_key = os.getenv("JWT_SIGNING_KEY")
+    redis_url = os.getenv("REDIS_URL")
+    storage_key = os.getenv("STORAGE_ENCRYPTION_KEY")
+
+    client_storage = None
+    if redis_url and storage_key:
+        from key_value.aio.stores.redis import RedisStore
+        from key_value.aio.wrappers.encryption import FernetEncryptionWrapper
+        from cryptography.fernet import Fernet
+
+        client_storage = FernetEncryptionWrapper(
+            key_value=RedisStore(url=redis_url),
+            fernet=Fernet(storage_key.encode()),
+        )
+    elif redis_url or storage_key:
+        logger.warning(
+            "Partial storage config: REDIS_URL and STORAGE_ENCRYPTION_KEY must "
+            "BOTH be set for persistent OAuth storage. Falling back to memory."
+        )
+
+    kwargs = dict(
         client_id=client_id,
         client_secret=client_secret,
         base_url=base_url,
         required_scopes=["read:user"],
     )
+    if jwt_signing_key:
+        kwargs["jwt_signing_key"] = jwt_signing_key
+    else:
+        logger.warning(
+            "JWT_SIGNING_KEY not set — tokens will be invalidated on every "
+            "worker restart. Set it for stable auth."
+        )
+    if client_storage is not None:
+        kwargs["client_storage"] = client_storage
+
+    return GitHubProvider(**kwargs)
 
 
 import logging

@@ -230,6 +230,49 @@ Dynamic Client Registration som claude.ai kräver.
 
 ---
 
+## MCP OAuth — persistent storage
+
+FastMCP's GitHubProvider stores JTI→user mappings and issued tokens **in memory** by
+default. On Railway, gunicorn workers restart regularly — and every restart kills
+all in-memory state, invalidating every issued token with `JTI mapping not found`.
+To survive restarts, the provider needs a persistent, encrypted token store (Redis)
+and a stable JWT signing key.
+
+### Required env vars (production)
+
+| Variable | Purpose | How to generate |
+|----------|---------|------------------|
+| `REDIS_URL` | Redis connection string | Railway auto-generates when you add Redis |
+| `JWT_SIGNING_KEY` | Stable key for signing OAuth tokens | `python -c "import secrets; print(secrets.token_urlsafe(48))"` |
+| `STORAGE_ENCRYPTION_KEY` | Fernet key for encrypting stored tokens | `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` |
+
+Plus the existing `MCP_GITHUB_CLIENT_ID`, `MCP_GITHUB_CLIENT_SECRET`, `MCP_BASE_URL`.
+
+**Important:** `STORAGE_ENCRYPTION_KEY` MUST be a valid Fernet key (32-byte base64)
+generated with `Fernet.generate_key()`. An arbitrary string will NOT work.
+
+### Railway setup
+
+1. Add Redis: Railway dashboard → New → Database → Add Redis
+   - Railway auto-creates the `REDIS_URL` reference variable.
+2. Set env vars on the project-cns service:
+   ```
+   REDIS_URL=$Redis.REDIS_URL        # Railway reference to Redis service
+   JWT_SIGNING_KEY=<generated-key>
+   STORAGE_ENCRYPTION_KEY=<generated-fernet-key>
+   ```
+3. Railway redeploys automatically when vars are set.
+
+### Key rotation warning
+
+Rotating `JWT_SIGNING_KEY` or `STORAGE_ENCRYPTION_KEY` **invalidates all issued
+tokens**. Every user must disconnect and reconnect the Cortxt connector in
+claude.ai after a rotation. Avoid rotating unless necessary.
+
+**Never commit these keys to the repo** — only store them in Railway env vars.
+
+---
+
 ## GitHub Webhook Setup
 
 CNS-servern tar emot GitHub-webhooks på `POST /api/webhook/github` och uppdaterar
