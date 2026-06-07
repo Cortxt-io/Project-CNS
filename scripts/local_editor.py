@@ -27,6 +27,12 @@ MENU_FIELDS = [
     ("notes_append", "Add Note"),
     ("risks", "Add Risk"),
     ("why_buy_not_build", "Why Buy Instead of Build?"),
+    # Node model fields (Quest A)
+    ("kind", "Kind (component/system/framework)"),
+    ("stage", "Stage (idea/building/working/maturing)"),
+    ("part_of", "Part Of (parent slug)"),
+    ("feeds", "Feeds (comma-separated slugs)"),
+    ("depends_on", "Depends On (comma-separated slugs)"),
 ]
 
 
@@ -139,6 +145,37 @@ def _ask_family(meta: dict, console: Console) -> str:
     return raw if raw in families else ""
 
 
+def _ask_kind(meta: dict, console: Console) -> str:
+    kinds = ["component", "system", "framework"]
+    current = meta.get("kind", "")
+    console.print(f"  Current kind: [dim]{current or '(none — legacy product)'}[/dim]")
+    console.print("  Options: " + ", ".join(kinds))
+    raw = Prompt.ask("  Kind (or press Enter to keep current)", default=current or "")
+    return raw if raw in kinds else ""
+
+
+def _ask_stage(meta: dict, console: Console) -> str:
+    stages = ["idea", "building", "working", "maturing"]
+    current = meta.get("stage", "")
+    console.print(f"  Current stage: [dim]{current or '(none)'}[/dim]")
+    console.print("  Options: " + ", ".join(stages))
+    raw = Prompt.ask("  Stage (or press Enter to keep current)", default=current or "")
+    return raw if raw in stages else ""
+
+
+def _ask_part_of(meta: dict, console: Console) -> str:
+    current = meta.get("part_of", "")
+    console.print(f"  Current part_of: [dim]{current or '(none)'}[/dim]")
+    return Prompt.ask("  Part Of (parent slug, or press Enter to clear)", default=current or "")
+
+
+def _ask_slug_list(field_name: str, meta: dict, console: Console) -> list[str]:
+    current = meta.get(field_name, [])
+    console.print(f"  Current {field_name}: [dim]{', '.join(current) if current else '(none)'}[/dim]")
+    raw = Prompt.ask(f"  {field_name} (comma-separated slugs)")
+    return [s.strip() for s in raw.split(",") if s.strip()]
+
+
 def run_local_edit(
     meta: dict[str, Any],
     sections: dict[str, str],
@@ -184,6 +221,24 @@ def run_local_edit(
             items = _ask_why_buy(console)
             if items:
                 changes["why_buy_not_build"] = items
+        elif field == "kind":
+            val = _ask_kind(meta, console)
+            if val:
+                changes["kind"] = val
+        elif field == "stage":
+            val = _ask_stage(meta, console)
+            if val:
+                changes["stage"] = val
+        elif field == "part_of":
+            changes["part_of"] = _ask_part_of(meta, console)
+        elif field == "feeds":
+            val = _ask_slug_list("feeds", meta, console)
+            if val:
+                changes["feeds"] = val
+        elif field == "depends_on":
+            val = _ask_slug_list("depends_on", meta, console)
+            if val:
+                changes["depends_on"] = val
 
     # Auto-compute ROI if cost or value changed
     cost = changes.get("cost_sek", meta.get("cost_sek", 0))
@@ -220,6 +275,22 @@ def run_new_project_interview(
         console.print()
         console.print(f"[bold]Setting up project:[/bold] [cyan]{meta['slug']}[/cyan]")
         console.print("[dim]Press Enter to skip any field.[/dim]\n")
+
+        # --- Kind (only if not already set) ---
+        if not meta.get("kind"):
+            kinds = ["component", "system", "framework"]
+            console.print("  Node kinds: " + ", ".join(kinds) + " (or press Enter for legacy product template)")
+            kind_raw = Prompt.ask("  Kind", default="")
+            if kind_raw.strip() in kinds:
+                meta["kind"] = kind_raw.strip()
+                meta.setdefault("stage", "idea")
+                meta.setdefault("part_of", "")
+                meta.setdefault("feeds", [])
+                meta.setdefault("depends_on", [])
+                # Switch section template to match kind
+                from scripts.md_parser import sections_for_kind
+                new_headings = sections_for_kind(meta["kind"])
+                sections = {h: sections.get(h, "") for h in new_headings}
 
         # --- Title ---
         title = Prompt.ask("  Title", default=meta["title"])
@@ -289,6 +360,8 @@ def _build_new_project_summary(
     lines = [
         f"  [bold]Title:[/bold]    {meta.get('title', dim_empty)}",
         f"  [bold]Status:[/bold]   {meta.get('status', 'idea')}",
+        f"  [bold]Kind:[/bold]     {meta.get('kind', '') or 'legacy product'}",
+        f"  [bold]Stage:[/bold]    {meta.get('stage', '') or dim_empty}",
         f"  [bold]Tags:[/bold]     {', '.join(meta.get('tags', [])) or dim_empty}",
         f"  [bold]Family:[/bold]   {meta.get('family', '') or dim_empty}",
         f"  [bold]Summary:[/bold]  {meta.get('summary', '') or dim_empty}",
@@ -296,5 +369,6 @@ def _build_new_project_summary(
         f"  [bold]Problem:[/bold]  {sections.get('Problem', '').strip() or dim_empty}",
         f"  [bold]Solution:[/bold] {sections.get('Solution', '').strip() or dim_empty}",
         f"  [bold]Audience:[/bold] {sections.get('Target Audience', '').strip() or dim_empty}",
+        f"  [bold]Syfte:[/bold]    {sections.get('Syfte', '').strip() or dim_empty}",
     ]
     return "\n".join(lines)

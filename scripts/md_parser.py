@@ -10,6 +10,7 @@ from typing import Any
 import frontmatter
 
 # Canonical section order that every project file must follow.
+# Product template (legacy — used when kind is None)
 SECTIONS = [
     "Problem",
     "Solution",
@@ -24,6 +25,51 @@ SECTIONS = [
     "Timeline",
     "Notes",
 ]
+
+# Component template — for nodes with kind: component
+COMPONENT_SECTIONS = [
+    "Syfte",
+    "Beroenden",
+    "Status",
+    "Nästa steg",
+    "Risker",
+    "Arbetslogg",
+    "Anteckningar",
+]
+
+# System template — for nodes with kind: system
+SYSTEM_SECTIONS = [
+    "Syfte/mål",
+    "Ingående komponenter",
+    "Dataflöde",
+    "Hälsa",
+    "Systemrisker",
+    "Arbetslogg",
+    "Anteckningar",
+]
+
+# Framework template — for nodes with kind: framework
+FRAMEWORK_SECTIONS = [
+    "Vision",
+    "Ingående system",
+    "Karta",
+    "Riktning",
+    "Principer",
+    "Arbetslogg",
+    "Anteckningar",
+]
+
+
+def sections_for_kind(kind: str | None) -> list[str]:
+    """Return the canonical section list for a given node kind.
+
+    If kind is None (legacy product nodes), returns the product SECTIONS list.
+    """
+    return {
+        "component": COMPONENT_SECTIONS,
+        "system": SYSTEM_SECTIONS,
+        "framework": FRAMEWORK_SECTIONS,
+    }.get(kind, SECTIONS)
 
 PROJECTS_DIR = Path(__file__).resolve().parent.parent / "projects"
 
@@ -69,16 +115,35 @@ def _parse_sections(body: str) -> dict[str, str]:
     return sections
 
 
-def _render_body(sections: dict[str, str]) -> str:
-    """Render sections back into Markdown body in canonical order."""
+def _render_body(sections: dict[str, str], kind: str | None = None) -> str:
+    """Render sections back into Markdown body in canonical order.
+
+    Sections not in the canonical order for this kind are appended
+    at the end (preserving content from migrated nodes).
+    """
+    canonical = sections_for_kind(kind)
+    rendered_headings: set[str] = set()
     parts: list[str] = []
-    for heading in SECTIONS:
+
+    # First pass: render sections in canonical order
+    for heading in canonical:
         content = sections.get(heading, "")
         parts.append(f"## {heading}")
         if content:
             parts.append("")
             parts.append(content)
         parts.append("")  # blank line after each section
+        rendered_headings.add(heading)
+
+    # Second pass: append any remaining sections not in canonical order
+    for heading, content in sections.items():
+        if heading not in rendered_headings:
+            parts.append(f"## {heading}")
+            if content:
+                parts.append("")
+                parts.append(content)
+            parts.append("")
+
     return "\n".join(parts).rstrip() + "\n"
 
 
@@ -129,32 +194,56 @@ def write_project(
     path = project_path(slug)
     path.parent.mkdir(parents=True, exist_ok=True)
 
-    body = _render_body(sections)
+    kind = meta.get("kind")  # None for legacy product nodes
+    body = _render_body(sections, kind=kind)
     post = frontmatter.Post(body, **meta)
     path.write_text(frontmatter.dumps(post) + "\n", encoding="utf-8")
     return path
 
 
-def new_project_template(slug: str) -> tuple[dict[str, Any], dict[str, str]]:
-    """Return default frontmatter and empty sections for a new project."""
+def new_project_template(slug: str, kind: str | None = None) -> tuple[dict[str, Any], dict[str, str]]:
+    """Return default frontmatter and empty sections for a new project.
+
+    If kind is set, uses the appropriate section template and includes
+    kind/stage/part_of/feeds/depends_on in frontmatter.
+    If kind is None, uses the legacy product template.
+    """
     today = date.today().isoformat()
+    section_headings = sections_for_kind(kind)
+    sections = {heading: "" for heading in section_headings}
+
+    # Base meta common to all templates
     meta: dict[str, Any] = {
         "title": slug.replace("-", " ").title(),
         "slug": slug,
         "status": "idea",
         "tags": [],
-        "cost_sek": 0,
-        "value_sek": 0,
-        "roi_percent": 0,
-        "mvp_stage": "hypothesis",
         "summary": None,
-        "family": None,
-        "url_live": None,
-        "url_repo": None,
         "created": today,
         "updated": today,
     }
-    sections = {heading: "" for heading in SECTIONS}
+
+    if kind is None:
+        # Legacy product template
+        meta.update({
+            "cost_sek": 0,
+            "value_sek": 0,
+            "roi_percent": 0,
+            "mvp_stage": "hypothesis",
+            "family": None,
+            "url_live": None,
+            "url_repo": None,
+        })
+    else:
+        # Node model template
+        meta.update({
+            "kind": kind,
+            "stage": "idea",
+            "part_of": "",
+            "feeds": [],
+            "depends_on": [],
+        })
+
     return meta, sections
 
 
@@ -238,6 +327,12 @@ def apply_changes(
         "family": "family",
         "url_live": "url_live",
         "url_repo": "url_repo",
+        # Node model fields (Quest A)
+        "kind": "kind",
+        "stage": "stage",
+        "part_of": "part_of",
+        "feeds": "feeds",
+        "depends_on": "depends_on",
     }
     for src, dst in fm_fields.items():
         val = changes.get(src)

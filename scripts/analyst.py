@@ -17,8 +17,10 @@ from rich.panel import Panel
 
 from scripts.md_parser import apply_changes, read_project
 from scripts.validator import (
+    VALID_KINDS,
     VALID_MVP_STAGES,
     VALID_RISK_CATEGORIES,
+    VALID_STAGES,
     VALID_STATUSES,
 )
 
@@ -413,6 +415,12 @@ def run_analyze(
         True if changes were applied or saved, False otherwise.
     """
     meta, sections, raw = read_project(slug)
+
+    # Skip non-product nodes (framework/system are not analyzed as products)
+    kind = meta.get("kind")
+    if kind in ("framework", "system"):
+        console.print(f"[dim]Skipping analysis — {kind} nodes are not product-analyzed.[/dim]")
+        return False
 
     console.print(f"[bold]Analyzing [cyan]{slug}[/cyan] with {ANTHROPIC_MODEL}...[/bold]")
 

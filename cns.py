@@ -21,6 +21,7 @@ from scripts.md_parser import (
     project_path,
     read_project,
     scaffold_project_dirs,
+    sections_for_kind,
     write_project,
     SECTIONS,
 )
@@ -59,8 +60,15 @@ def _show_diff_and_confirm(
             console.print(f"  [red]- {key}: {old_val}[/red]")
             console.print(f"  [green]+ {key}: {new_val}[/green]")
 
-    # Show changed sections
-    for heading in SECTIONS:
+    # Show changed sections — kind-aware
+    kind = new_meta.get("kind")
+    section_headings = sections_for_kind(kind)
+    # Also check headings that exist in sections but not in canonical list
+    all_headings = list(section_headings) + [
+        h for h in set(list(sections.keys()) + list(new_sections.keys()))
+        if h not in section_headings
+    ]
+    for heading in all_headings:
         old_text = sections.get(heading, "").strip()
         new_text = new_sections.get(heading, "").strip()
         if old_text != new_text:
@@ -333,6 +341,7 @@ def cmd_export_json(args: argparse.Namespace) -> None:
 def cmd_new(args: argparse.Namespace) -> None:
     """Create a new project from template with full folder scaffold."""
     slug = args.slug
+    kind = getattr(args, "kind", None)
 
     # Check if already exists
     pdir = project_dir(slug)
@@ -342,7 +351,7 @@ def cmd_new(args: argparse.Namespace) -> None:
 
     # Scaffold directories first, then write project.md
     scaffold_project_dirs(slug)
-    meta, sections = new_project_template(slug)
+    meta, sections = new_project_template(slug, kind=kind)
 
     # Interactive interview (unless --skip-prompts)
     if not getattr(args, "skip_prompts", False):
@@ -354,6 +363,8 @@ def cmd_new(args: argparse.Namespace) -> None:
 
     written = write_project(slug, meta, sections)
     console.print(f"[green]Created new project: {written}[/green]")
+    if kind:
+        console.print(f"[dim]Kind: {kind} | Stage: {meta.get('stage', 'idea')}[/dim]")
     console.print(f"[dim]Project folder: {pdir}[/dim]")
 
 
@@ -628,6 +639,12 @@ def main() -> None:
     # cns new <slug>
     sp_new = subparsers.add_parser("new", help="Create a new project")
     sp_new.add_argument("slug", help="Project slug (e.g. my-new-project)")
+    sp_new.add_argument(
+        "--kind", "-k",
+        choices=["component", "system", "framework"],
+        default=None,
+        help="Node kind (default: legacy product template)",
+    )
     sp_new.add_argument(
         "--skip-prompts", action="store_true", default=False,
         help="Skip interactive prompts and create a blank project",

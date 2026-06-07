@@ -21,6 +21,10 @@ VALID_STATUSES = {"idea", "early_mvp", "mvp", "live", "shelved"}
 VALID_MVP_STAGES = {"hypothesis", "problem_interviews", "solution_test", "demand_test", "launch"}
 VALID_RISK_CATEGORIES = {"technical", "market", "legal", "ops", "competition", "positioning", "adoption"}
 
+# Node model enums (Quest A — optional fields)
+VALID_KINDS = {"component", "system", "framework"}
+VALID_STAGES = {"idea", "building", "working", "maturing"}
+
 VALID_LAYERS = {
     "pipeline",
     "infrastructure",
@@ -40,8 +44,10 @@ VALID_FAMILIES = {
     "cns-core", "ideas", "cns-platform", "monitoring-pipeline",
 }
 
-# Required sections (must exist as ## headings)
+# Required sections (must exist as ## headings) — imported lazily to avoid
+# circular dependency with kind-aware section sets
 from scripts.md_parser import SECTIONS as REQUIRED_SECTIONS
+from scripts.md_parser import sections_for_kind as _sections_for_kind
 
 
 def load_schema() -> dict:
@@ -72,11 +78,20 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
     Returns a list of error strings.  Empty list = valid.
     """
     errors: list[str] = []
+    kind = meta.get("kind")  # None for legacy product nodes
 
     # 1. Required frontmatter fields
-    for field in REQUIRED_FM_FIELDS:
-        if field not in meta:
-            errors.append(f"Missing frontmatter field: {field}")
+    #    For component/system/framework nodes, product fields are optional.
+    #    Legacy nodes (kind=None) must still satisfy all product requirements.
+    if kind is None:
+        for field in REQUIRED_FM_FIELDS:
+            if field not in meta:
+                errors.append(f"Missing frontmatter field: {field}")
+    else:
+        # Nodes with a kind still need title and slug
+        for field in ("title", "slug"):
+            if field not in meta:
+                errors.append(f"Missing frontmatter field: {field}")
 
     # 2. Enum checks
     status = meta.get("status")
@@ -112,27 +127,42 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
             f"Invalid pipeline '{pipeline}'. Allowed: {', '.join(sorted(VALID_PIPELINES))}"
         )
 
-    # 3. Required sections
-    for heading in REQUIRED_SECTIONS:
+    # 2e. Kind enum check (optional field)
+    if kind is not None and kind not in VALID_KINDS:
+        errors.append(
+            f"Invalid kind '{kind}'. Allowed: {', '.join(sorted(VALID_KINDS))}"
+        )
+
+    # 2f. Stage enum check (optional field)
+    stage = meta.get("stage")
+    if stage is not None and stage not in VALID_STAGES:
+        errors.append(
+            f"Invalid stage '{stage}'. Allowed: {', '.join(sorted(VALID_STAGES))}"
+        )
+
+    # 3. Required sections — kind-aware
+    required_headings = _sections_for_kind(kind)
+    for heading in required_headings:
         if heading not in sections:
             errors.append(f"Missing section: ## {heading}")
 
-    # 4. ROI consistency
-    cost = meta.get("cost_sek", 0)
-    value = meta.get("value_sek", 0)
-    roi = meta.get("roi_percent", 0)
-    if isinstance(cost, (int, float)) and isinstance(value, (int, float)) and isinstance(roi, (int, float)):
-        if cost > 0:
-            expected_roi = round((value - cost) / cost * 100)
-            if roi != expected_roi:
+    # 4. ROI consistency (only for legacy product nodes)
+    if kind is None:
+        cost = meta.get("cost_sek", 0)
+        value = meta.get("value_sek", 0)
+        roi = meta.get("roi_percent", 0)
+        if isinstance(cost, (int, float)) and isinstance(value, (int, float)) and isinstance(roi, (int, float)):
+            if cost > 0:
+                expected_roi = round((value - cost) / cost * 100)
+                if roi != expected_roi:
+                    errors.append(
+                        f"ROI mismatch: roi_percent={roi} but calculated "
+                        f"(value_sek - cost_sek) / cost_sek * 100 = {expected_roi}"
+                    )
+            elif cost == 0 and roi != 0:
                 errors.append(
-                    f"ROI mismatch: roi_percent={roi} but calculated "
-                    f"(value_sek - cost_sek) / cost_sek * 100 = {expected_roi}"
+                    f"ROI mismatch: cost_sek=0 so roi_percent should be 0, got {roi}"
                 )
-        elif cost == 0 and roi != 0:
-            errors.append(
-                f"ROI mismatch: cost_sek=0 so roi_percent should be 0, got {roi}"
-            )
 
     # 5. Risk category validation
     risk_text = sections.get("Risk Assessment", "")
@@ -149,5 +179,31 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
                     f"Invalid risk category '{cat}'. "
                     f"Allowed: {', '.join(sorted(VALID_RISK_CATEGORIES))}"
                 )
+
+    # 6. Node-model reference validation (warnings, not errors)
+    if kind is not None:
+        # part_of: if set, slug directory should exist
+        part_of = meta.get("part_of")
+        if part_of is not None and part_of != "":
+            from scripts.md_parser import project_dir as _project_dir
+            if not _project_dir(part_of).exists():
+                errors.append(
+                    f"Warning: part_of='{part_of}' but no project directory found for that slug"
+                )
+
+        # feeds and depends_on must be lists of strings if present
+        for rel_field in ("feeds", "depends_on"):
+            val = meta.get(rel_field)
+            if val is not None:
+                if not isinstance(val, list):
+                    errors.append(f"{rel_field} must be a list, got {type(val).__name__}")
+                elif not all(isinstance(item, str) for item in val):
+                    errors.append(f"{rel_field} must be a list of strings")
+
+        # Kind-structure hints (informational warnings)
+        if kind == "framework" and part_of not in (None, ""):
+            errors.append(f"Warning: framework nodes should not have part_of (got '{part_of}')")
+        if kind == "component" and part_of in (None, ""):
+            errors.append("Warning: component nodes should typically have part_of set")
 
     return errors
