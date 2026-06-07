@@ -1427,6 +1427,33 @@ def api_devwatch_run():
         return jsonify({"status": "error", "message": str(exc)}), 500
 
 
+@app.route("/api/devlog", methods=["GET", "OPTIONS"])
+def api_devlog():
+    """Return the latest devlog digest JSON."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+
+    latest = _latest_export("devlog_*.json")
+    if not latest or not latest.exists():
+        return jsonify({
+            "text": "",
+            "generated_at": "",
+            "event_count": 0,
+            "status": "not_found",
+        }), 404
+
+    try:
+        data = json.loads(latest.read_text(encoding="utf-8"))
+        return jsonify({
+            "text": data.get("text", ""),
+            "generated_at": data.get("generated_at", ""),
+            "event_count": data.get("event_count", 0),
+            "status": "ok",
+        })
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
 @app.route("/api/devlog/run", methods=["POST", "OPTIONS"])
 def api_devlog_run():
     if request.method == "OPTIONS":
@@ -1447,36 +1474,49 @@ def api_devlog_run():
         output_path = Path("exports") / f"devlog_{date.today().isoformat()}.html"
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        run_devlog(output_path=output_path)
+        result = run_devlog(output_path=output_path, html=True)
 
-        if not output_path.exists():
-            return jsonify({
-                "status": "error",
-                "message": "Devlog produced no output",
-            }), 500
+        # Push devlog JSON digest
+        json_path = Path("exports") / f"devlog_{date.today().isoformat()}.json"
+        if json_path.exists():
+            push_file_immediately(
+                json_path,
+                f"cns-vault: devlog digest {date.today().isoformat()}",
+            )
+            latest_json = Path(
+                "projects/project-vault-dashboard/dashboard/data/devlog_latest.json"
+            )
+            latest_json.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(json_path, latest_json)
+            push_file_immediately(
+                latest_json,
+                f"cns-vault: update devlog_latest json {date.today().isoformat()}",
+            )
 
-        # Push devlog HTML to GitHub
-        ok, msg = push_file_immediately(
-            output_path,
-            f"cns-vault: devlog run {date.today().isoformat()}",
-        )
+        # Push deprecated HTML (kept for backwards compatibility)
+        html_pushed = False
+        if result.get("html_path") and Path(result["html_path"]).exists():
+            html_path = Path(result["html_path"])
+            ok, msg = push_file_immediately(
+                html_path,
+                f"cns-vault: devlog run {date.today().isoformat()}",
+            )
+            html_pushed = ok
 
-        # Also update the latest file
-        latest_path = Path(
-            "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
-        )
-        latest_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy(output_path, latest_path)
-
-        push_file_immediately(
-            latest_path,
-            f"cns-vault: update devlog_latest {date.today().isoformat()}",
-        )
+            latest_path = Path(
+                "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+            )
+            latest_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(html_path, latest_path)
+            push_file_immediately(
+                latest_path,
+                f"cns-vault: update devlog_latest {date.today().isoformat()}",
+            )
 
         return jsonify({
             "status": "ok",
-            "output": str(output_path),
-            "pushed": ok,
+            "digest": result,
+            "pushed": html_pushed,
         })
 
     except Exception as exc:
@@ -1534,18 +1574,35 @@ def api_update_run():
     # Step 2: devlog
     try:
         dl_path = Path("exports") / f"devlog_{date.today().isoformat()}.html"
-        run_devlog(output_path=dl_path)
-        results["devlog"] = {"status": "ok"}
+        result = run_devlog(output_path=dl_path, html=True)
+        results["devlog"] = {"status": "ok", "event_count": result.get("event_count", 0)}
 
-        if dl_path.exists():
+        # Push JSON digest
+        json_path = Path("exports") / f"devlog_{date.today().isoformat()}.json"
+        if json_path.exists():
             push_file_immediately(
-                dl_path, f"cns-vault: devlog {date.today().isoformat()}"
+                json_path, f"cns-vault: devlog {date.today().isoformat()}"
+            )
+            latest_dl_json = Path(
+                "projects/project-vault-dashboard/dashboard/data/devlog_latest.json"
+            )
+            latest_dl_json.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(json_path, latest_dl_json)
+            push_file_immediately(
+                latest_dl_json, "cns-vault: update devlog_latest json"
+            )
+
+        # Push deprecated HTML
+        if result.get("html_path") and Path(result["html_path"]).exists():
+            html_path = Path(result["html_path"])
+            push_file_immediately(
+                html_path, f"cns-vault: devlog {date.today().isoformat()}"
             )
             latest_dl = Path(
                 "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
             )
             latest_dl.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy(dl_path, latest_dl)
+            shutil.copy(html_path, latest_dl)
             push_file_immediately(
                 latest_dl, "cns-vault: update devlog_latest"
             )

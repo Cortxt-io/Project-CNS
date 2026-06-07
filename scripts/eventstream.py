@@ -19,6 +19,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import re
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -245,9 +246,10 @@ def generate_aggregate(max_events: int = 500) -> Path:
 
 
 def normalize_push_event(payload: dict) -> list[dict]:
-    """Normalize a GitHub push webhook payload into events (one per commit).
+    """Normalize a GitHub push webhook payload into events (one per commit per slug).
 
-    Returns list of event dicts.
+    Returns list of event dicts. Multi-slug commits get unique event IDs
+    per slug to avoid dedup collisions.
     """
     events = []
     repo = payload.get("repository", {}).get("full_name", "")
@@ -256,18 +258,44 @@ def normalize_push_event(payload: dict) -> list[dict]:
 
     for commit in payload.get("commits", []):
         sha = commit.get("id", "")[:8]
-        events.append(make_event(
-            what="push",
-            when=commit.get("timestamp", ""),
-            why=commit.get("message", ""),
-            how=_summarize_commit(commit),
-            who=commit.get("author", {}).get("username", "") or commit.get("author", {}).get("name", ""),
-            where=f"{repo}:{branch}",
-            source="github",
-            slug=_slug_from_repo(repo),
-            event_id=f"evt:github:push:{sha}",
-            meta={"sha": commit.get("id", ""), "url": commit.get("url", "")},
-        ))
+        slugs = _slugs_from_files(
+            commit.get("added", []) + commit.get("modified", []) + commit.get("removed", [])
+        )
+
+        if not slugs:
+            # Global event when no project files touched
+            events.append(make_event(
+                what="push",
+                when=commit.get("timestamp", ""),
+                why=commit.get("message", ""),
+                how=_summarize_commit(commit),
+                who=commit.get("author", {}).get("username", "") or commit.get("author", {}).get("name", ""),
+                where=f"{repo}:{branch}",
+                source="github",
+                slug=None,
+                event_id=f"evt:github:push:{sha}",
+                meta={"sha": commit.get("id", ""), "url": commit.get("url", "")},
+            ))
+        else:
+            all_slugs = sorted(slugs)
+            for slug in all_slugs:
+                events.append(make_event(
+                    what="push",
+                    when=commit.get("timestamp", ""),
+                    why=commit.get("message", ""),
+                    how=_summarize_commit(commit),
+                    who=commit.get("author", {}).get("username", "") or commit.get("author", {}).get("name", ""),
+                    where=f"{repo}:{branch}",
+                    source="github",
+                    slug=slug,
+                    event_id=f"evt:github:push:{sha}:{slug}",
+                    meta={
+                        "sha": commit.get("id", ""),
+                        "url": commit.get("url", ""),
+                        "slugs": all_slugs,
+                        "is_multi_slug": len(all_slugs) > 1,
+                    },
+                ))
 
     return events
 
@@ -280,6 +308,8 @@ def normalize_pr_event(payload: dict) -> list[dict]:
     number = pr.get("number", "")
     branch = pr.get("head", {}).get("ref", "")
 
+    slug = _slug_from_message(pr.get("title", "")) or _slug_from_message(branch)
+
     return [make_event(
         what="pull_request",
         when=pr.get("updated_at", "") or pr.get("created_at", ""),
@@ -288,7 +318,7 @@ def normalize_pr_event(payload: dict) -> list[dict]:
         who=pr.get("user", {}).get("login", ""),
         where=f"{repo}:{branch}",
         source="github",
-        slug=_slug_from_repo(repo),
+        slug=slug,
         event_id=f"evt:github:pr:{number}",
         meta={"number": number, "action": action, "merged": pr.get("merged", False)},
     )]
@@ -301,15 +331,19 @@ def normalize_workflow_run_event(payload: dict) -> list[dict]:
     conclusion = run.get("conclusion", "")
     name = run.get("name", "")
 
+    branch = run.get("head_branch", "")
+    display_title = run.get("display_title", "") or name
+    slug = _slug_from_message(display_title) or _slug_from_message(branch)
+
     return [make_event(
         what="workflow_run",
         when=run.get("updated_at", "") or run.get("run_started_at", ""),
-        why=run.get("display_title", "") or name,
+        why=display_title,
         how=f"Workflow {name}: {conclusion}",
         who=run.get("actor", {}).get("login", ""),
-        where=f"{repo}:{run.get('head_branch', '')}",
+        where=f"{repo}:{branch}",
         source="github",
-        slug=_slug_from_repo(repo),
+        slug=slug,
         event_id=f"evt:github:workflow:{run.get('id', '')}",
         meta={"run_id": run.get("id"), "conclusion": conclusion, "name": name},
     )]
@@ -364,16 +398,19 @@ def fetch_github_commits(since: str, repo: str | None = None,
         for c in commits:
             sha = c.get("sha", "")[:8]
             commit_data = c.get("commit", {})
+            message = commit_data.get("message", "").split("\n")[0]
+            slug = _slug_from_message(message)
+            event_id = f"evt:github:push:{sha}:{slug}" if slug else f"evt:github:push:{sha}"
             events.append(make_event(
                 what="push",
                 when=commit_data.get("committer", {}).get("date", ""),
-                why=commit_data.get("message", "").split("\n")[0],
+                why=message,
                 how="CI backfill",
                 who=commit_data.get("author", {}).get("name", ""),
                 where=f"{repo}:main",
                 source="github",
-                slug=_slug_from_repo(repo),
-                event_id=f"evt:github:push:{sha}",
+                slug=slug,
+                event_id=event_id,
             ))
 
         if len(commits) < 100:
@@ -506,6 +543,16 @@ def run_sync(since: str | None = None) -> dict:
 
     all_known_ids = existing_ids | redis_ids
 
+    # Build set of known SHAs for cross-variant dedup.
+    # If a commit was already logged via webhook (with per-slug IDs like
+    # evt:github:push:<sha>:<slug>), we must skip the backfill variant
+    # (evt:github:push:<sha>) to avoid duplicates in the timeline.
+    known_shas: set[str] = set()
+    for eid in all_known_ids:
+        sha = _extract_sha_from_event_id(eid)
+        if sha:
+            known_shas.add(sha)
+
     # Fetch from all adapters
     all_new: list[dict] = []
     counts: dict[str, int] = {}
@@ -528,10 +575,19 @@ def run_sync(since: str | None = None) -> dict:
 
         new_count = 0
         for evt in events:
-            if evt.get("id", "") not in all_known_ids:
-                all_new.append(evt)
-                all_known_ids.add(evt.get("id", ""))
-                new_count += 1
+            eid = evt.get("id", "")
+            if eid in all_known_ids:
+                continue
+            # Cross-variant dedup: if any variant of this SHA already exists,
+            # skip the backfill event (webhook already logged it with correct slug)
+            sha = _extract_sha_from_event_id(eid)
+            if sha and sha in known_shas:
+                continue
+            all_new.append(evt)
+            all_known_ids.add(eid)
+            if sha:
+                known_shas.add(sha)
+            new_count += 1
         counts[name] = new_count
 
     # Append to .jsonl
@@ -554,16 +610,56 @@ def run_sync(since: str | None = None) -> dict:
 # ---------------------------------------------------------------------------
 
 
-def _slug_from_repo(repo: str) -> str | None:
-    """Best-effort mapping from GitHub repo full_name to CNS slug.
+def _slugs_from_files(files: list[str]) -> set[str]:
+    """Return project slugs touched by file paths.
 
-    The repo name might match a project directory directly.
+    Matches paths like projects/<slug>/... extracted from commit file lists.
     """
-    if not repo:
+    slugs: set[str] = set()
+    for f in files:
+        parts = Path(f).parts
+        if len(parts) >= 2 and parts[0] == "projects":
+            slugs.add(parts[1])
+    return slugs
+
+
+def _known_slugs() -> set[str]:
+    """Return known project slugs from the projects/ directory."""
+    projects_dir = Path(__file__).resolve().parent.parent / "projects"
+    if not projects_dir.exists():
+        return set()
+    return {p.name for p in projects_dir.iterdir() if p.is_dir() and not p.name.startswith(".")}
+
+
+def _slug_from_message(message: str) -> str | None:
+    """Best-effort slug detection from commit message.
+
+    Matches known project slugs as whole words. Used for CI backfill
+    when file information is not available. Falska träffar är harmlösa —
+    webhook ger sanningen i realtid, och dedup via event-ID förhindrar
+    att heuristiken krockar med webhook-eventet.
+    """
+    if not message:
         return None
-    # repo is like "rian010194/prompt-cns" — the repo name is "prompt-cns"
-    # For this repo, events relate to whatever project was touched
-    # The webhook handler does per-file slug matching; this is a fallback
+    known = _known_slugs()
+    lower = message.lower()
+    for slug in known:
+        if re.search(rf"\b{re.escape(slug)}\b", lower):
+            return slug
+        # Also try without hyphens (e.g. "devwatch" matches "cns-devwatch")
+        no_hyphen = slug.replace("-", "")
+        if no_hyphen != slug and re.search(rf"\b{re.escape(no_hyphen)}\b", lower):
+            return slug
+    return None
+
+
+def _extract_sha_from_event_id(event_id: str) -> str | None:
+    """Extract the 8-char SHA from a github push event ID."""
+    if not event_id or not event_id.startswith("evt:github:push:"):
+        return None
+    parts = event_id.split(":")
+    if len(parts) >= 4:
+        return parts[3]
     return None
 
 

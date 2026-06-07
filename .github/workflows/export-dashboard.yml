@@ -53,6 +53,10 @@ jobs:
             echo "No devwatch export found — skipping"
           fi
 
+      - name: Generate eventstream aggregate from devwatch
+        run: |
+          python -c "from scripts.eventstream import generate_aggregate; generate_aggregate()"
+
       - name: Sync eventstream
         env:
           CNS_GITHUB_TOKEN: ${{ secrets.CNS_GITHUB_TOKEN }}
@@ -77,16 +81,25 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          python cns.py devlog
+          python cns.py devlog --html
 
-      - name: Copy latest devlog export
+      - name: Copy latest devlog exports
         run: |
-          LATEST=$(ls exports/devlog_[0-9]*.html 2>/dev/null | sort | tail -n 1)
-          if [ -n "$LATEST" ]; then
-            cp "$LATEST" projects/project-vault-dashboard/dashboard/data/devlog_latest.html
-            echo "Copied $LATEST"
+          # Copy digest JSON (new primary output)
+          LATEST_JSON=$(ls exports/devlog_[0-9]*.json 2>/dev/null | sort | tail -n 1)
+          if [ -n "$LATEST_JSON" ]; then
+            cp "$LATEST_JSON" projects/project-vault-dashboard/dashboard/data/devlog_latest.json
+            echo "Copied $LATEST_JSON"
           else
-            echo "No devlog export found — skipping"
+            echo "No devlog JSON export found — skipping"
+          fi
+          # Copy deprecated HTML (backwards compatibility)
+          LATEST_HTML=$(ls exports/devlog_[0-9]*.html 2>/dev/null | sort | tail -n 1)
+          if [ -n "$LATEST_HTML" ]; then
+            cp "$LATEST_HTML" projects/project-vault-dashboard/dashboard/data/devlog_latest.html
+            echo "Copied $LATEST_HTML"
+          else
+            echo "No devlog HTML export found — skipping"
           fi
 
       - name: Commit updated files
@@ -95,7 +108,9 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add projects/project-vault-dashboard/dashboard/data/projects.json
           git add projects/project-vault-dashboard/dashboard/data/devwatch_latest.json
+          git add exports/devlog_*.json || true
           git add exports/devlog_*.html || true
+          git add projects/project-vault-dashboard/dashboard/data/devlog_latest.json || true
           git add projects/project-vault-dashboard/dashboard/data/devlog_latest.html || true
           git add exports/eventstream_*.jsonl || true
           git add exports/eventstream_latest.json || true

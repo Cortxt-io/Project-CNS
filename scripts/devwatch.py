@@ -11,6 +11,7 @@ import json
 import re
 import subprocess
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
@@ -319,6 +320,86 @@ def build_event(
 
 
 # ---------------------------------------------------------------------------
+# Stage-transition detection
+# ---------------------------------------------------------------------------
+
+_STAGE_DIFF_RE = re.compile(r"^stage:\s*(.+)$")
+
+
+def _extract_stage_transition(diff_text: str) -> tuple[Optional[str], Optional[str]]:
+    """Parse unified diff for stage field changes in project.md frontmatter.
+
+    Returns (old_stage, new_stage) or (None, None) if no transition detected.
+    """
+    old: Optional[str] = None
+    new: Optional[str] = None
+    for line in diff_text.splitlines():
+        # Only look at changed lines (not context or diff metadata)
+        if line.startswith("-") and not line.startswith("---"):
+            m = _STAGE_DIFF_RE.match(line[1:].strip())
+            if m:
+                old = m.group(1).strip()
+        elif line.startswith("+") and not line.startswith("+++"):
+            m = _STAGE_DIFF_RE.match(line[1:].strip())
+            if m:
+                new = m.group(1).strip()
+    return old, new
+
+
+# ---------------------------------------------------------------------------
+# Eventstream adapter
+# ---------------------------------------------------------------------------
+
+def to_eventstream_event(
+    change_event: dict, old_stage: Optional[str], new_stage: Optional[str]
+) -> dict:
+    """Convert a ChangeEvent to an eventstream event."""
+    from scripts.eventstream import make_event
+
+    meta = change_event.get("meta", {})
+    slug = meta.get("slug", "")
+    changed_fields = meta.get("changed_fields", [])
+    changed_files = meta.get("changed_files", [])
+    project_title = meta.get("project_title", slug)
+
+    # Determine event type
+    has_stage_change = (
+        old_stage is not None and new_stage is not None and old_stage != new_stage
+    )
+    what = "stage_change" if has_stage_change else "md_change"
+
+    # Build how summary
+    file_names = [cf.get("file", "?") for cf in changed_files]
+    how = f"{len(file_names)} files: {', '.join(file_names)}"
+
+    # Deterministic event ID based on devwatch fingerprint
+    devwatch_id = change_event.get("id", "")
+    parts = devwatch_id.split(":")
+    fp = parts[2] if len(parts) >= 3 else uuid.uuid4().hex[:16]
+    event_id = f"evt:devwatch:{what}:{slug}:{fp}"
+
+    return make_event(
+        what=what,
+        when=change_event.get("detectedAt", ""),
+        why=change_event.get("title", ""),
+        how=how,
+        who="",
+        where=f"devwatch:{slug}",
+        source="devwatch",
+        slug=slug,
+        event_id=event_id,
+        meta={
+            "devwatch_id": devwatch_id,
+            "changed_fields": changed_fields,
+            "changed_files": changed_files,
+            "project_title": project_title,
+            "stage_from": old_stage,
+            "stage_to": new_stage,
+        },
+    )
+
+
+# ---------------------------------------------------------------------------
 # State helpers
 # ---------------------------------------------------------------------------
 
@@ -376,6 +457,7 @@ def run_devwatch(
     projects_scanned = len(all_slugs)
 
     events: list[dict] = []
+    es_events: list[dict] = []
     noise_count = 0
 
     for slug, file_diff_map in slug_diffs.items():
@@ -393,7 +475,13 @@ def run_devwatch(
         except FileNotFoundError:
             project_meta = {"title": slug, "tags": []}
 
-        events.append(build_event(slug, classified, project_meta, run_id, now_iso))
+        change_event = build_event(slug, classified, project_meta, run_id, now_iso)
+        events.append(change_event)
+
+        # Detect stage transition and convert to eventstream event
+        project_md_diff = file_diff_map.get("project.md", "")
+        old_stage, new_stage = _extract_stage_transition(project_md_diff)
+        es_events.append(to_eventstream_event(change_event, old_stage, new_stage))
 
     no_changes = (len(events) == 0 and noise_count == 0 and not slug_diffs)
 
@@ -427,6 +515,14 @@ def run_devwatch(
             json.dumps(state, ensure_ascii=False, indent=2, default=str),
             encoding="utf-8",
         )
+
+        # Write eventstream events (adapter mode)
+        if es_events:
+            from scripts.eventstream import append_to_jsonl, push_to_redis, generate_aggregate
+            for evt in es_events:
+                append_to_jsonl(evt)
+                push_to_redis(evt)
+            generate_aggregate()
 
     return output_path
 

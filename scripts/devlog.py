@@ -62,44 +62,44 @@ def _get_api_key() -> str:
 
 
 # ---------------------------------------------------------------------------
-# DevWatch input helpers
+# Eventstream input helpers
 # ---------------------------------------------------------------------------
 
 
-def _resolve_devwatch_path(today_str: str) -> Path:
-    """Resolve the devwatch JSON path for today.
+def _load_eventstream_events() -> list[dict]:
+    """Load recent events from eventstream.
 
-    If exports/devwatch_{today}.json exists, return it directly.
-    Otherwise, run devwatch to produce a fresh file and return that path.
+    Priority: Redis live-buffer > aggregate JSON > regenerate from .jsonl.
     """
-    today_file = EXPORTS_DIR / f"devwatch_{today_str}.json"
+    from scripts.eventstream import read_from_redis, generate_aggregate
 
-    if today_file.exists():
-        console.print(f"[dim]Using existing devwatch: {today_file.name}[/dim]")
-        return today_file
+    # 1. Try Redis first
+    events = read_from_redis(limit=500)
+    if events:
+        return events
 
-    console.print("[cyan]No devwatch file for today — running devwatch first.[/cyan]")
-    from scripts.devwatch import run_devwatch
+    # 2. Fallback to aggregate JSON
+    agg_path = EXPORTS_DIR / "eventstream_latest.json"
+    if agg_path.exists():
+        try:
+            with open(agg_path, encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, list):
+                return data
+        except (json.JSONDecodeError, OSError):
+            pass
 
-    EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-    devwatch_path = run_devwatch()
-
-    console.print(f"[dim]Devwatch produced: {devwatch_path.name}[/dim]")
-    return devwatch_path
-
-
-def _load_devwatch(path: Path) -> dict:
-    """Load and lightly validate a devwatch JSON file."""
+    # 3. Last resort: regenerate aggregate from .jsonl files
     try:
-        data = json.loads(path.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as exc:
-        raise RuntimeError(f"Invalid JSON in {path}: {exc}")
+        generate_aggregate()
+        with open(agg_path, encoding="utf-8") as f:
+            data = json.load(f)
+        if isinstance(data, list):
+            return data
+    except Exception:
+        pass
 
-    if "meta" not in data:
-        raise RuntimeError(f"Missing 'meta' key in {path}")
-    if "events" not in data:
-        raise RuntimeError(f"Missing 'events' key in {path}")
-    return data
+    return []
 
 
 # ---------------------------------------------------------------------------
@@ -108,63 +108,55 @@ def _load_devwatch(path: Path) -> dict:
 
 
 def _build_prompt(events: list[dict]) -> str:
-    """Build the user prompt from ChangeEvents."""
+    """Build the user prompt from eventstream events."""
     parts: list[str] = [
-        "Här är en sammanfattning av ändringar i min projektportfölj:\n"
+        "Här är en sammanfattning av aktivitet i min projektportfölj:\n"
     ]
 
     for event in events:
+        slug = event.get("slug", "unknown")
+        what = event.get("what", "")
+        why = event.get("why", "")
+        how = event.get("how", "")
         meta = event.get("meta", {})
-        slug = meta.get("slug", "unknown")
-        title = meta.get("project_title", slug)
+        project_title = meta.get("project_title", slug)
+        stage_from = meta.get("stage_from")
+        stage_to = meta.get("stage_to")
         changed_fields = meta.get("changed_fields", [])
-        changed_files = meta.get("changed_files", [])
-        raw_content = event.get("rawContent", "")
 
         parts.append("---")
-        parts.append(f"Projekt: {title} (slug: {slug})")
-        parts.append(
-            f"Ändrade fält: {', '.join(changed_fields) if changed_fields else 'Inga'}"
-        )
-
-        if changed_files:
-            parts.append("Ändrade filer/sektioner:")
-            for cf in changed_files:
-                file_name = cf.get("file", "?")
-                sections = cf.get("sections", [])
-                if sections:
-                    parts.append(f"- {file_name}: {', '.join(sections)}")
-                else:
-                    parts.append(f"- {file_name}")
-        else:
-            parts.append("Ändrade filer: Inga")
-
-        excerpt = raw_content[:400].strip()
-        if len(raw_content) > 400:
-            excerpt += "..."
-        parts.append(f"Excerpt:\n{excerpt}")
+        parts.append(f"Projekt: {project_title} (slug: {slug})")
+        parts.append(f"Händelsetyp: {what}")
+        if stage_from is not None and stage_to is not None:
+            parts.append(f"Stage-övergång: {stage_from} → {stage_to}")
+        if changed_fields:
+            parts.append(f"Ändrade fält: {', '.join(changed_fields)}")
+        if why:
+            parts.append(f"Beskrivning: {why}")
+        if how:
+            parts.append(f"Sammanfattning: {how}")
         parts.append("")
 
     parts.append("---\n\n")
     parts.append(
         "Skriv en daglig portföljbrief på svenska. Max 400 ord totalt.\n\n"
         "Prioritering av ändringar (högst till lägst):\n"
-        "1. mvp_stage eller status ändrades – avgörande signal\n"
-        "2. ## MVP Steps eller ## Problem ändrades – strategisk signal\n"
-        "3. ## Solution, ## Risk Assessment, planning/ eller research/ ändrades\n"
-        "4. ## Notes eller ## Timeline ändrades – låg prioritet\n"
-        "5. Endast frontmatter-fält som cost_sek, roi_percent, updated – ignorera\n\n"
+        "1. stage_change – avgörande signal\n"
+        "2. Nya noder eller ändrade relationer (part_of, feeds, depends_on)\n"
+        "3. Deploy-events och mergade PRs\n"
+        "4. Ändringar i Syfte, Status, eller Nästa steg\n"
+        "5. Endast frontmatter-fält som updated – ignorera\n\n"
         "Regler:\n"
         "- Börja direkt med analysen. Upprepa inte listan ovan.\n"
         "- Ignorera projekt där bara README-filer eller scaffold-mappar ändrats – det är infrastruktur, inte progress.\n"
-        "- Ignorera projekt där bara frontmatter-fält som cost_sek, roi_percent, created, updated ändrats utan sektionsinnehåll.\n"
-        "- Fokusera på projekt där faktiskt innehåll ändrats: Problem, Solution, MVP Steps, Notes, planning/, research/.\n"
+        "- Ignorera projekt där bara frontmatter-fält som updated ändrats utan sektionsinnehåll.\n"
+        "- Fokusera på projekt där faktiskt innehåll ändrats.\n"
         "- Om inga meningsfulla ändringar finns: skriv 'Ingen meningsfull aktivitet idag.' och inget mer.\n\n"
         "Format:\n"
         "## Vad hände igår\n"
         "Per projekt med faktisk aktivitet – vad ändrades konkret.\n\n"
         "## Vad är kvar\n"
-        "Per projekt – nästa konkreta steg baserat på MVP Steps.\n\n"
+        "Per projekt – nästa konkreta steg.\n\n"
         "## Nästa steg idag\n"
         "Max 3 punkter för hela portföljen."
     )
@@ -324,33 +316,20 @@ def _text_to_html(text: str) -> str:
 
 def _render_html(
     ai_digest: Optional[str],
-    devwatch_data: dict,
-    no_changes: bool,
+    event_count: int,
+    date_str: str,
 ) -> str:
     """Render a complete self-contained HTML page."""
-    exported_at = devwatch_data.get("exported_at", "")
-    source_run_id = devwatch_data.get("run_id", "")
-    meta = devwatch_data.get("meta", {})
-    event_count = meta.get("events_exported", 0)
-    source_file = devwatch_data.get("_source_path", "devwatch.json")
-
-    # Derive display date from exported_at or fallback to today
-    try:
-        dt = datetime.fromisoformat(exported_at.replace("Z", "+00:00"))
-        date_str = dt.strftime("%Y-%m-%d")
-    except (ValueError, AttributeError):
-        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-
     generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     digest_html = ""
-    if no_changes:
+    if not ai_digest:
         digest_html = (
             '<div class="no-activity">'
             "<p>Ingen aktivitet i portföljen idag.</p>"
             "</div>"
         )
-    elif ai_digest:
+    else:
         digest_html = (
             '<section class="card">\n'
             '  <h2>Dagens sammanfattning</h2>\n'
@@ -460,7 +439,7 @@ def _render_html(
       <p class="subtitle">{date_str}</p>
       <div class="meta">
         <p><span>Antal händelser:</span> {event_count}</p>
-        <p><span>Källa:</span> {source_file} ({source_run_id})</p>
+        <p><span>Källa:</span> eventstream</p>
       </div>
     </header>
 
@@ -481,18 +460,14 @@ def _render_html(
 
 
 def _print_summary(
-    devwatch_data: dict,
-    html_path: Path,
+    events: list[dict],
+    html_path: Optional[Path],
+    json_path: Path,
     dry_run: bool,
     no_changes: bool,
     event_count: int,
 ) -> None:
-    meta = devwatch_data.get("meta", {})
-    run_id = devwatch_data.get("run_id", "")
-    baseline = devwatch_data.get("baseline", "")
-
-    header = f"Run: {run_id}  Baseline: {baseline}\n"
-    header += f"Events: {event_count}"
+    header = f"Events: {event_count}"
     if dry_run:
         header += "  [dim](dry-run)[/dim]"
 
@@ -505,21 +480,21 @@ def _print_summary(
     else:
         table = Table(show_header=True, header_style="bold", box=None, padding=(0, 2))
         table.add_column("slug", style="cyan")
-        table.add_column("changed files")
-        table.add_column("changed fields")
+        table.add_column("what")
+        table.add_column("why")
 
-        for event in devwatch_data.get("events", []):
-            m = event.get("meta", {})
-            files = m.get("changed_files", [])
-            files_str = ", ".join(cf.get("file", "?") for cf in files) if files else "[dim]—[/dim]"
-            fields = m.get("changed_fields", [])
-            fields_str = ", ".join(fields) if fields else "[dim]—[/dim]"
-            table.add_row(m.get("slug", "?"), files_str, fields_str)
+        for event in events:
+            slug = event.get("slug", "?")
+            what = event.get("what", "")
+            why = event.get("why", "")[:40]
+            table.add_row(slug, what, why)
 
         console.print(table)
 
     if not dry_run:
-        console.print(f"  Output: [green]{html_path}[/green]")
+        console.print(f"  JSON: [green]{json_path}[/green]")
+        if html_path:
+            console.print(f"  HTML: [green]{html_path}[/green]")
 
 
 # ---------------------------------------------------------------------------
@@ -531,52 +506,56 @@ def run_devlog(
     input_path: Optional[str] = None,
     output_path: Optional[str] = None,
     dry_run: bool = False,
-) -> Path:
-    """Run the cns-devlog pipeline. Returns path to output HTML file."""
+    html: bool = False,
+) -> dict:
+    """Run the cns-devlog pipeline. Returns digest dict.
+
+    Args:
+        input_path: Ignored (kept for backwards compatibility).
+        output_path: Override output path for HTML (if html=True).
+        dry_run: Print prompt and skip API call + file writes.
+        html: Also generate deprecated HTML output.
+
+    Returns:
+        {"text": str, "generated_at": str, "event_count": int, "html_path": str|None}
+    """
+    from datetime import timedelta
 
     now = datetime.now(timezone.utc)
     today_str = now.strftime("%Y-%m-%d")
 
-    # Resolve input
-    if input_path:
-        devwatch_path = Path(input_path)
-    else:
-        devwatch_path = _resolve_devwatch_path(today_str)
+    # Load eventstream events
+    events = _load_eventstream_events()
 
-    # Resolve output
-    if output_path:
-        html_path = Path(output_path)
-    else:
-        EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-        html_path = EXPORTS_DIR / f"devlog_{today_str}.html"
+    # Inclusive source filter: allow devwatch, github, manual, quest
+    # Exclude workflow_run noise. Deploy sources added when adapters implement.
+    allowed_sources = {"devwatch", "github", "manual", "quest"}
 
-    # Load devwatch data
-    try:
-        devwatch_data = _load_devwatch(devwatch_path)
-    except (FileNotFoundError, RuntimeError) as exc:
-        console.print(f"[bold red]Error:[/bold red] {exc}")
-        sys.exit(1)
+    cutoff = now - timedelta(hours=24)
+    cutoff_iso = cutoff.isoformat()
 
-    # Stash source path for HTML meta display
-    devwatch_data["_source_path"] = devwatch_path.name
+    filtered = [
+        e for e in events
+        if e.get("source") in allowed_sources and e.get("when", "") >= cutoff_iso
+    ]
 
-    meta = devwatch_data.get("meta", {})
-    no_changes = meta.get("no_changes", False)
-    events = devwatch_data.get("events", [])
-    event_count = len(events)
+    event_count = len(filtered)
+    no_changes = event_count == 0
 
     ai_digest: Optional[str] = None
 
-    if no_changes:
-        ai_digest = None
-    else:
-        prompt = _build_prompt(events)
+    if not no_changes:
+        prompt = _build_prompt(filtered)
 
         if dry_run:
             console.print(Panel(prompt, title="[dim]Prompt (dry-run)[/dim]", border_style="dim"))
             console.print("[dim]Dry run — skipping API call and file write.[/dim]")
-            _print_summary(devwatch_data, html_path, dry_run=True, no_changes=False, event_count=event_count)
-            return html_path
+            return {
+                "text": "",
+                "generated_at": now.isoformat(),
+                "event_count": event_count,
+                "html_path": None,
+            }
 
         try:
             ai_digest = _call_claude(SYSTEM_PROMPT, prompt)
@@ -584,14 +563,43 @@ def run_devlog(
             console.print(f"[bold red]API Error:[/bold red] {exc}")
             sys.exit(1)
 
-    html = _render_html(ai_digest, devwatch_data, no_changes=no_changes)
+    # Build result dict
+    result = {
+        "text": ai_digest or "",
+        "generated_at": now.isoformat(),
+        "event_count": event_count,
+        "html_path": None,
+    }
+
+    # Resolve output paths
+    html_path: Optional[Path] = None
+    if html:
+        if output_path:
+            html_path = Path(output_path)
+        else:
+            EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
+            html_path = EXPORTS_DIR / f"devlog_{today_str}.html"
+        result["html_path"] = str(html_path)
+
+    # Save JSON digest always
+    json_path = EXPORTS_DIR / f"devlog_{today_str}.json"
+    if not dry_run:
+        EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
+        json_path.write_text(
+            json.dumps(result, ensure_ascii=False, indent=2, default=str),
+            encoding="utf-8",
+        )
+
+    # Render HTML if requested
+    if html and html_path:
+        html_content = _render_html(ai_digest, event_count, today_str)
+        if not dry_run:
+            html_path.write_text(html_content, encoding="utf-8")
 
     if not dry_run:
-        html_path.parent.mkdir(parents=True, exist_ok=True)
-        html_path.write_text(html, encoding="utf-8")
+        _print_summary(filtered, html_path, json_path, dry_run, no_changes, event_count)
 
-    _print_summary(devwatch_data, html_path, dry_run, no_changes, event_count)
-    return html_path
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -607,7 +615,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--input", "-i", default=None,
-        help="Override devwatch JSON path (default: latest exports/devwatch_YYYY-MM-DD.json)",
+        help="Deprecated: eventstream is now the default input",
     )
     parser.add_argument(
         "--output", "-o", default=None,
@@ -617,5 +625,9 @@ if __name__ == "__main__":
         "--dry-run", action="store_true", default=False,
         help="Print prompt and skip Claude call + file write",
     )
+    parser.add_argument(
+        "--html", action="store_true", default=False,
+        help="Also generate deprecated HTML output",
+    )
     args = parser.parse_args()
-    run_devlog(input_path=args.input, output_path=args.output, dry_run=args.dry_run)
+    run_devlog(input_path=args.input, output_path=args.output, dry_run=args.dry_run, html=args.html)
