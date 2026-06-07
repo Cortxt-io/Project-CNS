@@ -164,13 +164,13 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
                     f"ROI mismatch: cost_sek=0 so roi_percent should be 0, got {roi}"
                 )
 
-    # 5. Risk category validation
-    risk_text = sections.get("Risk Assessment", "")
+    # 5. Risk category validation + new risk schema
+    risk_text = sections.get("Risk Assessment", sections.get("Risker", sections.get("Systemrisker", "")))
     for line in risk_text.splitlines():
         line = line.strip()
         if not line.startswith("- **"):
             continue
-        # Extract category from "- **Category** (score ...)"
+        # Extract category from "- **Category** (score ...)" or "- **Category** (P2 × I4 = 8/25)"
         m = re.match(r"- \*\*(\w+)\*\*", line)
         if m:
             cat = m.group(1).lower()
@@ -179,6 +179,33 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
                     f"Invalid risk category '{cat}'. "
                     f"Allowed: {', '.join(sorted(VALID_RISK_CATEGORIES))}"
                 )
+
+    # 5b. Validate risk objects in frontmatter (if present as structured data)
+    risks = meta.get("risks")
+    if isinstance(risks, list):
+        for i, risk in enumerate(risks):
+            if not isinstance(risk, dict):
+                continue
+            score = risk.get("score")
+            prob = risk.get("probability")
+            imp = risk.get("impact")
+            # If probability and impact exist, score should equal p × i
+            if prob is not None and imp is not None:
+                if isinstance(prob, (int, float)) and isinstance(imp, (int, float)):
+                    if prob < 1 or prob > 5:
+                        errors.append(f"Risk at index {i}: probability must be 1-5, got {prob}")
+                    if imp < 1 or imp > 5:
+                        errors.append(f"Risk at index {i}: impact must be 1-5, got {imp}")
+                    expected_score = prob * imp
+                    if score is not None and isinstance(score, (int, float)):
+                        if score != expected_score:
+                            errors.append(
+                                f"Risk at index {i}: score={score} but probability({prob}) × impact({imp}) = {expected_score}"
+                            )
+            # Score range: 1-25 (new) or 1-5 (legacy)
+            if score is not None and isinstance(score, (int, float)):
+                if score < 1 or score > 25:
+                    errors.append(f"Risk at index {i}: score must be 1-25, got {score}")
 
     # 6. Node-model reference validation (warnings, not errors)
     if kind is not None:

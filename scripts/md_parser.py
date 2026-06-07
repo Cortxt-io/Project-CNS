@@ -466,15 +466,31 @@ def apply_changes(
         items = [f"- {item}" for item in changes["why_buy_not_build"]]
         sections["Why Buy Instead of Build?"] = "\n".join(items)
 
-    # Risks -> Risk Assessment
+    # Risks -> Risk Assessment / Risker / Systemrisker
     if changes.get("risks"):
         risk_lines = []
         for risk in changes["risks"]:
-            risk_lines.append(
-                f"- **{risk['category'].title()}** (score {risk['score']}/5): {risk['description']}"
-            )
+            prob = risk.get("probability")
+            imp = risk.get("impact")
+            mitigation = risk.get("mitigation")
+            if prob is not None and imp is not None:
+                # New format: P2 × I4 = 8/25
+                score = risk['score']
+                line = f"- **{risk['category'].title()}** (P{prob} × I{imp} = {score}/25): {risk['description']}"
+                if mitigation:
+                    line += f" Mitigation: {mitigation}"
+            else:
+                # Legacy format: score 3/5
+                line = f"- **{risk['category'].title()}** (score {risk['score']}/5): {risk['description']}"
+            risk_lines.append(line)
         new_risks = "\n".join(risk_lines)
-        sections["Risk Assessment"] = new_risks
+        # Write to whichever risk section exists for this node kind
+        for key in ("Risk Assessment", "Risker", "Systemrisker"):
+            if key in sections:
+                sections[key] = new_risks
+                break
+        else:
+            sections["Risk Assessment"] = new_risks
 
     # Notes append
     if changes.get("notes_append"):

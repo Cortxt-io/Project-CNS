@@ -35,6 +35,7 @@ def _build_portfolio_context(
     devwatch_events: list[dict],
     pending: list[dict],
     devlog_text: str = "",
+    eventstream_events: list[dict] | None = None,
 ) -> str:
     """Build compressed portfolio context string for Claude."""
     lines: list[str] = []
@@ -72,9 +73,28 @@ def _build_portfolio_context(
         )
     lines.append("")
 
-    # Devwatch events
+    # Eventstream events — PRIMARY signal
+    if eventstream_events:
+        lines.append("## Senaste aktivitet (eventstream — PRIMÄR SIGNAL)")
+        # Group by slug
+        by_slug: dict[str, list[dict]] = {}
+        for evt in eventstream_events:
+            slug = evt.get("slug") or "_global"
+            by_slug.setdefault(slug, []).append(evt)
+        for slug, evts in sorted(by_slug.items()):
+            lines.append(f"### {slug}")
+            for evt in evts[:10]:  # max 10 per slug
+                what = evt.get("what", "")
+                why = (evt.get("why", "") or "")[:80]
+                who = evt.get("who", "")
+                where = evt.get("where", "")
+                when = evt.get("when", "")[:10]
+                lines.append(f"  [{when}] {what} by {who}: {why} ({where})")
+        lines.append("")
+
+    # Devwatch events — complement
     if devwatch_events:
-        lines.append("## Senaste aktivitet (devwatch)")
+        lines.append("## Senaste aktivitet (devwatch — komplement)")
         for event in devwatch_events:
             emeta = event.get("meta", {})
             slug = emeta.get("slug", "")
@@ -114,8 +134,10 @@ def _build_portfolio_context(
 
 BRIEF_SYSTEM = (
     "Du är en senior produktchef som analyserar din egen projektportfölj. "
-    "Du jobbar ensam. Fokusera på vad som faktiskt hände igår (från devlog och devwatch), "
+    "Du jobbar ensam. Fokusera på vad som faktiskt hände (från eventstream, devlog och devwatch), "
     "vad som är nästa konkreta steg idag, och vilket quest ger mest värde just nu. "
+    "Basera PRIMÄRT dina förslag på eventstream-aktivitet (commits, PRs, deploys). "
+    "Devwatch är ett komplement. "
     "Undvik generella portföljobservationer — ge specifika handlingsbara beslut. "
     "Returnera ENDAST giltig JSON enligt det schema som specificeras."
 )
@@ -152,12 +174,13 @@ def _build_brief_user_prompt(context: str) -> str:
         f"---\n{context}\n---\n\n"
         f"Förväntat JSON-svar:\n{BRIEF_SCHEMA}\n\n"
         f"Regler:\n"
-        f"- situation: Basera på devlog och devwatch-data, inte bara statiska projekt-fält. "
-        f"Om devlog finns: sammanfatta vad som faktiskt gjordes igår.\n"
-        f"- priorities: Välj projekt där faktisk aktivitet skett eller där ett konkret nästa steg är tydligt. "
+        f"- situation: Basera på eventstream (commits, PRs, deploys) och devlog, inte bara statiska projekt-fält. "
+        f"Om eventstream finns: sammanfatta vad som faktiskt hände (commits, PRs). "
+        f"Om devlog finns: komplettera med gårdagens AI-sammanfattning.\n"
+        f"- priorities: Välj projekt där faktisk aktivitet skett (commits/PRs i eventstream) eller där ett konkret nästa steg är tydligt. "
         f"Undvik projekt som bara har 'idea'-status utan aktivitet.\n"
         f"- quest_suggestion: Föreslå ett quest som kan genomföras idag. "
-        f"Basera på senaste aktivitet och pending förslag. Var specifik.\n"
+        f"Basera på senaste eventstream-aktivitet och pending förslag. Var specifik.\n"
         f"- pending_recommendation: Om pending finns, rekommendera specifikt vilka slugs som bör godkännas "
         f"och varför (baserat på aktivitet), och vilka som kan vänta.\n"
         f"- Inga generella portföljobservationer. Varje punkt ska vara handlingsbar."
@@ -271,8 +294,30 @@ def run_portfolio_brief(output_path: Path | None = None) -> dict:
     # 4. Read pending suggestions
     pending = load_pending_suggestions()
 
+    # 4b. Read eventstream events (primary signal)
+    eventstream_events: list[dict] = []
+    es_raw = read_file_from_github(
+        "projects/project-vault-dashboard/dashboard/data/eventstream_latest.json"
+    )
+    if es_raw:
+        try:
+            eventstream_events = json.loads(es_raw)
+        except Exception:
+            pass
+    # Fallback: read from local exports
+    if not eventstream_events:
+        es_path = _latest_export("eventstream_latest.json")
+        if es_path:
+            try:
+                eventstream_events = json.loads(es_path.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+
     # 5. Build portfolio context
-    context = _build_portfolio_context(projects, devwatch_events, pending, devlog_text)
+    context = _build_portfolio_context(
+        projects, devwatch_events, pending, devlog_text,
+        eventstream_events=eventstream_events,
+    )
 
     # 5. Call Claude
     system_prompt = BRIEF_SYSTEM

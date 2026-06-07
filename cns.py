@@ -637,6 +637,22 @@ def cmd_eventstream_sync(args: argparse.Namespace) -> None:
     console.print(f"\n[bold]Total: {total} new events archived[/bold]")
 
 
+def cmd_eventstream_import(args: argparse.Namespace) -> None:
+    """Import a one-time batch of historical events into eventstream."""
+    from scripts.eventstream import import_retroactive_events
+
+    events_file = args.file
+    console.print(f"[bold]Importing retroactive events from {events_file}...[/bold]")
+
+    count = import_retroactive_events(events_file)
+    console.print(f"[green]Imported {count} events[/green]")
+
+    if args.delete:
+        import os
+        os.remove(events_file)
+        console.print(f"[dim]Deleted {events_file} (one-time import)[/dim]")
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
@@ -841,6 +857,20 @@ def main() -> None:
         help="Show what would be synced without writing files",
     )
     sp_es_sync.set_defaults(func=cmd_eventstream_sync)
+
+    sp_es_import = es_sub.add_parser(
+        "import",
+        help="Import a one-time batch of historical events from a JSON file",
+    )
+    sp_es_import.add_argument(
+        "file",
+        help="Path to JSON file containing events array",
+    )
+    sp_es_import.add_argument(
+        "--delete", action="store_true", default=False,
+        help="Delete the import file after successful import",
+    )
+    sp_es_import.set_defaults(func=cmd_eventstream_import)
 
     args = parser.parse_args()
 

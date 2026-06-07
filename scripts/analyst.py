@@ -252,7 +252,10 @@ def _build_user_prompt(context: str, devwatch_context: str = "") -> str:
       {
         "category": "technical",
         "description": "string",
-        "score": 3
+        "score": 8,
+        "probability": 2,
+        "impact": 4,
+        "mitigation": "string or null"
       }
     ] | null,
     "summary": "string" | null
@@ -288,7 +291,10 @@ def _build_user_prompt(context: str, devwatch_context: str = "") -> str:
         f"Basera dina förslag på allt material, men prioritera devwatch-aktiviteten om den finns.\n\n"
         f"Giltiga status-värden: {sorted(VALID_STATUSES)}\n"
         f"Giltiga mvp_stage-värden: {sorted(VALID_MVP_STAGES)}\n"
-        f"Giltiga risk_categories: {sorted(VALID_RISK_CATEGORIES)}\n\n"
+        f"Giltiga risk_categories: {sorted(VALID_RISK_CATEGORIES)}\n"
+        f"Risk-schema: probability (1-5) × impact (1-5) = score (1-25). "
+        f"Om du kan bedöma probability och impact separat, gör det. Annars behåll gammalt score-format (1-5). "
+        f"Mitigation är en valfri text om hur risken kan hanteras.\n\n"
         f"Förväntat JSON-svar:\n{schema}\n\n"
         f"Analysera projektet ovan. För varje fält i \"suggestions\": om det redan ser korrekt "
         f"och aktuellt ut, returnera null. Om det bör uppdateras, returnera "
@@ -363,8 +369,23 @@ def _parse_response(raw: str) -> tuple[dict[str, Any], dict[str, str], str]:
             if not isinstance(risk.get("description"), str):
                 raise RuntimeError(f"Risk at index {i} missing 'description' string")
             score = risk.get("score")
-            if not isinstance(score, (int, float)) or score < 1 or score > 5:
+            prob = risk.get("probability")
+            imp = risk.get("impact")
+            # Accept both legacy (score 1-5) and new format (score 1-25)
+            if not isinstance(score, (int, float)) or score < 1 or score > 25:
                 raise RuntimeError(f"Risk at index {i} has invalid score: {score}")
+            # If probability and impact provided, validate and compute score
+            if prob is not None and imp is not None:
+                if not isinstance(prob, (int, float)) or prob < 1 or prob > 5:
+                    raise RuntimeError(f"Risk at index {i} has invalid probability: {prob}")
+                if not isinstance(imp, (int, float)) or imp < 1 or imp > 5:
+                    raise RuntimeError(f"Risk at index {i} has invalid impact: {imp}")
+                # Compute score from p × i if not provided or mismatched
+                suggestions_raw["risks"][i]["score"] = int(prob) * int(imp)
+            # mitigation is optional
+            if "mitigation" in risk and risk["mitigation"] is not None:
+                if not isinstance(risk["mitigation"], str):
+                    raise RuntimeError(f"Risk at index {i} mitigation must be string or null")
 
     # Validate reasoning
     if not isinstance(reasoning_raw, dict):

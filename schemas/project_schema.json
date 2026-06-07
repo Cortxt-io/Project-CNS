@@ -36,7 +36,10 @@
             "properties": {
               "category":    { "enum": ["technical", "market", "legal", "ops", "competition", "positioning", "adoption"] },
               "description": { "type": "string" },
-              "score":       { "type": "number", "minimum": 1, "maximum": 5 }
+              "score":       { "type": "number", "minimum": 1, "maximum": 25 },
+              "probability": { "type": "number", "minimum": 1, "maximum": 5 },
+              "impact":      { "type": "number", "minimum": 1, "maximum": 5 },
+              "mitigation":  { "type": ["string", "null"] }
             }
           }
         },

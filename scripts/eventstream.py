@@ -583,3 +583,75 @@ def _summarize_commit(commit: dict) -> str:
     if removed:
         parts.append(f"-{removed}")
     return f"{total} files ({', '.join(parts)})"
+
+
+# ---------------------------------------------------------------------------
+# Retroactive import (one-time batch)
+# ---------------------------------------------------------------------------
+
+
+def import_retroactive_events(events_file: str) -> int:
+    """Import a one-time batch of historical events into eventstream.
+
+    Args:
+        events_file: Path to a JSON file containing a list of event dicts.
+            Each event must have at least 'what', 'when', and 'source'.
+
+    Returns:
+        Number of events imported.
+    """
+    path = Path(events_file)
+    if not path.exists():
+        raise FileNotFoundError(f"Events file not found: {events_file}")
+
+    with open(path, encoding="utf-8") as f:
+        raw_events = json.load(f)
+
+    if not isinstance(raw_events, list):
+        raise ValueError(f"Events file must contain a JSON array, got {type(raw_events).__name__}")
+
+    EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
+    today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    jsonl_path = EXPORTS_DIR / f"eventstream_{today}.jsonl"
+    existing_ids = load_existing_ids(jsonl_path)
+
+    imported = 0
+    for raw_evt in raw_events:
+        # Ensure minimum fields
+        if not isinstance(raw_evt, dict):
+            logger.warning("Skipping non-dict event in retroactive import")
+            continue
+        if not raw_evt.get("what") or not raw_evt.get("source"):
+            logger.warning("Skipping event missing what/source: %s", raw_evt.get("id", "?"))
+            continue
+
+        # Add ID if missing
+        if "id" not in raw_evt:
+            raw_evt["id"] = f"evt:{raw_evt['source']}:{raw_evt['what']}:{uuid.uuid4().hex[:8]}"
+
+        # Dedup
+        if raw_evt["id"] in existing_ids:
+            logger.info("Skipping duplicate event: %s", raw_evt["id"])
+            continue
+
+        # Fill missing dimensions with defaults
+        raw_evt.setdefault("when", datetime.now(timezone.utc).isoformat())
+        raw_evt.setdefault("why", "")
+        raw_evt.setdefault("how", "")
+        raw_evt.setdefault("who", "")
+        raw_evt.setdefault("where", "")
+        raw_evt.setdefault("slug", None)
+        raw_evt.setdefault("meta", {})
+
+        # Write to .jsonl
+        append_to_jsonl(raw_evt, date_str=today)
+        # Also push to Redis for immediate availability
+        push_to_redis(raw_evt)
+
+        existing_ids.add(raw_evt["id"])
+        imported += 1
+
+    # Regenerate aggregate
+    generate_aggregate()
+
+    return imported

@@ -109,13 +109,33 @@ def _ask_note(console: Console) -> str:
 
 
 def _ask_risk(console: Console) -> dict:
-    categories = ["technical", "market", "legal", "ops", "competition"]
+    categories = ["technical", "market", "legal", "ops", "competition", "positioning", "adoption"]
     console.print("  Risk categories: " + ", ".join(categories))
     category = Prompt.ask("  Risk category", choices=categories)
     description = Prompt.ask("  Risk description")
-    score = IntPrompt.ask("  Risk score (1-5)", default=3)
-    score = max(1, min(5, score))
-    return {"category": category, "description": description, "score": score}
+    # New format: probability × impact
+    use_new_format = Confirm.ask("  Use probability × impact format?", default=True)
+    if use_new_format:
+        probability = IntPrompt.ask("  Probability (1-5)", default=3)
+        probability = max(1, min(5, probability))
+        impact = IntPrompt.ask("  Impact (1-5)", default=3)
+        impact = max(1, min(5, impact))
+        score = probability * impact
+        mitigation = Prompt.ask("  Mitigation (or Enter to skip)", default="")
+        result = {
+            "category": category,
+            "description": description,
+            "score": score,
+            "probability": probability,
+            "impact": impact,
+        }
+        if mitigation:
+            result["mitigation"] = mitigation
+        return result
+    else:
+        score = IntPrompt.ask("  Risk score (1-5)", default=3)
+        score = max(1, min(5, score))
+        return {"category": category, "description": description, "score": score}
 
 
 def _ask_why_buy(console: Console) -> list[str]:
