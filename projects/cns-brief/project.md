@@ -77,3 +77,4 @@ portfolio_brief.py konsumerar hela portföljens data (project.md-filer, senaste 
 ## Cost Estimate
 
 3 000 SEK (ca 12h × 250 kr/h) — portfolio_brief.py
+"" 
