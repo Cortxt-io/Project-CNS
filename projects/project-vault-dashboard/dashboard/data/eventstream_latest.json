@@ -1,0 +1,2003 @@
+[
+  {
+    "id": "evt:devwatch:md_change:ai-ticket-triage:f66054cb42cfe661",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "ai-ticket-triage: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:ai-ticket-triage",
+    "source": "devwatch",
+    "slug": "ai-ticket-triage",
+    "meta": {
+      "devwatch_id": "devwatch:ai-ticket-triage:f66054cb42cfe661:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "current_slice",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "AI Ticket Triage",
+      "stage_from": null,
+      "stage_to": "idea"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cns-analyst:18d238fdd8ade60a",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cns-analyst: planning/quests.md, project.md",
+    "how": "2 files: planning/quests.md, project.md",
+    "who": "",
+    "where": "devwatch:cns-analyst",
+    "source": "devwatch",
+    "slug": "cns-analyst",
+    "meta": {
+      "devwatch_id": "devwatch:cns-analyst:18d238fdd8ade60a:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "current_slice",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "pipeline",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "planning/quests.md",
+          "sections": [
+            "2026-05-27 — Förbättra riskschema med sannolikhet × påverkan",
+            "2026-05-27 — Validera CNS Analyst bulk-analys med 20 pending förslag",
+            "2026-05-31 — Implementera nytt riskschema i CNS Analyst",
+            "2026-05-31 — Implementera sannolikhet×påverkan riskmodell i CNS Analyst"
+          ]
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        }
+      ],
+      "project_title": "CNS Analyst",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cns-brief:db2ec7b59035725c",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cns-brief: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+    "how": "6 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+    "who": "",
+    "where": "devwatch:cns-brief",
+    "source": "devwatch",
+    "slug": "cns-brief",
+    "meta": {
+      "devwatch_id": "devwatch:cns-brief:db2ec7b59035725c:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "pipeline",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "url_live",
+        "url_repo",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": [
+            "Current",
+            "Next"
+          ]
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Nästa steg",
+            "Problem",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/README.md",
+          "sections": []
+        }
+      ],
+      "project_title": "CNS Brief",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cns-devlog:39f48b0ac700bf8c",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cns-devlog: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:cns-devlog",
+    "source": "devwatch",
+    "slug": "cns-devlog",
+    "meta": {
+      "devwatch_id": "devwatch:cns-devlog:39f48b0ac700bf8c:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "pipeline",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "CNS DevLog",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cns-devwatch:5737965b1ebeb693",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cns-devwatch: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:cns-devwatch",
+    "source": "devwatch",
+    "slug": "cns-devwatch",
+    "meta": {
+      "devwatch_id": "devwatch:cns-devwatch:5737965b1ebeb693:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "current_slice",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "pipeline",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "CNS DevWatch",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cns-hosting-infra:defaaa2c25fa528b",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cns-hosting-infra: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:cns-hosting-infra",
+    "source": "devwatch",
+    "slug": "cns-hosting-infra",
+    "meta": {
+      "devwatch_id": "devwatch:cns-hosting-infra:defaaa2c25fa528b:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "url_repo",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "CNS Hosting Infra",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cns-vault-app:690a3ba31922bf14",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cns-vault-app: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:cns-vault-app",
+    "source": "devwatch",
+    "slug": "cns-vault-app",
+    "meta": {
+      "devwatch_id": "devwatch:cns-vault-app:690a3ba31922bf14:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "url_live",
+        "url_repo",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "CNS Vault App",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cortxt-dashboard-app:590a6ed37617a516",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cortxt-dashboard-app: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+    "how": "6 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+    "who": "",
+    "where": "devwatch:cortxt-dashboard-app",
+    "source": "devwatch",
+    "slug": "cortxt-dashboard-app",
+    "meta": {
+      "devwatch_id": "devwatch:cortxt-dashboard-app:590a6ed37617a516:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "url_live",
+        "url_repo",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": [
+            "2026-05-27 — Family-enum dual-mapping",
+            "2026-05-27 — HashRouter istället för BrowserRouter",
+            "2026-05-27 — Inga edges i Reactflow graph v1",
+            "2026-05-27 — Railway REST API som datakälla, ingen MCP i v1"
+          ]
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": [
+            "v1 — MVP (pågår)",
+            "v2 — Planerat"
+          ]
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/README.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Cortxt Dashboard App",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cortxt-eventstream:273ecc68316e22b6",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cortxt-eventstream: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:cortxt-eventstream",
+    "source": "devwatch",
+    "slug": "cortxt-eventstream",
+    "meta": {
+      "devwatch_id": "devwatch:cortxt-eventstream:273ecc68316e22b6:20260607T095606Z",
+      "changed_fields": [
+        "created",
+        "depends_on",
+        "feeds",
+        "kind",
+        "part_of",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Arbetslogg",
+            "Beroenden",
+            "Nästa steg",
+            "Risker",
+            "Status",
+            "Syfte"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Cortxt Eventstream",
+      "stage_from": null,
+      "stage_to": "building"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cortxt-graph-view:882867d4ba934b3d",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cortxt-graph-view: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+    "how": "6 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+    "who": "",
+    "where": "devwatch:cortxt-graph-view",
+    "source": "devwatch",
+    "slug": "cortxt-graph-view",
+    "meta": {
+      "devwatch_id": "devwatch:cortxt-graph-view:882867d4ba934b3d:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "current_slice",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "url_live",
+        "url_repo",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": [
+            "2026-05-27 — Graph-vy parkerad tills förutsättningar är uppfyllda"
+          ]
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": [
+            "v0 — Coming Soon (nu)",
+            "v1 — Planerat",
+            "v2 — Framtida"
+          ]
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/README.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Cortxt Graph View",
+      "stage_from": null,
+      "stage_to": "idea"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cortxt-landing:ca3fafb530fad8d7",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cortxt-landing: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+    "how": "6 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/README.md",
+    "who": "",
+    "where": "devwatch:cortxt-landing",
+    "source": "devwatch",
+    "slug": "cortxt-landing",
+    "meta": {
+      "devwatch_id": "devwatch:cortxt-landing:ca3fafb530fad8d7:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "url_live",
+        "url_repo",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": [
+            "2026-05-27 — Cloudflare Pages istället för GitHub Pages",
+            "2026-05-27 — DNS flyttad till Cloudflare",
+            "2026-05-27 — React + Vite istället för statisk HTML"
+          ]
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": [
+            "v1 — MVP (pågår)",
+            "v2 — Planerat"
+          ]
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/README.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Cortxt Landing",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:cortxt:b0411c13927667c2",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "cortxt: ARCHITECTURE.md, project.md",
+    "how": "2 files: ARCHITECTURE.md, project.md",
+    "who": "",
+    "where": "devwatch:cortxt",
+    "source": "devwatch",
+    "slug": "cortxt",
+    "meta": {
+      "devwatch_id": "devwatch:cortxt:b0411c13927667c2:20260607T095606Z",
+      "changed_fields": [
+        "created",
+        "depends_on",
+        "feeds",
+        "kind",
+        "part_of",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated"
+      ],
+      "changed_files": [
+        {
+          "file": "ARCHITECTURE.md",
+          "sections": [
+            "Anteckningar          fritt",
+            "Anteckningar      fritt",
+            "Anteckningar    fritt",
+            "Beslut: filnamn förblir `project.md` (typ bärs av `kind`)",
+            "Det nya komponent-schemat",
+            "Framework-schemat",
+            "Konsekvens för befintliga noder (utkast — justeras vid migrering)",
+            "Migreringsstrategi: ADDITIV, inte hård",
+            "Modellen: två ortogonala dimensioner",
+            "Nästa steg (när du sätter dig fräsch)",
+            "Principer         designprinciper (CNS-first, human-in-the-loop, GitHub som",
+            "Problemet vi löser",
+            "Relationer — det som ritar grafen",
+            "System-schemat",
+            "Vad händer med risk-frågan",
+            "Varianter — medvetet INTE skapade ännu"
+          ]
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Arbetslogg",
+            "Ingående system",
+            "Karta",
+            "Principer",
+            "Riktning",
+            "Vision"
+          ]
+        }
+      ],
+      "project_title": "Cortxt",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:dev-changelog-engine-mini:68d68d115643896a",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "dev-changelog-engine-mini: project.md",
+    "how": "1 files: project.md",
+    "who": "",
+    "where": "devwatch:dev-changelog-engine-mini",
+    "source": "devwatch",
+    "slug": "dev-changelog-engine-mini",
+    "meta": {
+      "devwatch_id": "devwatch:dev-changelog-engine-mini:68d68d115643896a:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "current_slice",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "pipeline",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "url_live",
+        "url_repo",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        }
+      ],
+      "project_title": "Dev Changelog Engine Mini",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:dev-changelog-engine:f4770a7a9bf62df6",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "dev-changelog-engine: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:dev-changelog-engine",
+    "source": "devwatch",
+    "slug": "dev-changelog-engine",
+    "meta": {
+      "devwatch_id": "devwatch:dev-changelog-engine:f4770a7a9bf62df6:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "pipeline",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Dev Changelog Engine",
+      "stage_from": null,
+      "stage_to": "idea"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:docs-watch:7e24acf0b81d2e6d",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "docs-watch: project.md",
+    "how": "1 files: project.md",
+    "who": "",
+    "where": "devwatch:docs-watch",
+    "source": "devwatch",
+    "slug": "docs-watch",
+    "meta": {
+      "devwatch_id": "devwatch:docs-watch:7e24acf0b81d2e6d:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "current_slice",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "pipeline",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "url_repo",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        }
+      ],
+      "project_title": "DocsWatch",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:infrastructure:75035483c3305762",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "infrastructure: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:infrastructure",
+    "source": "devwatch",
+    "slug": "infrastructure",
+    "meta": {
+      "devwatch_id": "devwatch:infrastructure:75035483c3305762:20260607T095606Z",
+      "changed_fields": [
+        "created",
+        "depends_on",
+        "feeds",
+        "kind",
+        "part_of",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Arbetslogg",
+            "Dataflöde",
+            "Hälsa",
+            "Ingående komponenter",
+            "Syfte/mål",
+            "Systemrisker"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Infrastructure",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:interface:40d6f45434b5a1e1",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "interface: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:interface",
+    "source": "devwatch",
+    "slug": "interface",
+    "meta": {
+      "devwatch_id": "devwatch:interface:40d6f45434b5a1e1:20260607T095606Z",
+      "changed_fields": [
+        "created",
+        "depends_on",
+        "feeds",
+        "kind",
+        "part_of",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Arbetslogg",
+            "Dataflöde",
+            "Hälsa",
+            "Ingående komponenter",
+            "Syfte/mål",
+            "Systemrisker"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Interface",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:pipeline-extern:8a5f8361adc4dd6a",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "pipeline-extern: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:pipeline-extern",
+    "source": "devwatch",
+    "slug": "pipeline-extern",
+    "meta": {
+      "devwatch_id": "devwatch:pipeline-extern:8a5f8361adc4dd6a:20260607T095606Z",
+      "changed_fields": [
+        "created",
+        "depends_on",
+        "feeds",
+        "kind",
+        "part_of",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Arbetslogg",
+            "Dataflöde",
+            "Hälsa",
+            "Ingående komponenter",
+            "Syfte/mål",
+            "Systemrisker"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Pipeline Extern",
+      "stage_from": null,
+      "stage_to": "idea"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:pipeline-intern:63d146b81394a516",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "pipeline-intern: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:pipeline-intern",
+    "source": "devwatch",
+    "slug": "pipeline-intern",
+    "meta": {
+      "devwatch_id": "devwatch:pipeline-intern:63d146b81394a516:20260607T095606Z",
+      "changed_fields": [
+        "created",
+        "depends_on",
+        "feeds",
+        "kind",
+        "part_of",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Arbetslogg",
+            "Dataflöde",
+            "Hälsa",
+            "Ingående komponenter",
+            "Syfte/mål",
+            "Systemrisker"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Pipeline Intern",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:pipeline-review:7be6ce355cd2bbed",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "pipeline-review: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "7 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:pipeline-review",
+    "source": "devwatch",
+    "slug": "pipeline-review",
+    "meta": {
+      "devwatch_id": "devwatch:pipeline-review:7be6ce355cd2bbed:20260607T095606Z",
+      "changed_fields": [
+        "created",
+        "depends_on",
+        "feeds",
+        "kind",
+        "part_of",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Arbetslogg",
+            "Dataflöde",
+            "Hälsa",
+            "Ingående komponenter",
+            "Syfte/mål",
+            "Systemrisker"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Pipeline Review",
+      "stage_from": null,
+      "stage_to": "working"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:project-vault-dashboard:ca1a1ad4d2156141",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "project-vault-dashboard: assets/README.md, dashboard/data/README.md, notes/README.md, notes/design-ideas.md, planning/api-schema.md, planning/dashboard-views.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "11 files: assets/README.md, dashboard/data/README.md, notes/README.md, notes/design-ideas.md, planning/api-schema.md, planning/dashboard-views.md, planning/decisions.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:project-vault-dashboard",
+    "source": "devwatch",
+    "slug": "project-vault-dashboard",
+    "meta": {
+      "devwatch_id": "devwatch:project-vault-dashboard:ca1a1ad4d2156141:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "family",
+        "layer",
+        "mvp_stage",
+        "roi_percent",
+        "slug",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "url_live",
+        "url_repo",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "dashboard/data/README.md",
+          "sections": [
+            "Generera projects.json",
+            "Schema",
+            "Uppdatering"
+          ]
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/design-ideas.md",
+          "sections": [
+            "Datakalla",
+            "Designideer",
+            "Inspirationskallor",
+            "Mojliga grafer",
+            "Oppen fraga"
+          ]
+        },
+        {
+          "file": "planning/api-schema.md",
+          "sections": [
+            "Anmarkningar",
+            "Faltbeskrivningar",
+            "Projektobjekt",
+            "Toppniva"
+          ]
+        },
+        {
+          "file": "planning/dashboard-views.md",
+          "sections": [
+            "1. Portfolio Overview (startsida)",
+            "2. ROI & Metrics (analysvyn)",
+            "3. Project Detail (detaljvy)",
+            "4. Status Filter (eventuell MVP+)",
+            "Navigationsstruktur"
+          ]
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": [
+            "2026-05-27 — Byt från GitHub Pages till Cloudflare Pages",
+            "2026-05-27 — Ett Cloudflare Pages-projekt, två custom domains",
+            "2026-05-27 — Family-enum dual-mapping",
+            "2026-05-27 — HashRouter istället för BrowserRouter",
+            "2026-05-27 — Ingen MCP-integration i v1"
+          ]
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": [
+            "v0 — Vanilla JS (klar)",
+            "v1 — React SPA (pågår)",
+            "v2 — Planerat"
+          ]
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Assumptions to Validate",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Solution",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "Project Vault Dashboard",
+      "stage_from": null,
+      "stage_to": null
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:scoring-studio:8b4f6c120d5cbd53",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "scoring-studio: project.md",
+    "how": "1 files: project.md",
+    "who": "",
+    "where": "devwatch:scoring-studio",
+    "source": "devwatch",
+    "slug": "scoring-studio",
+    "meta": {
+      "devwatch_id": "devwatch:scoring-studio:8b4f6c120d5cbd53:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "mvp_stage",
+        "part_of",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated",
+        "value_sek"
+      ],
+      "changed_files": [
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Cost Estimate",
+            "MVP Steps",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risk Assessment",
+            "Risker",
+            "Solution",
+            "Status",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Buy Instead of Build?"
+          ]
+        }
+      ],
+      "project_title": "Scoring Studio",
+      "stage_from": null,
+      "stage_to": "idea"
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:site-change-monitor:ff7446ff3b09a5f5",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "site-change-monitor: README.md, planning/decisions.md, planning/mvp-scope.md, planning/report-review-checklist.md, planning/roadmap.md",
+    "how": "5 files: README.md, planning/decisions.md, planning/mvp-scope.md, planning/report-review-checklist.md, planning/roadmap.md",
+    "who": "",
+    "where": "devwatch:site-change-monitor",
+    "source": "devwatch",
+    "slug": "site-change-monitor",
+    "meta": {
+      "devwatch_id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260607T095606Z",
+      "changed_fields": [],
+      "changed_files": [
+        {
+          "file": "README.md",
+          "sections": [
+            "Config format",
+            "Noise reduction heuristics",
+            "Reports",
+            "Setup",
+            "Snapshot format",
+            "Usage",
+            "What it does",
+            "What this MVP does NOT do"
+          ]
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/mvp-scope.md",
+          "sections": [
+            "Current Slice",
+            "Next Steps",
+            "Not Now"
+          ]
+        },
+        {
+          "file": "planning/report-review-checklist.md",
+          "sections": [
+            "Beslut efter 5–10 körningar",
+            "Kontrollpunkter",
+            "Syfte"
+          ]
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        }
+      ],
+      "project_title": "site-change-monitor",
+      "stage_from": null,
+      "stage_to": null
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:test-interactive:d81a0f0e5646d663",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "test-interactive: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
+    "how": "6 files: assets/README.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:test-interactive",
+    "source": "devwatch",
+    "slug": "test-interactive",
+    "meta": {
+      "devwatch_id": "devwatch:test-interactive:d81a0f0e5646d663:20260607T095606Z",
+      "changed_fields": [],
+      "changed_files": [
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": []
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": []
+        }
+      ],
+      "project_title": "test-interactive",
+      "stage_from": null,
+      "stage_to": null
+    }
+  },
+  {
+    "id": "evt:devwatch:md_change:webhook-router:82fe7aa1d9158748",
+    "what": "md_change",
+    "when": "2026-06-07T09:56:06Z",
+    "why": "webhook-router: README.md, assets/README.md, docs/architecture.md, docs/configuration.md, docs/integration-guide.md, notes/README.md, planning/decisions.md, planning/mvp-scope.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "how": "12 files: README.md, assets/README.md, docs/architecture.md, docs/configuration.md, docs/integration-guide.md, notes/README.md, planning/decisions.md, planning/mvp-scope.md, planning/roadmap.md, project.md, research/market-notes.md, research/sources.md",
+    "who": "",
+    "where": "devwatch:webhook-router",
+    "source": "devwatch",
+    "slug": "webhook-router",
+    "meta": {
+      "devwatch_id": "devwatch:webhook-router:82fe7aa1d9158748:20260607T095606Z",
+      "changed_fields": [
+        "cost_sek",
+        "created",
+        "current_slice",
+        "depends_on",
+        "family",
+        "feeds",
+        "kind",
+        "layer",
+        "mvp_stage",
+        "part_of",
+        "roi_percent",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "tags",
+        "title",
+        "updated"
+      ],
+      "changed_files": [
+        {
+          "file": "README.md",
+          "sections": [
+            "Beroenden i portfoljen",
+            "Dokumentation",
+            "Projektstruktur",
+            "Snabbstart",
+            "Status"
+          ]
+        },
+        {
+          "file": "assets/README.md",
+          "sections": []
+        },
+        {
+          "file": "docs/architecture.md",
+          "sections": [
+            "Dataflode",
+            "Designbeslut",
+            "Framtida utvidgningar (inte i MVP)",
+            "Komponenter",
+            "Oversikt"
+          ]
+        },
+        {
+          "file": "docs/configuration.md",
+          "sections": [
+            "Miljovariabler",
+            "Routing-regler",
+            "Standardvarden"
+          ]
+        },
+        {
+          "file": "docs/integration-guide.md",
+          "sections": [
+            "Exempel: Site Change Monitor",
+            "Oversikt",
+            "Steg 1: Definiera handelser",
+            "Steg 2: Lagg till routing-regel",
+            "Steg 3: Skicka webhook"
+          ]
+        },
+        {
+          "file": "notes/README.md",
+          "sections": []
+        },
+        {
+          "file": "planning/decisions.md",
+          "sections": [
+            "2026-05-07: Ompositionering fran intern infra till extern produkt",
+            "2026-05-07: Python + SQLite som teknikval",
+            "2026-05-07: Replay som killer feature",
+            "2026-05-07: Self-hosted som differentiator"
+          ]
+        },
+        {
+          "file": "planning/mvp-scope.md",
+          "sections": [
+            "Current Slice",
+            "Next Steps",
+            "Not Now"
+          ]
+        },
+        {
+          "file": "planning/roadmap.md",
+          "sections": []
+        },
+        {
+          "file": "project.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Assumptions to Validate",
+            "Beroenden",
+            "Core Need",
+            "Cost Estimate",
+            "Losning",
+            "MVP Scope",
+            "Not in MVP",
+            "Notes",
+            "Nästa steg",
+            "Problem",
+            "ROI",
+            "Risker",
+            "Risks",
+            "Status",
+            "Suggested First Build",
+            "Syfte",
+            "Target Audience",
+            "Timeline",
+            "Value Estimate",
+            "Why Now",
+            "Why This Instead of Existing Tools"
+          ]
+        },
+        {
+          "file": "research/market-notes.md",
+          "sections": []
+        },
+        {
+          "file": "research/sources.md",
+          "sections": [
+            "Konkurrentlandskap",
+            "Potentiella forsta anvandare",
+            "Var positionering"
+          ]
+        }
+      ],
+      "project_title": "Webhook Router",
+      "stage_from": null,
+      "stage_to": "building"
+    }
+  }
+]
