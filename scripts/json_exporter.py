@@ -58,6 +58,15 @@ def export_json(output_path: Optional[Path] = None) -> Path:
         project_list.append({
             "slug": meta.get("slug", ""),
             "title": meta.get("title", ""),
+            # Node-model fields (always exported, empty string/list if absent)
+            "kind": meta.get("kind", ""),
+            "stage": meta.get("stage", ""),
+            "part_of": meta.get("part_of", ""),
+            "feeds": meta.get("feeds", []),
+            "depends_on": meta.get("depends_on", []),
+            "layer": meta.get("layer", ""),
+            "pipeline": meta.get("pipeline", ""),
+            # Legacy product fields (kept for backward compatibility)
             "status": meta.get("status", ""),
             "mvp_stage": meta.get("mvp_stage", ""),
             "cost_sek": meta.get("cost_sek", 0),
@@ -71,17 +80,21 @@ def export_json(output_path: Optional[Path] = None) -> Path:
             "url_live": meta.get("url_live", ""),
             "url_repo": meta.get("url_repo", ""),
             "current_slice": meta.get("current_slice", ""),
+            # Product sections (only meaningful for legacy product nodes,
+            # component/system/framework nodes use different sections)
             "problem": sections.get("Problem", "").strip(),
             "solution": sections.get("Solution", "").strip(),
             "primary_audience": _extract_audience(sections.get("Target Audience", ""), "Primary"),
             "assumptions": _list_items(sections.get("Assumptions to Validate", "")),
             "mvp_steps": _list_items(sections.get("MVP Steps", "")),
             "top_risk": _top_risk(sections.get("Risk Assessment", "")),
+            # Component/system/framework sections
+            "syfte": sections.get("Syfte", sections.get("Syfte/mål", sections.get("Vision", ""))).strip(),
         })
 
     payload = {
         "exported_at": datetime.now().isoformat(),
-        "version": "1.0",
+        "version": "2.0",
         "projects": project_list,
     }
 
