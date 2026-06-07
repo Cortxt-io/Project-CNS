@@ -2,10 +2,18 @@
 cost_sek: 35000
 created: 2026-05-02
 current_slice: Focused changelog/docs monitor via CLI, reusing Site Change Monitor
+depends_on: []
 family: developer-tools
+feeds:
+- dev-changelog-engine-mini
+kind: component
+layer: pipeline
 mvp_stage: solution_test
+part_of: pipeline-extern
+pipeline: pipeline-extern
 roi_percent: 243
 slug: docs-watch
+stage: working
 status: early_mvp
 summary: CLI-verktyg som bevakar externa changelogs och docs för dev-team.
 tags:
@@ -16,9 +24,21 @@ title: DocsWatch
 updated: '2026-05-26'
 url_repo: https://github.com/rian010194/docs-watch
 value_sek: 120000
-layer: pipeline
-pipeline: pipeline-extern
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

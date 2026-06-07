@@ -2,10 +2,18 @@
 cost_sek: 3000
 created: '2026-05-20'
 current_slice: Kör skriptet dagligen i en vecka och utvärdera signal vs brus.
+depends_on: []
 family: internal-monitoring
+feeds:
+- cns-devlog
+kind: component
+layer: pipeline
 mvp_stage: solution_test
+part_of: pipeline-intern
+pipeline: pipeline-intern
 roi_percent: 233
 slug: cns-devwatch
+stage: working
 status: early_mvp
 summary: Bevakar dagliga git-ändringar i project.md-filer och exporterar dem som ChangeEvents.
 tags:
@@ -17,9 +25,21 @@ tags:
 title: CNS DevWatch
 updated: '2026-05-27'
 value_sek: 10000
-layer: pipeline
-pipeline: pipeline-intern
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

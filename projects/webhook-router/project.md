@@ -1,10 +1,19 @@
 ---
 cost_sek: 40000
 created: 2026-05-02
+current_slice: Self-hosted webhook audit log -- log, inspect, replay inkommande webhooks
+depends_on: []
+family: developer-tools
+feeds: []
+kind: component
+layer: infrastructure
 mvp_stage: hypothesis
+part_of: infrastructure
 roi_percent: 200
 slug: webhook-router
+stage: building
 status: idea
+summary: Self-hosted proxy som loggar, söker och replayer inkommande webhooks.
 tags:
 - devtools
 - webhooks
@@ -12,11 +21,21 @@ tags:
 - debugging
 title: Webhook Router
 updated: '2026-05-07'
-current_slice: Self-hosted webhook audit log -- log, inspect, replay inkommande webhooks
-summary: Self-hosted proxy som loggar, söker och replayer inkommande webhooks.
-family: developer-tools
-layer: infrastructure
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

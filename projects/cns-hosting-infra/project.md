@@ -1,10 +1,19 @@
 ---
 cost_sek: 2000
 created: '2026-05-19'
+depends_on: []
+family: cns-core
+feeds: []
+kind: component
+layer: infrastructure
 mvp_stage: solution_test
+part_of: infrastructure
 roi_percent: 650
 slug: cns-hosting-infra
+stage: working
 status: early_mvp
+summary: GitHub Actions-infrastruktur som kör hela CNS-pipelinen automatiskt utan
+  lokal dator.
 tags:
 - hosting
 - infrastructure
@@ -12,13 +21,23 @@ tags:
 - static
 title: CNS Hosting Infra
 updated: '2026-05-19'
-value_sek: 15000
-summary: GitHub Actions-infrastruktur som kör hela CNS-pipelinen automatiskt utan
-  lokal dator.
-family: cns-core
 url_repo: https://github.com/rian010194/Project-CNS
-layer: infrastructure
+value_sek: 15000
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

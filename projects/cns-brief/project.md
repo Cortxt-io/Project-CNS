@@ -1,27 +1,46 @@
 ---
-title: CNS Brief
-slug: cns-brief
-status: early_mvp
-mvp_stage: solution_test
-family: cns-core
 cost_sek: 3000
-value_sek: 20000
+created: '2026-05-27'
+depends_on: []
+family: cns-core
+feeds: []
+kind: component
+layer: pipeline
+mvp_stage: solution_test
+part_of: pipeline-intern
+pipeline: pipeline-intern
 roi_percent: 567
+slug: cns-brief
+stage: working
+status: early_mvp
+summary: AI-driven portföljbrief som analyserar hela portföljen och föreslår dagens
+  quest och prioriteringar baserat på devwatch, devlog och pending AI-förslag.
 tags:
 - python
 - claude
 - portfolio
 - decision-support
 - dashboard
-url_repo: https://github.com/rian010194/Project-CNS
-url_live: https://app.cortxt.io
-created: '2026-05-27'
+title: CNS Brief
 updated: '2026-05-27'
-summary: AI-driven portföljbrief som analyserar hela portföljen och föreslår dagens
-  quest och prioriteringar baserat på devwatch, devlog och pending AI-förslag.
-layer: pipeline
-pipeline: pipeline-intern
+url_live: https://app.cortxt.io
+url_repo: https://github.com/rian010194/Project-CNS
+value_sek: 20000
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

@@ -1,12 +1,19 @@
 ---
-title: Cortxt Landing
-slug: cortxt-landing
-status: early_mvp
-mvp_stage: solution_test
-family: cns-core
 cost_sek: 6000
-value_sek: 30000
+created: '2026-05-27'
+depends_on: []
+family: cns-core
+feeds: []
+kind: component
+layer: interface
+mvp_stage: solution_test
+part_of: interface
 roi_percent: 400
+slug: cortxt-landing
+stage: working
+status: early_mvp
+summary: Statisk landningssida för Cortxt på cortxt.io. Förklarar produkten, visar
+  pipeline-diagram och samlar waitlist-intresse.
 tags:
 - react
 - vite
@@ -14,14 +21,26 @@ tags:
 - reactflow
 - cloudflare-pages
 - marketing
-url_repo: https://github.com/rian010194/cortxt
-url_live: https://cortxt.io
-created: '2026-05-27'
+title: Cortxt Landing
 updated: '2026-05-27'
-summary: Statisk landningssida för Cortxt på cortxt.io. Förklarar produkten, visar
-  pipeline-diagram och samlar waitlist-intresse.
-layer: interface
+url_live: https://cortxt.io
+url_repo: https://github.com/rian010194/cortxt
+value_sek: 30000
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

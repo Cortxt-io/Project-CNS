@@ -1,19 +1,38 @@
 ---
-title: Dev Changelog Engine
-slug: dev-changelog-engine
-status: idea
-tags: []
 cost_sek: 125000
-value_sek: 380000
-roi_percent: 204
-mvp_stage: hypothesis
 created: 2026-05-02
-updated: 2026-05-02
-summary: Fullskalig pipeline för changelog-digest – ännu ej specificerad.
+depends_on: []
 family: digest-pipeline
+feeds: []
+kind: component
 layer: pipeline
+mvp_stage: hypothesis
+part_of: ''
 pipeline: pipeline-extern
+roi_percent: 204
+slug: dev-changelog-engine
+stage: idea
+status: idea
+summary: Fullskalig pipeline för changelog-digest – ännu ej specificerad.
+tags: []
+title: Dev Changelog Engine
+updated: 2026-05-02
+value_sek: 380000
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

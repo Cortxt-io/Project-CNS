@@ -1,10 +1,18 @@
 ---
 cost_sek: 4000
 created: '2026-05-20'
+depends_on: []
 family: internal-monitoring
+feeds:
+- cns-brief
+kind: component
+layer: pipeline
 mvp_stage: solution_test
+part_of: pipeline-intern
+pipeline: pipeline-intern
 roi_percent: 275
 slug: cns-devlog
+stage: working
 status: early_mvp
 summary: Genererar daglig AI-sammanfattning av portföljförändringar, publicerad som
   statisk sida.
@@ -17,9 +25,21 @@ tags:
 title: CNS DevLog
 updated: '2026-05-27'
 value_sek: 15000
-layer: pipeline
-pipeline: pipeline-intern
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

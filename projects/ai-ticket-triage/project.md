@@ -3,11 +3,16 @@ cost_sek: 210000
 created: 2026-05-02
 current_slice: Genomföra problemintervjuer med supportteam för att validera smärtpunkter
   kring manuell triagering
+depends_on: []
 family: ideas
+feeds: []
+kind: component
 layer: concept
 mvp_stage: problem_interviews
+part_of: ''
 roi_percent: 257
 slug: ai-ticket-triage
+stage: idea
 status: idea
 summary: AI-driven triagering och automatisk kategorisering av supportärenden för
   att minska manuell handläggningstid och förbättra svarstider
@@ -16,6 +21,20 @@ title: AI Ticket Triage
 updated: '2026-05-31'
 value_sek: 750000
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

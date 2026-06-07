@@ -3,12 +3,17 @@ cost_sek: 5000
 created: '2026-05-25'
 current_slice: Validera bulk-analys på scoring-studio (9), ai-ticket-triage (6) och
   cns-devwatch (5) förslag – mät precision, false positives och performance
+depends_on: []
 family: cns-core
+feeds: []
+kind: component
 layer: pipeline
 mvp_stage: demand_test
+part_of: pipeline-review
 pipeline: pipeline-review
 roi_percent: 400
 slug: cns-analyst
+stage: working
 status: mvp
 summary: AI-driven analysmotor som föreslår uppdateringar av MVP-steg, risker och
   ROI-estimat per projekt.
@@ -21,6 +26,20 @@ title: CNS Analyst
 updated: '2026-05-31'
 value_sek: 25000
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

@@ -1,12 +1,19 @@
 ---
-title: Cortxt Dashboard App
-slug: cortxt-dashboard-app
-status: early_mvp
-mvp_stage: solution_test
-family: cns-core
 cost_sek: 8000
-value_sek: 35000
+created: '2026-05-27'
+depends_on: []
+family: cns-core
+feeds: []
+kind: component
+layer: interface
+mvp_stage: solution_test
+part_of: interface
 roi_percent: 338
+slug: cortxt-dashboard-app
+stage: working
+status: early_mvp
+summary: React SPA på app.cortxt.io som visualiserar CNS-portföljen via Railway Flask
+  API. Portföljgrid, projektdetaljer och Reactflow graph-overlay.
 tags:
 - react
 - vite
@@ -14,14 +21,26 @@ tags:
 - reactflow
 - cloudflare-pages
 - dashboard
-url_repo: https://github.com/rian010194/cortxt
-url_live: https://app.cortxt.io
-created: '2026-05-27'
+title: Cortxt Dashboard App
 updated: '2026-05-27'
-summary: React SPA på app.cortxt.io som visualiserar CNS-portföljen via Railway Flask
-  API. Portföljgrid, projektdetaljer och Reactflow graph-overlay.
-layer: interface
+url_live: https://app.cortxt.io
+url_repo: https://github.com/rian010194/cortxt
+value_sek: 35000
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

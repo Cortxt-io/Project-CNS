@@ -305,6 +305,114 @@ def _seed_if_missing(path: Path, content: str) -> None:
         path.write_text(content, encoding="utf-8")
 
 
+def render_generated_section(slug: str, all_projects: list[tuple[dict, dict]] | None = None) -> str:
+    """Generate 'Ingående komponenter' or 'Ingående system' from part_of relations.
+
+    For system nodes: find all nodes where part_of == slug.
+    For framework nodes: find all nodes where part_of == slug, OR where part_of
+    points to a system node that has part_of == slug.
+
+    Args:
+        slug: The slug of the system/framework node to generate for.
+        all_projects: Optional list of (meta, sections) tuples. If None, reads all.
+
+    Returns:
+        Markdown-formatted string for the generated section.
+    """
+    if all_projects is None:
+        all_projects = read_all_projects()
+
+    kind = None
+    for meta, _ in all_projects:
+        if meta.get("slug") == slug:
+            kind = meta.get("kind")
+            break
+
+    if kind not in ("system", "framework"):
+        return ""
+
+    # Find direct children (part_of == this slug)
+    children = []
+    for meta, _ in all_projects:
+        if meta.get("part_of") == slug:
+            children.append(meta)
+
+    if kind == "system":
+        # List direct children as components
+        if not children:
+            return "(Inga komponenter ännu.)"
+        lines = []
+        for child in sorted(children, key=lambda m: m.get("stage", "")):
+            c_slug = child.get("slug", "")
+            c_stage = child.get("stage", "")
+            c_summary = child.get("summary", "")
+            line = f"- **{c_slug}** ({c_stage})"
+            if c_summary:
+                line += f" — {c_summary}"
+            lines.append(line)
+        return "\n".join(lines)
+
+    # Framework: list direct children (systems) + their components
+    if not children:
+        return "(Inga system ännu.)"
+
+    lines = []
+    for child in sorted(children, key=lambda m: m.get("slug", "")):
+        c_slug = child.get("slug", "")
+        c_stage = child.get("stage", "")
+        c_kind = child.get("kind", "")
+        c_summary = child.get("summary", "")
+        line = f"- **{c_slug}** ({c_kind}, {c_stage})"
+        if c_summary:
+            line += f" — {c_summary}"
+        lines.append(line)
+
+        # Find sub-children (components of this system)
+        sub_children = []
+        for meta, _ in all_projects:
+            if meta.get("part_of") == c_slug:
+                sub_children.append(meta)
+        for sub in sorted(sub_children, key=lambda m: m.get("stage", "")):
+            s_slug = sub.get("slug", "")
+            s_stage = sub.get("stage", "")
+            line = f"  - {s_slug} ({s_stage})"
+            lines.append(line)
+
+    return "\n".join(lines)
+
+
+def render_dataflow_section(slug: str, all_projects: list[tuple[dict, dict]] | None = None) -> str:
+    """Generate 'Dataflöde' section from feeds relations among children.
+
+    For system nodes: find feeds chains among components that are part_of this system.
+
+    Returns:
+        Markdown-formatted string describing data flows, or empty string.
+    """
+    if all_projects is None:
+        all_projects = read_all_projects()
+
+    # Find children of this slug
+    children = {meta.get("slug"): meta for meta, _ in all_projects if meta.get("part_of") == slug}
+    if not children:
+        return ""
+
+    # Find feeds relations among children
+    flow_lines = []
+    for c_slug, c_meta in sorted(children.items()):
+        feeds = c_meta.get("feeds", [])
+        for target in feeds:
+            if target in children:
+                flow_lines.append(f"{c_slug} → {target}")
+            elif target:  # feeds outside this system
+                flow_lines.append(f"{c_slug} → {target} (extern)")
+
+    if not flow_lines:
+        return "(Inga dataflöden mellan ingående komponenter.)"
+
+    return "\n".join(f"- {line}" for line in flow_lines)
+
+
 def apply_changes(
     meta: dict[str, Any],
     sections: dict[str, str],

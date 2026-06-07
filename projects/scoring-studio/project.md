@@ -1,22 +1,42 @@
 ---
-title: Scoring Studio
+cost_sek: 4000
+created: '2026-05-25'
+depends_on: []
+family: digest-pipeline
+feeds: []
+kind: component
+mvp_stage: hypothesis
+part_of: pipeline-extern
+roi_percent: 250
 slug: scoring-studio
+stage: idea
 status: idea
+summary: Visuellt verktyg för att justera scoring-vikter i Changelog Engine Mini utan
+  att redigera kod.
 tags:
 - devtools
 - digest-pipeline
 - scoring
 - config
 - static-site
-family: digest-pipeline
-cost_sek: 4000
-value_sek: 14000
-roi_percent: 250
-mvp_stage: hypothesis
-summary: Visuellt verktyg för att justera scoring-vikter i Changelog Engine Mini utan att redigera kod.
-created: '2026-05-25'
+title: Scoring Studio
 updated: '2026-05-25'
+value_sek: 14000
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

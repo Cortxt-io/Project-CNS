@@ -212,6 +212,35 @@ meningsfullt och välriktat.
 
 ---
 
+## Beslut: filnamn förblir `project.md` (typ bärs av `kind`)
+
+Frågan uppstod om noder borde ha olika filnamn (`component.md`, `system.md`,
+`framework.md`) nu när de har olika typer. Beslut: **NEJ — behåll `project.md`
+för alla nodtyper. `kind` i frontmatter bär typen.**
+
+Motivering:
+1. **All kod globbar `*/project.md`** — `project_path()`, `list_project_files()`,
+   post-commit-hooken, json_exporter, devwatch, MCP-servern, dashboarden. Olika
+   filnamn = varje sådan plats måste hantera flera mönster = stor buggyta för
+   en kosmetisk vinst.
+2. **`kind` kan ändras, filnamn vill man inte byta.** En nod kan röra sig
+   (ai-ticket-triage: komponent → system). Sitter typen i filnamnet måste filen
+   döpas om → bryter git-historik och alla referenser. Sitter den i frontmatter
+   ändras ett fält. Mjukt och spårbart.
+3. **Strukturen bär redan typen** (via `part_of`). Filnamnet skulle duplicera
+   information som redan finns — och duplicerad sanning blir motstridig sanning.
+
+Tre olika filnamn vore det sämsta alternativet: migreringsjobbet PLUS pågående
+komplexitet av flera mönster överallt.
+
+**Möjlig framtida ISOLERAD övning (inte nu, inte i arkitektur-quest:et):** om
+ordet "project" fortsätter skava efter att systemet använts ett tag, byt ALLA
+till ett neutralt `node.md` i ett eget rename-quest. Allt är noder — det vore
+konceptuellt korrekt. Men det blandas INTE in i den additiva migreringen; det
+är en separat sak som annars ökar risken i allt annat.
+
+---
+
 ## Migreringsstrategi: ADDITIV, inte hård
 
 16 befintliga project.md har produktmallen. Vi skriver INTE om alla på en gång.

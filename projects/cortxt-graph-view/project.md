@@ -4,10 +4,16 @@ created: '2026-05-27'
 current_slice: Implementera depends_on-fält i CNS-schemat och validera att beroendedata
   kan läsas in korrekt i dashboard-appen. Verifiera att family-enum-migration är komplett
   innan graph-layouten byggs.
+depends_on: []
 family: cns-core
+feeds: []
+kind: component
+layer: interface
 mvp_stage: solution_test
+part_of: interface
 roi_percent: 300
 slug: cortxt-graph-view
+stage: idea
 status: idea
 summary: Interaktiv Reactflow-graf i cortxt-dashboard-app som visualiserar projektberoenden
   och familjestrukturer med edges och hierarkisk layout.
@@ -22,8 +28,21 @@ updated: '2026-05-27'
 url_live: https://app.cortxt.io
 url_repo: https://github.com/rian010194/cortxt
 value_sek: 20000
-layer: interface
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 

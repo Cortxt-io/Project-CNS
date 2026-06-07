@@ -2,10 +2,17 @@
 cost_sek: 3000
 created: 2026-05-05
 current_slice: Step 4 — Markdown & HTML renderers
+depends_on: []
 family: digest-pipeline
+feeds: []
+kind: component
+layer: pipeline
 mvp_stage: solution_test
+part_of: pipeline-extern
+pipeline: pipeline-extern
 roi_percent: 300
 slug: dev-changelog-engine-mini
+stage: working
 status: early_mvp
 summary: Omvandlar DocsWatch-data till prioriterade veckodigest i Markdown och HTML.
 tags:
@@ -18,9 +25,21 @@ updated: '2026-05-27'
 url_live: https://rian010194.github.io/dev-changelog-engine-mini/
 url_repo: https://github.com/rian010194/dev-changelog-engine-mini
 value_sek: 12000
-layer: pipeline
-pipeline: pipeline-extern
 ---
+
+## Syfte
+
+## Beroenden
+
+## Status
+
+## Nästa steg
+
+## Risker
+
+## Arbetslogg
+
+## Anteckningar
 
 ## Problem
 
