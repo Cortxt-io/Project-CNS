@@ -4,7 +4,7 @@
   "title": "Validera riskmodell med bulk-analys av 20 pending",
   "description": "Kör bulk-analys på de 20 pending förslagen i CNS Analyst med nya sannolikhet × påverkan-modellen. Dokumentera precision jämfört med gamla 1-5 skalan. Uppdatera parser och validator baserat på resultat.",
   "estimated_impact": "Validerar den nya riskmodellen med verklig data innan full implementering. Två färska quests väntar på genomförande och projektet har tydlig ROI (400%) plus är i demand_test-fas där datadrivet beslut är kritiskt.",
-  "status": "completed",
+  "status": "archived",
   "source": "portfolio-brief",
   "created_at": "2026-06-06",
   "started_at": "2026-06-07T09:23:56",
