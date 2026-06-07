@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-06-07T09:18:57.487776",
+  "exported_at": "2026-06-07T09:51:38.078824",
   "version": "2.0",
   "projects": [
     {
@@ -401,7 +401,7 @@
       "slug": "cortxt-eventstream",
       "title": "Cortxt Eventstream",
       "kind": "component",
-      "stage": "idea",
+      "stage": "building",
       "part_of": "infrastructure",
       "feeds": [
         "cns-devlog",
@@ -412,7 +412,7 @@
       ],
       "layer": "",
       "pipeline": "",
-      "status": "idea",
+      "status": "building",
       "mvp_stage": "",
       "cost_sek": 0,
       "value_sek": 0,
@@ -896,54 +896,6 @@
         "Launch: publicera som statisk sida under digest-pipeline-familjen, länka från Changelog Engine Mini README."
       ],
       "top_risk": "**Technical** (score 2/5): Externaliseringen av `DEFAULT_WEIGHTS` är ett litet ingrepp i befintlig kod men kräver att CLI:t läser filen korrekt och faller tillbaka på defaults utan att krascha.",
-      "syfte": ""
-    },
-    {
-      "slug": "site-change-monitor",
-      "title": "Site Change Monitor",
-      "kind": "component",
-      "stage": "working",
-      "part_of": "",
-      "feeds": [],
-      "depends_on": [],
-      "layer": "concept",
-      "pipeline": "",
-      "status": "shelved",
-      "mvp_stage": "solution_test",
-      "cost_sek": 71000,
-      "value_sek": 220000,
-      "roi_percent": 210,
-      "tags": [
-        "devtools",
-        "monitoring",
-        "competitor-intel",
-        "project-vault"
-      ],
-      "created": "2026-05-02",
-      "updated": "2026-05-07",
-      "summary": "Ursprungsprojektet bakom DocsWatch – parkerat, bevakar webbsideförändringar.",
-      "family": "developer-tools",
-      "url_live": "",
-      "url_repo": "",
-      "current_slice": "Basic monitor + diff + alert loop via CLI",
-      "problem": "Teams manually check competitor pages, pricing pages, changelogs, policy pages, and other critical URLs to detect important changes. This is slow, inconsistent, and easy to miss, which means strategic changes, compliance updates, or public-facing errors are often discovered too late.",
-      "solution": "Site Change Monitor is a lightweight monitoring tool that watches selected webpages, detects meaningful changes, and sends a clear alert with context about what changed. The product focuses on practical monitoring for business and product teams rather than generic uptime monitoring.",
-      "primary_audience": " Solo founders, product teams, and competitive intelligence workflows that need to detect important website changes without manually checking pages.",
-      "assumptions": [
-        "Users care more about meaningful page-change alerts than about generic uptime monitoring.",
-        "Teams are willing to pay for a simpler focused monitor instead of stitching together scripts and generic tools.",
-        "Competitor pricing, messaging, and product-page changes are frequent enough to create recurring value.",
-        "Users want alerts with context (what changed and why it matters), not just a raw \"page changed\" notification.",
-        "A lightweight setup experience is a competitive advantage over broader monitoring platforms."
-      ],
-      "mvp_steps": [
-        "Hypothesis: prove that focused website change monitoring solves a real business pain beyond uptime checks.",
-        "Problem interviews: talk to founders, marketers, and product/CI users about how they currently monitor important pages.",
-        "Solution test: let a few users monitor a small set of URLs and evaluate whether the alerts are useful.",
-        "Demand test: validate willingness to pay for competitor/pricing/policy monitoring with a simple landing page or manual concierge offer.",
-        "Launch: ship a narrow but reliable first version with clear alerting and understandable diffs."
-      ],
-      "top_risk": "**Market** (score 3/5): Users may see this as too similar to existing monitoring tools unless the positioning is sharp.",
       "syfte": ""
     },
     {
