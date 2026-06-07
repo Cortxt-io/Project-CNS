@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CNS DevLog — 2026-06-06</title>
+  <title>CNS DevLog — 2026-06-07</title>
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -95,40 +95,40 @@
   <main>
     <header>
       <h1>CNS DevLog</h1>
-      <p class="subtitle">2026-06-06</p>
+      <p class="subtitle">2026-06-07</p>
       <div class="meta">
-        <p><span>Antal händelser:</span> 18</p>
-        <p><span>Källa:</span> devwatch_2026-06-06.json (20260606_091907)</p>
+        <p><span>Antal händelser:</span> 8</p>
+        <p><span>Källa:</span> eventstream</p>
       </div>
     </header>
 
     <section class="card">
   <h2>Dagens sammanfattning</h2>
   <div class="digest-content">
-<h2>Daglig portföljbrief</h2>
 <h3>Vad hände igår</h3>
-<p><strong>CNS Analyst</strong> – Två nya quests skapade för att förbättra riskmodellen: övergång från enkel 1-5 skala till sannolikhet × påverkan-modell med mitigation. Omfattar uppdateringar av schema, validator, parser och Claude-prompt. Bulk-analys med 20 pending förslag planerad för validering.</p>
-<p><strong>Cortxt Graph View</strong> – Parkerad. Beslut taget att vänta tills förutsättningar är uppfyllda. Roadmap omstrukturerad till v0 &quot;Coming Soon&quot;, v1 &quot;Planerat&quot;, v2 &quot;Framtida&quot;.</p>
-<p><strong>Cortxt Dashboard App</strong> – Fyra arkitekturbeslut dokumenterade: Railway REST API som datakälla (ingen MCP i v1), HashRouter istället för BrowserRouter, family-enum dual-mapping, inga edges i Reactflow graph v1. Roadmap uppdaterad med v1 MVP pågående och v2 planerat.</p>
-<p><strong>Cortxt Landing</strong> – Tre tekniska beslut: React + Vite istället för statisk HTML, Cloudflare Pages istället för GitHub Pages, DNS flyttad till Cloudflare. Roadmap satt till v1 MVP pågående.</p>
-<p><strong>Project Vault Dashboard</strong> – Omfattande dokumentation tillagd: API-schema, dashboard-views (Portfolio Overview, ROI &amp; Metrics, Project Detail), design-idéer med grafer och inspirationskällor. Fem beslut: Cloudflare Pages, två custom domains på ett projekt, family-enum dual-mapping, HashRouter, ingen MCP i v1.</p>
-<p><strong>Webhook Router</strong> – Ompositionering från intern infra till extern produkt. Tre strategiska beslut: self-hosted som differentiator, replay som killer feature, Python + SQLite som teknikval. Omfattande dokumentation tillagd: arkitektur, konfiguration, integrationsguide med Site Change Monitor-exempel.</p>
-<p><strong>Site Change Monitor</strong> – README expanderad med detaljerad beskrivning av vad systemet gör, noise reduction heuristics, snapshot-format, config-format. Report review checklist tillagd.</p>
+<p><strong>Eventstream-konsolidering (cns-brief)</strong></p>
+<p>Stor refaktorering där backend-aktivitet nu samlas i en central eventstream. Fixade slug-koppling genom `_slugs_from_files` och per-commit unika ID:n. Lade till heuristik för att extrahera slug från commit-meddelanden (för CI-backfill). Implementerade SHA-deduplicering över varianter i `run_sync`. Konverterade devwatch till eventstream-adapter med stage-change-detektion. Skrev om devlog för att läsa från eventstream och returnera dict, plus nytt GET-endpoint `/api/devlog`. Uppdaterade CI-workflow för ny digest-JSON (deprecated HTML). Verifierade att multi-slug commits genererar 3 events med unika ID:n.</p>
+<p><strong>Quest E: Portfolio brief + riskschema</strong></p>
+<p>Implementerade portfolio_brief som använder eventstream som primär signal. Ny riskmodell med probability×impact=score+mitigation-schema, redo för RiskMatrix-rendering. Byggde CLI för retroaktiv import av eventstream. Quest aktiverad, completerad och arkiverad (quest-fb76a3cb).</p>
+<p><strong>Slug-verifiering</strong></p>
+<p>Testade slug-koppling med riktig nodfil och verifierade i eventstream. Triggade webhook-test.</p>
 <h3>Vad är kvar</h3>
-<p><strong>CNS Analyst</strong> – Implementera nytt riskschema (2026-05-31), validera bulk-analys med 20 förslag (2026-05-27).</p>
-<p><strong>Cortxt Dashboard App</strong> – Slutföra v1 MVP med Railway REST API-integration och Reactflow-graf.</p>
-<p><strong>Cortxt Landing</strong> – Slutföra v1 MVP med React + Vite på Cloudflare Pages.</p>
-<p><strong>Project Vault Dashboard</strong> – Slutföra v1 React SPA med de tre definierade vyerna.</p>
-<p><strong>Webhook Router</strong> – Bygga MVP: routing engine, SQLite event log, replay-funktion.</p>
+<p><strong>cns-brief</strong></p>
+<ul>
+<li>Verifiera att eventstream-adaptern fångar alla relevanta stage-changes korrekt</li>
+<li>Testa portfolio_brief med verklig data från eventstream</li>
+<li>Validera att riskmatrisen renderar korrekt med nya schemat</li>
+<li>Kontrollera att retroaktiv import fungerar för historisk data</li>
+</ul>
 <h3>Nästa steg idag</h3>
-<h3><strong>CNS Analyst</strong> – Börja implementera sannolikhet × påverkan-modellen i schema och validator</h3>
-<h3><strong>Webhook Router</strong> – Definiera exakt MVP-scope för routing engine och event log</h3>
-<h3><strong>Cortxt Dashboard App</strong> – Testa Railway REST API-anrop och verifiera dataflöde</h3>
+<h3><strong>Kör retroaktiv eventstream-import</strong> – populera historisk data och verifiera integritet</h3>
+<h3><strong>Testa portfolio_brief end-to-end</strong> – från eventstream via riskanalys till rendering</h3>
+<h3><strong>Dokumentera nya flödet</strong> – hur eventstream, stage-changes och portfolio_brief hänger ihop</h3>
   </div>
 </section>
 
     <footer>
-      <p>Genererad av cns-devlog &middot; 2026-06-06 09:19 UTC</p>
+      <p>Genererad av cns-devlog &middot; 2026-06-07 09:51 UTC</p>
     </footer>
   </main>
 </body>
