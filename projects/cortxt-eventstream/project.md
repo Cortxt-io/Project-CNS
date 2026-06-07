@@ -8,8 +8,8 @@ feeds:
 kind: component
 part_of: infrastructure
 slug: cortxt-eventstream
-stage: idea
-status: idea
+stage: building
+status: building
 summary: Enhetlig händelselogning av alla systemaktiviteter med sex dimensioner.
 tags: []
 title: Cortxt Eventstream

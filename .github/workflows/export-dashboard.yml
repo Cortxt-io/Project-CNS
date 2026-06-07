@@ -53,6 +53,24 @@ jobs:
             echo "No devwatch export found — skipping"
           fi
 
+      - name: Sync eventstream
+        env:
+          CNS_GITHUB_TOKEN: ${{ secrets.CNS_GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          SINCE=$(date -u -d 'yesterday 07:00' '+%Y-%m-%dT%H:%M:%S' 2>/dev/null || \
+                  date -u -v-1d -v7H -v0M -v0S '+%Y-%m-%dT%H:%M:%S')
+          python cns.py eventstream sync --since "$SINCE"
+
+      - name: Copy latest eventstream export
+        run: |
+          if [ -f exports/eventstream_latest.json ]; then
+            cp exports/eventstream_latest.json projects/project-vault-dashboard/dashboard/data/eventstream_latest.json
+            echo "Copied eventstream_latest.json"
+          else
+            echo "No eventstream export found — skipping"
+          fi
+
       - name: Run devlog
         continue-on-error: true
         env:
@@ -79,6 +97,9 @@ jobs:
           git add projects/project-vault-dashboard/dashboard/data/devwatch_latest.json
           git add exports/devlog_*.html || true
           git add projects/project-vault-dashboard/dashboard/data/devlog_latest.html || true
+          git add exports/eventstream_*.jsonl || true
+          git add exports/eventstream_latest.json || true
+          git add projects/project-vault-dashboard/dashboard/data/eventstream_latest.json || true
           if git diff --cached --quiet; then
             echo "No changes"
           else

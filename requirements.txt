@@ -15,4 +15,5 @@ uvicorn[standard]>=0.30
 a2wsgi>=1.10
 anthropic>=0.40
 py-key-value-aio[redis]>=0.2
+redis>=5.0
 cryptography>=43

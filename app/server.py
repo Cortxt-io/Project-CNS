@@ -864,6 +864,46 @@ def api_health():
     })
 
 
+@app.route("/api/eventstream/events")
+def api_eventstream_events():
+    """Return recent events from Redis live-buffer, filterable.
+
+    Query params:
+      slug:   filter by CNS node slug
+      source: filter by source (github, railway, etc.)
+      limit:  max events to return (default 100, max 500)
+
+    Falls back to eventstream_latest.json if Redis is unavailable.
+    """
+    from scripts.eventstream import read_from_redis
+
+    slug = request.args.get("slug")
+    source = request.args.get("source")
+    limit = min(int(request.args.get("limit", 100)), 500)
+
+    events = read_from_redis(limit=limit, slug=slug, source=source)
+
+    if events is None or len(events) == 0:
+        # Fallback: read from eventstream_latest.json
+        latest_path = Path(__file__).resolve().parent.parent / "exports" / "eventstream_latest.json"
+        if latest_path.exists():
+            try:
+                all_events = json.loads(latest_path.read_text(encoding="utf-8"))
+                if slug:
+                    all_events = [e for e in all_events if e.get("slug") == slug]
+                if source:
+                    all_events = [e for e in all_events if e.get("source") == source]
+                events = all_events[:limit]
+            except Exception:
+                events = []
+
+    return jsonify({
+        "events": events,
+        "count": len(events),
+        "source": "redis" if events else "fallback",
+    })
+
+
 @app.route("/brief")
 @auth.login_required
 def brief_page():
@@ -1621,13 +1661,14 @@ def _set_ci_status_for_slugs(slugs: set[str], ci_status: str) -> dict[str, str]:
 
 @app.route("/api/webhook/github", methods=["POST", "OPTIONS"])
 def api_webhook_github():
-    """Receive GitHub webhooks and update quests.
+    """Receive GitHub webhooks — quest auto-complete + eventstream logging.
 
     Handled events:
-      - push: auto-complete in_progress quests for slugs whose files changed
-      - pull_request: opened/reopened -> start matching quests (in_progress);
-        closed+merged -> auto-complete matching quests
-      - workflow_run: record CI conclusion (success/failure) on matching quests
+      - push: auto-complete quests + log commits to eventstream
+      - pull_request: start/complete quests + log to eventstream
+      - workflow_run: record CI conclusion + log to eventstream
+
+    Eventstream logging happens AFTER quest logic so it never interferes.
     """
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
@@ -1649,8 +1690,10 @@ def api_webhook_github():
 
     affected_slugs: set[str] = set()
     results: dict[str, str] = {}
+    eventstream_count = 0  # events logged to Redis
 
     if event == "push":
+        # --- QUEST AUTO-COMPLETE (existing, unchanged) ---
         affected_slugs = _slugs_from_pushed_files(payload)
         ref = payload.get("ref", "")
         commit_msg = payload.get("head_commit", {}).get("message", "")
@@ -1659,6 +1702,18 @@ def api_webhook_github():
             f"Commit: {commit_msg[:100]}"
         )
         results = _complete_quests_for_slugs(affected_slugs, summary)
+
+        # --- EVENTSTREAM LOGGING (after quest logic) ---
+        try:
+            from scripts.eventstream import normalize_push_event, push_to_redis
+            for evt in normalize_push_event(payload):
+                # Assign slug from affected files if available
+                if not evt.get("slug") and affected_slugs:
+                    evt["slug"] = sorted(affected_slugs)[0]
+                push_to_redis(evt)
+                eventstream_count += 1
+        except Exception as exc:
+            app.logger.warning("Eventstream push logging failed: %s", exc)
 
     elif event == "pull_request":
         action = payload.get("action", "")
@@ -1678,10 +1733,19 @@ def api_webhook_github():
             )
             results = _complete_quests_for_slugs(affected_slugs, summary)
         else:
-            return jsonify({
-                "status": "ok",
-                "message": f"Ignored pull_request action: {action}",
-            })
+            # Still log to eventstream even for ignored PR actions
+            pass
+
+        # --- EVENTSTREAM LOGGING (after quest logic) ---
+        try:
+            from scripts.eventstream import normalize_pr_event, push_to_redis
+            for evt in normalize_pr_event(payload):
+                if not evt.get("slug") and affected_slugs:
+                    evt["slug"] = sorted(affected_slugs)[0]
+                push_to_redis(evt)
+                eventstream_count += 1
+        except Exception as exc:
+            app.logger.warning("Eventstream PR logging failed: %s", exc)
 
     elif event == "workflow_run":
         run = payload.get("workflow_run", {})
@@ -1698,6 +1762,17 @@ def api_webhook_github():
         ci_status = "passing" if conclusion == "success" else "failing"
         results = _set_ci_status_for_slugs(affected_slugs, ci_status)
 
+        # --- EVENTSTREAM LOGGING (after quest logic) ---
+        try:
+            from scripts.eventstream import normalize_workflow_run_event, push_to_redis
+            for evt in normalize_workflow_run_event(payload):
+                if not evt.get("slug") and affected_slugs:
+                    evt["slug"] = sorted(affected_slugs)[0]
+                push_to_redis(evt)
+                eventstream_count += 1
+        except Exception as exc:
+            app.logger.warning("Eventstream workflow logging failed: %s", exc)
+
     else:
         return jsonify({"status": "ok", "message": f"Ignored event: {event}"})
 
@@ -1706,6 +1781,7 @@ def api_webhook_github():
         "event": event,
         "affected_slugs": list(affected_slugs),
         "quest_results": results,
+        "eventstream_logged": eventstream_count,
     })
 
 

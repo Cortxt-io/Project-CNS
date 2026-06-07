@@ -605,6 +605,38 @@ def cmd_review(_args: argparse.Namespace) -> None:
         apply_pending(item, _show_diff_and_confirm)
 
 
+def cmd_eventstream_sync(args: argparse.Namespace) -> None:
+    """Pull events from GitHub API and append to .jsonl archive."""
+    from scripts.eventstream import run_sync
+
+    since = args.since
+    dry_run = args.dry_run
+
+    if dry_run:
+        console.print("[dim]Dry run — showing what would be synced:[/dim]")
+        if since:
+            console.print(f"  Since: {since}")
+        else:
+            console.print("  Since: last 24h (default)")
+        console.print("  Would fetch from: github_commits, github_workflows, railway, cloudflare")
+        return
+
+    console.print("[bold]Syncing eventstream...[/bold]")
+    if since:
+        console.print(f"  Since: {since}")
+
+    counts = run_sync(since=since)
+
+    for source, count in counts.items():
+        if count < 0:
+            console.print(f"  [red]{source}: adapter failed[/red]")
+        else:
+            console.print(f"  [green]{source}:[/green] {count} new events")
+
+    total = counts.get("total_new", 0)
+    console.print(f"\n[bold]Total: {total} new events archived[/bold]")
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
@@ -789,6 +821,26 @@ def main() -> None:
         help="Review and apply pending AI suggestions",
     )
     sp_review.set_defaults(func=cmd_review)
+
+    # cns eventstream sync
+    sp_eventstream = subparsers.add_parser(
+        "eventstream",
+        help="Eventstream operations",
+    )
+    es_sub = sp_eventstream.add_subparsers(dest="es_command")
+    sp_es_sync = es_sub.add_parser(
+        "sync",
+        help="Pull events from GitHub API and append to .jsonl archive",
+    )
+    sp_es_sync.add_argument(
+        "--since", default=None,
+        help="ISO timestamp to pull events since (default: last 24h)",
+    )
+    sp_es_sync.add_argument(
+        "--dry-run", action="store_true", default=False,
+        help="Show what would be synced without writing files",
+    )
+    sp_es_sync.set_defaults(func=cmd_eventstream_sync)
 
     args = parser.parse_args()
 
