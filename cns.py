@@ -102,15 +102,16 @@ def _show_diff_and_confirm(
 # ---------------------------------------------------------------------------
 
 def cmd_list(_args: argparse.Namespace) -> None:
-    """Print a summary table of all projects."""
+    """Print a summary table of all projects (node-aware)."""
     files = list_project_files()
     if not files:
         console.print("[yellow]No projects found.[/yellow]")
         return
 
-    # Check if any project has a current_slice to decide whether to show the column
+    # Collect project data and detect which optional columns have data
     projects_data = []
     has_any_slice = False
+    has_any_cost = False
     for path in files:
         slug = path.parent.name
         try:
@@ -120,46 +121,78 @@ def cmd_list(_args: argparse.Namespace) -> None:
             continue
         if meta.get("current_slice"):
             has_any_slice = True
+        if meta.get("cost_sek", 0) or meta.get("value_sek", 0) or meta.get("roi_percent", 0):
+            has_any_cost = True
         projects_data.append((slug, meta))
 
-    table = Table(title="CNS Projects", show_lines=True)
+    # Sort by part_of so tree structure is visible — nodes with same parent cluster together
+    projects_data.sort(key=lambda x: (x[1].get("part_of", "") or "", x[0]))
+
+    kind_color_map = {
+        "framework": "bold magenta",
+        "system": "cyan",
+        "component": "green",
+    }
+    stage_color_map = {
+        "idea": "dim",
+        "building": "yellow",
+        "working": "green",
+        "maturing": "bold green",
+    }
+    status_color_map = {
+        "idea": "dim",
+        "early_mvp": "yellow",
+        "mvp": "green",
+        "live": "bold green",
+        "shelved": "dim red",
+    }
+
+    table = Table(title="CNS Nodes", show_lines=True)
     table.add_column("Slug", style="cyan", no_wrap=True)
     table.add_column("Title", style="bold")
+    table.add_column("Kind")
+    table.add_column("Stage")
+    table.add_column("Part Of", style="dim")
     table.add_column("Status")
-    table.add_column("MVP Stage")
     if has_any_slice:
         table.add_column("Current Slice", max_width=30, no_wrap=True)
-    table.add_column("Cost SEK", justify="right")
-    table.add_column("Value SEK", justify="right")
-    table.add_column("ROI %", justify="right")
+    if has_any_cost:
+        table.add_column("Cost", justify="right")
+        table.add_column("Value", justify="right")
+        table.add_column("ROI %", justify="right")
 
     for slug, meta in projects_data:
+        kind = meta.get("kind", "")
+        stage = meta.get("stage", "")
         status = meta.get("status", "")
-        status_color = {
-            "idea": "dim",
-            "early_mvp": "yellow",
-            "mvp": "green",
-            "live": "bold green",
-            "shelved": "dim red",
-        }.get(status, "")
+        part_of = meta.get("part_of", "") or ""
+
+        kind_c = kind_color_map.get(kind, "dim")
+        stage_c = stage_color_map.get(stage, "")
+        status_c = status_color_map.get(status, "")
 
         row = [
             slug,
             meta.get("title", ""),
-            f"[{status_color}]{status}[/{status_color}]" if status_color else status,
-            meta.get("mvp_stage", ""),
+            f"[{kind_c}]{kind or '—'}[/{kind_c}]",
+            f"[{stage_c}]{stage}[/{stage_c}]" if stage_c else stage or "—",
+            part_of,
+            f"[{status_c}]{status}[/{status_c}]" if status_c else status,
         ]
         if has_any_slice:
             slice_val = meta.get("current_slice", "")
-            # Truncate for table readability
             if len(slice_val) > 30:
                 slice_val = slice_val[:27] + "..."
             row.append(f"[yellow]{slice_val}[/yellow]" if slice_val else "")
-        row.extend([
-            f"{meta.get('cost_sek', 0):,}",
-            f"{meta.get('value_sek', 0):,}",
-            f"{meta.get('roi_percent', 0)}%",
-        ])
+        if has_any_cost:
+            cost = meta.get("cost_sek", 0) or 0
+            value = meta.get("value_sek", 0) or 0
+            roi = meta.get("roi_percent", 0) or 0
+            row.extend([
+                f"{cost:,}",
+                f"{value:,}",
+                f"{roi}%",
+            ])
         table.add_row(*row)
 
     console.print(table)
