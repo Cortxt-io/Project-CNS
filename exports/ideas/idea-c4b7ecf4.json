@@ -4,5 +4,6 @@
   "created_at": "2026-06-08T22:55:30",
   "source": "chat",
   "slug": "cns-core",
-  "status": "open"
+  "status": "promoted",
+  "promoted_to": "quest-13dbeedf"
 }
