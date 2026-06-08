@@ -4,5 +4,6 @@
   "created_at": "2026-06-08T21:44:07",
   "source": "chat",
   "slug": "cns-mcp",
-  "status": "open"
+  "status": "promoted",
+  "promoted_to": "quest-3f0fda81"
 }
