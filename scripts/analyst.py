@@ -27,10 +27,23 @@ from scripts.validator import (
 ANTHROPIC_ENDPOINT = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_MODEL = "claude-sonnet-4-5"
 
-ALLOWED_FIELDS = {
+# Fields the analyst may propose for kind-aware nodes (component/system/framework)
+NODE_MODEL_FIELDS = {
+    "stage", "status", "risks", "summary",
+}
+
+# Legacy fields only proposed for product nodes (kind=None)
+LEGACY_FIELDS = {
     "mvp_stage", "status", "current_slice", "roi_percent",
     "value_sek", "cost_sek", "risks", "summary",
 }
+
+
+def _allowed_fields_for(kind: str | None) -> set[str]:
+    """Return the set of analyst-proposable fields based on node kind."""
+    if kind is not None:
+        return NODE_MODEL_FIELDS
+    return LEGACY_FIELDS
 
 console = Console()
 
@@ -239,8 +252,36 @@ def _build_system_prompt() -> str:
     )
 
 
-def _build_user_prompt(context: str, devwatch_context: str = "") -> str:
-    schema = """{
+def _build_user_prompt(context: str, devwatch_context: str = "", kind: str | None = None) -> str:
+    if kind is not None:
+        # Kind-aware node prompt (component nodes)
+        schema = """{
+  "suggestions": {
+    "stage": "building" | null,
+    "status": "early_mvp" | null,
+    "risks": [
+      {
+        "category": "technical",
+        "description": "string",
+        "score": 8,
+        "probability": 2,
+        "impact": 4,
+        "mitigation": "string or null"
+      }
+    ] | null,
+    "summary": "string" | null
+  },
+  "reasoning": {
+    "stage": "Motivering för ändringen..." | null,
+    "status": "Motivering för ändringen..." | null,
+    "risks": "Motivering..." | null,
+    "summary": "Motivering..." | null
+  },
+  "overall": "Övergripande bedömning av projektet."
+}"""
+    else:
+        # Legacy product node prompt
+        schema = """{
   "suggestions": {
     "mvp_stage": "solution_test" | null,
     "status": "early_mvp" | null,
@@ -283,6 +324,36 @@ def _build_user_prompt(context: str, devwatch_context: str = "") -> str:
             f"att gissa från statiskt innehåll."
         )
 
+    if kind is not None:
+        # Kind-aware node: only stage/status/risks/summary
+        return (
+            f"Här är en komponentnod (kind={kind}):\n\n"
+            f"---\n{context}\n---"
+            f"{devwatch_section}\n\n"
+            f"Du har tillgång till hela projektmappen ovan, inklusive planning-, notes- och research-filer. "
+            f"Basera dina förslag på allt material, men prioritera devwatch-aktiviteten om den finns.\n\n"
+            f"Giltiga status-värden: {sorted(VALID_STATUSES)}\n"
+            f"Giltiga stage-värden: {sorted(VALID_STAGES)}\n"
+            f"Giltiga risk_categories: {sorted(VALID_RISK_CATEGORIES)}\n"
+            f"Risk-schema: probability (1-5) × impact (1-5) = score (1-25). "
+            f"Om du kan bedöma probability och impact separat, gör det. Annars behåll gammalt score-format (1-5). "
+            f"Mitigation är en valfri text om hur risken kan hanteras.\n\n"
+            f"Förväntat JSON-svar:\n{schema}\n\n"
+            f"Analysera projektet ovan. Du får BARA föreslå dessa fält: stage, status, risks, summary. "
+            f"Föreslå INGA ekonomiska fält (cost_sek, value_sek, roi_percent) — de är deprecated. "
+            f"Föreslå INTE mvp_stage eller current_slice. "
+            f"För varje fält i \"suggestions\": om det redan ser korrekt "
+            f"och aktuellt ut, returnera null. Om det bör uppdateras, returnera "
+            f"det nya värdet. Null betyder \"inget förslag\". "
+            f"För risks-fältet: returnera null om riskerna redan ser korrekta "
+            f"och aktuella ut. Föreslå bara om du har nya eller väsentligt "
+            f"ändrade risker att tillföra. Returnera aldrig exakt samma risker "
+            f"som redan finns i projektet.\n\n"
+            f"I \"reasoning\": ge en kort motivering för varje föreslaget fält (null för fälten du inte föreslår). "
+            f"I \"overall\": ge en övergripande bedömning av projektets status och nästa steg."
+        )
+
+    # Legacy product node prompt
     return (
         f"Här är ett MVP-projekt:\n\n"
         f"---\n{context}\n---"
@@ -315,14 +386,20 @@ def _build_user_prompt(context: str, devwatch_context: str = "") -> str:
 # ---------------------------------------------------------------------------
 
 
-def _parse_response(raw: str) -> tuple[dict[str, Any], dict[str, str], str]:
+def _parse_response(raw: str, kind: str | None = None) -> tuple[dict[str, Any], dict[str, str], str]:
     """Parse Claude response into (suggestions, reasoning, overall).
+
+    Args:
+        raw: Raw JSON string from Claude.
+        kind: Node kind (None for legacy product nodes).
 
     Returns:
         suggestions: dict of non-null field suggestions (validated)
         reasoning: dict of per-field motivation strings
         overall: overall assessment string
     """
+    allowed_fields = _allowed_fields_for(kind)
+
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as exc:
@@ -341,14 +418,22 @@ def _parse_response(raw: str) -> tuple[dict[str, Any], dict[str, str], str]:
         raise RuntimeError(f"'suggestions' must be a dict, got {type(suggestions_raw)}")
 
     for key in suggestions_raw:
-        if key not in ALLOWED_FIELDS:
+        if key not in allowed_fields:
             raise RuntimeError(f"Unexpected field in suggestions: '{key}'")
 
     # Validate enum fields in suggestions
-    if suggestions_raw.get("mvp_stage") is not None and suggestions_raw["mvp_stage"] not in VALID_MVP_STAGES:
-        raise RuntimeError(
-            f"Invalid mvp_stage '{suggestions_raw['mvp_stage']}'. Valid: {sorted(VALID_MVP_STAGES)}"
-        )
+    if kind is not None:
+        # Kind-aware node: validate stage enum
+        if suggestions_raw.get("stage") is not None and suggestions_raw["stage"] not in VALID_STAGES:
+            raise RuntimeError(
+                f"Invalid stage '{suggestions_raw['stage']}'. Valid: {sorted(VALID_STAGES)}"
+            )
+    else:
+        # Legacy node: validate mvp_stage enum
+        if suggestions_raw.get("mvp_stage") is not None and suggestions_raw["mvp_stage"] not in VALID_MVP_STAGES:
+            raise RuntimeError(
+                f"Invalid mvp_stage '{suggestions_raw['mvp_stage']}'. Valid: {sorted(VALID_MVP_STAGES)}"
+            )
 
     if suggestions_raw.get("status") is not None and suggestions_raw["status"] not in VALID_STATUSES:
         raise RuntimeError(
@@ -392,7 +477,7 @@ def _parse_response(raw: str) -> tuple[dict[str, Any], dict[str, str], str]:
         raise RuntimeError(f"'reasoning' must be a dict, got {type(reasoning_raw)}")
 
     for key in reasoning_raw:
-        if key not in ALLOWED_FIELDS:
+        if key not in allowed_fields:
             raise RuntimeError(f"Unexpected field in reasoning: '{key}'")
         if reasoning_raw[key] is not None and not isinstance(reasoning_raw[key], str):
             raise RuntimeError(f"Reasoning for '{key}' must be a string or null")
@@ -454,10 +539,10 @@ def run_analyze(
             console.print(f"[dim]Devwatch context length: {len(devwatch_context)} characters[/dim]")
 
     system_prompt = _build_system_prompt()
-    user_prompt = _build_user_prompt(context, devwatch_context)
+    user_prompt = _build_user_prompt(context, devwatch_context, kind=kind)
 
     ai_raw = _call_claude(system_prompt, user_prompt)
-    suggestions, reasoning, overall = _parse_response(ai_raw)
+    suggestions, reasoning, overall = _parse_response(ai_raw, kind=kind)
 
     # After parsing suggestions, filter out no-op suggestions
     try:

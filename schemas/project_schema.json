@@ -10,16 +10,10 @@
       "type": "object",
       "properties": {
         "title":              { "type": ["string", "null"] },
+        "slug":               { "type": ["string", "null"] },
         "status":             { "enum": ["idea", "early_mvp", "mvp", "live", "shelved", null] },
         "tags":               { "type": ["array", "null"] },
-        "cost_sek":           { "type": ["number", "null"] },
-        "value_sek":          { "type": ["number", "null"] },
-        "roi_percent":        { "type": ["number", "null"] },
-        "mvp_stage":          { "enum": ["hypothesis", "problem_interviews", "solution_test", "demand_test", "launch", null] },
         "summary":            { "type": ["string", "null"] },
-        "family":             { "enum": ["developer-tools", "digest-pipeline", "internal-monitoring", "cns-core", "ideas", null] },
-        "url_live":           { "type": ["string", "null"] },
-        "url_repo":           { "type": ["string", "null"] },
         "kind":              { "enum": ["component", "system", "framework", null] },
         "stage":             { "enum": ["idea", "building", "working", "maturing", null] },
         "part_of":           { "type": ["string", "null"] },
@@ -27,7 +21,6 @@
         "depends_on":        { "type": ["array", "null"], "items": { "type": "string" } },
         "primary_audience":   { "type": ["string", "null"] },
         "secondary_audience": { "type": ["string", "null"] },
-        "why_buy_not_build":  { "type": ["array", "null"], "maxItems": 3 },
         "risks": {
           "type": ["array", "null"],
           "items": {

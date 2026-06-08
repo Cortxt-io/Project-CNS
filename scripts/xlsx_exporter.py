@@ -99,9 +99,15 @@ def export_xlsx() -> Path:
         ws.cell(row=row_idx, column=7, value=_extract_audience(audience_text, "Secondary"))
         ws.cell(row=row_idx, column=8, value=_join_list_items(sections.get("Assumptions to Validate", "")))
         ws.cell(row=row_idx, column=9, value=_join_list_items(sections.get("Why Buy Instead of Build?", "")))
-        ws.cell(row=row_idx, column=10, value=meta.get("cost_sek", 0))
-        ws.cell(row=row_idx, column=11, value=meta.get("value_sek", 0))
-        ws.cell(row=row_idx, column=12, value=meta.get("roi_percent", 0))
+        kind = meta.get("kind")
+        if kind is None:
+            ws.cell(row=row_idx, column=10, value=meta.get("cost_sek", 0))
+            ws.cell(row=row_idx, column=11, value=meta.get("value_sek", 0))
+            ws.cell(row=row_idx, column=12, value=meta.get("roi_percent", 0))
+        else:
+            ws.cell(row=row_idx, column=10, value=meta.get("stage", ""))
+            ws.cell(row=row_idx, column=11, value=meta.get("kind", ""))
+            ws.cell(row=row_idx, column=12, value="")  # No ROI for kind-aware
         ws.cell(row=row_idx, column=13, value=_top_risk(sections.get("Risk Assessment", "")))
         ws.cell(row=row_idx, column=14, value=str(meta.get("updated", "")))
 

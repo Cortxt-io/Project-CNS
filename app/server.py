@@ -44,7 +44,7 @@ from app.git_ops import (  # noqa: E402
     push_file_immediately,
     read_file_from_github,
 )
-from scripts.analyst import load_pending_suggestions, run_analyze  # noqa: E402
+from scripts.analyst import load_pending_suggestions, run_analyze, _call_claude, _read_project_context, _get_devwatch_context  # noqa: E402
 from scripts.portfolio_brief import run_portfolio_brief  # noqa: E402
 from scripts.json_exporter import export_json  # noqa: E402
 from scripts.devwatch import run_devwatch, DevwatchError  # noqa: E402
@@ -1317,7 +1317,7 @@ def api_project_update(slug):
         return jsonify({"status": "error", "message": "fields required"}), 400
 
     EDITABLE_FIELDS = {
-        "status", "mvp_stage", "current_slice", "summary",
+        "status", "stage", "mvp_stage", "current_slice", "summary",
         "cost_sek", "value_sek", "roi_percent", "url_live", "url_repo", "tags"
     }
 
@@ -1347,6 +1347,53 @@ def api_project_update(slug):
 
     except FileNotFoundError:
         return jsonify({"status": "error", "message": f"Project '{slug}' not found"}), 404
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
+@app.route("/api/project/<slug>/suggest-quest", methods=["POST"])
+@auth.login_required
+def api_suggest_quest(slug):
+    """Generate a quest suggestion for a specific node using Claude."""
+    if not is_admin():
+        return jsonify({"status": "error", "message": "Admin required"}), 403
+
+    try:
+        meta, sections, raw = read_project(slug)
+    except FileNotFoundError:
+        return jsonify({"status": "error", "message": "Project not found"}), 404
+
+    try:
+        context = _read_project_context(slug)
+        devwatch_context = _get_devwatch_context(slug)
+
+        system_prompt = (
+            "Du är en teknisk projektplanerare. "
+            "Givet nodens kontext, föreslå ETT quest som bör göras härnäst. "
+            "Returnera ENDAST giltig JSON: {\"title\": \"...\", \"description\": \"...\", \"estimated_impact\": \"...\"}"
+        )
+
+        user_prompt = f"Projektkontext:\n\n{context}"
+        if devwatch_context:
+            user_prompt += f"\n\nSenaste ändringar (devwatch):\n\n{devwatch_context}"
+
+        ai_raw = _call_claude(system_prompt, user_prompt, max_tokens=1024)
+        result = json.loads(ai_raw)
+
+        # Validate required keys
+        for key in ("title", "description", "estimated_impact"):
+            if not result.get(key) or not isinstance(result[key], str) or not result[key].strip():
+                return jsonify({"status": "error", "message": f"Missing or empty field: {key}"}), 500
+
+        if len(result["title"]) > 120:
+            result["title"] = result["title"][:120]
+
+        return jsonify({
+            "title": result["title"].strip(),
+            "description": result["description"].strip(),
+            "estimated_impact": result["estimated_impact"].strip(),
+        })
+
     except Exception as exc:
         return jsonify({"status": "error", "message": str(exc)}), 500
 

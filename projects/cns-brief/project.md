@@ -1,34 +1,23 @@
 ---
-cost_sek: 3000
-created: '2026-05-27'
-depends_on: []
-family: cns-core
-feeds: []
-kind: component
-layer: pipeline
-mvp_stage: solution_test
-part_of: pipeline-intern
-pipeline: pipeline-intern
-roi_percent: 567
+created: '2026-06-07'
+updated: '2026-06-08'
 slug: cns-brief
+title: CNS Brief
+kind: component
+part_of: pipeline-intern
 stage: working
 status: early_mvp
-summary: AI-driven portföljbrief som analyserar hela portföljen och föreslår dagens
-  quest och prioriteringar baserat på devwatch, devlog och pending AI-förslag.
-tags:
-- python
-- claude
-- portfolio
-- decision-support
-- dashboard
-title: CNS Brief
-updated: '2026-05-27'
-url_live: https://app.cortxt.io
+feeds: []
+depends_on: []
+summary: AI-driven portföljbrief som varje morgon returnerar situation, prioriteringar och questförslag.
+tags: []
+url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS
-value_sek: 20000
 ---
 
 ## Syfte
+
+AI-driven portföljbrief som varje morgon läser hela portföljen (project.md + devwatch + devlog + pending förslag) och returnerar situation, prioriteringar, blockers och ett konkret questförslag. Visas som startsida i dashboarden.
 
 ## Beroenden
 
@@ -38,43 +27,9 @@ value_sek: 20000
 
 ## Risker
 
+- **Adoption**: Risk att brief:en inte används dagligen och blir en engångsgrej.
+- **Technical**: Briefkvaliteten hänger helt på Claude-prompten och underlagets färskhet.
+
 ## Arbetslogg
 
 ## Anteckningar
-
-## Problem
-
-Portföljen har många projekt men inget system för att varje morgon veta vad som är viktigast att göra. Beslut fattas intuitivt utan att ta hänsyn till beroenden, pending förslag eller vad som faktiskt hände igår.
-
-## Solution
-
-portfolio_brief.py konsumerar hela portföljens data (project.md-filer, senaste devwatch-events, devlog-sammanfattning och pending AI-förslag) och skickar det till Claude som returnerar en strukturerad brief med situation, prioriteringar, blockers och ett konkret questförslag. Exponeras via /api/brief i Flask och visas som startsida i cortxt-dashboard-appen.
-
-## Target Audience
-
-**Primary:** Mig själv — portföljägare som vill starta varje dag med ett tydligt beslut istället för att orientera sig manuellt.
-
-## Assumptions to Validate
-
-- Claude kan ge meningsfulla handlingsbara prioriteringar baserat på portföljdata + devwatch + devlog.
-- Quest-förslagen är relevanta nog att faktiskt användas som underlag för Qoder-prompts.
-- "Visa underlag"-funktionen ger tillräcklig transparens för att lita på brief:en.
-- Daglig användning av brief:en minskar tid på orientering och ökar fokus på execution.
-
-## Why Buy Instead of Build?
-
-- En AI-driven portföljbrief kan se beroenden och mönster som är svåra att se manuellt.
-- Eliminerar den dagliga orienteringsfasen — direkt till beslut och execution.
-- Grunden för framtida MCP-integration där agenter kan konsumera brief:en direkt.
-
-## MVP Steps
-
-- [x] Hypothesis: portfolio_brief.py kan generera en brief med situation, prioriteringar och questförslag.
-- [x] Solution test: brief:en visas som startsida i cortxt-dashboard och genereras on-demand.
-- [ ] Demand test: används brief:en faktiskt varje morgon för att fatta beslut?
-- [ ] Launch: brief:en inkluderar devlog + devwatch som kontext, push-till-planning fungerar, underlag visas.
-
-## Cost Estimate
-
-3 000 SEK (ca 12h × 250 kr/h) — portfolio_brief.py
-"" 

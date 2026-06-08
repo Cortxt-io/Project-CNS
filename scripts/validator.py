@@ -10,11 +10,8 @@ from jsonschema import ValidationError, validate
 
 SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schemas" / "project_schema.json"
 
-# Required frontmatter fields for a valid project
-REQUIRED_FM_FIELDS = [
-    "title", "slug", "status", "mvp_stage",
-    "cost_sek", "value_sek", "roi_percent",
-]
+# REMOVED during node-model migration (all nodes now have kind set):
+# REQUIRED_FM_FIELDS for legacy product nodes is no longer needed.
 
 # Allowed enum values
 VALID_STATUSES = {"idea", "early_mvp", "mvp", "live", "shelved"}
@@ -24,6 +21,9 @@ VALID_RISK_CATEGORIES = {"technical", "market", "legal", "ops", "competition", "
 # Node model enums (Quest A — optional fields)
 VALID_KINDS = {"component", "system", "framework"}
 VALID_STAGES = {"idea", "building", "working", "maturing"}
+
+# Legacy enum constants kept for reference but no longer validated:
+# VALID_LAYERS, VALID_PIPELINES, VALID_FAMILIES
 
 VALID_LAYERS = {
     "pipeline",
@@ -38,7 +38,6 @@ VALID_PIPELINES = {
     "pipeline-review",
 }
 
-# Behåll för bakåtkompatibilitet
 VALID_FAMILIES = {
     "developer-tools", "digest-pipeline", "internal-monitoring",
     "cns-core", "ideas", "cns-platform", "monitoring-pipeline",
@@ -81,17 +80,11 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
     kind = meta.get("kind")  # None for legacy product nodes
 
     # 1. Required frontmatter fields
-    #    For component/system/framework nodes, product fields are optional.
-    #    Legacy nodes (kind=None) must still satisfy all product requirements.
-    if kind is None:
-        for field in REQUIRED_FM_FIELDS:
-            if field not in meta:
-                errors.append(f"Missing frontmatter field: {field}")
-    else:
-        # Nodes with a kind still need title and slug
-        for field in ("title", "slug"):
-            if field not in meta:
-                errors.append(f"Missing frontmatter field: {field}")
+    #    All nodes now have kind set — require title and slug.
+    #    (Legacy REQUIRED_FM_FIELDS check removed during node-model migration.)
+    for field in ("title", "slug"):
+        if field not in meta:
+            errors.append(f"Missing frontmatter field: {field}")
 
     # 2. Enum checks
     status = meta.get("status")
@@ -106,26 +99,7 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
             f"Invalid mvp_stage '{mvp_stage}'. Allowed: {', '.join(sorted(VALID_MVP_STAGES))}"
         )
 
-    # 2b. Family enum check
-    family = meta.get("family")
-    if family is not None and family not in VALID_FAMILIES:
-        errors.append(
-            f"Invalid family '{family}'. Allowed: {', '.join(sorted(VALID_FAMILIES))}"
-        )
-
-    # 2c. Layer enum check
-    layer = meta.get("layer")
-    if layer is not None and layer not in VALID_LAYERS:
-        errors.append(
-            f"Invalid layer '{layer}'. Allowed: {', '.join(sorted(VALID_LAYERS))}"
-        )
-
-    # 2d. Pipeline enum check
-    pipeline = meta.get("pipeline")
-    if pipeline is not None and pipeline not in VALID_PIPELINES:
-        errors.append(
-            f"Invalid pipeline '{pipeline}'. Allowed: {', '.join(sorted(VALID_PIPELINES))}"
-        )
+    # (Legacy family/layer/pipeline enum checks removed during node-model migration.)
 
     # 2e. Kind enum check (optional field)
     if kind is not None and kind not in VALID_KINDS:
@@ -146,23 +120,7 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
         if heading not in sections:
             errors.append(f"Missing section: ## {heading}")
 
-    # 4. ROI consistency (only for legacy product nodes)
-    if kind is None:
-        cost = meta.get("cost_sek", 0)
-        value = meta.get("value_sek", 0)
-        roi = meta.get("roi_percent", 0)
-        if isinstance(cost, (int, float)) and isinstance(value, (int, float)) and isinstance(roi, (int, float)):
-            if cost > 0:
-                expected_roi = round((value - cost) / cost * 100)
-                if roi != expected_roi:
-                    errors.append(
-                        f"ROI mismatch: roi_percent={roi} but calculated "
-                        f"(value_sek - cost_sek) / cost_sek * 100 = {expected_roi}"
-                    )
-            elif cost == 0 and roi != 0:
-                errors.append(
-                    f"ROI mismatch: cost_sek=0 so roi_percent should be 0, got {roi}"
-                )
+    # (ROI consistency check removed — no legacy product nodes remain.)
 
     # 5. Risk category validation + new risk schema
     risk_text = sections.get("Risk Assessment", sections.get("Risker", sections.get("Systemrisker", "")))

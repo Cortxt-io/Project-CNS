@@ -1,31 +1,23 @@
 ---
-cost_sek: 2000
-created: '2026-05-19'
-depends_on: []
-family: cns-core
-feeds: []
-kind: component
-layer: infrastructure
-mvp_stage: solution_test
-part_of: infrastructure
-roi_percent: 650
+created: '2026-06-07'
+updated: '2026-06-08'
 slug: cns-hosting-infra
+title: CNS Hosting Infra
+kind: component
+part_of: infrastructure
 stage: working
 status: early_mvp
-summary: GitHub Actions-infrastruktur som kör hela CNS-pipelinen automatiskt utan
-  lokal dator.
-tags:
-- hosting
-- infrastructure
-- github-actions
-- static
-title: CNS Hosting Infra
-updated: '2026-05-19'
+feeds: []
+depends_on: []
+summary: GitHub Actions-infrastruktur som kör CNS-pipelinen schemalagt och publicerar outputs statiskt.
+tags: []
+url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS
-value_sek: 15000
 ---
 
 ## Syfte
+
+GitHub Actions-infrastruktur som kör hela CNS-pipelinen schemalagt och publicerar alla outputs statiskt — portföljen lever utan att en lokal dator är igång.
 
 ## Beroenden
 
@@ -35,51 +27,9 @@ value_sek: 15000
 
 ## Risker
 
+- **Technical**: Snapshot-storage via git kan bli klumpigt vid stora diffs.
+- **Ops**: GitHub Actions cron är inte garanterat exakt, kan försenas.
+
 ## Arbetslogg
 
 ## Anteckningar
-
-## Problem
-
-Alla projekt kräver manuella kommandon och en lokal dator för att köra. Inget kör automatiskt.
-
-## Solution
-
-GitHub Actions för schemalagda körningar, statisk hosting för alla outputs, ingen lokal server behövs.
-
-## Target Audience
-
-**Primary:** Mig själv
-
-## Assumptions to Validate
-
-- GitHub Actions cron räcker för daglig körning av DocsWatch och Changelog Engine Mini
-- Statisk hosting (GitHub Pages) räcker för alla tre outputs i MVP
-- Snapshot-storage för DocsWatch kan lösas via git commit i samma repo
-- Migrering till egen server senare kräver ingen kodändring, bara ny trigger
-
-## Why Buy Instead of Build?
-
-## MVP Steps
-
-- [x] Inventera repos: bekräfta att DocsWatch och Changelog Engine Mini har egna GitHub-repos
-- [x] Sätt upp GitHub Actions workflow för DocsWatch (daglig cron, committar snapshots)
-- [x] Sätt upp GitHub Actions workflow för Changelog Engine Mini (triggas efter DocsWatch)
-- [x] Publicera Dashboard på GitHub Pages
-- [x] Verifiera att alla tre outputs är tillgängliga via URL utan lokal dator
-
-## Cost Estimate
-
-## Value Estimate
-
-## ROI
-
-## Risk Assessment
-
-- **Technical** (score 2/5): DocsWatch snapshot-storage via git kan bli klumpigt vid stora diffs
-- **Ops** (score 2/5): GitHub Actions cron är inte garanterat exakt – kan vara försenat upp till 15 min
-- **Technical** (score 1/5): Privata repos kostar Actions-minuter, men dagliga jobb ryms inom gratiskvoten
-
-## Timeline
-
-## Notes

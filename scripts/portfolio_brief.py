@@ -60,7 +60,7 @@ def _build_portfolio_context(
         status = meta.get("status", "")
         mvp_stage = meta.get("mvp_stage", "")
         updated = meta.get("updated", "")
-        roi = meta.get("roi_percent", "")
+        stage = meta.get("stage", "")
         # Check if project has pending suggestions
         has_pending = any(p["slug"] == slug for p in pending)
         pending_note = ""
@@ -69,7 +69,7 @@ def _build_portfolio_context(
             fields = list(p_item.get("suggestions", {}).keys())
             pending_note = f" | ja ({len(fields)} förslag: {', '.join(fields[:5])})"
         lines.append(
-            f"[{slug}] {title} | {status} | {mvp_stage} | roi={roi}% | updated={updated}{pending_note}"
+            f"[{slug}] {title} | {status} | {mvp_stage} | stage={stage} | updated={updated}{pending_note}"
         )
     lines.append("")
 

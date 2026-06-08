@@ -1,4 +1,4 @@
-# cortxt-dashboard-app / decisions
+# Beslut — Cortxt Dashboard App
 
 ## 2026-05-27 — HashRouter istället för BrowserRouter
 
@@ -32,3 +32,21 @@
 **Beslut:** Graph-vyn visar noder grupperade per family utan edges.
 
 **Skäl:** Beroendekartan kräver maskinläsbar edge-data i project.md som inte finns än. Edges läggs till i v2.
+
+---
+
+## Cloudflare Pages-byte
+
+**Beslut:** Deployer React SPA via Cloudflare Pages istället för GitHub Pages.
+
+**Skäl:** GitHub Pages tillåter bara en Pages-publicering per repo. cortxt-repot behöver två separata custom domains (cortxt.io och app.cortxt.io). Cloudflare Pages stöder detta utan extra repos.
+
+**Konsekvens:** deploy-landing.yml i cortxt kan inaktiveras. DNS för cortxt.io flyttad från Porkbun till Cloudflare nameservers.
+
+---
+
+## DNS-flytt: Porkbun → Cloudflare
+
+**Beslut:** cortxt.io (landing) och app.cortxt.io (dashboard) är ett enda Cloudflare Pages-projekt med två custom domains, inte två separata projekt. DNS hanteras av Cloudflare (nameservers bytta från Porkbun 2026-05-27).
+
+**Skäl:** Enklare att underhålla, en deploy-pipeline, ett repo. Cloudflare ger global CDN, HTTPS och noll driftkostnad.

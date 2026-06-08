@@ -1,33 +1,23 @@
 ---
-cost_sek: 3000
-created: 2026-05-05
-current_slice: Step 4 — Markdown & HTML renderers
-depends_on: []
-family: digest-pipeline
-feeds: []
-kind: component
-layer: pipeline
-mvp_stage: solution_test
-part_of: pipeline-extern
-pipeline: pipeline-extern
-roi_percent: 300
+created: '2026-06-07'
+updated: '2026-06-08'
 slug: dev-changelog-engine-mini
+title: Dev Changelog Engine Mini
+kind: component
+part_of: pipeline-extern
 stage: working
 status: early_mvp
-summary: Omvandlar DocsWatch-data till prioriterade veckodigest i Markdown och HTML.
-tags:
-- typescript
-- nodejs
-- docswatch
-- digest
-title: Dev Changelog Engine Mini
-updated: '2026-05-27'
-url_live: https://rian010194.github.io/dev-changelog-engine-mini/
+feeds: []
+depends_on: []
+summary: Pipeline that transforms DocsWatch data into prioritized weekly digests in Markdown and HTML.
+tags: []
+url_live: ''
 url_repo: https://github.com/rian010194/dev-changelog-engine-mini
-value_sek: 12000
 ---
 
 ## Syfte
+
+Pipeline som omvandlar DocsWatch-data till prioriterade veckodigest i Markdown och HTML — scorar ändringar efter relevans och renderar en läsbar sammanfattning.
 
 ## Beroenden
 
@@ -37,61 +27,8 @@ value_sek: 12000
 
 ## Risker
 
+- **Technical**: LLM-sammanfattningens kvalitet hänger på prompt-engineering.
+
 ## Arbetslogg
 
 ## Anteckningar
-
-## Problem
-
-Raw change data from DocsWatch is technical and unreadable for quick consumption. There is no automated way to turn monitored site changes into a concise, human-friendly weekly digest.
-
-## Solution
-
-A pipeline that ingests DocsWatch exports, scores changes by relevance, and renders prioritized weekly digests in Markdown and static HTML.
-
-## Target Audience
-
-- Myself (portfolio/learning project)
-- Developers who follow documentation changes and want summarized updates
-
-## Assumptions to Validate
-
-- DocsWatch export format is stable enough to build on
-- Heuristic scoring provides useful prioritization without ML
-- Weekly cadence is the right default for digests
-
-## Why Buy Instead of Build?
-
-## MVP Steps
-
-- [x] Repository skeleton & ChangeEvent schema
-- [x] DocsWatch adapter (data ingestion)
-- [x] Scoring heuristics (prioritize changes)
-- [x] Markdown & HTML renderer
-- [ ] LLM summarizer (concise descriptions)
-- [ ] GitHub Pages publishing
-
-## Cost Estimate
-
-~3000 SEK (development time, no infrastructure costs — runs locally with Node.js)
-
-## Value Estimate
-
-~12000 SEK (portfolio value, automation of manual digest writing, reusable pipeline pattern)
-
-## ROI
-
-(12000 - 3000) / 3000 = 300%
-
-## Risk Assessment
-
-- **Technical** (score 3/5): LLM summarization quality depends on prompt engineering
-
-## Timeline
-
-## Notes
-
-- Consumes DocsWatch data but does NOT duplicate its monitoring
-- Boundary: DocsWatch watches, this engine summarizes
-- Tech stack: TypeScript, Commander.js, Node.js
-- Design principle: "AI is a component, not the product"

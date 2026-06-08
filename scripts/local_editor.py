@@ -226,9 +226,15 @@ def run_local_edit(
         elif field == "family":
             changes["family"] = _ask_family(meta, console)
         elif field == "cost_sek":
-            changes["cost_sek"] = _ask_number("cost_sek", meta, console)
+            if meta.get("kind") is None:
+                changes["cost_sek"] = _ask_number("cost_sek", meta, console)
+            else:
+                console.print("  [yellow]cost_sek not applicable for kind-aware nodes. Use 'stage' instead.[/yellow]")
         elif field == "value_sek":
-            changes["value_sek"] = _ask_number("value_sek", meta, console)
+            if meta.get("kind") is None:
+                changes["value_sek"] = _ask_number("value_sek", meta, console)
+            else:
+                console.print("  [yellow]value_sek not applicable for kind-aware nodes. Use 'stage' instead.[/yellow]")
         elif field == "primary_audience":
             changes["primary_audience"] = _ask_text("primary_audience", "Primary Audience", sections, console)
         elif field == "secondary_audience":
@@ -260,14 +266,16 @@ def run_local_edit(
             if val:
                 changes["depends_on"] = val
 
-    # Auto-compute ROI if cost or value changed
-    cost = changes.get("cost_sek", meta.get("cost_sek", 0))
-    value = changes.get("value_sek", meta.get("value_sek", 0))
-    if "cost_sek" in changes or "value_sek" in changes:
-        if cost > 0:
-            changes["roi_percent"] = round((value - cost) / cost * 100)
-        else:
-            changes["roi_percent"] = 0
+    # Auto-compute ROI if cost or value changed (only for legacy kind=None nodes)
+    kind = meta.get("kind")
+    if kind is None:
+        cost = changes.get("cost_sek", meta.get("cost_sek", 0))
+        value = changes.get("value_sek", meta.get("value_sek", 0))
+        if "cost_sek" in changes or "value_sek" in changes:
+            if cost > 0:
+                changes["roi_percent"] = round((value - cost) / cost * 100)
+            else:
+                changes["roi_percent"] = 0
 
     changes["updated_at"] = date.today().isoformat()
     return changes
