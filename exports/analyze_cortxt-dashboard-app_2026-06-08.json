@@ -1,0 +1,51 @@
+{
+  "slug": "cortxt-dashboard-app",
+  "analyzed_at": "2026-06-08",
+  "suggestions": {
+    "mvp_stage": "demand_test",
+    "status": "mvp",
+    "current_slice": "Verifiera om app.cortxt.io faktiskt används som primär ingång till portföljen istället för terminalen eller vanilla JS-dashboarden",
+    "risks": [
+      {
+        "category": "technical",
+        "description": "Reactflow GroupNode-layout kräver manuell positionering — kan bli komplex om antalet projekt växer snabbt",
+        "probability": 2,
+        "impact": 2,
+        "score": 4,
+        "mitigation": "Implementera auto-layout algoritm för GroupNodes eller utvärdera alternativa graph-bibliotek om projekträkningen överstiger 30"
+      },
+      {
+        "category": "market",
+        "description": "Personligt verktyg med låg extern marknadsrisk",
+        "probability": 1,
+        "impact": 1,
+        "score": 1,
+        "mitigation": null
+      },
+      {
+        "category": "ops",
+        "description": "Cloudflare Pages är stabilt, Railway API kör redan",
+        "probability": 1,
+        "impact": 1,
+        "score": 1,
+        "mitigation": null
+      },
+      {
+        "category": "adoption",
+        "description": "Användaren (du) kan fortsätta föredra terminalen över webbappen, vilket gör hela investeringen meningslös",
+        "probability": 3,
+        "impact": 4,
+        "score": 12,
+        "mitigation": "Sätt upp mätbart demand test-kriterium: 'app.cortxt.io öppnas minst 3x/vecka i 2 veckor' före launch-godkännande"
+      }
+    ],
+    "updated_at": "2026-06-08"
+  },
+  "reasoning": {
+    "mvp_stage": "Projektet har alla tre vyer implementerade (portföljgrid, projektdetalj, graph-overlay) enligt v1-roadmap. Solution test-checkboxen i MVP Steps är markerad som ej klar, men koden är färdig och redo för deploy enligt devwatch-aktiviteten. Nästa logiska steg är demand_test: verifiera att appen faktiskt används enligt Timeline vecka 3 och 'Assumptions to Validate'.",
+    "status": "Projektets solution test-fas är klar enligt aktiviteten (alla komponenter, hooks och graph-vy implementerade). Custom domain app.cortxt.io planeras enligt Timeline vecka 2, och demand test är nästa steg. Status 'mvp' är mer korrekt än 'early_mvp' när lösningen är fullständig och redo för användarverifiering.",
+    "current_slice": "Timeline anger explicit att vecka 3 är demand test-fasen ('används appen faktiskt?'). Detta är den aktuella arbetsskivan efter att solution test-implementationen är klar enligt devwatch-aktiviteten.",
+    "risks": "Riskerna behöver konverteras till nytt schema med probability × impact. Den viktigaste saknade risken är adoption: projektet antar att du faktiskt kommer använda appen istället för terminalen, men detta är oprövat och står som explicit assumption att validera. Utan faktisk adoption blir hela 8 000 SEK-investeringen värdelös, vilket är en betydande risk för ett personligt verktyg."
+  },
+  "overall": "Projektet har lyckad teknisk implementation (alla v1-features klara enligt devwatch-aktivitet) men står nu vid kritisk brytpunkt: demand test. Nästa fas handlar inte om att bygga mer, utan att bevisa att du faktiskt använder appen. Utan mätbar adoption-data är risken hög att detta blir ett 'shelf-ware' projekt trots teknisk framgång. Föreslår tydligt definierat demand test-kriterium före launch-godkännande."
+}
