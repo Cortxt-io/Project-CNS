@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-06-07T09:56:05.789529",
+  "exported_at": "2026-06-08T11:50:08.046224",
   "version": "2.0",
   "projects": [
     {
@@ -359,7 +359,7 @@
       "depends_on": [],
       "layer": "interface",
       "pipeline": "",
-      "status": "early_mvp",
+      "status": "idea",
       "mvp_stage": "solution_test",
       "cost_sek": 8000,
       "value_sek": 35000,
@@ -373,7 +373,7 @@
         "dashboard"
       ],
       "created": "2026-05-27",
-      "updated": "2026-05-27",
+      "updated": "2026-06-08",
       "summary": "React SPA på app.cortxt.io som visualiserar CNS-portföljen via Railway Flask API. Portföljgrid, projektdetaljer och Reactflow graph-overlay.",
       "family": "cns-core",
       "url_live": "https://app.cortxt.io",
