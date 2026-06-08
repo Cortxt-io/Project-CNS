@@ -1,0 +1,14 @@
+{
+  "id": "quest-3f0fda81",
+  "slug": "cns-mcp",
+  "title": "Round-trip quest",
+  "description": "Testidé för round-trip-verifiering av idé-inkorgen",
+  "estimated_impact": "",
+  "status": "suggested",
+  "source": "idea",
+  "created_at": "2026-06-08",
+  "started_at": null,
+  "completed_at": null,
+  "result_summary": null,
+  "ci_status": null
+}
