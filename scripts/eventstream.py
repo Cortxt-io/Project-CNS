@@ -263,7 +263,7 @@ def normalize_push_event(payload: dict) -> list[dict]:
         )
 
         if not slugs:
-            # Global event when no project files touched
+            # Global event when no node files touched
             events.append(make_event(
                 what="push",
                 when=commit.get("timestamp", ""),
@@ -611,30 +611,30 @@ def run_sync(since: str | None = None) -> dict:
 
 
 def _slugs_from_files(files: list[str]) -> set[str]:
-    """Return project slugs touched by file paths.
+    """Return node slugs touched by file paths.
 
-    Matches paths like projects/<slug>/... extracted from commit file lists.
+    Matches paths like nodes/<slug>/... extracted from commit file lists.
     """
     slugs: set[str] = set()
     for f in files:
         parts = Path(f).parts
-        if len(parts) >= 2 and parts[0] == "projects":
+        if len(parts) >= 2 and parts[0] == "nodes":
             slugs.add(parts[1])
     return slugs
 
 
 def _known_slugs() -> set[str]:
-    """Return known project slugs from the projects/ directory."""
-    projects_dir = Path(__file__).resolve().parent.parent / "projects"
-    if not projects_dir.exists():
+    """Return known node slugs from the nodes/ directory."""
+    nodes_dir = Path(__file__).resolve().parent.parent / "nodes"
+    if not nodes_dir.exists():
         return set()
-    return {p.name for p in projects_dir.iterdir() if p.is_dir() and not p.name.startswith(".")}
+    return {p.name for p in nodes_dir.iterdir() if p.is_dir() and not p.name.startswith(".")}
 
 
 def _slug_from_message(message: str) -> str | None:
     """Best-effort slug detection from commit message.
 
-    Matches known project slugs as whole words. Used for CI backfill
+    Matches known node slugs as whole words. Used for CI backfill
     when file information is not available. Falska träffar är harmlösa —
     webhook ger sanningen i realtid, och dedup via event-ID förhindrar
     att heuristiken krockar med webhook-eventet.

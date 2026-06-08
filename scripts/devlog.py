@@ -119,13 +119,13 @@ def _build_prompt(events: list[dict]) -> str:
         why = event.get("why", "")
         how = event.get("how", "")
         meta = event.get("meta", {})
-        project_title = meta.get("project_title", slug)
+        node_title = meta.get("node_title", slug)
         stage_from = meta.get("stage_from")
         stage_to = meta.get("stage_to")
         changed_fields = meta.get("changed_fields", [])
 
         parts.append("---")
-        parts.append(f"Projekt: {project_title} (slug: {slug})")
+        parts.append(f"Projekt: {node_title} (slug: {slug})")
         parts.append(f"Händelsetyp: {what}")
         if stage_from is not None and stage_to is not None:
             parts.append(f"Stage-övergång: {stage_from} → {stage_to}")

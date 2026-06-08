@@ -1,4 +1,4 @@
-"""Quest workflow — manage active build state for CNS projects."""
+"""Quest workflow — manage active build state for CNS nodes."""
 
 from __future__ import annotations
 
@@ -9,10 +9,10 @@ from typing import Any
 import frontmatter
 
 from scripts.md_parser import (
-    project_dir,
-    project_path,
-    read_project,
-    write_project,
+    node_dir,
+    node_path,
+    read_node,
+    write_node,
     _parse_sections,
 )
 
@@ -33,8 +33,8 @@ _ADVANCED_STATUSES = {"mvp", "live"}
 # ---------------------------------------------------------------------------
 
 def mvp_scope_path(slug: str) -> Path:
-    """Return path to planning/mvp-scope.md for a project."""
-    return project_dir(slug) / "planning" / "mvp-scope.md"
+    """Return path to planning/mvp-scope.md for a node."""
+    return node_dir(slug) / "planning" / "mvp-scope.md"
 
 
 # ---------------------------------------------------------------------------
@@ -97,27 +97,27 @@ def new_mvp_scope_template(slug: str) -> tuple[dict[str, Any], dict[str, str]]:
 # ---------------------------------------------------------------------------
 
 def quest_init(slug: str) -> dict[str, Any]:
-    """Initialize quest for a project. Idempotent-safe.
+    """Initialize quest for a node. Idempotent-safe.
 
     Returns a dict describing what was done:
         {
             "scope_created": bool,
             "scope_existed": bool,
-            "project_updated": bool,
+            "node_updated": bool,
             "changes": list[str],
         }
     """
     result: dict[str, Any] = {
         "scope_created": False,
         "scope_existed": False,
-        "project_updated": False,
+        "node_updated": False,
         "changes": [],
     }
 
-    # Ensure project exists
-    ppath = project_path(slug)
+    # Ensure node exists
+    ppath = node_path(slug)
     if not ppath.exists():
-        raise FileNotFoundError(f"Project '{slug}' not found at {ppath}")
+        raise FileNotFoundError(f"Node '{slug}' not found at {ppath}")
 
     # --- mvp-scope.md ---
     scope_path = mvp_scope_path(slug)
@@ -129,15 +129,15 @@ def quest_init(slug: str) -> dict[str, Any]:
         result["scope_created"] = True
         result["changes"].append("Created planning/mvp-scope.md")
 
-    # --- project.md: ensure quest fields ---
-    proj_meta, proj_sections, _ = read_project(slug)
+    # --- node.md: ensure quest fields ---
+    proj_meta, proj_sections, _ = read_node(slug)
     updated = False
 
     # Add current_slice if missing
     if "current_slice" not in proj_meta:
         proj_meta["current_slice"] = ""
         updated = True
-        result["changes"].append("Added current_slice field to project.md")
+        result["changes"].append("Added current_slice field to node.md")
 
     # Upgrade status to early_mvp if still at 'idea'
     # (do NOT downgrade a more advanced status)
@@ -149,8 +149,8 @@ def quest_init(slug: str) -> dict[str, Any]:
 
     if updated:
         proj_meta["updated"] = date.today().isoformat()
-        write_project(slug, proj_meta, proj_sections)
-        result["project_updated"] = True
+        write_node(slug, proj_meta, proj_sections)
+        result["node_updated"] = True
 
     return result
 
@@ -160,7 +160,7 @@ def quest_init(slug: str) -> dict[str, Any]:
 # ---------------------------------------------------------------------------
 
 def quest_sync(slug: str) -> dict[str, Any]:
-    """Sync current_slice from mvp-scope.md back into project.md frontmatter.
+    """Sync current_slice from mvp-scope.md back into node.md frontmatter.
 
     Returns a dict describing what was done.
     """
@@ -185,14 +185,14 @@ def quest_sync(slug: str) -> dict[str, Any]:
 
     result["current_slice"] = first_line
 
-    # Update project.md
-    proj_meta, proj_sections, _ = read_project(slug)
+    # Update node.md
+    proj_meta, proj_sections, _ = read_node(slug)
     old_slice = proj_meta.get("current_slice", "")
 
     if old_slice != first_line:
         proj_meta["current_slice"] = first_line
         proj_meta["updated"] = date.today().isoformat()
-        write_project(slug, proj_meta, proj_sections)
+        write_node(slug, proj_meta, proj_sections)
         result["synced"] = True
 
     return result

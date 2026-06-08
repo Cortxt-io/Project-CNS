@@ -8,7 +8,7 @@ from datetime import date
 from pathlib import Path
 
 from scripts.analyst import _call_claude, _get_api_key, load_pending_suggestions
-from scripts.md_parser import read_all_projects
+from scripts.md_parser import read_all_nodes
 
 
 # ---------------------------------------------------------------------------
@@ -31,7 +31,7 @@ def _latest_export(pattern: str) -> Path | None:
 
 
 def _build_portfolio_context(
-    projects: list[tuple[dict, dict]],
+    nodes: list[tuple[dict, dict]],
     devwatch_events: list[dict],
     pending: list[dict],
     devlog_text: str = "",
@@ -41,7 +41,7 @@ def _build_portfolio_context(
     lines: list[str] = []
 
     # Aggregate metadata
-    all_meta = [meta for meta, _ in projects]
+    all_meta = [meta for meta, _ in nodes]
     total = len(all_meta)
     status_counts = Counter(m.get("status", "unknown") for m in all_meta)
     status_dist = ", ".join(f"{k}({v})" for k, v in sorted(status_counts.items()))
@@ -52,16 +52,16 @@ def _build_portfolio_context(
     lines.append(f"Status-fördelning: {status_dist}")
     lines.append("")
 
-    # Per-project summary
+    # Per-node summary
     lines.append("## Projekt")
-    for meta, _ in projects:
+    for meta, _ in nodes:
         slug = meta.get("slug", "")
         title = meta.get("title", slug)
         status = meta.get("status", "")
         mvp_stage = meta.get("mvp_stage", "")
         updated = meta.get("updated", "")
         stage = meta.get("stage", "")
-        # Check if project has pending suggestions
+        # Check if node has pending suggestions
         has_pending = any(p["slug"] == slug for p in pending)
         pending_note = ""
         if has_pending:
@@ -262,17 +262,17 @@ def run_portfolio_brief(output_path: Path | None = None) -> dict:
         Brief dict with situation, priorities, blockers, quest_suggestion,
         pending_recommendation, and generated_at.
     """
-    # 1. Read all projects
-    projects = read_all_projects()
-    if not projects:
-        raise RuntimeError("No projects in portfolio — cannot generate brief.")
+    # 1. Read all nodes
+    nodes = read_all_nodes()
+    if not nodes:
+        raise RuntimeError("No nodes in portfolio — cannot generate brief.")
 
     # 2. Read latest devwatch from GitHub
     from app.git_ops import read_file_from_github
 
     devwatch_events: list[dict] = []
     devwatch_raw = read_file_from_github(
-        "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+        "nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json"
     )
     if devwatch_raw:
         try:
@@ -283,7 +283,7 @@ def run_portfolio_brief(output_path: Path | None = None) -> dict:
 
     # 3. Read latest devlog from GitHub
     devlog_raw = read_file_from_github(
-        "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+        "nodes/project-vault-dashboard/dashboard/data/devlog_latest.html"
     )
     devlog_text = ""
     if devlog_raw:
@@ -297,7 +297,7 @@ def run_portfolio_brief(output_path: Path | None = None) -> dict:
     # 4b. Read eventstream events (primary signal)
     eventstream_events: list[dict] = []
     es_raw = read_file_from_github(
-        "projects/project-vault-dashboard/dashboard/data/eventstream_latest.json"
+        "nodes/project-vault-dashboard/dashboard/data/eventstream_latest.json"
     )
     if es_raw:
         try:
@@ -315,7 +315,7 @@ def run_portfolio_brief(output_path: Path | None = None) -> dict:
 
     # 5. Build portfolio context
     context = _build_portfolio_context(
-        projects, devwatch_events, pending, devlog_text,
+        nodes, devwatch_events, pending, devlog_text,
         eventstream_events=eventstream_events,
     )
 

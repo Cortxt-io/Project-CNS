@@ -34,8 +34,8 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Export projects.json
-        run: python cns.py export json --output projects/project-vault-dashboard/dashboard/data/projects.json
+      - name: Export nodes.json
+        run: python cns.py export json --output nodes/project-vault-dashboard/dashboard/data/nodes.json
 
       - name: Run devwatch
         run: |
@@ -47,7 +47,7 @@ jobs:
         run: |
           LATEST=$(ls exports/devwatch_[0-9]*.json 2>/dev/null | sort | tail -n 1)
           if [ -n "$LATEST" ]; then
-            cp "$LATEST" projects/project-vault-dashboard/dashboard/data/devwatch_latest.json
+            cp "$LATEST" nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json
             echo "Copied $LATEST"
           else
             echo "No devwatch export found — skipping"
@@ -69,7 +69,7 @@ jobs:
       - name: Copy latest eventstream export
         run: |
           if [ -f exports/eventstream_latest.json ]; then
-            cp exports/eventstream_latest.json projects/project-vault-dashboard/dashboard/data/eventstream_latest.json
+            cp exports/eventstream_latest.json nodes/project-vault-dashboard/dashboard/data/eventstream_latest.json
             echo "Copied eventstream_latest.json"
           else
             echo "No eventstream export found — skipping"
@@ -88,7 +88,7 @@ jobs:
           # Copy digest JSON (new primary output)
           LATEST_JSON=$(ls exports/devlog_[0-9]*.json 2>/dev/null | sort | tail -n 1)
           if [ -n "$LATEST_JSON" ]; then
-            cp "$LATEST_JSON" projects/project-vault-dashboard/dashboard/data/devlog_latest.json
+            cp "$LATEST_JSON" nodes/project-vault-dashboard/dashboard/data/devlog_latest.json
             echo "Copied $LATEST_JSON"
           else
             echo "No devlog JSON export found — skipping"
@@ -96,7 +96,7 @@ jobs:
           # Copy deprecated HTML (backwards compatibility)
           LATEST_HTML=$(ls exports/devlog_[0-9]*.html 2>/dev/null | sort | tail -n 1)
           if [ -n "$LATEST_HTML" ]; then
-            cp "$LATEST_HTML" projects/project-vault-dashboard/dashboard/data/devlog_latest.html
+            cp "$LATEST_HTML" nodes/project-vault-dashboard/dashboard/data/devlog_latest.html
             echo "Copied $LATEST_HTML"
           else
             echo "No devlog HTML export found — skipping"
@@ -106,15 +106,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add projects/project-vault-dashboard/dashboard/data/projects.json
-          git add projects/project-vault-dashboard/dashboard/data/devwatch_latest.json
+          git add nodes/project-vault-dashboard/dashboard/data/nodes.json
+          git add nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json
           git add exports/devlog_*.json || true
           git add exports/devlog_*.html || true
-          git add projects/project-vault-dashboard/dashboard/data/devlog_latest.json || true
-          git add projects/project-vault-dashboard/dashboard/data/devlog_latest.html || true
+          git add nodes/project-vault-dashboard/dashboard/data/devlog_latest.json || true
+          git add nodes/project-vault-dashboard/dashboard/data/devlog_latest.html || true
           git add exports/eventstream_*.jsonl || true
           git add exports/eventstream_latest.json || true
-          git add projects/project-vault-dashboard/dashboard/data/eventstream_latest.json || true
+          git add nodes/project-vault-dashboard/dashboard/data/eventstream_latest.json || true
           if git diff --cached --quiet; then
             echo "No changes"
           else
@@ -136,7 +136,7 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: projects/project-vault-dashboard/dashboard
+          path: nodes/project-vault-dashboard/dashboard
 
       - name: Deploy to GitHub Pages
         id: deployment

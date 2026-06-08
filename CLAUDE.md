@@ -3,7 +3,7 @@
 CNS-kärnan och backenden. Läs detta först varje session. Arbetsspråk: **svenska**.
 
 ## Vad det är
-CNS (Central Node Store): ett lokalt-först, Markdown-baserat system för att modellera och driva ett produktsystem från idé till drift. Varje nod = `projects/<slug>/project.md` (YAML-frontmatter + sektioner). **GitHub är källan till sanning.**
+CNS (Central Node Store): ett lokalt-först, Markdown-baserat system för att modellera och driva ett produktsystem från idé till drift. Varje nod = `nodes/<slug>/node.md` (YAML-frontmatter + sektioner). **GitHub är källan till sanning.**
 
 ## Nodmodellen (viktigast)
 Två ortogonala dimensioner per nod:
@@ -12,26 +12,27 @@ Två ortogonala dimensioner per nod:
 
 Tre relationer driver grafen: `part_of` (tillhörighet/nesting), `feeds` (dataflöde), `depends_on` (beroende).
 
-Filnamnet är **alltid `project.md`** oavsett kind — all kod globar `*/project.md`. Kind kan ändras utan att byta namn. Byt inte filnamn (kaskad i globs).
+Filnamnet är **alltid `node.md`** oavsett kind — all kod globar `*/node.md` (katalogen är `nodes/`, via `NODES_DIR` i `md_parser.py`). Kind kan ändras utan att byta filnamn. (Historik: hette tidigare `project.md` i `projects/` — bytt i branchen `rename-project-to-node`.)
 
 ## Repo-layout
 - `cns.py` — CLI-entrypoint
-- `scripts/md_parser.py` — läser/skriver project.md; kind-medvetna sektionsmallar (COMPONENT/SYSTEM/FRAMEWORK_SECTIONS)
+- `scripts/md_parser.py` — läser/skriver node.md; kind-medvetna sektionsmallar (COMPONENT/SYSTEM/FRAMEWORK_SECTIONS)
 - `scripts/validator.py` — schemavalidering (`cns validate <slug>`)
-- `scripts/json_exporter.py` — exporterar alla noder till projects.json
+- `scripts/json_exporter.py` — exporterar alla noder till nodes.json
 - `scripts/analyst.py` — AI-analys (anropar Claude via ANTHROPIC_API_KEY)
 - `scripts/portfolio_brief.py` — daglig portföljbrief
 - `scripts/quest_manager.py` — quest-livscykel
+- `scripts/idea_inbox.py` — idé-inkorg (lättviktig fångst under quests; `exports/ideas/<id>.json`, glob `idea-*.json`). Promote → `quest_manager.create_quest`.
 - `scripts/git_ops.py` — direkt GitHub API-push
 - `app/server.py` — Flask-backend (Railway)
 - `app/mcp_server.py` — MCP-server (FastMCP, GitHub OAuth, Redis token-store)
 - `app/asgi.py` — ASGI-entrypoint. **FastMCP är yttersta appen** och äger `/mcp` + OAuth-routes (`/.well-known/...`, `/authorize`, `/token`); Flask monteras *inuti* via `a2wsgi` som fallthrough (WSGI kan inte hålla ASGI, därför denna riktning). Kör med uvicorn-worker, inte sync-gunicorn. `/mcp` exponeras bara när OAuth är konfigurerat (annars 503) — annars vore en data-muterande endpoint öppen.
-- `schemas/project_schema.json` — JSON-schema
+- `schemas/node_schema.json` — JSON-schema
 - `skills/` — portabla konventioner (t.ex. cortxt-quests)
 
 ## Deploy & dataflöde
 - GitHub = sanning. AI-genererat innehåll pushas via **direkt GitHub API** (`git_ops.py`), inte till Railways efemära disk.
-- Backend på Railway: `https://project-cns-production.up.railway.app`. `/api/projects` kör `git_pull()` + `export_json()` live.
+- Backend på Railway: `https://project-cns-production.up.railway.app`. `/api/nodes` kör `git_pull()` + `export_json()` live.
 - Dashboarden (separat `cortxt`-repo på Vercel) proxar `/api/*` hit via sin `vercel.json`.
 - **En nod är inte "tillagd" förrän den är committad, pushad OCH exporterad.** Nya mappar måste `git add`:as explicit — `git commit -am` missar otrackade filer.
 
@@ -46,8 +47,8 @@ Efter quest-logiken loggas varje event till **eventstream (Redis)** via `scripts
 > Noden `github-webhook` *är* denna mottagare. `webhook-router` är ett fristående devtool — **inte** detta (namnkrock).
 
 **2. Utgående skrivningar (Flask/MCP → GitHub Contents API).** `app/git_ops.py` — använder REST `https://api.github.com`, **inte** `git`-subprocess (Railway saknar `.git/`). Env: `CNS_GITHUB_TOKEN` + `GITHUB_REPO`, branch `main`.
-- `push_file_immediately()` — huvudvägen: GET sha → PUT en fil. Anropas av nästan alla muterande endpoints i `server.py` (quest create/update/activate/complete/archive, projekt-edit, `export projects.json`) och av `mcp_server.py` `cortxt_complete_quest` (agent-initierad commit).
-- `git_commit_and_push()` — scannar `projects/`+`exports/` efter filer ändrade senaste 60 s.
+- `push_file_immediately()` — huvudvägen: GET sha → PUT en fil. Anropas av nästan alla muterande endpoints i `server.py` (quest create/update/activate/complete/archive, projekt-edit, `export nodes.json`) och av `mcp_server.py` `cortxt_complete_quest` (agent-initierad commit).
+- `git_commit_and_push()` — scannar `nodes/`+`exports/` efter filer ändrade senaste 60 s.
 - `delete_file_on_github()` — DELETE. `read_file_from_github()` — GET (läsning, se nedan).
 
 **3. Pollande läsning (CNS → GitHub API).** `scripts/eventstream.py` pollar `GET /repos/{repo}/commits` och `/actions/runs`. `read_file_from_github()` läser tillbaka genererad JSON (devwatch/devlog/eventstream) i `server.py` och `scripts/portfolio_brief.py`.

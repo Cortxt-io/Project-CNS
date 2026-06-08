@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Aktivitet – Project Vault{% endblock %}
+{% block title %}Aktivitet – CNS Vault{% endblock %}
 
 {% block content %}
 
@@ -29,7 +29,7 @@
   </div>
 </div>
 
-<!-- Section 2: Changed projects (devwatch) -->
+<!-- Section 2: Changed nodes (devwatch) -->
 <div class="mb-8">
   <h3 class="text-base font-bold text-slate-800 mb-3">Ändrade projekt</h3>
   <div class="space-y-3">
@@ -38,7 +38,7 @@
     <div class="bg-white border border-slate-200 rounded-lg shadow-sm p-4">
       <div class="flex flex-wrap items-start justify-between gap-2 mb-2">
         <div>
-          <a href="/project/{{ slug }}" class="font-semibold text-sm text-slate-800 hover:text-blue-600 transition-colors">{{ event.meta.project_title or slug }}</a>
+          <a href="/node/{{ slug }}" class="font-semibold text-sm text-slate-800 hover:text-blue-600 transition-colors">{{ event.meta.node_title or slug }}</a>
           <span class="text-xs text-slate-400 ml-2">{{ event.detectedAt }}</span>
         </div>
         {% if is_admin %}

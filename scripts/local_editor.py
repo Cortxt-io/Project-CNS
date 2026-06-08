@@ -1,4 +1,4 @@
-"""Interactive local editor for CNS project updates."""
+"""Interactive local editor for CNS node updates."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt, IntPrompt, Confirm
 
-SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schemas" / "project_schema.json"
+SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schemas" / "node_schema.json"
 
 # Fields offered in the interactive menu.
 MENU_FIELDS = [
@@ -282,16 +282,16 @@ def run_local_edit(
 
 
 # ---------------------------------------------------------------------------
-# New-project interview
+# New-node interview
 # ---------------------------------------------------------------------------
 
 
-def run_new_project_interview(
+def run_new_node_interview(
     meta: dict[str, Any],
     sections: dict[str, str],
     console: Console,
 ) -> tuple[dict[str, Any], dict[str, str]] | None:
-    """Run interactive interview for a new project.
+    """Run interactive interview for a new node.
 
     Prompts for essential fields (title, problem, solution, audience, tags).
     All prompts are skippable by pressing Enter.
@@ -301,7 +301,7 @@ def run_new_project_interview(
     """
     try:
         console.print()
-        console.print(f"[bold]Setting up project:[/bold] [cyan]{meta['slug']}[/cyan]")
+        console.print(f"[bold]Setting up node:[/bold] [cyan]{meta['slug']}[/cyan]")
         console.print("[dim]Press Enter to skip any field.[/dim]\n")
 
         # --- Kind (only if not already set) ---
@@ -359,30 +359,30 @@ def run_new_project_interview(
 
         # --- Summary panel ---
         console.print()
-        summary = _build_new_project_summary(meta, sections)
+        summary = _build_new_node_summary(meta, sections)
         console.print(Panel(
             summary,
-            title=f"[bold cyan]New Project: {meta['slug']}[/bold cyan]",
+            title=f"[bold cyan]New Node: {meta['slug']}[/bold cyan]",
             border_style="blue",
         ))
 
         # --- Confirmation ---
-        if not Confirm.ask("  Create project with these details?", default=True):
-            console.print("[yellow]  Cancelled — project will use blank template.[/yellow]")
+        if not Confirm.ask("  Create node with these details?", default=True):
+            console.print("[yellow]  Cancelled — node will use blank template.[/yellow]")
             return None
 
         return meta, sections
 
     except (KeyboardInterrupt, EOFError):
-        console.print("\n[yellow]  Interrupted — project will use blank template.[/yellow]")
+        console.print("\n[yellow]  Interrupted — node will use blank template.[/yellow]")
         return None
 
 
-def _build_new_project_summary(
+def _build_new_node_summary(
     meta: dict[str, Any],
     sections: dict[str, str],
 ) -> str:
-    """Format a summary string for the new-project confirmation panel."""
+    """Format a summary string for the new-node confirmation panel."""
     dim_empty = "[dim](empty)[/dim]"
 
     lines = [

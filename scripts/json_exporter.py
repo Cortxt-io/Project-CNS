@@ -1,4 +1,4 @@
-"""Export project data to JSON format."""
+"""Export node data to JSON format."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
-from scripts.md_parser import read_all_projects
+from scripts.md_parser import read_all_nodes
 
 EXPORTS_DIR = Path(__file__).resolve().parent.parent / "exports"
 
@@ -40,22 +40,22 @@ def _top_risk(section_text: str) -> str:
 
 
 def export_json(output_path: Optional[Path] = None) -> Path:
-    """Generate exports/projects.json from all project files.
+    """Generate exports/nodes.json from all node files.
 
     Returns the path to the generated file.
     """
     if output_path is None:
         EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
-        output_path = EXPORTS_DIR / "projects.json"
+        output_path = EXPORTS_DIR / "nodes.json"
     else:
         output_path = Path(output_path)
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    projects = read_all_projects()
+    nodes = read_all_nodes()
 
-    project_list = []
-    for meta, sections in projects:
-        project_list.append({
+    node_list = []
+    for meta, sections in nodes:
+        node_list.append({
             "slug": meta.get("slug", ""),
             "title": meta.get("title", ""),
             # Node-model fields (always exported, empty string/list if absent)
@@ -95,7 +95,7 @@ def export_json(output_path: Optional[Path] = None) -> Path:
     payload = {
         "exported_at": datetime.now().isoformat(),
         "version": "2.0",
-        "projects": project_list,
+        "nodes": node_list,
     }
 
     output_path.write_text(

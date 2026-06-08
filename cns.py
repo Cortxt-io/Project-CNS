@@ -15,14 +15,14 @@ from rich.table import Table
 
 from scripts.md_parser import (
     apply_changes,
-    list_project_files,
-    new_project_template,
-    project_dir,
-    project_path,
-    read_project,
-    scaffold_project_dirs,
+    list_node_files,
+    new_node_template,
+    node_dir,
+    node_path,
+    read_node,
+    scaffold_node_dirs,
     sections_for_kind,
-    write_project,
+    write_node,
     SECTIONS,
 )
 from scripts.xlsx_exporter import export_xlsx
@@ -92,7 +92,7 @@ def _show_diff_and_confirm(
         console.print("[yellow]Changes discarded.[/yellow]")
         return False
 
-    path = write_project(slug, new_meta, new_sections)
+    path = write_node(slug, new_meta, new_sections)
     console.print(f"[green]Updated {path}[/green]")
     return True
 
@@ -102,20 +102,20 @@ def _show_diff_and_confirm(
 # ---------------------------------------------------------------------------
 
 def cmd_list(_args: argparse.Namespace) -> None:
-    """Print a summary table of all projects (node-aware)."""
-    files = list_project_files()
+    """Print a summary table of all nodes (node-aware)."""
+    files = list_node_files()
     if not files:
-        console.print("[yellow]No projects found.[/yellow]")
+        console.print("[yellow]No nodes found.[/yellow]")
         return
 
-    # Collect project data and detect which optional columns have data
-    projects_data = []
+    # Collect node data and detect which optional columns have data
+    nodes_data = []
     has_any_slice = False
     has_any_cost = False
     for path in files:
         slug = path.parent.name
         try:
-            meta, _, _ = read_project(slug)
+            meta, _, _ = read_node(slug)
         except Exception as exc:
             console.print(f"[red]Error reading {slug}: {exc}[/red]")
             continue
@@ -123,10 +123,10 @@ def cmd_list(_args: argparse.Namespace) -> None:
             has_any_slice = True
         if meta.get("cost_sek", 0) or meta.get("value_sek", 0) or meta.get("roi_percent", 0):
             has_any_cost = True
-        projects_data.append((slug, meta))
+        nodes_data.append((slug, meta))
 
     # Sort by part_of so tree structure is visible — nodes with same parent cluster together
-    projects_data.sort(key=lambda x: (x[1].get("part_of", "") or "", x[0]))
+    nodes_data.sort(key=lambda x: (x[1].get("part_of", "") or "", x[0]))
 
     kind_color_map = {
         "framework": "bold magenta",
@@ -161,7 +161,7 @@ def cmd_list(_args: argparse.Namespace) -> None:
         table.add_column("Value", justify="right")
         table.add_column("ROI %", justify="right")
 
-    for slug, meta in projects_data:
+    for slug, meta in nodes_data:
         kind = meta.get("kind", "")
         stage = meta.get("stage", "")
         status = meta.get("status", "")
@@ -199,10 +199,10 @@ def cmd_list(_args: argparse.Namespace) -> None:
 
 
 def cmd_show(args: argparse.Namespace) -> None:
-    """Print the full content of a single project file."""
+    """Print the full content of a single node file."""
     slug = args.slug
     try:
-        meta, sections, raw = read_project(slug)
+        meta, sections, raw = read_node(slug)
     except FileNotFoundError as exc:
         console.print(f"[red]{exc}[/red]")
         sys.exit(1)
@@ -211,7 +211,7 @@ def cmd_show(args: argparse.Namespace) -> None:
 
 
 def cmd_update(args: argparse.Namespace) -> None:
-    """Update a project (local mode or api mode)."""
+    """Update a node (local mode or api mode)."""
     slug = args.slug
     instruction = getattr(args, "instruction", None)
     mode = getattr(args, "mode", "local")
@@ -221,9 +221,9 @@ def cmd_update(args: argparse.Namespace) -> None:
         mode = "api"
         console.print("[dim]Detected --instruction flag, using api mode.[/dim]")
 
-    # Read current project
+    # Read current node
     try:
-        meta, sections, raw = read_project(slug)
+        meta, sections, raw = read_node(slug)
     except FileNotFoundError as exc:
         console.print(f"[red]{exc}[/red]")
         sys.exit(1)
@@ -330,28 +330,28 @@ def cmd_doctor(_args: argparse.Namespace) -> None:
 
 
 def cmd_validate(args: argparse.Namespace) -> None:
-    """Validate a project's frontmatter, sections, ROI, and risk categories."""
-    from scripts.validator import validate_project
+    """Validate a node's frontmatter, sections, ROI, and risk categories."""
+    from scripts.validator import validate_node
 
     slug = args.slug
     try:
-        meta, sections, _ = read_project(slug)
+        meta, sections, _ = read_node(slug)
     except FileNotFoundError as exc:
         console.print(f"[red]{exc}[/red]")
         sys.exit(1)
 
-    errors = validate_project(meta, sections)
+    errors = validate_node(meta, sections)
     if not errors:
-        console.print(f"[green]Project '{slug}' is valid.[/green]")
+        console.print(f"[green]Node '{slug}' is valid.[/green]")
     else:
-        console.print(f"[red]Project '{slug}' has {len(errors)} issue(s):[/red]")
+        console.print(f"[red]Node '{slug}' has {len(errors)} issue(s):[/red]")
         for err in errors:
             console.print(f"  [red]- {err}[/red]")
         sys.exit(1)
 
 
 def cmd_export_xlsx(_args: argparse.Namespace) -> None:
-    """Export all projects to an xlsx file."""
+    """Export all nodes to an xlsx file."""
     try:
         path = export_xlsx()
         console.print(f"[green]Exported to {path}[/green]")
@@ -361,7 +361,7 @@ def cmd_export_xlsx(_args: argparse.Namespace) -> None:
 
 
 def cmd_export_json(args: argparse.Namespace) -> None:
-    """Export all projects to a JSON file."""
+    """Export all nodes to a JSON file."""
     output = getattr(args, "output", None)
     try:
         path = export_json(output_path=output)
@@ -372,33 +372,33 @@ def cmd_export_json(args: argparse.Namespace) -> None:
 
 
 def cmd_new(args: argparse.Namespace) -> None:
-    """Create a new project from template with full folder scaffold."""
+    """Create a new node from template with full folder scaffold."""
     slug = args.slug
     kind = getattr(args, "kind", None)
 
     # Check if already exists
-    pdir = project_dir(slug)
+    pdir = node_dir(slug)
     if pdir.exists():
-        console.print(f"[red]Project '{slug}' already exists at {pdir}[/red]")
+        console.print(f"[red]Node '{slug}' already exists at {pdir}[/red]")
         sys.exit(1)
 
-    # Scaffold directories first, then write project.md
-    scaffold_project_dirs(slug)
-    meta, sections = new_project_template(slug, kind=kind)
+    # Scaffold directories first, then write node.md
+    scaffold_node_dirs(slug)
+    meta, sections = new_node_template(slug, kind=kind)
 
     # Interactive interview (unless --skip-prompts)
     if not getattr(args, "skip_prompts", False):
-        from scripts.local_editor import run_new_project_interview
+        from scripts.local_editor import run_new_node_interview
 
-        result = run_new_project_interview(meta, sections, console)
+        result = run_new_node_interview(meta, sections, console)
         if result is not None:
             meta, sections = result
 
-    written = write_project(slug, meta, sections)
-    console.print(f"[green]Created new project: {written}[/green]")
+    written = write_node(slug, meta, sections)
+    console.print(f"[green]Created new node: {written}[/green]")
     if kind:
         console.print(f"[dim]Kind: {kind} | Stage: {meta.get('stage', 'idea')}[/dim]")
-    console.print(f"[dim]Project folder: {pdir}[/dim]")
+    console.print(f"[dim]Node folder: {pdir}[/dim]")
 
 
 # ---------------------------------------------------------------------------
@@ -406,7 +406,7 @@ def cmd_new(args: argparse.Namespace) -> None:
 # ---------------------------------------------------------------------------
 
 def cmd_quest_init(args: argparse.Namespace) -> None:
-    """Initialize quest workflow for a project."""
+    """Initialize quest workflow for a node."""
     from scripts.quest import quest_init
 
     slug = args.slug
@@ -431,14 +431,14 @@ def cmd_quest_init(args: argparse.Namespace) -> None:
 
 
 def cmd_quest_show(args: argparse.Namespace) -> None:
-    """Show current quest state for a project."""
+    """Show current quest state for a node."""
     from scripts.quest import read_mvp_scope, QUEST_SECTIONS
 
     slug = args.slug
 
-    # Read project.md for context
+    # Read node.md for context
     try:
-        meta, _, _ = read_project(slug)
+        meta, _, _ = read_node(slug)
     except FileNotFoundError as exc:
         console.print(f"[red]{exc}[/red]")
         sys.exit(1)
@@ -477,7 +477,7 @@ def cmd_quest_show(args: argparse.Namespace) -> None:
 
 
 def cmd_quest_sync(args: argparse.Namespace) -> None:
-    """Sync current_slice from mvp-scope.md into project.md."""
+    """Sync current_slice from mvp-scope.md into node.md."""
     from scripts.quest import quest_sync
 
     slug = args.slug
@@ -495,7 +495,7 @@ def cmd_quest_sync(args: argparse.Namespace) -> None:
 
 
 def cmd_devwatch(args: argparse.Namespace) -> None:
-    """Run cns-devwatch: detect changes in project.md files and export ChangeEvents."""
+    """Run cns-devwatch: detect changes in node.md files and export ChangeEvents."""
     from scripts.devwatch import run_devwatch
     run_devwatch(output=args.output, since=args.since, dry_run=args.dry_run)
 
@@ -513,7 +513,7 @@ def cmd_watch(_args: argparse.Namespace) -> None:
 
 
 def cmd_analyze(args: argparse.Namespace) -> None:
-    """AI-analyze a project and suggest field updates."""
+    """AI-analyze a node and suggest field updates."""
     from scripts.analyst import run_analyze
     try:
         run_analyze(
@@ -530,14 +530,14 @@ def cmd_analyze(args: argparse.Namespace) -> None:
 
 
 def cmd_scaffold(_args: argparse.Namespace) -> None:
-    """Ensure all project directories exist."""
-    from scripts.md_parser import ensure_all_project_dirs
-    created = ensure_all_project_dirs()
+    """Ensure all node directories exist."""
+    from scripts.md_parser import ensure_all_node_dirs
+    created = ensure_all_node_dirs()
     if created:
         for slug in created:
             console.print(f"[green]Scaffolded missing dirs for: {slug}[/green]")
     else:
-        console.print("[dim]All project directories already complete.[/dim]")
+        console.print("[dim]All node directories already complete.[/dim]")
 
 
 def cmd_install_hooks(_args: argparse.Namespace) -> None:
@@ -562,7 +562,7 @@ def cmd_post_commit_analyze(_args: argparse.Namespace) -> None:
     slugs = set()
     for f in changed_files:
         parts = Path(f).parts
-        if len(parts) >= 2 and parts[0] == "projects":
+        if len(parts) >= 2 and parts[0] == "nodes":
             slugs.add(parts[1])
 
     if not slugs:
@@ -660,25 +660,25 @@ def cmd_eventstream_import(args: argparse.Namespace) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="cns",
-        description="CNS (Central Node Store) - Local-first project management CLI",
+        description="CNS (Central Node Store) - Local-first node management CLI",
     )
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
     # cns list
-    sp_list = subparsers.add_parser("list", help="List all projects")
+    sp_list = subparsers.add_parser("list", help="List all nodes")
     sp_list.set_defaults(func=cmd_list)
 
     # cns show <slug>
-    sp_show = subparsers.add_parser("show", help="Show a project")
-    sp_show.add_argument("slug", help="Project slug")
+    sp_show = subparsers.add_parser("show", help="Show a node")
+    sp_show.add_argument("slug", help="Node slug")
     sp_show.set_defaults(func=cmd_show)
 
     # cns update <slug> [--mode local|api] [--instruction "..."]
     sp_update = subparsers.add_parser(
         "update",
-        help="Update a project (default: interactive local mode)",
+        help="Update a node (default: interactive local mode)",
     )
-    sp_update.add_argument("slug", help="Project slug")
+    sp_update.add_argument("slug", help="Node slug")
     sp_update.add_argument(
         "--mode", "-m",
         choices=["local", "api"],
@@ -697,7 +697,7 @@ def main() -> None:
         "prepare",
         help="Generate an edit brief for external LLM (connector mode)",
     )
-    sp_prepare.add_argument("slug", help="Project slug")
+    sp_prepare.add_argument("slug", help="Node slug")
     sp_prepare.set_defaults(func=cmd_prepare)
 
     # cns doctor
@@ -713,13 +713,13 @@ def main() -> None:
     sp_json = export_sub.add_parser("json", help="Export to JSON")
     sp_json.add_argument(
         "--output", "-o", default=None,
-        help="Override output path (default: exports/projects.json)",
+        help="Override output path (default: exports/nodes.json)",
     )
     sp_json.set_defaults(func=cmd_export_json)
 
     # cns new <slug>
-    sp_new = subparsers.add_parser("new", help="Create a new project")
-    sp_new.add_argument("slug", help="Project slug (e.g. my-new-project)")
+    sp_new = subparsers.add_parser("new", help="Create a new node")
+    sp_new.add_argument("slug", help="Node slug (e.g. my-new-node)")
     sp_new.add_argument(
         "--kind", "-k",
         choices=["component", "system", "framework"],
@@ -728,35 +728,35 @@ def main() -> None:
     )
     sp_new.add_argument(
         "--skip-prompts", action="store_true", default=False,
-        help="Skip interactive prompts and create a blank project",
+        help="Skip interactive prompts and create a blank node",
     )
     sp_new.set_defaults(func=cmd_new)
 
     # cns validate <slug>
-    sp_validate = subparsers.add_parser("validate", help="Validate a project file")
-    sp_validate.add_argument("slug", help="Project slug")
+    sp_validate = subparsers.add_parser("validate", help="Validate a node file")
+    sp_validate.add_argument("slug", help="Node slug")
     sp_validate.set_defaults(func=cmd_validate)
 
     # cns quest {init|show|sync} <slug>
     sp_quest = subparsers.add_parser("quest", help="Manage active build quest workflow")
     quest_sub = sp_quest.add_subparsers(dest="quest_command")
 
-    sp_quest_init = quest_sub.add_parser("init", help="Initialize quest for a project")
-    sp_quest_init.add_argument("slug", help="Project slug")
+    sp_quest_init = quest_sub.add_parser("init", help="Initialize quest for a node")
+    sp_quest_init.add_argument("slug", help="Node slug")
     sp_quest_init.set_defaults(func=cmd_quest_init)
 
     sp_quest_show = quest_sub.add_parser("show", help="Show current quest state")
-    sp_quest_show.add_argument("slug", help="Project slug")
+    sp_quest_show.add_argument("slug", help="Node slug")
     sp_quest_show.set_defaults(func=cmd_quest_show)
 
-    sp_quest_sync = quest_sub.add_parser("sync", help="Sync mvp-scope.md into project.md")
-    sp_quest_sync.add_argument("slug", help="Project slug")
+    sp_quest_sync = quest_sub.add_parser("sync", help="Sync mvp-scope.md into node.md")
+    sp_quest_sync.add_argument("slug", help="Node slug")
     sp_quest_sync.set_defaults(func=cmd_quest_sync)
 
     # cns devwatch
     sp_devwatch = subparsers.add_parser(
         "devwatch",
-        help="Detect changes in project.md files and export ChangeEvents to JSON",
+        help="Detect changes in node.md files and export ChangeEvents to JSON",
     )
     sp_devwatch.add_argument(
         "--output", "-o", default=None,
@@ -794,16 +794,16 @@ def main() -> None:
     # cns watch
     sp_watch = subparsers.add_parser(
         "watch",
-        help="Watch projects/ for changes and auto-update 'updated' timestamp",
+        help="Watch nodes/ for changes and auto-update 'updated' timestamp",
     )
     sp_watch.set_defaults(func=cmd_watch)
 
     # cns analyze <slug> [--dry-run]
     sp_analyze = subparsers.add_parser(
         "analyze",
-        help="AI-analyze a project and suggest field updates",
+        help="AI-analyze a node and suggest field updates",
     )
-    sp_analyze.add_argument("slug", help="Project slug")
+    sp_analyze.add_argument("slug", help="Node slug")
     sp_analyze.add_argument(
         "--dry-run", action="store_true", default=False,
         help="Run analysis without saving or applying changes",
@@ -813,7 +813,7 @@ def main() -> None:
     # cns scaffold
     sp_scaffold = subparsers.add_parser(
         "scaffold",
-        help="Ensure all project directories exist",
+        help="Ensure all node directories exist",
     )
     sp_scaffold.set_defaults(func=cmd_scaffold)
 
@@ -827,7 +827,7 @@ def main() -> None:
     # cns post-commit-analyze
     sp_post_commit = subparsers.add_parser(
         "post-commit-analyze",
-        help="Analyze projects changed in the last commit (intended for git hooks)",
+        help="Analyze nodes changed in the last commit (intended for git hooks)",
     )
     sp_post_commit.set_defaults(func=cmd_post_commit_analyze)
 

@@ -1,4 +1,4 @@
-"""cns-analyze: AI-driven analysis of project.md files via Anthropic Claude."""
+"""cns-analyze: AI-driven analysis of node.md files via Anthropic Claude."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 from rich.console import Console
 from rich.panel import Panel
 
-from scripts.md_parser import apply_changes, read_project
+from scripts.md_parser import apply_changes, read_node
 from scripts.validator import (
     VALID_KINDS,
     VALID_MVP_STAGES,
@@ -118,12 +118,12 @@ def _call_claude(system_prompt: str, user_prompt: str, max_tokens: int = 4096) -
 
 
 # ---------------------------------------------------------------------------
-# Project context reader
+# Node context reader
 # ---------------------------------------------------------------------------
 
 
 def _get_devwatch_context(slug: str) -> str:
-    """Get recent devwatch events for a specific project slug.
+    """Get recent devwatch events for a specific node slug.
 
     First tries GitHub (for Railway/production), falls back to local exports/.
     Returns formatted string of recent changes, or empty string if none found.
@@ -135,7 +135,7 @@ def _get_devwatch_context(slug: str) -> str:
         from app.git_ops import read_file_from_github
 
         raw = read_file_from_github(
-            "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+            "nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json"
         )
         if raw:
             devwatch_data = json.loads(raw)
@@ -204,18 +204,18 @@ def _get_devwatch_context(slug: str) -> str:
     return "\n".join(parts)
 
 
-def _read_project_context(slug: str) -> str:
-    """Read and concatenate all project Markdown files as context."""
-    from scripts.md_parser import project_dir
+def _read_node_context(slug: str) -> str:
+    """Read and concatenate all node Markdown files as context."""
+    from scripts.md_parser import node_dir
 
-    pdir = project_dir(slug)
+    pdir = node_dir(slug)
     parts: list[str] = []
 
     files_to_read: list[tuple[Path, str]] = []
-    # project.md always first
-    project_md = pdir / "project.md"
-    if project_md.exists():
-        files_to_read.append((project_md, "project.md"))
+    # node.md always first
+    node_md = pdir / "node.md"
+    if node_md.exists():
+        files_to_read.append((node_md, "node.md"))
 
     for subdir in ("planning", "notes", "research"):
         for md_file in sorted(pdir.glob(f"{subdir}/*.md")):
@@ -505,10 +505,10 @@ def run_analyze(
     dry_run: bool = False,
     output_path: Path | None = None,
 ) -> bool:
-    """Analyze a project via Anthropic Claude and apply suggested updates.
+    """Analyze a node via Anthropic Claude and apply suggested updates.
 
     Args:
-        slug: Project slug.
+        slug: Node slug.
         confirm_fn: Callable with signature (meta, new_meta, sections,
             new_sections, slug) -> bool. Returns True if user confirmed.
             If None and output_path is also None, logs a warning.
@@ -520,7 +520,7 @@ def run_analyze(
     Returns:
         True if changes were applied or saved, False otherwise.
     """
-    meta, sections, raw = read_project(slug)
+    meta, sections, raw = read_node(slug)
 
     # Skip non-product nodes (framework/system are not analyzed as products)
     kind = meta.get("kind")
@@ -530,7 +530,7 @@ def run_analyze(
 
     console.print(f"[bold]Analyzing [cyan]{slug}[/cyan] with {ANTHROPIC_MODEL}...[/bold]")
 
-    context = _read_project_context(slug)
+    context = _read_node_context(slug)
     devwatch_context = _get_devwatch_context(slug)
 
     if dry_run:
@@ -546,7 +546,7 @@ def run_analyze(
 
     # After parsing suggestions, filter out no-op suggestions
     try:
-        meta, sections, _ = read_project(slug)
+        meta, sections, _ = read_node(slug)
         filtered_suggestions = {}
         filtered_reasoning = {}
         for field, proposed_value in suggestions.items():
@@ -559,10 +559,10 @@ def run_analyze(
         if reasoning:
             reasoning = filtered_reasoning
     except Exception:
-        pass  # If we can't read the project, keep all suggestions
+        pass  # If we can't read the node, keep all suggestions
 
     if not suggestions:
-        console.print("[dim]No suggestions -- project looks up to date.[/dim]")
+        console.print("[dim]No suggestions -- node looks up to date.[/dim]")
         return False
 
     if dry_run:
@@ -644,7 +644,7 @@ def apply_pending(
     slug = pending["slug"]
     suggestions = pending["suggestions"]
 
-    meta, sections, _ = read_project(slug)
+    meta, sections, _ = read_node(slug)
 
     new_meta, new_sections = apply_changes(
         meta.copy(), {k: v for k, v in sections.items()}, suggestions

@@ -1,4 +1,4 @@
-"""Anthropic Claude API client for CNS project updates."""
+"""Anthropic Claude API client for CNS node updates."""
 
 from __future__ import annotations
 
@@ -24,13 +24,13 @@ def _get_api_key() -> str:
 
 
 def send_update_request(
-    project_content: str,
+    node_content: str,
     instruction: str,
 ) -> str:
     """Send an update request to Claude and return the raw JSON string.
 
     Args:
-        project_content: Full text of the current project .md file.
+        node_content: Full text of the current node .md file.
         instruction: Natural language instruction from the user.
 
     Returns:
@@ -43,10 +43,10 @@ def send_update_request(
     system_prompt = SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 
     user_message = (
-        f"Here is the current project file:\n\n"
-        f"```markdown\n{project_content}\n```\n\n"
+        f"Here is the current node file:\n\n"
+        f"```markdown\n{node_content}\n```\n\n"
         f"Instruction: {instruction}\n\n"
-        f"Respond with a single JSON object matching the project schema."
+        f"Respond with a single JSON object matching the node schema."
     )
 
     client = anthropic.Anthropic(api_key=api_key)

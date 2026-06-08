@@ -23,7 +23,7 @@ Full quest details enriched with parent project context.
 
 **When to use:** User asks about a specific quest, wants context before starting work, or references a quest ID.
 
-**Returns:** Quest object + `project_context` (meta, summary, layer, pipeline)
+**Returns:** Quest object + `project_context` (meta: kind, stage, status, relations, summary)
 
 ### cortxt_complete_quest
 Transition a quest to `completed`, record a result summary, and push to GitHub.
@@ -43,7 +43,7 @@ List all CNS project nodes with key metadata.
 
 **When to use:** User asks "what projects exist?", "show portfolio", "list nodes"
 
-**Returns:** Array of: `slug`, `title`, `status`, `layer`, `pipeline`, `summary`
+**Returns:** Array of: `slug`, `title`, `kind`, `stage`, `status`, `part_of`, `summary`
 
 ### cortxt_get_project
 Full project context including sections and planning files.
@@ -77,15 +77,31 @@ Transitions are enforced — you cannot skip states. `cortxt_complete_quest` han
 1. Confirm with user: "Mark quest-XXXX as completed with summary: '...'?"
 2. Call `cortxt_complete_quest`
 3. If push fails, inform user they need to push manually
+4. If the work changed architecture, conventions, deploy flow, repo layout, or the node model, update the repo's `CLAUDE.md` to match — see "Keeping CLAUDE.md current" below.
 
 ### CLI alternative
 The same data is accessible via `cns quest show <slug>` and `cns quest sync <slug>` if MCP is unavailable.
 
-## Project Fields Reference
+## Keeping CLAUDE.md current
 
-Key metadata fields in project responses:
+Each repo (`Project-CNS`, `cortxt`) has a `CLAUDE.md` at its root. It is loaded at the start of every session and is the primary standing context — the node model, repo layout, deploy flow, conventions, and known gotchas.
+
+**Treat `CLAUDE.md` as a living document, not a one-time setup.** Whenever work — especially a completed quest — changes something `CLAUDE.md` describes, update it in the same change:
+- architecture or data flow changes
+- new, renamed, or removed nodes/systems
+- deploy, auth, or DNS changes
+- a new convention, or a gotcha worth not hitting twice
+
+Keep it concise and high-signal; it is not full documentation. If it drifts, every future session — and every future Claude Code run — starts from stale assumptions. When in doubt, update it.
+
+## Node Model Reference
+
+The live model is **kind + stage + relations**. A node is `nodes/<slug>/node.md`.
+
+- `kind`: component | system | framework — **emerges from structure**, not declared. A node is a *system* if other nodes point to it via `part_of`, a *component* if none do, a *framework* if it is top-level. Fractal.
+- `stage`: idea | building | working | maturing — **"idea" is a stage, not a kind**. There are no standalone product ideas; everything is a component in some stage.
 - `status`: idea | early_mvp | mvp | live | shelved
-- `stage`: idea | building | working | maturing
-- `layer`: infrastructure | platform | application
-- `pipeline`: intern | extern | review
-- `current_slice`: what is being actively worked on
+- relations: `part_of` (containment), `feeds` (data flow), `depends_on` (dependency)
+- `current_slice`: what is actively being worked on
+
+`layer` and `pipeline` are **legacy** frontmatter fields, usually empty — structure now comes from `part_of`/`kind`, not from a `layer` field. Do not rely on them.

@@ -10,10 +10,13 @@ OAuth flow (GitHub by default), NOT the ``CNS_API_TOKEN`` used by the REST API.
 When the OAuth env vars are unset the server starts unauthenticated, which is
 intended only for local development / Claude Desktop.
 
-Provides 5 tools:
+Provides 8 tools:
   - cortxt_list_active_quests
   - cortxt_get_quest
   - cortxt_complete_quest
+  - cortxt_capture_idea
+  - cortxt_list_ideas
+  - cortxt_promote_idea_to_quest
   - cortxt_list_projects
   - cortxt_get_project
 """
@@ -156,13 +159,13 @@ def cortxt_list_active_quests() -> list[dict]:
 def cortxt_get_quest(quest_id: str) -> dict:
     """Get full quest details including project context."""
     from scripts.quest_manager import get_quest
-    from scripts.md_parser import read_project
+    from scripts.md_parser import read_node
     quest = get_quest(quest_id)
     if not quest:
         return {"error": f"Quest {quest_id} not found"}
     # Add project context
     try:
-        meta, sections, _ = read_project(quest["slug"])
+        meta, sections, _ = read_node(quest["slug"])
         quest["project_context"] = {
             "meta": meta,
             "summary": meta.get("summary", ""),
@@ -189,11 +192,86 @@ def cortxt_complete_quest(quest_id: str, result_summary: str) -> dict:
 
 
 @mcp.tool()
+def cortxt_capture_idea(text: str, source: str = "chat", slug: str | None = None) -> dict:
+    """Capture a raw idea into the inbox — lighter than a quest.
+
+    Use this for any thought worth keeping that isn't yet an actionable task.
+    `source` is "chat" or "code"; `slug` optionally links the idea to a node.
+    """
+    from scripts.idea_inbox import capture_idea, IDEAS_DIR
+    from app.git_ops import push_file_immediately
+    idea = capture_idea(text=text, source=source, slug=slug)
+    idea_path = IDEAS_DIR / f"{idea['id']}.json"
+    push_file_immediately(idea_path, f"cns-vault: capture idea {idea['id']}")
+    return idea
+
+
+@mcp.tool()
+def cortxt_list_ideas(status: str = "open", slug: str | None = None) -> list[dict]:
+    """List captured ideas, newest first. Pass status='' to include all."""
+    from scripts.idea_inbox import list_ideas
+    return list_ideas(status=status or None, slug=slug)
+
+
+@mcp.tool()
+def cortxt_promote_idea_to_quest(
+    idea_id: str,
+    title: str,
+    estimated_impact: str = "",
+    slug: str | None = None,
+    description: str | None = None,
+) -> dict:
+    """Promote an idea into a quest, reusing the quest-creation logic.
+
+    The new quest's slug comes from the idea (or the `slug` argument if the idea
+    has none); its description defaults to the idea's text. The idea is kept and
+    marked 'promoted'. Returns {"idea": ..., "quest": ...}.
+    """
+    from scripts.idea_inbox import get_idea, mark_promoted, IDEAS_DIR
+    from scripts.quest_manager import create_quest, QUESTS_DIR
+    from app.git_ops import push_file_immediately
+
+    idea = get_idea(idea_id)
+    if idea is None:
+        raise ToolError(f"Idea {idea_id} not found")
+    if idea.get("status") == "promoted":
+        raise ToolError(
+            f"Idea {idea_id} was already promoted to {idea.get('promoted_to')}"
+        )
+
+    quest_slug = slug or idea.get("slug")
+    if not quest_slug:
+        raise ToolError(
+            "Idea has no linked slug — pass `slug` to say which node the quest is for."
+        )
+
+    quest = create_quest(
+        slug=quest_slug,
+        title=title,
+        description=description or idea["text"],
+        estimated_impact=estimated_impact,
+        source="idea",
+    )
+    quest_path = QUESTS_DIR / f"{quest['id']}.json"
+    push_file_immediately(
+        quest_path, f"cns-vault: create quest {quest['id']} from idea {idea_id}"
+    )
+
+    idea = mark_promoted(idea_id, quest["id"])
+    idea_path = IDEAS_DIR / f"{idea_id}.json"
+    push_file_immediately(
+        idea_path, f"cns-vault: promote idea {idea_id} to {quest['id']}"
+    )
+
+    return {"idea": idea, "quest": quest}
+
+
+@mcp.tool()
 def cortxt_list_projects() -> list[dict]:
     """List all CNS projects with metadata."""
-    from scripts.md_parser import read_all_projects
+    from scripts.md_parser import read_all_nodes
     result = []
-    for meta, _ in read_all_projects():
+    for meta, _ in read_all_nodes():
         result.append({
             "slug": meta.get("slug"),
             "title": meta.get("title"),
@@ -208,12 +286,12 @@ def cortxt_list_projects() -> list[dict]:
 @mcp.tool()
 def cortxt_get_project(slug: str) -> dict:
     """Get full project context including sections and planning files."""
-    from scripts.md_parser import read_project, project_dir
+    from scripts.md_parser import read_node, node_dir
     try:
-        meta, sections, _ = read_project(slug)
+        meta, sections, _ = read_node(slug)
         # Read planning files
         planning = {}
-        pdir = project_dir(slug) / "planning"
+        pdir = node_dir(slug) / "planning"
         if pdir.exists():
             for f in sorted(pdir.glob("*.md")):
                 if f.name.lower() != "readme.md":

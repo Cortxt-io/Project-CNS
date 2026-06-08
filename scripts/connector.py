@@ -8,7 +8,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 
-from scripts.md_parser import project_dir, read_project
+from scripts.md_parser import node_dir, read_node
 
 SYSTEM_PROMPT_PATH = Path(__file__).resolve().parent.parent / "system_prompt.md"
 
@@ -33,7 +33,7 @@ _FIELD_CHECKLIST: dict[str, list[str]] = {
 
 
 def _build_summary(meta: dict, sections: dict) -> str:
-    """Build a short summary of the current project state."""
+    """Build a short summary of the current node state."""
     lines = [
         f"Title:     {meta.get('title', '?')}",
         f"Slug:      {meta.get('slug', '?')}",
@@ -81,12 +81,12 @@ def _build_brief(
         instruction = (
             f'Using the synced file for {slug} as the source of truth, '
             f'apply these changes:\n\n{description}\n\n'
-            f'Return a JSON object matching the project schema with only the changed fields set '
+            f'Return a JSON object matching the node schema with only the changed fields set '
             f'(all others null).'
         )
     else:  # detailed
         instruction = (
-            f'Using the synced file for {slug} as the source of truth, update the project so that:\n\n'
+            f'Using the synced file for {slug} as the source of truth, update the node so that:\n\n'
             f'{description}\n\n'
             f'Context: current status is "{meta.get("status", "?")}", '
             f'MVP stage is "{meta.get("mvp_stage", "?")}", '
@@ -122,7 +122,7 @@ def _build_brief(
 def generate_edit_brief(slug: str, console: Console) -> None:
     """Interactive interview + edit brief generation for connector mode."""
     try:
-        meta, sections, _ = read_project(slug)
+        meta, sections, _ = read_node(slug)
     except FileNotFoundError as exc:
         console.print(f"[red]{exc}[/red]")
         return
@@ -143,8 +143,8 @@ def generate_edit_brief(slug: str, console: Console) -> None:
 
     brief = _build_brief(meta, sections, description, change_type, detail)
 
-    # Write brief to project exports folder
-    exports_dir = project_dir(slug) / "exports"
+    # Write brief to node exports folder
+    exports_dir = node_dir(slug) / "exports"
     exports_dir.mkdir(parents=True, exist_ok=True)
     brief_path = exports_dir / "ai-brief.md"
     brief_path.write_text(brief + "\n", encoding="utf-8")

@@ -1,4 +1,4 @@
-"""cns-watch: Auto-update 'updated' timestamp when project.md files change."""
+"""cns-watch: Auto-update 'updated' timestamp when node.md files change."""
 
 from __future__ import annotations
 
@@ -11,13 +11,13 @@ from rich.console import Console
 from watchdog.events import FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-PROJECTS_DIR = Path(__file__).resolve().parent.parent / "projects"
+NODES_DIR = Path(__file__).resolve().parent.parent / "nodes"
 
 console = Console()
 
 
-class _ProjectMdHandler(FileSystemEventHandler):
-    """Handle modification events for project.md files."""
+class _NodeMdHandler(FileSystemEventHandler):
+    """Handle modification events for node.md files."""
 
     def on_modified(self, event: FileModifiedEvent) -> None:
         if event.is_directory:
@@ -25,7 +25,7 @@ class _ProjectMdHandler(FileSystemEventHandler):
 
         path = Path(event.src_path)
 
-        if path.name != "project.md":
+        if path.name != "node.md":
             return
 
         try:
@@ -41,24 +41,24 @@ class _ProjectMdHandler(FileSystemEventHandler):
 
             # Derive slug from parent directory name
             slug = path.parent.name
-            console.print(f"[cns watch] {slug}/project.md -> updated: {today}")
+            console.print(f"[cns watch] {slug}/node.md -> updated: {today}")
 
         except Exception as exc:
             console.print(f"[red][cns watch] Error processing {event.src_path}: {exc}[/red]")
 
 
 def run_watch() -> None:
-    """Start watching projects/ for changes and auto-update 'updated' timestamps."""
-    if not PROJECTS_DIR.exists():
-        console.print(f"[red]Projects directory not found: {PROJECTS_DIR}[/red]")
+    """Start watching nodes/ for changes and auto-update 'updated' timestamps."""
+    if not NODES_DIR.exists():
+        console.print(f"[red]Nodes directory not found: {NODES_DIR}[/red]")
         sys.exit(1)
 
-    handler = _ProjectMdHandler()
+    handler = _NodeMdHandler()
     observer = Observer()
-    observer.schedule(handler, str(PROJECTS_DIR), recursive=True)
+    observer.schedule(handler, str(NODES_DIR), recursive=True)
     observer.start()
 
-    console.print(f"[cns watch] Watching {PROJECTS_DIR}/ ... (Ctrl+C to stop)")
+    console.print(f"[cns watch] Watching {NODES_DIR}/ ... (Ctrl+C to stop)")
 
     try:
         while observer.is_alive():

@@ -44,7 +44,7 @@ from app.git_ops import (  # noqa: E402
     push_file_immediately,
     read_file_from_github,
 )
-from scripts.analyst import load_pending_suggestions, run_analyze, _call_claude, _read_project_context, _get_devwatch_context  # noqa: E402
+from scripts.analyst import load_pending_suggestions, run_analyze, _call_claude, _read_node_context, _get_devwatch_context  # noqa: E402
 from scripts.portfolio_brief import run_portfolio_brief  # noqa: E402
 from scripts.json_exporter import export_json  # noqa: E402
 from scripts.devwatch import run_devwatch, DevwatchError  # noqa: E402
@@ -52,11 +52,11 @@ from scripts.devlog import run_devlog  # noqa: E402
 from scripts.md_parser import (  # noqa: E402
     SECTIONS,
     apply_changes,
-    project_dir,
-    project_path,
-    read_all_projects,
-    read_project,
-    write_project,
+    node_dir,
+    node_path,
+    read_all_nodes,
+    read_node,
+    write_node,
 )
 from scripts.validator import (  # noqa: E402
     VALID_FAMILIES,
@@ -248,17 +248,17 @@ app.jinja_env.filters["format_sek"] = _format_sek
 app.jinja_env.filters["md_to_html"] = _md_to_html
 
 # ---------------------------------------------------------------------------
-# Helper: read project subdirectory files
+# Helper: read node subdirectory files
 # ---------------------------------------------------------------------------
 
 
-def _read_project_files(slug: str) -> dict[str, list[tuple[str, str]]]:
+def _read_node_files(slug: str) -> dict[str, list[tuple[str, str]]]:
     """Read markdown files from planning/, notes/, research/ subdirs.
 
     Returns: {subdir_name: [(filename, content), ...]}
     Skips README.md and empty files.
     """
-    pdir = project_dir(slug)
+    pdir = node_dir(slug)
     result: dict[str, list[tuple[str, str]]] = {}
     for subdir in ("planning", "notes", "research"):
         files: list[tuple[str, str]] = []
@@ -336,19 +336,19 @@ def _extract_devlog_body(html_path: Path | None) -> str:
 def index():
     git_pull()
 
-    all_projects = read_all_projects()
-    projects_data = []
-    for meta, sections in all_projects:
-        projects_data.append(meta)
+    all_nodes = read_all_nodes()
+    nodes_data = []
+    for meta, sections in all_nodes:
+        nodes_data.append(meta)
 
     # Aggregate stats
-    total = len(projects_data)
+    total = len(nodes_data)
     active = sum(
-        1 for p in projects_data if p.get("status") in ("active", "early_mvp", "mvp", "live")
+        1 for p in nodes_data if p.get("status") in ("active", "early_mvp", "mvp", "live")
     )
-    total_cost = sum(p.get("cost_sek", 0) or 0 for p in projects_data)
-    total_value = sum(p.get("value_sek", 0) or 0 for p in projects_data)
-    with_roi = [p for p in projects_data if (p.get("roi_percent") or 0) > 0]
+    total_cost = sum(p.get("cost_sek", 0) or 0 for p in nodes_data)
+    total_value = sum(p.get("value_sek", 0) or 0 for p in nodes_data)
+    with_roi = [p for p in nodes_data if (p.get("roi_percent") or 0) > 0]
     avg_roi = (
         round(sum(p.get("roi_percent", 0) or 0 for p in with_roi) / len(with_roi))
         if with_roi
@@ -356,12 +356,12 @@ def index():
     )
 
     # Collect unique values for filters
-    statuses = sorted(set(p.get("status", "") for p in projects_data if p.get("status")))
+    statuses = sorted(set(p.get("status", "") for p in nodes_data if p.get("status")))
     all_tags: list[str] = []
-    for p in projects_data:
+    for p in nodes_data:
         all_tags.extend(p.get("tags", []) or [])
     tags = sorted(set(all_tags))
-    families = sorted(set(p.get("family", "") for p in projects_data if p.get("family")))
+    families = sorted(set(p.get("family", "") for p in nodes_data if p.get("family")))
 
     # Query params for filtering
     status_filter = request.args.get("status", "").split(",") if request.args.get("status") else []
@@ -375,7 +375,7 @@ def index():
     view_mode = request.args.get("view", "table")
 
     # Apply filters
-    filtered = projects_data[:]
+    filtered = nodes_data[:]
     if status_filter:
         filtered = [p for p in filtered if p.get("status") in status_filter]
     if tag_filter:
@@ -408,7 +408,7 @@ def index():
 
     return render_template(
         "index.html",
-        projects=filtered,
+        nodes=filtered,
         stats={
             "total": total,
             "active": active,
@@ -430,39 +430,39 @@ def index():
     )
 
 
-@app.route("/project/<slug>")
+@app.route("/node/<slug>")
 @auth.login_required
-def project_detail(slug):
+def node_detail(slug):
     git_pull()
 
     try:
-        meta, sections, raw = read_project(slug)
+        meta, sections, raw = read_node(slug)
     except FileNotFoundError:
         return render_template(
-            "project.html",
+            "node.html",
             error="not_found",
             slug=slug,
             meta=None,
             sections={},
             section_order=[],
-            project_files={},
+            node_files={},
             has_pending=False,
             is_admin=is_admin(),
         ), 404
 
-    project_files = _read_project_files(slug)
+    node_files = _read_node_files(slug)
 
-    # Check if there are pending suggestions for this project
+    # Check if there are pending suggestions for this node
     has_pending = any(
         p["slug"] == slug for p in load_pending_suggestions()
     )
 
     return render_template(
-        "project.html",
+        "node.html",
         meta=meta,
         sections=sections,
         section_order=SECTIONS,
-        project_files=project_files,
+        node_files=node_files,
         has_pending=has_pending,
         slug=slug,
         error=None,
@@ -481,11 +481,11 @@ def review():
     if slug_filter:
         pending = [p for p in pending if p["slug"] == slug_filter]
 
-    # Enrich with current project data for diff display
+    # Enrich with current node data for diff display
     enriched = []
     for item in pending:
         try:
-            meta, sections, _ = read_project(item["slug"])
+            meta, sections, _ = read_node(item["slug"])
         except FileNotFoundError:
             meta = {}
             sections = {}
@@ -511,7 +511,7 @@ def activity():
 
     # Read devwatch from GitHub
     devwatch_raw = read_file_from_github(
-        "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+        "nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json"
     )
     if devwatch_raw:
         try:
@@ -526,7 +526,7 @@ def activity():
     # Read devlog from GitHub
     devlog_html = ""
     devlog_raw = read_file_from_github(
-        "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+        "nodes/project-vault-dashboard/dashboard/data/devlog_latest.html"
     )
     if devlog_raw:
         devlog_html = _extract_devlog_body_from_string(devlog_raw)
@@ -548,10 +548,10 @@ def activity():
 def analyze():
     git_pull()
 
-    all_projects = read_all_projects()
-    projects_data = []
-    for meta, _sections in all_projects:
-        projects_data.append(meta)
+    all_nodes = read_all_nodes()
+    nodes_data = []
+    for meta, _sections in all_nodes:
+        nodes_data.append(meta)
 
     # Load latest devwatch to find changed slugs
     devwatch_path = _latest_export("devwatch_*.json")
@@ -572,13 +572,13 @@ def analyze():
     for p in pending_list:
         pending_by_slug[p["slug"]] = p
 
-    # Build project list with analysis state
-    project_list = []
-    for meta in projects_data:
+    # Build node list with analysis state
+    node_list = []
+    for meta in nodes_data:
         slug = meta.get("slug", "")
         pending = pending_by_slug.get(slug)
         has_pending = pending is not None
-        project_list.append({
+        node_list.append({
             "meta": meta,
             "has_pending": has_pending,
             "pending_count": len(pending["suggestions"]) if has_pending else 0,
@@ -587,7 +587,7 @@ def analyze():
         })
 
     # Sort: changed first, then pending, then alphabetically
-    project_list.sort(
+    node_list.sort(
         key=lambda p: (
             not p["changed_in_devwatch"],
             not p["has_pending"],
@@ -595,11 +595,11 @@ def analyze():
         )
     )
 
-    total_pending = sum(p["pending_count"] for p in project_list)
+    total_pending = sum(p["pending_count"] for p in node_list)
 
     return render_template(
         "analyze.html",
-        project_list=project_list,
+        node_list=node_list,
         total_pending=total_pending,
         is_admin=is_admin(),
     )
@@ -616,15 +616,15 @@ def api_analyze_list():
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
-    all_projects = read_all_projects()
+    all_nodes = read_all_nodes()
     pending_list = load_pending_suggestions()
     pending_by_slug = {p["slug"]: p for p in pending_list}
 
-    project_list = []
-    for meta, _ in all_projects:
+    node_list = []
+    for meta, _ in all_nodes:
         slug = meta.get("slug", "")
         pending = pending_by_slug.get(slug)
-        project_list.append({
+        node_list.append({
             "slug": slug,
             "title": meta.get("title", slug),
             "status": meta.get("status", ""),
@@ -634,12 +634,12 @@ def api_analyze_list():
             "last_analyzed": pending.get("analyzed_at") if pending else None,
         })
 
-    project_list.sort(key=lambda p: (
+    node_list.sort(key=lambda p: (
         not p["has_pending"],
         (p["title"] or "").lower()
     ))
 
-    return jsonify({"projects": project_list})
+    return jsonify({"nodes": node_list})
 
 
 @app.route("/api/analyze/<slug>", methods=["POST"])
@@ -681,7 +681,7 @@ def api_analyze(slug):
             return jsonify({"status": "ok", "suggestions_count": 0})
 
     except FileNotFoundError:
-        return jsonify({"status": "error", "message": f"Project '{slug}' not found"}), 404
+        return jsonify({"status": "error", "message": f"Node '{slug}' not found"}), 404
     except RuntimeError as exc:
         return jsonify({"status": "error", "message": str(exc)}), 502
     except Exception as exc:
@@ -736,7 +736,7 @@ def api_analyze_all():
             else:
                 analyzed.append(slug)
         except FileNotFoundError:
-            errors[slug] = f"Project '{slug}' not found"
+            errors[slug] = f"Node '{slug}' not found"
         except Exception as exc:
             errors[slug] = str(exc)
 
@@ -766,7 +766,7 @@ def api_review_approve(slug):
     pending_path = pending["path"]
 
     try:
-        meta, sections, _ = read_project(slug)
+        meta, sections, _ = read_node(slug)
 
         new_meta, new_sections = apply_changes(
             meta.copy(), {k: v for k, v in sections.items()}, suggestions
@@ -778,16 +778,16 @@ def api_review_approve(slug):
 
         new_meta["updated"] = date.today().isoformat()
 
-        write_project(slug, new_meta, new_sections)
+        write_node(slug, new_meta, new_sections)
 
-        # Push project.md immediately — bypasses Railway ephemeral disk
-        project_md_path = project_path(slug)
+        # Push node.md immediately — bypasses Railway ephemeral disk
+        node_md_path = node_path(slug)
         ok, msg = push_file_immediately(
-            project_md_path,
+            node_md_path,
             f"cns-vault: apply analyze suggestions for {slug}",
         )
         if not ok:
-            app.logger.warning("Failed to push project.md for %s: %s", slug, msg)
+            app.logger.warning("Failed to push node.md for %s: %s", slug, msg)
 
         # Delete the JSON file
         if pending_path.exists():
@@ -849,8 +849,8 @@ def api_review_reject(slug):
     return redirect(url_for("review", slug=slug))
 
 
-@app.route("/api/projects")
-def api_projects():
+@app.route("/api/nodes")
+def api_nodes():
     git_pull()
     path = export_json()
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -928,7 +928,7 @@ def api_brief():
 @app.route("/api/planning/quest", methods=["POST"])
 @auth.login_required
 def api_planning_quest():
-    """Append a quest suggestion to projects/<slug>/planning/quests.md"""
+    """Append a quest suggestion to nodes/<slug>/planning/quests.md"""
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
@@ -940,7 +940,7 @@ def api_planning_quest():
         return jsonify({"status": "error", "message": "slug and quest required"}), 400
 
     # Read or create quests.md
-    quests_path = project_path(slug).parent / "planning" / "quests.md"
+    quests_path = node_path(slug).parent / "planning" / "quests.md"
     quests_path.parent.mkdir(parents=True, exist_ok=True)
 
     existing = quests_path.read_text(encoding="utf-8") if quests_path.exists() else f"# {slug} / quests\n\n"
@@ -1200,7 +1200,7 @@ def api_activity():
 
     # Read devwatch from GitHub
     devwatch_raw = read_file_from_github(
-        "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+        "nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json"
     )
     if devwatch_raw:
         try:
@@ -1213,7 +1213,7 @@ def api_activity():
 
     # Read devlog from GitHub
     devlog_raw = read_file_from_github(
-        "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+        "nodes/project-vault-dashboard/dashboard/data/devlog_latest.html"
     )
     if devlog_raw:
         devlog_html = _extract_devlog_body_from_string(devlog_raw)
@@ -1247,19 +1247,19 @@ def api_pending():
     return jsonify({"pending": result})
 
 
-@app.route("/api/project/<slug>/full")
-def api_project_full(slug):
-    """Return full project data including sections and subdir files."""
+@app.route("/api/node/<slug>/full")
+def api_node_full(slug):
+    """Return full node data including sections and subdir files."""
     git_pull()
     try:
-        meta, sections, raw = read_project(slug)
+        meta, sections, raw = read_node(slug)
     except FileNotFoundError:
         return jsonify({"status": "error",
-                        "message": f"Project '{slug}' not found"}), 404
+                        "message": f"Node '{slug}' not found"}), 404
 
     # Read subdir files (planning/, notes/, research/)
-    project_files: dict[str, list[dict]] = {}
-    pdir = project_dir(slug)
+    node_files: dict[str, list[dict]] = {}
+    pdir = node_dir(slug)
     for subdir in ("planning", "notes", "research"):
         subpath = pdir / subdir
         if not subpath.exists():
@@ -1273,7 +1273,7 @@ def api_project_full(slug):
                 continue
             files.append({"filename": md_file.name, "content": content})
         if files:
-            project_files[subdir] = files
+            node_files[subdir] = files
 
     # Check pending suggestions
     pending_list = load_pending_suggestions()
@@ -1298,15 +1298,15 @@ def api_project_full(slug):
         "slug": slug,
         "meta": meta_clean,
         "sections": sections,
-        "project_files": project_files,
+        "node_files": node_files,
         "pending": pending_data,
     })
 
 
-@app.route("/api/project/<slug>", methods=["PATCH"])
+@app.route("/api/node/<slug>", methods=["PATCH"])
 @auth.login_required
-def api_project_update(slug):
-    """Directly update specific fields in a project.md file."""
+def api_node_update(slug):
+    """Directly update specific fields in a node.md file."""
     if not is_admin():
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
@@ -1326,32 +1326,32 @@ def api_project_update(slug):
         return jsonify({"status": "error", "message": f"Fields not editable: {invalid}"}), 400
 
     try:
-        meta, sections, _ = read_project(slug)
+        meta, sections, _ = read_node(slug)
         new_meta = meta.copy()
 
         for field, value in fields.items():
             new_meta[field] = value
 
         new_meta["updated"] = date.today().isoformat()
-        write_project(slug, new_meta, sections)
+        write_node(slug, new_meta, sections)
 
-        project_md_path = project_path(slug)
+        node_md_path = node_path(slug)
         ok, msg = push_file_immediately(
-            project_md_path,
+            node_md_path,
             f"cns-vault: update {', '.join(fields.keys())} for {slug}"
         )
         if not ok:
-            app.logger.warning("Failed to push project.md for %s: %s", slug, msg)
+            app.logger.warning("Failed to push node.md for %s: %s", slug, msg)
 
         return jsonify({"status": "ok", "updated_fields": list(fields.keys())})
 
     except FileNotFoundError:
-        return jsonify({"status": "error", "message": f"Project '{slug}' not found"}), 404
+        return jsonify({"status": "error", "message": f"Node '{slug}' not found"}), 404
     except Exception as exc:
         return jsonify({"status": "error", "message": str(exc)}), 500
 
 
-@app.route("/api/project/<slug>/suggest-quest", methods=["POST"])
+@app.route("/api/node/<slug>/suggest-quest", methods=["POST"])
 @auth.login_required
 def api_suggest_quest(slug):
     """Generate a quest suggestion for a specific node using Claude."""
@@ -1359,12 +1359,12 @@ def api_suggest_quest(slug):
         return jsonify({"status": "error", "message": "Admin required"}), 403
 
     try:
-        meta, sections, raw = read_project(slug)
+        meta, sections, raw = read_node(slug)
     except FileNotFoundError:
-        return jsonify({"status": "error", "message": "Project not found"}), 404
+        return jsonify({"status": "error", "message": "Node not found"}), 404
 
     try:
-        context = _read_project_context(slug)
+        context = _read_node_context(slug)
         devwatch_context = _get_devwatch_context(slug)
 
         system_prompt = (
@@ -1452,7 +1452,7 @@ def api_devwatch_run():
 
         # Also update the latest symlink file
         latest_path = Path(
-            "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+            "nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json"
         )
         latest_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(result_path, latest_path)
@@ -1532,7 +1532,7 @@ def api_devlog_run():
                 f"cns-vault: devlog digest {date.today().isoformat()}",
             )
             latest_json = Path(
-                "projects/project-vault-dashboard/dashboard/data/devlog_latest.json"
+                "nodes/project-vault-dashboard/dashboard/data/devlog_latest.json"
             )
             latest_json.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(json_path, latest_json)
@@ -1552,7 +1552,7 @@ def api_devlog_run():
             html_pushed = ok
 
             latest_path = Path(
-                "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+                "nodes/project-vault-dashboard/dashboard/data/devlog_latest.html"
             )
             latest_path.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(html_path, latest_path)
@@ -1606,7 +1606,7 @@ def api_update_run():
         )
 
         latest_dw = Path(
-            "projects/project-vault-dashboard/dashboard/data/devwatch_latest.json"
+            "nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json"
         )
         latest_dw.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy(result_path, latest_dw)
@@ -1632,7 +1632,7 @@ def api_update_run():
                 json_path, f"cns-vault: devlog {date.today().isoformat()}"
             )
             latest_dl_json = Path(
-                "projects/project-vault-dashboard/dashboard/data/devlog_latest.json"
+                "nodes/project-vault-dashboard/dashboard/data/devlog_latest.json"
             )
             latest_dl_json.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(json_path, latest_dl_json)
@@ -1647,7 +1647,7 @@ def api_update_run():
                 html_path, f"cns-vault: devlog {date.today().isoformat()}"
             )
             latest_dl = Path(
-                "projects/project-vault-dashboard/dashboard/data/devlog_latest.html"
+                "nodes/project-vault-dashboard/dashboard/data/devlog_latest.html"
             )
             latest_dl.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy(html_path, latest_dl)
@@ -1658,13 +1658,13 @@ def api_update_run():
     except Exception as exc:
         results["devlog"] = {"status": "error", "message": str(exc)}
 
-    # Step 3: export projects.json
+    # Step 3: export nodes.json
     try:
         json_path = export_json()
-        push_file_immediately(json_path, "cns-vault: export projects.json")
-        results["projects_json"] = {"status": "ok"}
+        push_file_immediately(json_path, "cns-vault: export nodes.json")
+        results["nodes_json"] = {"status": "ok"}
     except Exception as exc:
-        results["projects_json"] = {"status": "error", "message": str(exc)}
+        results["nodes_json"] = {"status": "error", "message": str(exc)}
 
     non_devwatch = {k: v for k, v in results.items() if k != "devwatch"}
     overall = (
@@ -1684,7 +1684,7 @@ GITHUB_WEBHOOK_SECRET = os.getenv("CNS_WEBHOOK_SECRET", "")
 
 
 def _slugs_from_pushed_files(payload: dict) -> set[str]:
-    """Return project slugs touched by a push event's commits."""
+    """Return node slugs touched by a push event's commits."""
     changed_files: set[str] = set()
     for commit in payload.get("commits", []):
         changed_files.update(commit.get("added", []))
@@ -1694,13 +1694,13 @@ def _slugs_from_pushed_files(payload: dict) -> set[str]:
     slugs: set[str] = set()
     for f in changed_files:
         parts = Path(f).parts
-        if len(parts) >= 2 and parts[0] == "projects":
+        if len(parts) >= 2 and parts[0] == "nodes":
             slugs.add(parts[1])
     return slugs
 
 
 def _slugs_from_text(*texts: str) -> set[str]:
-    """Match known project slugs mentioned in free text (PR title/body/branch).
+    """Match known node slugs mentioned in free text (PR title/body/branch).
 
     Used for events that don't carry a file list (pull_request, workflow_run).
     A slug matches if it appears as a whole token in any of the given texts.

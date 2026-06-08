@@ -44,10 +44,10 @@ python cns.py quest sync <slug>
 
 ## 2. DocsWatch
 
-Overvakar docs/changelogs for meningsfulla forandringar. Rot: `projects/docs-watch/`
+Overvakar docs/changelogs for meningsfulla forandringar. Rot: `nodes/docs-watch/`
 
 ```bash
-cd projects/docs-watch
+cd nodes/docs-watch
 
 # Standardkorning (hamtar, diffar, genererar sajt)
 python -m src.cli
@@ -81,10 +81,10 @@ start data/site/index.html
 
 ## 3. dev-changelog-engine-mini
 
-Genererar poangberaknade veckodigest fran DocsWatch-events. Rot: `projects/dev-changelog-engine-mini/`
+Genererar poangberaknade veckodigest fran DocsWatch-events. Rot: `nodes/dev-changelog-engine-mini/`
 
 ```bash
-cd projects/dev-changelog-engine-mini
+cd nodes/dev-changelog-engine-mini
 
 # Installera beroenden
 npm install
@@ -112,14 +112,14 @@ npx serve dist/
 
 ## 4. Project Vault Dashboard
 
-Visuell portfoljoversikt over alla CNS-projekt. Rot: `projects/project-vault-dashboard/dashboard/`
+Visuell portfoljoversikt over alla CNS-projekt. Rot: `nodes/project-vault-dashboard/dashboard/`
 
 ```bash
 # Uppdatera projektdata (fran prompt-cns-roten)
-python cns.py export json --output projects/project-vault-dashboard/dashboard/data/projects.json
+python cns.py export json --output nodes/project-vault-dashboard/dashboard/data/nodes.json
 
 # Starta lokal server och oppna dashboarden
-npx serve projects/project-vault-dashboard/dashboard -l 3000
+npx serve nodes/project-vault-dashboard/dashboard -l 3000
 # Oppna sedan http://localhost:3000 i webblasaren
 ```
 
@@ -166,8 +166,9 @@ Verifiera med `python cns.py doctor`.
 
 MCP-servern (`app/mcp_server.py`) körs i två lägen: **remote Streamable HTTP**
 på Railway (huvudleveransen, nåbar från telefon/web via claude.ai) och **lokal
-stdio** som fallback för Claude Desktop. Samma 5 tools i båda:
+stdio** som fallback för Claude Desktop. Samma 8 tools i båda:
 `cortxt_list_active_quests`, `cortxt_get_quest`, `cortxt_complete_quest`,
+`cortxt_capture_idea`, `cortxt_list_ideas`, `cortxt_promote_idea_to_quest`,
 `cortxt_list_projects`, `cortxt_get_project`.
 
 ### Remote (claude.ai Custom Connector) – huvudleverans
@@ -297,12 +298,12 @@ quests automatiskt utifrån vad som händer i kopplade repos.
 
 | Event | Trigger | Effekt på quest |
 |-------|---------|-----------------|
-| `push` | Commits pushade | Filer under `projects/<slug>/` → matchande `in_progress`-quests blir `completed` |
+| `push` | Commits pushade | Filer under `nodes/<slug>/` → matchande `in_progress`-quests blir `completed` |
 | `pull_request` (opened/reopened) | PR öppnad | `active`-quests vars slug nämns i PR-titel/body/branch → `in_progress` |
 | `pull_request` (closed + merged) | PR merge:ad | Matchande `in_progress`-quests → `completed` |
 | `workflow_run` (completed) | CI-körning klar | `ci_status` sätts till `passing`/`failing` på matchande `in_progress`-quests |
 
-**Slug-matchning:** `push` matchar via filsökväg (`projects/<slug>/...`). `pull_request`
+**Slug-matchning:** `push` matchar via filsökväg (`nodes/<slug>/...`). `pull_request`
 och `workflow_run` saknar fillista i sin payload — de matchar istället quests vars
 `slug` nämns som text i PR-titel/body/branch respektive workflow-titel/branch.
 
@@ -312,7 +313,7 @@ och `workflow_run` saknar fillista i sin payload — de matchar istället quests
 
 ```bash
 # 1. Kor DocsWatch for att hamta senaste andringar
-cd projects/docs-watch
+cd nodes/docs-watch
 python -m src.cli
 
 # 2. Exportera events for veckan
@@ -327,9 +328,9 @@ npm run build-site
 
 # 5. Uppdatera dashboard-datan
 cd ../..
-python cns.py export json --output projects/project-vault-dashboard/dashboard/data/projects.json
+python cns.py export json --output nodes/project-vault-dashboard/dashboard/data/nodes.json
 
 # 6. Starta dashboard-server
-npx serve projects/project-vault-dashboard/dashboard -l 3000
+npx serve nodes/project-vault-dashboard/dashboard -l 3000
 # Oppna http://localhost:3000
 ```

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Analys – Project Vault{% endblock %}
+{% block title %}Analys – CNS Vault{% endblock %}
 
 {% block content %}
 
@@ -19,7 +19,7 @@
   {% endif %}
 </div>
 
-{% if not project_list %}
+{% if not node_list %}
 <div class="text-center py-16 bg-white border border-slate-200 rounded-lg">
   <div class="text-4xl mb-3">&#128300;</div>
   <h3 class="text-lg font-semibold text-slate-600 mb-1">Inga projekt</h3>
@@ -27,7 +27,7 @@
 {% else %}
 
 <div class="space-y-3">
-  {% for p in project_list %}
+  {% for p in node_list %}
   {% set meta = p.meta %}
   {% set slug = meta.slug %}
   <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden
@@ -36,7 +36,7 @@
               {% else %}border-l-4 border-slate-200{% endif %}">
     <div class="px-4 py-3 flex flex-wrap items-center justify-between gap-2">
       <div class="flex flex-wrap items-center gap-2">
-        <a href="/project/{{ slug }}" class="font-semibold text-sm text-slate-800 hover:text-blue-600 transition-colors">{{ meta.title or slug }}</a>
+        <a href="/node/{{ slug }}" class="font-semibold text-sm text-slate-800 hover:text-blue-600 transition-colors">{{ meta.title or slug }}</a>
         {% if p.changed_in_devwatch %}
         <span class="inline-block px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 text-xs font-medium">Ändrad</span>
         {% endif %}

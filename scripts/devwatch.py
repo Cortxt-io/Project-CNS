@@ -1,6 +1,6 @@
-"""cns-devwatch: git-diff-based change detector for the CNS project portfolio.
+"""cns-devwatch: git-diff-based change detector for the CNS node portfolio.
 
-Monitors ALL .md files under projects/<slug>/ and exports one ChangeEvent per
+Monitors ALL .md files under nodes/<slug>/ and exports one ChangeEvent per
 slug, compatible with the DocsWatch/cns-devlog schema.
 """
 
@@ -20,7 +20,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from scripts.md_parser import read_project, list_project_files
+from scripts.md_parser import read_node, list_node_files
 
 
 class DevwatchError(RuntimeError):
@@ -93,9 +93,9 @@ def get_baseline_commit(
 
 
 def run_git_diff(baseline_commit: str) -> str:
-    """Return unified diff for all .md files under projects/ since baseline_commit."""
+    """Return unified diff for all .md files under nodes/ since baseline_commit."""
     r = _git(
-        ["diff", "--unified=3", f"{baseline_commit}..HEAD", "--", "projects/"],
+        ["diff", "--unified=3", f"{baseline_commit}..HEAD", "--", "nodes/"],
         check=False,
     )
     return r.stdout
@@ -105,9 +105,9 @@ def run_git_diff(baseline_commit: str) -> str:
 # Diff parsing — group by slug, track subfile
 # ---------------------------------------------------------------------------
 
-# Matches:  diff --git a/projects/<slug>/some/path.md b/projects/<slug>/some/path.md
+# Matches:  diff --git a/nodes/<slug>/some/path.md b/nodes/<slug>/some/path.md
 _DIFF_HEADER_RE = re.compile(
-    r"^diff --git a/projects/([^/]+)/(.+\.md) b/projects/[^/]+/.+\.md$"
+    r"^diff --git a/nodes/([^/]+)/(.+\.md) b/nodes/[^/]+/.+\.md$"
 )
 
 
@@ -117,7 +117,7 @@ def parse_diff_by_slug(diff_output: str) -> dict[str, dict[str, str]]:
     Returns:
         {
             slug: {
-                "project.md": "<diff text>",
+                "node.md": "<diff text>",
                 "planning/decisions.md": "<diff text>",
                 ...
             }
@@ -153,12 +153,12 @@ def parse_diff_by_slug(diff_output: str) -> dict[str, dict[str, str]]:
 _FM_FIELD_RE = re.compile(r"^([a-z_]+):\s*(.*)$")
 
 
-def classify_file_diff(diff_text: str, is_project_md: bool = False) -> dict:
+def classify_file_diff(diff_text: str, is_node_md: bool = False) -> dict:
     """Analyse the diff for a single file.
 
     Returns:
         {
-            "changed_fields": [...],   # frontmatter keys (project.md only)
+            "changed_fields": [...],   # frontmatter keys (node.md only)
             "sections": [...],         # ## Heading names with changed content
             "raw_content": "...",      # diff snippets, per-section <= 500 chars
         }
@@ -187,8 +187,8 @@ def classify_file_diff(diff_text: str, is_project_md: bool = False) -> dict:
             continue
         content = line[1:].strip()
 
-        # Frontmatter field detection (project.md only)
-        if is_project_md:
+        # Frontmatter field detection (node.md only)
+        if is_node_md:
             fm_m = _FM_FIELD_RE.match(content)
             if fm_m:
                 changed_fields.add(fm_m.group(1))
@@ -223,17 +223,17 @@ def classify_file_diff(diff_text: str, is_project_md: bool = False) -> dict:
 def is_noise(classified: dict[str, dict]) -> bool:
     """Return True if all changes for a slug are noise-only.
 
-    Noise = only project.md changed AND only the `updated` field changed
+    Noise = only node.md changed AND only the `updated` field changed
     AND no section content changed.
-    Any change to a non-project.md file is always meaningful.
+    Any change to a non-node.md file is always meaningful.
     """
     file_keys = set(classified.keys())
 
-    # Any non-project.md file changed → always meaningful
-    if file_keys - {"project.md"}:
+    # Any non-node.md file changed → always meaningful
+    if file_keys - {"node.md"}:
         return False
 
-    pmd = classified.get("project.md", {})
+    pmd = classified.get("node.md", {})
     changed_fields = pmd.get("changed_fields", [])
     sections = pmd.get("sections", [])
 
@@ -261,7 +261,7 @@ def _fingerprint(slug: str, changed_files_meta: list[dict]) -> str:
 def build_event(
     slug: str,
     classified: dict[str, dict],
-    project_meta: dict,
+    node_meta: dict,
     run_id: str,
     now_iso: str,
 ) -> dict:
@@ -272,8 +272,8 @@ def build_event(
         for rel_file, info in sorted(classified.items())
     ]
 
-    # Top-level changed_fields from project.md only
-    changed_fields = classified.get("project.md", {}).get("changed_fields", [])
+    # Top-level changed_fields from node.md only
+    changed_fields = classified.get("node.md", {}).get("changed_fields", [])
 
     # Title: slug + comma-joined file names
     file_names = ", ".join(cf["file"] for cf in changed_files_meta)
@@ -289,16 +289,16 @@ def build_event(
     fp = _fingerprint(slug, changed_files_meta)
     run_compact = run_id.replace("_", "T") + "Z"
 
-    project_title = project_meta.get("title", slug)
-    project_tags = project_meta.get("tags") or []
-    tags = sorted({slug} | set(project_tags))
+    node_title = node_meta.get("title", slug)
+    node_tags = node_meta.get("tags") or []
+    tags = sorted({slug} | set(node_tags))
 
     return {
         "id": f"devwatch:{slug}:{fp}:{run_compact}",
         "detectedAt": now_iso,
         "source": {
             "id": slug,
-            "name": project_title,
+            "name": node_title,
             "type": "devwatch",
             "url": None,
         },
@@ -311,7 +311,7 @@ def build_event(
             "run_id": run_id,
             "run_timestamp": run_compact,
             "slug": slug,
-            "project_title": project_title,
+            "node_title": node_title,
             "changed_fields": changed_fields,
             "changed_files": changed_files_meta,
             "noise_filtered": False,
@@ -327,7 +327,7 @@ _STAGE_DIFF_RE = re.compile(r"^stage:\s*(.+)$")
 
 
 def _extract_stage_transition(diff_text: str) -> tuple[Optional[str], Optional[str]]:
-    """Parse unified diff for stage field changes in project.md frontmatter.
+    """Parse unified diff for stage field changes in node.md frontmatter.
 
     Returns (old_stage, new_stage) or (None, None) if no transition detected.
     """
@@ -360,7 +360,7 @@ def to_eventstream_event(
     slug = meta.get("slug", "")
     changed_fields = meta.get("changed_fields", [])
     changed_files = meta.get("changed_files", [])
-    project_title = meta.get("project_title", slug)
+    node_title = meta.get("node_title", slug)
 
     # Determine event type
     has_stage_change = (
@@ -392,7 +392,7 @@ def to_eventstream_event(
             "devwatch_id": devwatch_id,
             "changed_fields": changed_fields,
             "changed_files": changed_files,
-            "project_title": project_title,
+            "node_title": node_title,
             "stage_from": old_stage,
             "stage_to": new_stage,
         },
@@ -453,8 +453,8 @@ def run_devwatch(
     diff_output = run_git_diff(baseline_commit)
     slug_diffs = parse_diff_by_slug(diff_output)
 
-    all_slugs = [p.parent.name for p in list_project_files()]
-    projects_scanned = len(all_slugs)
+    all_slugs = [p.parent.name for p in list_node_files()]
+    nodes_scanned = len(all_slugs)
 
     events: list[dict] = []
     es_events: list[dict] = []
@@ -462,7 +462,7 @@ def run_devwatch(
 
     for slug, file_diff_map in slug_diffs.items():
         classified: dict[str, dict] = {
-            rel_file: classify_file_diff(diff_text, is_project_md=(rel_file == "project.md"))
+            rel_file: classify_file_diff(diff_text, is_node_md=(rel_file == "node.md"))
             for rel_file, diff_text in file_diff_map.items()
         }
 
@@ -471,16 +471,16 @@ def run_devwatch(
             continue
 
         try:
-            project_meta, _, _ = read_project(slug)
+            node_meta, _, _ = read_node(slug)
         except FileNotFoundError:
-            project_meta = {"title": slug, "tags": []}
+            node_meta = {"title": slug, "tags": []}
 
-        change_event = build_event(slug, classified, project_meta, run_id, now_iso)
+        change_event = build_event(slug, classified, node_meta, run_id, now_iso)
         events.append(change_event)
 
         # Detect stage transition and convert to eventstream event
-        project_md_diff = file_diff_map.get("project.md", "")
-        old_stage, new_stage = _extract_stage_transition(project_md_diff)
+        node_md_diff = file_diff_map.get("node.md", "")
+        old_stage, new_stage = _extract_stage_transition(node_md_diff)
         es_events.append(to_eventstream_event(change_event, old_stage, new_stage))
 
     no_changes = (len(events) == 0 and noise_count == 0 and not slug_diffs)
@@ -492,8 +492,8 @@ def run_devwatch(
         "baseline": baseline_label,
         "events": events,
         "meta": {
-            "projects_scanned": projects_scanned,
-            "projects_changed": len(slug_diffs),
+            "nodes_scanned": nodes_scanned,
+            "nodes_changed": len(slug_diffs),
             "events_exported": len(events),
             "noise_filtered": noise_count,
             "no_changes": no_changes,
@@ -544,8 +544,8 @@ def _print_summary(
 
     header = (
         f"Run: {run_id}  Baseline: {baseline_label}\n"
-        f"Scanned {meta['projects_scanned']} projects · "
-        f"{meta['projects_changed']} changed · "
+        f"Scanned {meta['nodes_scanned']} nodes · "
+        f"{meta['nodes_changed']} changed · "
         f"{noise_count} filtered"
     )
     if dry_run:
@@ -590,7 +590,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         prog="devwatch",
-        description="Detect changes in CNS project files via git diff",
+        description="Detect changes in CNS node files via git diff",
     )
     parser.add_argument("--output", "-o", default=None, help="Override output file path")
     parser.add_argument(

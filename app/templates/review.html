@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Granska förslag – Project Vault{% endblock %}
+{% block title %}Granska förslag – CNS Vault{% endblock %}
 
 {% block content %}
 
@@ -24,7 +24,7 @@
   <!-- Header -->
   <div class="px-4 py-3 bg-slate-50/50 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
     <div>
-      <a href="/project/{{ item.slug }}" class="font-semibold text-sm text-slate-800 hover:text-blue-600 transition-colors">{{ item.slug }}</a>
+      <a href="/node/{{ item.slug }}" class="font-semibold text-sm text-slate-800 hover:text-blue-600 transition-colors">{{ item.slug }}</a>
       <span class="text-xs text-slate-400 ml-2">{{ item.analyzed_at }}</span>
     </div>
     <div class="flex items-center gap-2">

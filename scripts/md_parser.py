@@ -1,4 +1,4 @@
-"""Read and write project Markdown files with YAML frontmatter."""
+"""Read and write node Markdown files with YAML frontmatter."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from typing import Any
 
 import frontmatter
 
-# Canonical section order that every project file must follow.
+# Canonical section order that every node file must follow.
 # Product template (legacy — used when kind is None)
 SECTIONS = [
     "Problem",
@@ -71,25 +71,25 @@ def sections_for_kind(kind: str | None) -> list[str]:
         "framework": FRAMEWORK_SECTIONS,
     }.get(kind, SECTIONS)
 
-PROJECTS_DIR = Path(__file__).resolve().parent.parent / "projects"
+NODES_DIR = Path(__file__).resolve().parent.parent / "nodes"
 
 
 # ---------------------------------------------------------------------------
-# Path helpers — single source of truth for project layout
+# Path helpers — single source of truth for node layout
 # ---------------------------------------------------------------------------
 
-def project_dir(slug: str) -> Path:
-    """Return the folder for a project: projects/<slug>/"""
-    return PROJECTS_DIR / slug
+def node_dir(slug: str) -> Path:
+    """Return the folder for a node: nodes/<slug>/"""
+    return NODES_DIR / slug
 
 
-def project_path(slug: str) -> Path:
-    """Return the canonical file for a project: projects/<slug>/project.md"""
-    return PROJECTS_DIR / slug / "project.md"
+def node_path(slug: str) -> Path:
+    """Return the canonical file for a node: nodes/<slug>/node.md"""
+    return NODES_DIR / slug / "node.md"
 
 
 # Subdirectories scaffolded by `cns new`
-PROJECT_SUBDIRS = ["notes", "research", "planning", "exports", "assets"]
+NODE_SUBDIRS = ["notes", "research", "planning", "exports", "assets"]
 
 
 def _parse_sections(body: str) -> dict[str, str]:
@@ -147,21 +147,21 @@ def _render_body(sections: dict[str, str], kind: str | None = None) -> str:
     return "\n".join(parts).rstrip() + "\n"
 
 
-def list_project_files() -> list[Path]:
-    """Return sorted list of project.md files in the projects directory."""
-    if not PROJECTS_DIR.exists():
+def list_node_files() -> list[Path]:
+    """Return sorted list of node.md files in the nodes directory."""
+    if not NODES_DIR.exists():
         return []
-    return sorted(PROJECTS_DIR.glob("*/project.md"))
+    return sorted(NODES_DIR.glob("*/node.md"))
 
 
-def read_project(slug: str) -> tuple[dict[str, Any], dict[str, str], str]:
-    """Read a project file and return (frontmatter_dict, sections_dict, raw_content).
+def read_node(slug: str) -> tuple[dict[str, Any], dict[str, str], str]:
+    """Read a node file and return (frontmatter_dict, sections_dict, raw_content).
 
-    Raises FileNotFoundError if the project does not exist.
+    Raises FileNotFoundError if the node does not exist.
     """
-    path = project_path(slug)
+    path = node_path(slug)
     if not path.exists():
-        raise FileNotFoundError(f"Project '{slug}' not found at {path}")
+        raise FileNotFoundError(f"Node '{slug}' not found at {path}")
 
     post = frontmatter.load(str(path))
     meta: dict[str, Any] = dict(post.metadata)
@@ -170,10 +170,10 @@ def read_project(slug: str) -> tuple[dict[str, Any], dict[str, str], str]:
     return meta, sections, raw
 
 
-def read_all_projects() -> list[tuple[dict[str, Any], dict[str, str]]]:
-    """Read all project files. Returns list of (frontmatter, sections) tuples."""
+def read_all_nodes() -> list[tuple[dict[str, Any], dict[str, str]]]:
+    """Read all node files. Returns list of (frontmatter, sections) tuples."""
     results = []
-    for path in list_project_files():
+    for path in list_node_files():
         post = frontmatter.load(str(path))
         meta = dict(post.metadata)
         sections = _parse_sections(post.content)
@@ -181,17 +181,17 @@ def read_all_projects() -> list[tuple[dict[str, Any], dict[str, str]]]:
     return results
 
 
-def write_project(
+def write_node(
     slug: str,
     meta: dict[str, Any],
     sections: dict[str, str],
 ) -> Path:
-    """Write a project file with the given frontmatter and sections.
+    """Write a node file with the given frontmatter and sections.
 
     Returns the path that was written to.
     """
-    PROJECTS_DIR.mkdir(parents=True, exist_ok=True)
-    path = project_path(slug)
+    NODES_DIR.mkdir(parents=True, exist_ok=True)
+    path = node_path(slug)
     path.parent.mkdir(parents=True, exist_ok=True)
 
     kind = meta.get("kind")  # None for legacy product nodes
@@ -201,8 +201,8 @@ def write_project(
     return path
 
 
-def new_project_template(slug: str, kind: str | None = None) -> tuple[dict[str, Any], dict[str, str]]:
-    """Return default frontmatter and empty sections for a new project.
+def new_node_template(slug: str, kind: str | None = None) -> tuple[dict[str, Any], dict[str, str]]:
+    """Return default frontmatter and empty sections for a new node.
 
     If kind is set, uses the appropriate section template and includes
     kind/stage/part_of/feeds/depends_on in frontmatter.
@@ -247,15 +247,15 @@ def new_project_template(slug: str, kind: str | None = None) -> tuple[dict[str, 
     return meta, sections
 
 
-def scaffold_project_dirs(slug: str) -> Path:
-    """Create the full folder scaffold for a new project.
+def scaffold_node_dirs(slug: str) -> Path:
+    """Create the full folder scaffold for a new node.
 
-    Creates: projects/<slug>/{notes, research, planning, exports, assets}/
+    Creates: nodes/<slug>/{notes, research, planning, exports, assets}/
     with placeholder README.md files in notes/ and assets/.
-    Returns the project directory path.
+    Returns the node directory path.
     """
-    pdir = project_dir(slug)
-    for sub in PROJECT_SUBDIRS:
+    pdir = node_dir(slug)
+    for sub in NODE_SUBDIRS:
         (pdir / sub).mkdir(parents=True, exist_ok=True)
 
     # Placeholder READMEs so empty dirs survive git/OneDrive sync
@@ -276,24 +276,24 @@ def scaffold_project_dirs(slug: str) -> Path:
     return pdir
 
 
-def ensure_project_dirs(slug: str) -> None:
-    """Ensure all PROJECT_SUBDIRS exist for a project. Creates only directories,
-    no seed files and no project.md."""
-    pdir = project_dir(slug)
-    for sub in PROJECT_SUBDIRS:
+def ensure_node_dirs(slug: str) -> None:
+    """Ensure all NODE_SUBDIRS exist for a node. Creates only directories,
+    no seed files and no node.md."""
+    pdir = node_dir(slug)
+    for sub in NODE_SUBDIRS:
         (pdir / sub).mkdir(parents=True, exist_ok=True)
 
 
-def ensure_all_project_dirs() -> list[str]:
-    """Run ensure_project_dirs for all existing projects.
+def ensure_all_node_dirs() -> list[str]:
+    """Run ensure_node_dirs for all existing nodes.
     Returns list of slugs where directories were created."""
     created: list[str] = []
-    for path in list_project_files():
+    for path in list_node_files():
         slug = path.parent.name
         # Check if any subdir was missing before creating
-        pdir = project_dir(slug)
-        had_missing = any(not (pdir / sub).exists() for sub in PROJECT_SUBDIRS)
-        ensure_project_dirs(slug)
+        pdir = node_dir(slug)
+        had_missing = any(not (pdir / sub).exists() for sub in NODE_SUBDIRS)
+        ensure_node_dirs(slug)
         if had_missing:
             created.append(slug)
     return created
@@ -305,7 +305,7 @@ def _seed_if_missing(path: Path, content: str) -> None:
         path.write_text(content, encoding="utf-8")
 
 
-def render_generated_section(slug: str, all_projects: list[tuple[dict, dict]] | None = None) -> str:
+def render_generated_section(slug: str, all_nodes: list[tuple[dict, dict]] | None = None) -> str:
     """Generate 'Ingående komponenter' or 'Ingående system' from part_of relations.
 
     For system nodes: find all nodes where part_of == slug.
@@ -314,16 +314,16 @@ def render_generated_section(slug: str, all_projects: list[tuple[dict, dict]] | 
 
     Args:
         slug: The slug of the system/framework node to generate for.
-        all_projects: Optional list of (meta, sections) tuples. If None, reads all.
+        all_nodes: Optional list of (meta, sections) tuples. If None, reads all.
 
     Returns:
         Markdown-formatted string for the generated section.
     """
-    if all_projects is None:
-        all_projects = read_all_projects()
+    if all_nodes is None:
+        all_nodes = read_all_nodes()
 
     kind = None
-    for meta, _ in all_projects:
+    for meta, _ in all_nodes:
         if meta.get("slug") == slug:
             kind = meta.get("kind")
             break
@@ -333,7 +333,7 @@ def render_generated_section(slug: str, all_projects: list[tuple[dict, dict]] | 
 
     # Find direct children (part_of == this slug)
     children = []
-    for meta, _ in all_projects:
+    for meta, _ in all_nodes:
         if meta.get("part_of") == slug:
             children.append(meta)
 
@@ -369,7 +369,7 @@ def render_generated_section(slug: str, all_projects: list[tuple[dict, dict]] | 
 
         # Find sub-children (components of this system)
         sub_children = []
-        for meta, _ in all_projects:
+        for meta, _ in all_nodes:
             if meta.get("part_of") == c_slug:
                 sub_children.append(meta)
         for sub in sorted(sub_children, key=lambda m: m.get("stage", "")):
@@ -381,7 +381,7 @@ def render_generated_section(slug: str, all_projects: list[tuple[dict, dict]] | 
     return "\n".join(lines)
 
 
-def render_dataflow_section(slug: str, all_projects: list[tuple[dict, dict]] | None = None) -> str:
+def render_dataflow_section(slug: str, all_nodes: list[tuple[dict, dict]] | None = None) -> str:
     """Generate 'Dataflöde' section from feeds relations among children.
 
     For system nodes: find feeds chains among components that are part_of this system.
@@ -389,11 +389,11 @@ def render_dataflow_section(slug: str, all_projects: list[tuple[dict, dict]] | N
     Returns:
         Markdown-formatted string describing data flows, or empty string.
     """
-    if all_projects is None:
-        all_projects = read_all_projects()
+    if all_nodes is None:
+        all_nodes = read_all_nodes()
 
     # Find children of this slug
-    children = {meta.get("slug"): meta for meta, _ in all_projects if meta.get("part_of") == slug}
+    children = {meta.get("slug"): meta for meta, _ in all_nodes if meta.get("part_of") == slug}
     if not children:
         return ""
 
@@ -418,7 +418,7 @@ def apply_changes(
     sections: dict[str, str],
     changes: dict[str, Any],
 ) -> tuple[dict[str, Any], dict[str, str]]:
-    """Apply a validated changes dict (from Perplexity response) to a project.
+    """Apply a validated changes dict (from Perplexity response) to a node.
 
     Only non-null values in changes are applied.  Returns updated (meta, sections).
     """

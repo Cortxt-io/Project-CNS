@@ -1,4 +1,4 @@
-"""Export project data to Excel (xlsx) format."""
+"""Export node data to Excel (xlsx) format."""
 
 from __future__ import annotations
 
@@ -7,12 +7,12 @@ from pathlib import Path
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
-from scripts.md_parser import read_all_projects
+from scripts.md_parser import read_all_nodes
 
 EXPORTS_DIR = Path(__file__).resolve().parent.parent / "exports"
 
 COLUMNS = [
-    "Project",
+    "Node",
     "Status",
     "MVP Stage",
     "Problem",
@@ -64,14 +64,14 @@ def _top_risk(section_text: str) -> str:
 
 
 def export_xlsx() -> Path:
-    """Generate exports/MVP_comparison.xlsx from all project files.
+    """Generate exports/MVP_comparison.xlsx from all node files.
 
     Returns the path to the generated file.
     """
     EXPORTS_DIR.mkdir(parents=True, exist_ok=True)
     output_path = EXPORTS_DIR / "MVP_comparison.xlsx"
 
-    projects = read_all_projects()
+    nodes = read_all_nodes()
 
     wb = Workbook()
     ws = wb.active
@@ -88,7 +88,7 @@ def export_xlsx() -> Path:
         cell.alignment = Alignment(horizontal="center")
 
     # Data rows
-    for row_idx, (meta, sections) in enumerate(projects, 2):
+    for row_idx, (meta, sections) in enumerate(nodes, 2):
         audience_text = sections.get("Target Audience", "")
         ws.cell(row=row_idx, column=1, value=meta.get("title", ""))
         ws.cell(row=row_idx, column=2, value=meta.get("status", ""))

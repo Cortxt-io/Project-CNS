@@ -2,7 +2,7 @@ from pathlib import Path
 import stat
 
 HOOK_CONTENT = """#!/bin/sh
-# CNS post-commit hook – trigger analyze for changed projects
+# CNS post-commit hook – trigger analyze for changed nodes
 cd "$(git rev-parse --show-toplevel)"
 python cns.py post-commit-analyze
 """

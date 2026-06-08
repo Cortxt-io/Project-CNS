@@ -11,9 +11,9 @@ from rich.table import Table
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-PROJECTS_DIR = PROJECT_ROOT / "projects"
+NODES_DIR = PROJECT_ROOT / "nodes"
 EXPORTS_DIR = PROJECT_ROOT / "exports"
-SCHEMA_PATH = PROJECT_ROOT / "schemas" / "project_schema.json"
+SCHEMA_PATH = PROJECT_ROOT / "schemas" / "node_schema.json"
 ENV_PATH = PROJECT_ROOT / ".env"
 
 
@@ -43,13 +43,13 @@ def run_doctor(console: Console) -> None:
         "Configured" if key_valid else "Optional — needed only for api mode",
     )
 
-    # 3. projects/ directory
-    projects_exist = PROJECTS_DIR.exists()
-    project_count = len(list(PROJECTS_DIR.glob("*/project.md"))) if projects_exist else 0
+    # 3. nodes/ directory
+    nodes_exist = NODES_DIR.exists()
+    node_count = len(list(NODES_DIR.glob("*/node.md"))) if nodes_exist else 0
     table.add_row(
-        "projects/ directory",
-        "[green]OK[/green]" if projects_exist else "[red]MISSING[/red]",
-        f"{project_count} project(s) found" if projects_exist else "Run cns new <slug> to create one",
+        "nodes/ directory",
+        "[green]OK[/green]" if nodes_exist else "[red]MISSING[/red]",
+        f"{node_count} node(s) found" if nodes_exist else "Run cns new <slug> to create one",
     )
 
     # 4. exports/ directory
@@ -63,7 +63,7 @@ def run_doctor(console: Console) -> None:
     # 5. JSON schema
     schema_exists = SCHEMA_PATH.exists()
     table.add_row(
-        "project_schema.json",
+        "node_schema.json",
         "[green]OK[/green]" if schema_exists else "[red]MISSING[/red]",
         str(SCHEMA_PATH) if schema_exists else "Schema file is missing — validation will fail",
     )

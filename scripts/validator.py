@@ -1,4 +1,4 @@
-"""Validation for Perplexity API responses and project files."""
+"""Validation for Perplexity API responses and node files."""
 
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ from pathlib import Path
 
 from jsonschema import ValidationError, validate
 
-SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schemas" / "project_schema.json"
+SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schemas" / "node_schema.json"
 
 # REMOVED during node-model migration (all nodes now have kind set):
 # REQUIRED_FM_FIELDS for legacy product nodes is no longer needed.
@@ -55,7 +55,7 @@ def load_schema() -> dict:
 
 
 def validate_response(data: dict) -> tuple[bool, str | None]:
-    """Validate a parsed JSON response against the project schema.
+    """Validate a parsed JSON response against the node schema.
 
     Returns (True, None) on success or (False, error_message) on failure.
     """
@@ -68,11 +68,11 @@ def validate_response(data: dict) -> tuple[bool, str | None]:
 
 
 # ---------------------------------------------------------------------------
-# Project-level validation (used by `cns validate`)
+# Node-level validation (used by `cns validate`)
 # ---------------------------------------------------------------------------
 
-def validate_project(meta: dict, sections: dict) -> list[str]:
-    """Validate a project's frontmatter and sections.
+def validate_node(meta: dict, sections: dict) -> list[str]:
+    """Validate a node's frontmatter and sections.
 
     Returns a list of error strings.  Empty list = valid.
     """
@@ -170,10 +170,10 @@ def validate_project(meta: dict, sections: dict) -> list[str]:
         # part_of: if set, slug directory should exist
         part_of = meta.get("part_of")
         if part_of is not None and part_of != "":
-            from scripts.md_parser import project_dir as _project_dir
-            if not _project_dir(part_of).exists():
+            from scripts.md_parser import node_dir as _node_dir
+            if not _node_dir(part_of).exists():
                 errors.append(
-                    f"Warning: part_of='{part_of}' but no project directory found for that slug"
+                    f"Warning: part_of='{part_of}' but no node directory found for that slug"
                 )
 
         # feeds and depends_on must be lists of strings if present

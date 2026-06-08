@@ -69,7 +69,7 @@ def read_file_from_github(rel_path: str) -> str | None:
 
     Args:
         rel_path: Path relative to repo root, e.g.
-                  'projects/project-vault-dashboard/dashboard/data/devwatch_latest.json'
+                  'nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json'
 
     Returns:
         File content as string, or None if not found.
@@ -97,7 +97,7 @@ def read_file_from_github(rel_path: str) -> str | None:
 
 
 def git_commit_and_push(message: str) -> tuple[bool, str]:
-    """Sync recently changed files under projects/ and exports/ to GitHub.
+    """Sync recently changed files under nodes/ and exports/ to GitHub.
 
     Only files modified in the last 60 seconds are pushed, to avoid
     sending hundreds of API requests on every call.
@@ -113,7 +113,7 @@ def git_commit_and_push(message: str) -> tuple[bool, str]:
     cutoff = time.time() - 60  # files changed in the last 60 seconds
 
     dirs_to_sync = [
-        REPO_ROOT / "projects",
+        REPO_ROOT / "nodes",
         REPO_ROOT / "exports",
     ]
 
@@ -146,7 +146,7 @@ def push_file_immediately(file_path: Path, message: str) -> tuple[bool, str]:
     """Push a single file to GitHub immediately via REST API.
 
     Use this instead of git_commit_and_push when you need guaranteed
-    delivery — e.g. after write_project() on Railway ephemeral disk.
+    delivery — e.g. after write_node() on Railway ephemeral disk.
     """
     token, repo = _get_config()
     if not token or not repo:
