@@ -128,6 +128,7 @@ def _wants_json() -> bool:
 ALLOWED_ORIGINS = [
     "https://rian010194.github.io",
     "https://app.cortxt.io",
+    "https://dashboard-sable-psi-28.vercel.app",
     "http://localhost:5000",
     "http://127.0.0.1:5000",
 ]
