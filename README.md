@@ -1,6 +1,14 @@
-# CNS (Central Node Store) v0.3
+# CNS (Central Node Store)
 
-A local-first, API-optional project management CLI for managing startup project ideas and MVPs. Markdown files are the single source of truth.
+A local-first, Markdown-based system for modelling and running a product portfolio from idea to operation. `projects/<slug>/project.md` files are the single source of truth; **GitHub is the source of truth in production.**
+
+The CLI below is the local entrypoint. CNS has since grown a **node model** (`kind`/`stage` + `part_of`/`feeds`/`depends_on` relations), a **Flask backend** on Railway, and a **remote MCP server** consumed by the `cortxt` dashboard and by claude.ai.
+
+> **Architecture lives in [`CLAUDE.md`](CLAUDE.md)** — read that for the node model, deploy/data flow, and repo layout. This README documents the CLI and local workflows.
+
+Two AI engines are used for different things:
+- **Perplexity** powers `cns update --mode api` (see Three Update Modes below). Needs `PERPLEXITY_API_KEY`.
+- **Claude** (Anthropic) powers the analysis features — `analyze`, `devlog`, `brief`, `suggest-quest`. Needs `ANTHROPIC_API_KEY`.
 
 ## Setup
 
@@ -123,37 +131,73 @@ python cns.py export xlsx
 python cns.py doctor
 ```
 
+### Validate a project file
+
+```bash
+python cns.py validate webhook-router
+```
+
+### AI analysis & logs (Claude — needs `ANTHROPIC_API_KEY`)
+
+```bash
+python cns.py analyze webhook-router   # AI analysis of a node
+python cns.py devlog                   # generate a devlog entry
+python cns.py brief                    # daily portfolio brief
+```
+
+### Dev/file watching & git hooks
+
+```bash
+python cns.py devwatch                 # watch git diffs for a node
+python cns.py watch                    # file watcher
+python cns.py install-hooks            # install git hooks
+python cns.py post-commit              # post-commit analysis (run by hook)
+python cns.py review                   # review pending changes
+python cns.py scaffold <slug>          # scaffold a new node's folders
+python cns.py eventstream sync         # sync the event stream
+```
+
+> Not every subcommand is documented in depth here; run `python cns.py -h` for the full, current list.
+
 ## Project Structure
 
 ```
-prompt-cns/
+Project-CNS/
 ├── README.md
-├── .env.example             <- optional, only for api mode
+├── CLAUDE.md                <- authoritative architecture / node model
+├── .env.example
 ├── requirements.txt
 ├── cns.py                   <- CLI entrypoint
-├── system_prompt.md         <- system prompt for Perplexity API / connector briefs
+├── system_prompt.md         <- system prompt for connector briefs / API
 ├── schemas/
-│   └── project_schema.json  <- JSON schema for validating API responses
-├── projects/                <- source of truth
+│   └── project_schema.json  <- JSON schema for validating AI responses
+├── projects/                <- source of truth (one folder per node)
 │   └── <slug>/
-│       ├── project.md       <- canonical project file (frontmatter + sections)
-│       ├── planning/
-│       │   ├── mvp-scope.md <- quest workflow: current slice, next steps, not now
-│       │   ├── roadmap.md
-│       │   └── decisions.md
-│       ├── research/
-│       ├── notes/
-│       ├── exports/
-│       └── assets/
-├── exports/                 <- global generated files (xlsx)
+│       ├── project.md       <- canonical node file (frontmatter + sections); name is ALWAYS project.md
+│       ├── planning/        <- mvp-scope.md (quest), roadmap.md, decisions.md
+│       ├── research/  notes/  exports/  assets/
+├── exports/                 <- global generated files (e.g. xlsx, projects.json)
+├── app/                     <- backend (Railway)
+│   ├── server.py            <- Flask app; /api/projects runs git_pull() + export_json() live
+│   ├── mcp_server.py        <- FastMCP server (GitHub OAuth, Redis token-store)
+│   ├── asgi.py              <- ASGI entrypoint: FastMCP owns /mcp, Flask mounted inside via a2wsgi
+│   ├── git_ops.py           <- direct GitHub API push (AI content bypasses Railway's ephemeral disk)
+│   └── templates/
+├── skills/                  <- portable conventions (e.g. cortxt-quests)
 └── scripts/
-    ├── md_parser.py         <- read/write .md files + frontmatter
-    ├── quest.py             <- quest workflow (init/show/sync)
-    ├── local_editor.py      <- interactive local editing
-    ├── connector.py         <- edit brief generator for connector mode
-    ├── doctor.py            <- environment diagnostics
-    ├── perplexity_client.py <- Perplexity API integration (optional)
+    ├── md_parser.py         <- read/write project.md + frontmatter; kind-aware section templates
     ├── validator.py         <- project + JSON schema validation
+    ├── json_exporter.py     <- export all nodes to projects.json
+    ├── analyst.py           <- AI analysis (Claude via ANTHROPIC_API_KEY)
+    ├── claude_client.py     <- Anthropic API client
+    ├── perplexity_client.py <- Perplexity API client (used by `update --mode api`)
+    ├── connector.py         <- edit-brief generator for connector mode
+    ├── local_editor.py      <- interactive local editing
+    ├── quest.py  quest_manager.py  <- quest workflow / lifecycle
+    ├── portfolio_brief.py   <- daily portfolio brief
+    ├── devlog.py  devwatch.py  eventstream.py  file_watcher.py  <- dev/activity tracking
+    ├── install_hooks.py     <- git hook installation
+    ├── doctor.py            <- environment diagnostics
     └── xlsx_exporter.py     <- generate exports/MVP_comparison.xlsx
 ```
 
@@ -170,21 +214,36 @@ prompt-cns/
 
 ## Frontmatter Schema
 
-Every project file uses YAML frontmatter with these fields:
+Every node uses YAML frontmatter. Frontmatter is migrated **additively** — newer nodes carry the node-model fields below; some older nodes still carry the legacy fields. Keep fallbacks on old fields so the dashboard doesn't break.
 
-| Field         | Type   | Allowed Values                                                        |
-|---------------|--------|-----------------------------------------------------------------------|
-| `title`       | string |                                                                       |
-| `slug`        | string |                                                                       |
-| `status`      | enum   | `idea`, `early_mvp`, `mvp`, `live`, `shelved`                         |
-| `tags`        | list   |                                                                       |
-| `cost_sek`    | number |                                                                       |
-| `value_sek`   | number |                                                                       |
-| `roi_percent` | number |                                                                       |
-| `mvp_stage`   | enum   | `hypothesis`, `problem_interviews`, `solution_test`, `demand_test`, `launch` |
-| `current_slice` | string | Short description of current vertical slice (optional, set by quest) |
-| `created`     | date   |                                                                       |
-| `updated`     | date   |                                                                       |
+**Node-model fields (current):**
+
+| Field         | Type   | Allowed Values                                              |
+|---------------|--------|------------------------------------------------------------|
+| `title`       | string |                                                            |
+| `slug`        | string |                                                            |
+| `kind`        | enum   | `component`, `system`, `framework` — **emerges from `part_of` structure, not declared** |
+| `stage`       | enum   | `idea`, `building`, `working`, `maturing`                  |
+| `status`      | enum   | `idea`, `early_mvp`, `mvp`, `live`, `shelved`              |
+| `part_of`     | string | slug of the parent node (drives nesting + kind)            |
+| `feeds`       | list   | slugs this node feeds data to                              |
+| `depends_on`  | list   | slugs this node depends on                                 |
+| `summary`     | string |                                                            |
+| `tags`        | list   |                                                            |
+| `url_live`    | string |                                                            |
+| `url_repo`    | string |                                                            |
+| `created`     | date   |                                                            |
+| `updated`     | date   |                                                            |
+
+**Legacy fields (still present on some older nodes):**
+
+| Field           | Type   | Allowed Values                                                               |
+|-----------------|--------|-----------------------------------------------------------------------------|
+| `cost_sek`      | number |                                                                             |
+| `value_sek`     | number |                                                                             |
+| `roi_percent`   | number |                                                                             |
+| `mvp_stage`     | enum   | `hypothesis`, `problem_interviews`, `solution_test`, `demand_test`, `launch` |
+| `current_slice` | string | Short description of current vertical slice (set by quest)                  |
 
 ## Perplexity API (optional)
 
