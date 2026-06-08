@@ -13,14 +13,17 @@ SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schemas" / "node_schema.
 # REMOVED during node-model migration (all nodes now have kind set):
 # REQUIRED_FM_FIELDS for legacy product nodes is no longer needed.
 
-# Allowed enum values
-VALID_STATUSES = {"idea", "early_mvp", "mvp", "live", "shelved"}
-VALID_MVP_STAGES = {"hypothesis", "problem_interviews", "solution_test", "demand_test", "launch"}
-VALID_RISK_CATEGORIES = {"technical", "market", "legal", "ops", "competition", "positioning", "adoption"}
+# Allowed enum values — single source of truth: schemas/enums.json
+# (also consumed by the JS package cortxt/packages/cns-schema via its generator).
+# Loaded as sets; all consumers use only membership (`in`) and `sorted()`.
+ENUMS_PATH = Path(__file__).resolve().parent.parent / "schemas" / "enums.json"
+_ENUMS = json.loads(ENUMS_PATH.read_text(encoding="utf-8"))
 
-# Node model enums (Quest A — optional fields)
-VALID_KINDS = {"component", "system", "framework"}
-VALID_STAGES = {"idea", "building", "working", "maturing"}
+VALID_STATUSES = set(_ENUMS["statuses"])
+VALID_MVP_STAGES = set(_ENUMS["mvp_stages"])
+VALID_RISK_CATEGORIES = set(_ENUMS["risk_categories"])
+VALID_KINDS = set(_ENUMS["kinds"])
+VALID_STAGES = set(_ENUMS["stages"])
 
 # Legacy enum constants kept for reference but no longer validated:
 # VALID_LAYERS, VALID_PIPELINES, VALID_FAMILIES

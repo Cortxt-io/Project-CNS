@@ -1,0 +1,8 @@
+{
+  "_comment": "Canonical enum values for the CNS node model. SINGLE SOURCE OF TRUTH. Consumed by scripts/validator.py (Python, as sets) and cortxt/packages/cns-schema (JS, generated via its generate.mjs). Array order is semantic (progression where applicable) and preserved on the JS side. Legacy layer/pipeline/family enums are intentionally NOT here — they are no longer validated (see validator.py).",
+  "statuses": ["idea", "early_mvp", "mvp", "live", "shelved"],
+  "kinds": ["component", "system", "framework"],
+  "stages": ["idea", "building", "working", "maturing"],
+  "mvp_stages": ["hypothesis", "problem_interviews", "solution_test", "demand_test", "launch"],
+  "risk_categories": ["technical", "market", "legal", "ops", "competition", "positioning", "adoption"]
+}
