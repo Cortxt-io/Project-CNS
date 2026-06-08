@@ -35,6 +35,56 @@ Filnamnet är **alltid `project.md`** oavsett kind — all kod globar `*/project
 - Dashboarden (separat `cortxt`-repo på Vercel) proxar `/api/*` hit via sin `vercel.json`.
 - **En nod är inte "tillagd" förrän den är committad, pushad OCH exporterad.** Nya mappar måste `git add`:as explicit — `git commit -am` missar otrackade filer.
 
+## GitHub-interaktion
+Tre kanaler, lätta att förväxla:
+
+**1. Inkommande webhooks (GitHub → Flask).** `app/server.py` → `/api/webhook/github`. HMAC-SHA256 mot `CNS_WEBHOOK_SECRET` (header `X-Hub-Signature-256`; fel → 401). Tre events (via `X-GitHub-Event`):
+- `push` → slug ur ändrade filvägar → **auto-completar quests** (`_slugs_from_pushed_files`, `_complete_quests_for_slugs`).
+- `pull_request` → slug ur titel/body/branch → `opened` **startar**, `merged` **completar** quest.
+- `workflow_run` (completed) → sätter **CI-status** (`passing`/`failing`).
+Efter quest-logiken loggas varje event till **eventstream (Redis)** via `scripts/eventstream.py` (`normalize_*` → `push_to_redis`).
+> Noden `github-webhook` *är* denna mottagare. `webhook-router` är ett fristående devtool — **inte** detta (namnkrock).
+
+**2. Utgående skrivningar (Flask/MCP → GitHub Contents API).** `app/git_ops.py` — använder REST `https://api.github.com`, **inte** `git`-subprocess (Railway saknar `.git/`). Env: `CNS_GITHUB_TOKEN` + `GITHUB_REPO`, branch `main`.
+- `push_file_immediately()` — huvudvägen: GET sha → PUT en fil. Anropas av nästan alla muterande endpoints i `server.py` (quest create/update/activate/complete/archive, projekt-edit, `export projects.json`) och av `mcp_server.py` `cortxt_complete_quest` (agent-initierad commit).
+- `git_commit_and_push()` — scannar `projects/`+`exports/` efter filer ändrade senaste 60 s.
+- `delete_file_on_github()` — DELETE. `read_file_from_github()` — GET (läsning, se nedan).
+
+**3. Pollande läsning (CNS → GitHub API).** `scripts/eventstream.py` pollar `GET /repos/{repo}/commits` och `/actions/runs`. `read_file_from_github()` läser tillbaka genererad JSON (devwatch/devlog/eventstream) i `server.py` och `scripts/portfolio_brief.py`.
+
+**4. GitHub Actions (körs *på* GitHub).** `.github/workflows/export-dashboard.yml` — cron 07:00 UTC + manuell. Genererar export → committar som `github-actions[bot]` med riktig `git push` (checkout-miljö, inte Contents API) → deployar GitHub Pages → triggar `docs-watch`-repot via `repository_dispatch` (PAT_TOKEN).
+
+```mermaid
+flowchart LR
+    subgraph GH[GitHub - sanning]
+        REPO[(repo main)]
+        ACT[Actions: export-dashboard.yml<br/>cron 07:00 UTC]
+        PAGES[GitHub Pages]
+        DW[docs-watch repo]
+    end
+    subgraph RW[Railway]
+        FL[Flask: server.py]
+        WH["/api/webhook/github<br/>HMAC-verifierad"]
+        MCP[mcp_server.py<br/>cortxt_complete_quest]
+        GO[git_ops.py<br/>Contents API]
+        ES[(eventstream / Redis)]
+    end
+    DASH[cortxt dashboard<br/>Vercel] -->|/api/* proxy| FL
+    AGENT[claude.ai / agent] -->|OAuth| MCP
+
+    REPO -->|push / PR / workflow_run webhook| WH
+    WH -->|quest-transitioner| FL
+    WH -->|normaliserade events| ES
+    FL -->|push_file_immediately| GO
+    MCP -->|push_file_immediately| GO
+    GO -->|GET sha + PUT/DELETE| REPO
+    ES -.->|poll /commits, /actions/runs| REPO
+    FL -.->|read_file_from_github| REPO
+    ACT -->|git push dashboard-data| REPO
+    ACT --> PAGES
+    ACT -->|repository_dispatch| DW
+```
+
 ## Enums
 - status: idea | early_mvp | mvp | live | shelved
 - stage: idea | building | working | maturing
