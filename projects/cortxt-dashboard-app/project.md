@@ -11,7 +11,7 @@ part_of: interface
 roi_percent: 338
 slug: cortxt-dashboard-app
 stage: working
-status: early_mvp
+status: idea
 summary: React SPA på app.cortxt.io som visualiserar CNS-portföljen via Railway Flask
   API. Portföljgrid, projektdetaljer och Reactflow graph-overlay.
 tags:
@@ -22,7 +22,7 @@ tags:
 - cloudflare-pages
 - dashboard
 title: Cortxt Dashboard App
-updated: '2026-05-27'
+updated: '2026-06-08'
 url_live: https://app.cortxt.io
 url_repo: https://github.com/rian010194/cortxt
 value_sek: 35000
