@@ -54,10 +54,19 @@ Lokal AI-integration (Qwen/GLM) väntar på `nodes/local-ai/planning/local-ai-re
 
 ## Anteckningar
 
-**Claw Code vs Claude Agent SDK (beslutspunkt):**
-Utvärdera Claw Code som agent-host på Railway-servern *innan* agent-creator-arkitekturen
-låses för servern. Jämför: Claw Code (Railway-native?) / Claude Agent SDK (nuvarande
-agent_host.py-ansats) / eget wrapper. Dokumentera valet här när det är fattat.
+**Claw Code vs Claude Agent SDK (utvärdering 2026-06-09):**
+Claw Code är en open-source Python/Rust clean-room-reimplementering av Claude Code-arkitekturen.
+Stödjer Claude, OpenAI och lokala modeller. Har Railway-template (ClaudeClaw) för 24/7-drift.
+
+| | Claw Code | Claude Agent SDK |
+|---|---|---|
+| Lokala modeller | ✓ native | Kräver adapter |
+| Railway-template | ✓ ClaudeClaw | Eget (agent_host.py) |
+| Mognad | Ny, okänd stabilitet | Etablerad, testad |
+
+**Beslut: Behåll Claude Agent SDK.** Claw Code är intressant för Qwen/GLM-integration men
+lokal AI är ändå uppskjuten pga hårdvara (UHD 610, 1 GB VRAM). Återbesök när lokal AI-deploy
+är aktuell — Claw Code kan ge enklare Ollama-integrationsväg då.
 
 **GitHub Agents API:**
 Undersök stabilitetsstatus vid nästa session som rör agent-infrastruktur. Om stabilt:
