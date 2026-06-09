@@ -1,0 +1,9 @@
+{
+  "id": "idea-b8e40c22",
+  "text": "TUI session-hub: central skärm för att hantera flera parallella sessioner — skapa ny session och koppla agenter runt den, markera sessioner för loop-körning, navigera direkt till gamla sessioner (claude --resume), rendera aktiva worktrees med branch/status. Bygger på sessions_view.py (tangent n) men behöver mutationsförmåga, inte bara läsning.",
+  "created_at": "2026-06-09T08:35:05",
+  "source": "chat",
+  "slug": null,
+  "session_id": null,
+  "status": "open"
+}

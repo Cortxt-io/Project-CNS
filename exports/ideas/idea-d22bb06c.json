@@ -1,0 +1,9 @@
+{
+  "id": "idea-d22bb06c",
+  "text": "Agent-creator → framework-creator: /agent-studio är steg 1, men målet är ett eget framework för att skapa och evaluera agenter. Steg: (1) research-agent identifierar bästa modell per uppgiftstyp (Anthropic/Qwen/GLM), (2) evaluator validerar output-kvalitet mot eval_criteria, (3) framework-creator genererar hela agent-definitioner inkl. skills, profiler och MCP-tillstånd. Claw Code utvärderas som agent-host.",
+  "created_at": "2026-06-09T08:35:15",
+  "source": "chat",
+  "slug": null,
+  "session_id": null,
+  "status": "open"
+}

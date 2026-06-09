@@ -1,9 +1,9 @@
 {
   "id": "session-1f0bed6e",
   "created_at": "2026-06-09T08:01:01",
-  "updated_at": "2026-06-09T08:01:01",
-  "status": "running",
-  "summary": "O1: schema-filer (session-profile + agent-definition), local-ai nod, GitHub MCP-expansion (prs/gh_projects/actions/wiki), Linear MCP, TUI-audit. 37 MCP-verktyg totalt.",
+  "updated_at": "2026-06-09T08:27:27",
+  "status": "done",
+  "summary": "O1-foundation klar: schema-filer (session-profile + agent-definition), local-ai nod, GitHub MCP-expansion (prs/gh_projects/actions/wiki/linear), Linear MCP, TUI-audit. 37 MCP-verktyg deployade på main. O2 (skill/hook/profiler/TUI-sessionsträd) och O3 (agent-studio/new-session-profile/new-skill) följde i samma session.",
   "link": {
     "kind": "node",
     "ref": "cns-mcp"
