@@ -1,0 +1,15 @@
+{
+  "id": "session-1f0bed6e",
+  "created_at": "2026-06-09T08:01:01",
+  "updated_at": "2026-06-09T08:01:01",
+  "status": "running",
+  "summary": "O1: schema-filer (session-profile + agent-definition), local-ai nod, GitHub MCP-expansion (prs/gh_projects/actions/wiki), Linear MCP, TUI-audit. 37 MCP-verktyg totalt.",
+  "link": {
+    "kind": "node",
+    "ref": "cns-mcp"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": "session-75e75370",
+  "fork_name": "O1-foundation"
+}
