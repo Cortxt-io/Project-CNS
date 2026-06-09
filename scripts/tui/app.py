@@ -37,6 +37,7 @@ from scripts.tui.data import (
     filter_nodes,
     load_nodes,
 )
+from scripts.tui.sessions_view import CnsSessionsScreen
 from scripts.tui.sources import (
     Transcript,
     git_branches,
@@ -382,6 +383,7 @@ class CnsTuiApp(App):
         Binding("s", "sessions", "Sessioner"),
         Binding("k", "knowledge", "Kunskap"),
         Binding("c", "agent", "Fråga Claude"),
+        Binding("n", "cns_sessions", "CNS-sessioner"),
         Binding("slash", "focus_filter", "Filter"),
         Binding("escape", "clear_filter", "Rensa filter", show=False),
     ]
@@ -473,6 +475,9 @@ class CnsTuiApp(App):
 
     def action_agent(self) -> None:
         self.push_screen(AgentScreen(self._current_slug))
+
+    def action_cns_sessions(self) -> None:
+        self.push_screen(CnsSessionsScreen())
 
     def action_focus_filter(self) -> None:
         filter_input = self.query_one("#filter", Input)

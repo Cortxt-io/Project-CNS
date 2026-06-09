@@ -1,0 +1,23 @@
+{
+  "$schema": "../session-profile.schema.json",
+  "name": "research",
+  "description": "Research- och planeringssession. Läser noder, Linear-issues och wiki; skriver planning/-filer.",
+  "context": [
+    "node:<slug>",
+    "linear-issues"
+  ],
+  "capacity": [
+    "cortxt_get_project",
+    "cortxt_list_projects",
+    "cortxt_list_linear_issues",
+    "cortxt_link_linear_to_cns",
+    "cortxt_read_wiki_page",
+    "cortxt_write_wiki_page",
+    "cortxt_list_wiki_pages",
+    "cortxt_capture_idea",
+    "cortxt_start_session",
+    "cortxt_mark_session_done",
+    "cortxt_save_session"
+  ],
+  "artifact_type": "node-planning-file"
+}

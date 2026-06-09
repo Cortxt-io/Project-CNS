@@ -1,0 +1,18 @@
+{
+  "$schema": "../session-profile.schema.json",
+  "name": "brainstorm",
+  "description": "Fri idédumpning och klustrering. Lyssna-läge — inga avbrott, inga strukturkrav.",
+  "context": [
+    "open-ideas",
+    "active-quests"
+  ],
+  "capacity": [
+    "cortxt_capture_idea",
+    "cortxt_list_ideas",
+    "cortxt_promote_idea_to_issue",
+    "cortxt_start_session",
+    "cortxt_mark_session_done",
+    "cortxt_read_wiki_page"
+  ],
+  "artifact_type": "ideas"
+}

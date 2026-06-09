@@ -1,0 +1,27 @@
+{
+  "$schema": "../session-profile.schema.json",
+  "name": "cns-build",
+  "description": "Kod- och byggsession mot en CNS-nod. Fokus på issues, PRs och Actions.",
+  "context": [
+    "node:<slug>",
+    "active-quests",
+    "open-issues"
+  ],
+  "capacity": [
+    "cortxt_list_open_issues",
+    "cortxt_get_issue",
+    "cortxt_create_issue",
+    "cortxt_close_issue",
+    "cortxt_add_todo",
+    "cortxt_check_todo",
+    "cortxt_list_prs",
+    "cortxt_create_pr",
+    "cortxt_list_workflow_runs",
+    "cortxt_trigger_workflow",
+    "cortxt_start_session",
+    "cortxt_mark_session_done",
+    "cortxt_save_session",
+    "cortxt_fork_session"
+  ],
+  "artifact_type": "code"
+}
