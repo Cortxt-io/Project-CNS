@@ -1,0 +1,8 @@
+{
+  "id": "idea-0e52a505",
+  "text": "CNS omsluter Claudes UI — hur långt? (riktningsfråga)\n\nFrö finns redan: TUI-steg 4 suspendar CNS och kör claude --resume, tar tillbaka kontrollen efteråt. CNS = nav man startar från och återvänder till.\n\nSpektrum:\n1. Nav/launcher (rek, on-mission): CNS förblir kartan, men blir kontextmedveten startramp — markera nod/quest → öppna Claude förseedad med den kontexten (öppna issues, senaste session, mål). Passet fångas tillbaka via Spara session (Fas B). Liten påbyggnad på resume-mönstret.\n2. Multiplex-paneler: CNS + Claude sida vid sida via tmux/Windows Terminal — start-layout, inte kod i CNS (två fullskärms-TUI kan inte samsas i en terminal).\n3. Agent-host (djup omslutning): CNS driver Claude headless via Agent SDK / claude -p och renderar i egna paneler. Mäktigast, men CNS blir en Claude-klient — korsar gränsen i ursprungs-idéns 'gräns' (CNS ska vara komplement, inte tredje överlappande yta).\n\nTeknisk gräns: kan inte bädda in Claudes interaktiva TUI inuti CNS textual-fönster; bara bounce (suspend), paneler, eller headless-SDK.\n\nRekommendation: börja vid 1 (kontextmedvetet nav). Utvärdera 3 separat om/när CNS faktiskt ska bli agent-host — då krävs Agent SDK-spår.",
+  "created_at": "2026-06-09T01:27:11",
+  "source": "chat",
+  "slug": "interface",
+  "status": "open"
+}
