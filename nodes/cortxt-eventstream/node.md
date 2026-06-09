@@ -9,7 +9,7 @@ kind: component
 part_of: infrastructure
 slug: cortxt-eventstream
 stage: building
-status: building
+status: early_mvp
 summary: Enhetlig händelselogning av alla systemaktiviteter med sex dimensioner.
 tags: []
 title: Cortxt Eventstream

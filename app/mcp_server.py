@@ -17,12 +17,18 @@ the right module (or a new module + its register call below), against the
 ``scripts/`` data layer — NOT as another decorator here. Tool names are a public
 connector contract (claude.ai) and must stay stable when moved between modules.
 
-  - issues:   cortxt_list_open_issues / get_issue / create_issue / close_issue
-  - quests:   cortxt_list_quests / get_quest / create_quest / close_quest  (milestones)
-  - ideas:    cortxt_capture_idea / list_ideas / promote_idea_to_issue
-  - projects: cortxt_list_projects / get_project
-  - sessions: cortxt_start_session / mark_session_done / save_session / list_sessions
-               / fork_session / get_session_tree
+  - issues:      cortxt_list_open_issues / get_issue / create_issue / close_issue
+                 / add_todo / check_todo
+  - quests:      cortxt_list_quests / get_quest / create_quest / close_quest  (milestones)
+  - ideas:       cortxt_capture_idea / list_ideas / promote_idea_to_issue
+  - projects:    cortxt_list_projects / get_project  (CNS nodes)
+  - sessions:    cortxt_start_session / mark_session_done / save_session / list_sessions
+                 / fork_session / get_session_tree
+  - prs:         cortxt_list_prs / get_pr / create_pr / set_pr_reviewers
+  - gh_projects: cortxt_list_gh_projects / list_gh_project_items / move_gh_project_item
+  - actions:     cortxt_list_workflow_runs / trigger_workflow / get_workflow_run
+  - wiki:        cortxt_list_wiki_pages / read_wiki_page / write_wiki_page
+  - linear:      cortxt_list_linear_issues / create_linear_issue / link_linear_to_cns
 """
 
 from __future__ import annotations
@@ -152,12 +158,18 @@ elif mcp.auth is not None:
 
 # Attach the cortxt_* tools. Each domain module owns its tools via register(mcp).
 from app.tools import issues, quests, ideas, projects, sessions
+from app.tools import prs, gh_projects, actions, wiki, linear
 
 issues.register(mcp)
 quests.register(mcp)
 ideas.register(mcp)
 projects.register(mcp)
 sessions.register(mcp)
+prs.register(mcp)
+gh_projects.register(mcp)
+actions.register(mcp)
+wiki.register(mcp)
+linear.register(mcp)
 
 
 if __name__ == "__main__":

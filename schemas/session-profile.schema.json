@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "session-profile.schema.json",
+  "title": "SessionProfile",
+  "description": "Reusable session profile — defines what a CNS work session loads, can do, and produces.",
+  "type": "object",
+  "required": ["name", "description", "context", "capacity", "artifact_type"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique slug, kebab-case."
+    },
+    "description": {
+      "type": "string"
+    },
+    "context": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Resources/data loaded at session start (e.g. 'open-ideas', 'active-quests', 'node:<slug>')."
+    },
+    "capacity": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Skills, MCP tools, and endpoints pre-allowed for this profile."
+    },
+    "artifact_type": {
+      "type": "string",
+      "description": "Primary output of this session type (e.g. 'ideas', 'code', 'node-planning-file')."
+    },
+    "agent": {
+      "$ref": "agent-definition.schema.json#",
+      "description": "Optional bound agent definition (inline or $ref to a file in schemas/agents/)."
+    }
+  }
+}

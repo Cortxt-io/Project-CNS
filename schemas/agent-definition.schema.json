@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "agent-definition.schema.json",
+  "title": "AgentDefinition",
+  "description": "Defines an agent in the CNS/Cortxt system — model, auth, tools, and eval criteria.",
+  "type": "object",
+  "required": ["name", "provider", "model"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique slug, kebab-case."
+    },
+    "description": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string",
+      "enum": ["anthropic", "claude-code", "qwen", "glm"],
+      "description": "Model provider. 'claude-code' uses the local Claude Code login (no API credits needed)."
+    },
+    "model": {
+      "type": "string",
+      "description": "Provider-specific model ID.",
+      "examples": [
+        "claude-sonnet-4-6",
+        "claude-opus-4-8",
+        "claude-haiku-4-5",
+        "qwen2.5-coder",
+        "qwen2.5",
+        "glm-4",
+        "codegeex4"
+      ]
+    },
+    "fallback_model": {
+      "type": "string",
+      "description": "Fallback model ID when primary is unavailable. Chain follows agent_host.py: ANTHROPIC_API_KEY → .cns-agent-key → Claude Code login."
+    },
+    "prompt": {
+      "type": "string",
+      "description": "System prompt. Keep concise — full prompts live in .claude/agents/<name>.md."
+    },
+    "tools": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "MCP tool names (cortxt_*) this agent is allowed to call."
+    },
+    "eval_criteria": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Criteria for evaluating agent output quality."
+    },
+    "read_only": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, agent may not call mutating tools (mirrors can_use_tool in agent_host.py)."
+    }
+  }
+}
