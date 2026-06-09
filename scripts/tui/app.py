@@ -32,6 +32,8 @@ from scripts.tui.sources import (
     git_branches,
     list_transcripts,
     load_ideas,
+    load_memory_cards,
+    load_skills,
     merged_branches,
     open_issues_for_slug,
 )
@@ -234,6 +236,55 @@ class SessionsScreen(ModalScreen):
             subprocess.run([claude, "--resume", t.session_id])
 
 
+def _knowledge_markup() -> str:
+    """Skills (repo) + memory-cards (harness, cross-boundary)."""
+    lines: list[str] = ["[bold]Skills[/bold]  [dim](skills/*/SKILL.md)[/dim]", ""]
+    skills = load_skills()
+    if not skills:
+        lines.append("[dim]inga skills[/dim]")
+    for s in skills:
+        lines.append(f"  • [cyan]{s['name']}[/cyan]")
+        if s.get("description"):
+            lines.append(f"    [dim]{s['description'][:88]}[/dim]")
+
+    lines.append("")
+    lines.append("[bold]Memory-cards[/bold]  [dim](~/.claude/…/memory — ej GitHub-sanning)[/dim]")
+    lines.append("")
+    cards = load_memory_cards()
+    if not cards:
+        lines.append("[dim]inga memory-cards[/dim]")
+    type_color = {
+        "feedback": "yellow",
+        "project": "green",
+        "reference": "cyan",
+        "user": "magenta",
+    }
+    for c in cards:
+        col = type_color.get(c.get("type", ""), "dim")
+        tag = f"[{col}]{c.get('type') or '—'}[/{col}]"
+        lines.append(f"  • {tag} [bold]{c['name']}[/bold]")
+        if c.get("description"):
+            lines.append(f"    [dim]{c['description'][:88]}[/dim]")
+
+    lines.append("")
+    lines.append("[dim]esc / k stänger[/dim]")
+    return "\n".join(lines)
+
+
+class KnowledgeScreen(ModalScreen):
+    """Skills + memory-cards på ett ställe (tangent k)."""
+
+    BINDINGS = [
+        Binding("escape", "dismiss", "Stäng"),
+        Binding("k", "dismiss", "Stäng"),
+        Binding("q", "dismiss", "Stäng"),
+    ]
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="knowledge-box"):
+            yield Static(_knowledge_markup(), id="knowledge")
+
+
 class CnsTuiApp(App):
     """Glanceable portföljöverblick i terminalen."""
 
@@ -245,6 +296,7 @@ class CnsTuiApp(App):
         Binding("r", "reload", "Ladda om"),
         Binding("o", "overview", "Översikt"),
         Binding("s", "sessions", "Sessioner"),
+        Binding("k", "knowledge", "Kunskap"),
         Binding("slash", "focus_filter", "Filter"),
         Binding("escape", "clear_filter", "Rensa filter", show=False),
     ]
@@ -328,6 +380,9 @@ class CnsTuiApp(App):
 
     def action_sessions(self) -> None:
         self.push_screen(SessionsScreen(self._transcripts))
+
+    def action_knowledge(self) -> None:
+        self.push_screen(KnowledgeScreen())
 
     def action_focus_filter(self) -> None:
         filter_input = self.query_one("#filter", Input)

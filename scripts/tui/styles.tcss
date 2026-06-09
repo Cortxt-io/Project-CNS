@@ -47,3 +47,15 @@ SessionsScreen {
     background: $surface;
     padding: 1 2;
 }
+
+KnowledgeScreen {
+    align: center middle;
+}
+
+#knowledge-box {
+    width: 75%;
+    height: 80%;
+    border: round $accent;
+    background: $surface;
+    padding: 1 2;
+}

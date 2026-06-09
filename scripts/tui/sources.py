@@ -221,3 +221,83 @@ def list_transcripts(known_slugs: set[str] | None = None, limit: int = 40) -> li
             transcripts.append(t)
     transcripts.sort(key=lambda t: t.timestamp, reverse=True)
     return transcripts[:limit]
+
+
+# -- kunskaps-ytor: skills + memory-cards ----------------------------------
+
+def _light_meta(path: Path) -> dict[str, str]:
+    """Minimal frontmatter-parser (topp-nivå key: value) — fallback när YAML är trasig."""
+    meta: dict[str, str] = {}
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception:
+        return meta
+    if not text.startswith("---"):
+        return meta
+    for line in text.splitlines()[1:]:
+        if line.strip() == "---":
+            break
+        if ":" in line and not line.startswith((" ", "\t")):
+            key, _, value = line.partition(":")
+            meta[key.strip()] = value.strip().strip("\"'")
+    return meta
+
+
+def load_skills() -> list[dict]:
+    """Lista skills (skills/*/SKILL.md), frontmatter-parsade. Degraderar till []."""
+    skills_dir = REPO_ROOT / "skills"
+    if not skills_dir.exists():
+        return []
+    out: list[dict] = []
+    for skill_md in sorted(skills_dir.glob("*/SKILL.md")):
+        name = skill_md.parent.name
+        description = ""
+        try:
+            import frontmatter
+
+            meta = frontmatter.load(str(skill_md)).metadata or {}
+            name = str(meta.get("name", name))
+            description = str(meta.get("description", ""))
+        except Exception:
+            meta = {}
+        if not description:
+            # Trasig/okänd YAML → lättviktig fallback.
+            light = _light_meta(skill_md)
+            name = light.get("name", name)
+            description = light.get("description", description)
+        out.append({"name": name, "description": description, "path": str(skill_md)})
+    return out
+
+
+def load_memory_cards() -> list[dict]:
+    """Lista memory-cards (~/.claude/.../memory/*.md). Cross-boundary, read-only.
+
+    Degraderar till [] om katalogen saknas. MEMORY.md-indexet hoppas över.
+    """
+    mem_dir = CLAUDE_PROJECTS_DIR / _encoded_workspace_dirname() / "memory"
+    if not mem_dir.exists():
+        return []
+    out: list[dict] = []
+    for md in sorted(mem_dir.glob("*.md")):
+        if md.name == "MEMORY.md":
+            continue
+        name = md.stem
+        description = ""
+        mtype = ""
+        try:
+            import frontmatter
+
+            meta = frontmatter.load(str(md)).metadata or {}
+            name = str(meta.get("name", name))
+            description = str(meta.get("description", ""))
+            inner = meta.get("metadata")
+            if isinstance(inner, dict) and inner.get("type"):
+                mtype = str(inner.get("type"))
+            elif meta.get("type"):
+                mtype = str(meta.get("type"))
+        except Exception:
+            pass
+        out.append(
+            {"name": name, "description": description, "type": mtype, "path": str(md)}
+        )
+    return out
