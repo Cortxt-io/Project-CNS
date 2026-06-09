@@ -10,13 +10,14 @@ OAuth flow (GitHub by default), NOT the ``CNS_API_TOKEN`` used by the REST API.
 When the OAuth env vars are unset the server starts unauthenticated, which is
 intended only for local development / Claude Desktop.
 
-Provides 8 tools:
-  - cortxt_list_active_quests
-  - cortxt_get_quest
-  - cortxt_complete_quest
+Provides 9 tools:
+  - cortxt_list_open_issues
+  - cortxt_get_issue
+  - cortxt_create_issue
+  - cortxt_close_issue
   - cortxt_capture_idea
   - cortxt_list_ideas
-  - cortxt_promote_idea_to_quest
+  - cortxt_promote_idea_to_issue
   - cortxt_list_projects
   - cortxt_get_project
 """
@@ -146,49 +147,58 @@ elif mcp.auth is not None:
     )
 
 
-@mcp.tool()
-def cortxt_list_active_quests() -> list[dict]:
-    """List all quests with status 'active' or 'in_progress'."""
-    from scripts.quest_manager import list_quests
-    active = list_quests(status="active")
-    in_progress = list_quests(status="in_progress")
-    return active + in_progress
+# --- Work items: GitHub Issues (replaces the quest lifecycle) ---------------
+# A node's work items are GitHub Issues tagged with the `node:<slug>` label.
+# These call scripts.issues_client with token=None, which uses CNS_GITHUB_TOKEN
+# (the server token git_ops already relies on). Decision E (act as the calling
+# user via the per-user OAuth token from get_access_token()) is pending
+# confirmation that the GitHub access token is retrievable here; until then the
+# server token is used. NOTE: these are breaking renames of the old
+# cortxt_*_quest tools — the claude.ai connector must be re-authed/refreshed.
 
 
 @mcp.tool()
-def cortxt_get_quest(quest_id: str) -> dict:
-    """Get full quest details including project context."""
-    from scripts.quest_manager import get_quest
+def cortxt_list_open_issues(node_slug: str | None = None) -> list[dict]:
+    """List open work-item issues, optionally filtered to one node via its node:<slug> label."""
+    from scripts.issues_client import list_issues
+    return list_issues(node_slug=node_slug, state="open")
+
+
+@mcp.tool()
+def cortxt_get_issue(number: int) -> dict:
+    """Get a work-item issue enriched with its node context (kind/stage/summary)."""
+    from scripts.issues_client import get_issue
     from scripts.md_parser import read_node
-    quest = get_quest(quest_id)
-    if not quest:
-        return {"error": f"Quest {quest_id} not found"}
-    # Add project context
-    try:
-        meta, sections, _ = read_node(quest["slug"])
-        quest["project_context"] = {
-            "meta": meta,
-            "summary": meta.get("summary", ""),
-            "layer": meta.get("layer", ""),
-            "pipeline": meta.get("pipeline", ""),
-        }
-    except Exception:
-        pass
-    return quest
+    issue = get_issue(number)
+    if not issue:
+        return {"error": f"Issue #{number} not found"}
+    slug = issue.get("node_slug")
+    if slug:
+        try:
+            meta, _sections, _ = read_node(slug)
+            issue["node_context"] = {
+                "meta": meta,
+                "summary": meta.get("summary", ""),
+                "kind": meta.get("kind", ""),
+                "stage": meta.get("stage", ""),
+            }
+        except Exception:
+            pass
+    return issue
 
 
 @mcp.tool()
-def cortxt_complete_quest(quest_id: str, result_summary: str) -> dict:
-    """Mark a quest as completed with a result summary."""
-    from scripts.quest_manager import transition_quest, update_quest
-    from app.git_ops import push_file_immediately
-    from scripts.quest_manager import QUESTS_DIR
-    quest = transition_quest(quest_id, "completed")
-    quest = update_quest(quest_id, result_summary=result_summary)
-    # Push to GitHub
-    quest_path = QUESTS_DIR / f"{quest_id}.json"
-    push_file_immediately(quest_path, f"cns-vault: complete quest {quest_id}")
-    return quest
+def cortxt_create_issue(node_slug: str, title: str, body: str = "") -> dict:
+    """Create a work-item issue tied to a node (adds the node:<slug> label)."""
+    from scripts.issues_client import create_issue
+    return create_issue(node_slug=node_slug, title=title, body=body)
+
+
+@mcp.tool()
+def cortxt_close_issue(number: int, result_summary: str) -> dict:
+    """Close a work-item issue, leaving the result summary as a closing comment."""
+    from scripts.issues_client import close_issue
+    return close_issue(number, comment=result_summary)
 
 
 @mcp.tool()
@@ -214,21 +224,20 @@ def cortxt_list_ideas(status: str = "open", slug: str | None = None) -> list[dic
 
 
 @mcp.tool()
-def cortxt_promote_idea_to_quest(
+def cortxt_promote_idea_to_issue(
     idea_id: str,
     title: str,
-    estimated_impact: str = "",
     slug: str | None = None,
-    description: str | None = None,
+    body: str | None = None,
 ) -> dict:
-    """Promote an idea into a quest, reusing the quest-creation logic.
+    """Promote an inbox idea into a GitHub Issue (a node work item).
 
-    The new quest's slug comes from the idea (or the `slug` argument if the idea
-    has none); its description defaults to the idea's text. The idea is kept and
-    marked 'promoted'. Returns {"idea": ..., "quest": ...}.
+    The issue's node comes from the idea (or the `slug` argument if the idea has
+    none); its body defaults to the idea's text. The idea is kept and marked
+    'promoted' to the new issue. Returns {"idea": ..., "issue": ...}.
     """
     from scripts.idea_inbox import get_idea, mark_promoted, IDEAS_DIR
-    from scripts.quest_manager import create_quest, QUESTS_DIR
+    from scripts.issues_client import create_issue
     from app.git_ops import push_file_immediately
 
     idea = get_idea(idea_id)
@@ -239,31 +248,21 @@ def cortxt_promote_idea_to_quest(
             f"Idea {idea_id} was already promoted to {idea.get('promoted_to')}"
         )
 
-    quest_slug = slug or idea.get("slug")
-    if not quest_slug:
+    node_slug = slug or idea.get("slug")
+    if not node_slug:
         raise ToolError(
-            "Idea has no linked slug — pass `slug` to say which node the quest is for."
+            "Idea has no linked slug — pass `slug` to say which node the issue is for."
         )
 
-    quest = create_quest(
-        slug=quest_slug,
-        title=title,
-        description=description or idea["text"],
-        estimated_impact=estimated_impact,
-        source="idea",
-    )
-    quest_path = QUESTS_DIR / f"{quest['id']}.json"
-    push_file_immediately(
-        quest_path, f"cns-vault: create quest {quest['id']} from idea {idea_id}"
-    )
+    issue = create_issue(node_slug=node_slug, title=title, body=body or idea["text"])
 
-    idea = mark_promoted(idea_id, quest["id"])
+    idea = mark_promoted(idea_id, f"#{issue['number']}")
     idea_path = IDEAS_DIR / f"{idea_id}.json"
     push_file_immediately(
-        idea_path, f"cns-vault: promote idea {idea_id} to {quest['id']}"
+        idea_path, f"cns-vault: promote idea {idea_id} to issue #{issue['number']}"
     )
 
-    return {"idea": idea, "quest": quest}
+    return {"idea": idea, "issue": issue}
 
 
 @mcp.tool()
