@@ -1,0 +1,8 @@
+{
+  "id": "idea-a5b04d2c",
+  "text": "Branch-vy i CNS TUI: ny source-adapter i scripts/tui/sources.py som hämtar branches (remote via eventstream/GitHub Contents-API, eftersom GitHub är sanningen) och renderar dem i en TUI-skärm — annoterade med länkad quest/session och CI-status (passing/failing finns redan via workflow_run-eventet). TUI:n förblir isolerad mot datalagret (konsumerar bara via sources.py, shellar inte ut till git). Öppen fråga: lokala branches (relevanta medan man jobbar oincheckat) vs remote branches (sanningen) — eller båda.",
+  "created_at": "2026-06-09T01:39:24",
+  "source": "chat",
+  "slug": "cns-core",
+  "status": "open"
+}

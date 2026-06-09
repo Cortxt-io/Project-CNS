@@ -1,0 +1,8 @@
+{
+  "id": "idea-11f06375",
+  "text": "Idé-inkorgen matar GitHub Issues, inte CNS-quests.\n\nFlytta uppgiftsnivån till GitHub (Issues, kanban, PRs) och låt CNS äga portföljnivån (noder, överblick, idéer). Idéer föds löst i CNS-inkorgen; de som överlever triage befordras till ett GitHub Issue i stället för en CNS-quest. CNS sköter \"innan det är arbete\", GitHub sköter \"nu är det arbete\".\n\nKonsekvens: cortxt_promote_idea_to_quest blir på sikt promote_idea_to_issue. Quest-städningen pausas — slöseri att putsa logik som ska ersättas. Nod-omdöpningen lever kvar.\n\nÖppen fråga som blockerar beslutet: Bor noderna i separata GitHub-repon eller i ett enda? Det avgör om \"issue hör till nod\" mappar rakt av, eller måste bryggas med labels/Projects-fält.",
+  "created_at": "2026-06-08T22:05:52",
+  "source": "chat",
+  "slug": "cns-core",
+  "status": "open"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "idea-c3e2202f",
+  "text": "Nå forks / `/btw`-asides från ett kommando.\n\nEtt kommando (i cns-CLI:t eller TUI:t) som låter mig nå och navigera till de forkade sidospåren — de `/btw`-asides som spawnas under en huvudsession. I dag försvinner de lätt ur sikte; varje `/btw` skapar en lättviktig fork men det finns ingen samlad väg tillbaka.\n\nVad det ska ge:\n- Lista aktiva/avslutade forks/btws för aktuell session (eller nod).\n- Hoppa till / öppna en specifik fork från kommandot.\n- Koppling till sessions-spåret: en btw/fork är en under-session, kan länkas som sessioner knyts till nod/quest (link.kind) och visas i samma överblick.\n\nGräns: samma cross-boundary-fråga som sessioner/transkript — forkarnas tillstånd lever i harness-katalogen, inte i repot. Lista+länka (read-first) är lätt; öppna/återuppta en fork drar in harness-interna sökvägar och är ett separat, svårare steg.\n\nHör ihop med tidigare idéer om sessioner↔quests och att navigera Claude-sessioner i TUI:t.",
+  "created_at": "2026-06-09T02:40:27",
+  "source": "chat",
+  "slug": "cns-core",
+  "status": "open"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "idea-d05dc514",
+  "text": "CNS får en egen terminal-UI (TUI) för portföljöverblick.\n\nEn dedikerad TUI för CNS som ger en glanceable bild av hela portföljen — noderna, deras status och relationer — direkt i terminalen där jag redan jobbar. Svarar på det enda CLI:t är dåligt på: visuell överblick. Bor i terminalen, så ingen kontextväxling till en webbflik.\n\nGräns: visar portfölj-/nod-nivån, inte en kanban som GitHub redan ger. Komplement till Claude (resonemang) och GitHub (uppgifter), inte en tredje överlappande yta. Billig första version: snyggt formaterade cns.py-kommandon (t.ex. `cns nodes` som tabell/träd) innan en full interaktiv TUI.\n\nBeror på / timing: hänger på GitHub-ägarskapsbeslutet (vad GitHub visar vs vad CNS visar). Byggs inte mitt i städning/CLI-flytt — eget spår senare.",
+  "created_at": "2026-06-08T22:23:54",
+  "source": "chat",
+  "slug": null,
+  "status": "promoted",
+  "promoted_to": "quest-26619cf3"
+}

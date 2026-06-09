@@ -1,0 +1,8 @@
+{
+  "id": "idea-a115a786",
+  "text": "Knyt sessioner till quests/issues som ett tredje lager: nod (portfölj) ← issue/quest (uppgift) ← session (utförande) — symmetriskt med att issues knyts till quests. Rekommenderad bindning är INDIREKT, inte en ny direkt session↔quest-länk: (1) en session producerar en branch/PR som refererar issuet → vid merge stänger GitHub issuet och CNS:s webhook auto-completar questet (kedjan finns redan i app/server.py). (2) För live-status \"jobbar nu\" innan PR finns: låt sessionen emitta ett event taggat med quest/issue-id till eventstream (scripts/eventstream.py) → dashboardens aktivitetsflöde. (3) Direkt session-id-på-quest via API är tyngst och bara värt det om 1+2 inte räcker (sessioner är efemära → ny plumbing). Relaterat: /loop behövs inte för harness-spårade sessioner (auto-notifieras) — bara för externa (CI/deploy/remote/PR). Hör ihop med quest→issue-migreringen och PR/kanban-flödet.",
+  "created_at": "2026-06-09T00:26:19",
+  "source": "chat",
+  "slug": "cns-core",
+  "status": "open"
+}

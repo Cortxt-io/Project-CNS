@@ -1,0 +1,8 @@
+{
+  "id": "idea-34298e57",
+  "text": "MCP-verktyg som når Anthropic-API:t för att hantera API-nycklar — t.ex. skapa/lista/rotera nycklar mot console-kontot. Motiv: idag kan en agent inte minta en Anthropic API-nyckel åt användaren (Anthropic exponerar med flit ingen programmatisk väg; nycklar skapas manuellt på console.anthropic.com → Settings → API Keys). Det blockerar flöden som agent-host i TUI:t (cns-tui, scripts/tui/agent_host.py) där `.cns-agent-key` behöver fyllas i för separat fakturering. Om Anthropic ett admin-/key-management-API kan ett MCP-verktyg wrappa det så nyckelhantering blir self-service från agenten. Att utreda: finns Anthropics Admin API (organisations-API-nycklar) och täcker det key-creation? Säkerhetsmodell/scoping innan något sånt byggs.\n\n--- SLUTSATS (utrett 2026-06-09): key-creation går INTE programmatiskt. ---\nAnthropics Admin API stödjer inte att skapa API-nycklar (sk-ant-...) via API — det är en medveten säkerhetsdesign; nycklar måste skapas manuellt i console.anthropic.com. Admin API:t täcker organisations-/workspace-hantering och kan LISTA/inspektera/återkalla (revoke) befintliga nycklar samt hantera medlemmar/workspaces, men aldrig MINTA en nyckel. Konsekvens för scope: ett MCP-verktyg kan bara wrappa list/inspektera/rotera-via-revoke-och-manuell-recreate — INTE create. Den ursprungliga drömmen (self-service nyckel-creation från agenten) är därmed inte byggbar; agent-host måste fortsatt förlita sig på manuellt ifylld .cns-agent-key (path 2, [[idea-376539fe]]) eller Claude Code-login. Säkerhetslinsen \"vad kan vara lokalt\" gäller fortsatt ([[idea-e810c72e]]).",
+  "created_at": "2026-06-09T02:57:40",
+  "source": "chat",
+  "slug": null,
+  "status": "open"
+}

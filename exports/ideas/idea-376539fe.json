@@ -1,0 +1,8 @@
+{
+  "id": "idea-376539fe",
+  "text": "Agent-host: dedikerad ANTHROPIC_API_KEY-väg (path 2), bortom login-fallbacken.\n\nIdag (path 1, byggt): agent_host.availability() provar env → otrackad .cns-agent-key → annars Claude Code-login. Nyckelfritt för personligt lokalt bruk.\n\nPath 2 (senare): en riktig UX för att köra agent-host på en *dedikerad* API-nyckel (separat fakturering, ej prenumerationen) —\n- Lägg-in-nyckel-flöde i TUI:t (klistra in en gång → skrivs till .cns-agent-key, gitignored), i stället för att redigera fil för hand.\n- Tydlig indikator i agent-panelen vilken auth som används (login vs dedikerad nyckel) + ev. kostnad/kredit.\n- Beslut: när vill man login vs egen nyckel? (Agent SDK:s villkor förbjuder prenumerationslogin för *distribuerade produkter* — irrelevant för personligt bruk, men relevant om CNS-TUI någonsin delas.)\nGrund finns: LOCAL_KEY_FILE-loadern i agent_host.py. Detta är resten av UX:en.",
+  "created_at": "2026-06-09T02:33:34",
+  "source": "chat",
+  "slug": "interface",
+  "status": "open"
+}
