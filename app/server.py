@@ -63,13 +63,12 @@ from scripts.validator import (  # noqa: E402
     VALID_MVP_STAGES,
     VALID_STATUSES,
 )
-from scripts.quest_manager import (  # noqa: E402
-    create_quest as qm_create_quest,
-    get_quest as qm_get_quest,
-    list_quests as qm_list_quests,
-    update_quest as qm_update_quest,
-    transition_quest as qm_transition_quest,
-    QUESTS_DIR,
+from scripts.issues_client import (  # noqa: E402
+    list_issues as ic_list_issues,
+    get_issue as ic_get_issue,
+    create_issue as ic_create_issue,
+    close_issue as ic_close_issue,
+    set_project_status as ic_set_project_status,
 )
 
 # ---------------------------------------------------------------------------
@@ -987,207 +986,107 @@ def _require_bearer_admin():
         return jsonify({"status": "error", "message": "Bearer token required"}), 401
 
 
-@app.route("/api/quests")
-def api_quests_list():
-    """List quests, optionally filtered by ?status=&slug=."""
-    status = request.args.get("status")
-    slug = request.args.get("slug")
-    quests = qm_list_quests(status=status, slug=slug)
-    return jsonify({"quests": quests})
+@app.route("/api/issues")
+def api_issues_list():
+    """List node issues, optionally filtered by ?node=<slug>&state=open|closed."""
+    node_slug = request.args.get("node")
+    state = request.args.get("state", "open")
+    issues = ic_list_issues(node_slug=node_slug, state=state)
+    return jsonify({"issues": issues})
 
 
-@app.route("/api/quests/<quest_id>")
-def api_quests_get(quest_id):
-    """Get a single quest by ID."""
-    quest = qm_get_quest(quest_id)
-    if quest is None:
-        return jsonify({"status": "error", "message": "Quest not found"}), 404
-    return jsonify({"quest": quest})
+@app.route("/api/issues/<int:number>")
+def api_issues_get(number):
+    """Get a single issue by number."""
+    issue = ic_get_issue(number)
+    if issue is None:
+        return jsonify({"status": "error", "message": "Issue not found"}), 404
+    return jsonify({"issue": issue})
 
 
-@app.route("/api/quests", methods=["POST", "OPTIONS"])
-def api_quests_create():
-    """Create a new quest."""
+@app.route("/api/issues", methods=["POST", "OPTIONS"])
+def api_issues_create():
+    """Create an issue tied to a node (adds the node:<slug> label)."""
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
     auth_err = _require_bearer_admin()
     if auth_err:
         return auth_err
 
-    data = request.get_json()
-    slug = data.get("slug")
+    data = request.get_json() or {}
+    node_slug = data.get("node_slug") or data.get("slug")
     title = data.get("title")
-    description = data.get("description", "")
-    estimated_impact = data.get("estimated_impact", "")
-    source = data.get("source", "manual")
+    body = data.get("body") or data.get("description", "")
 
-    if not slug or not title:
-        return jsonify({"status": "error", "message": "slug and title required"}), 400
+    if not node_slug or not title:
+        return jsonify({"status": "error", "message": "node_slug and title required"}), 400
 
-    quest = qm_create_quest(
-        slug=slug,
-        title=title,
-        description=description,
-        estimated_impact=estimated_impact,
-        source=source,
-    )
-
-    # Push to GitHub
-    from scripts.quest_manager import QUESTS_DIR
-    quest_path = QUESTS_DIR / f"{quest['id']}.json"
-    push_file_immediately(quest_path, f"cns-vault: create quest {quest['id']}")
-
-    return jsonify({"quest": quest}), 201
+    issue = ic_create_issue(node_slug=node_slug, title=title, body=body)
+    return jsonify({"issue": issue}), 201
 
 
-@app.route("/api/quests/<quest_id>", methods=["PATCH", "OPTIONS"])
-def api_quests_update(quest_id):
-    """Update arbitrary fields on a quest."""
+@app.route("/api/issues/<int:number>/close", methods=["POST", "OPTIONS"])
+def api_issues_close(number):
+    """Close an issue, leaving an optional result_summary as a closing comment."""
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
     auth_err = _require_bearer_admin()
     if auth_err:
         return auth_err
 
-    quest = qm_get_quest(quest_id)
-    if quest is None:
-        return jsonify({"status": "error", "message": "Quest not found"}), 404
-
-    data = request.get_json()
-    allowed_fields = {"title", "description", "estimated_impact", "result_summary"}
-    fields = {k: v for k, v in data.items() if k in allowed_fields}
-
-    if not fields:
-        return jsonify({"status": "error", "message": "No valid fields to update"}), 400
-
-    try:
-        quest = qm_update_quest(quest_id, **fields)
-    except FileNotFoundError:
-        return jsonify({"status": "error", "message": "Quest not found"}), 404
-
-    from scripts.quest_manager import QUESTS_DIR
-    quest_path = QUESTS_DIR / f"{quest['id']}.json"
-    push_file_immediately(quest_path, f"cns-vault: update quest {quest_id}")
-
-    return jsonify({"quest": quest})
-
-
-@app.route("/api/quests/<quest_id>/activate", methods=["POST", "OPTIONS"])
-def api_quests_activate(quest_id):
-    """Transition quest: suggested -> active."""
-    if request.method == "OPTIONS":
-        return add_cors_headers(app.make_default_options_response())
-    auth_err = _require_bearer_admin()
-    if auth_err:
-        return auth_err
-
-    try:
-        quest = qm_transition_quest(quest_id, "active")
-    except FileNotFoundError:
-        return jsonify({"status": "error", "message": "Quest not found"}), 404
-    except ValueError as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-
-    from scripts.quest_manager import QUESTS_DIR
-    quest_path = QUESTS_DIR / f"{quest['id']}.json"
-    push_file_immediately(quest_path, f"cns-vault: activate quest {quest_id}")
-
-    return jsonify({"quest": quest})
-
-
-@app.route("/api/quests/<quest_id>/complete", methods=["POST", "OPTIONS"])
-def api_quests_complete(quest_id):
-    """Transition quest: * -> completed. Accepts optional result_summary."""
-    if request.method == "OPTIONS":
-        return add_cors_headers(app.make_default_options_response())
-    auth_err = _require_bearer_admin()
-    if auth_err:
-        return auth_err
-
-    try:
-        quest = qm_transition_quest(quest_id, "completed")
-    except FileNotFoundError:
-        return jsonify({"status": "error", "message": "Quest not found"}), 404
-    except ValueError as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
-
-    # Optionally update result_summary
     data = request.get_json(silent=True) or {}
-    result_summary = data.get("result_summary")
-    if result_summary:
-        quest = qm_update_quest(quest_id, result_summary=result_summary)
-
-    from scripts.quest_manager import QUESTS_DIR
-    quest_path = QUESTS_DIR / f"{quest['id']}.json"
-    push_file_immediately(quest_path, f"cns-vault: complete quest {quest_id}")
-
-    return jsonify({"quest": quest})
+    issue = ic_close_issue(number, comment=data.get("result_summary"))
+    return jsonify({"issue": issue})
 
 
-@app.route("/api/quests/<quest_id>/archive", methods=["POST", "OPTIONS"])
-def api_quests_archive(quest_id):
-    """Transition quest: * -> archived."""
+@app.route("/api/issues/<int:number>/status", methods=["POST", "OPTIONS"])
+def api_issues_status(number):
+    """Set the issue's Projects-v2 stage column (suggested/active/in_progress/done).
+
+    No-op (returns {"configured": False}) until the board is provisioned —
+    see scripts.issues_client.set_project_status and the migration plan (decision B).
+    """
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
     auth_err = _require_bearer_admin()
     if auth_err:
         return auth_err
 
-    try:
-        quest = qm_transition_quest(quest_id, "archived")
-    except FileNotFoundError:
-        return jsonify({"status": "error", "message": "Quest not found"}), 404
-    except ValueError as e:
-        return jsonify({"status": "error", "message": str(e)}), 400
+    data = request.get_json() or {}
+    status = data.get("status")
+    if not status:
+        return jsonify({"status": "error", "message": "status required"}), 400
 
-    from scripts.quest_manager import QUESTS_DIR
-    quest_path = QUESTS_DIR / f"{quest['id']}.json"
-    push_file_immediately(quest_path, f"cns-vault: archive quest {quest_id}")
-
-    return jsonify({"quest": quest})
+    result = ic_set_project_status(number, status)
+    return jsonify({"result": result})
 
 
-@app.route("/api/quests/from-brief", methods=["POST", "OPTIONS"])
-def api_quests_from_brief():
-    """Create a quest from the brief's quest_suggestion."""
+@app.route("/api/issues/from-brief", methods=["POST", "OPTIONS"])
+def api_issues_from_brief():
+    """Create an issue from the brief's suggestion (deduped by open issue, same title+node)."""
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
     auth_err = _require_bearer_admin()
     if auth_err:
         return auth_err
 
-    data = request.get_json()
-    slug = data.get("slug")
+    data = request.get_json() or {}
+    node_slug = data.get("node_slug") or data.get("slug")
     title = data.get("title")
-    description = data.get("description", "")
-    estimated_impact = data.get("estimated_impact", "")
+    body = data.get("body") or data.get("description", "")
 
-    if not slug or not title:
-        return jsonify({"status": "error", "message": "slug and title required"}), 400
+    if not node_slug or not title:
+        return jsonify({"status": "error", "message": "node_slug and title required"}), 400
 
-    # Check for duplicate quest with same title + slug in suggested or active status
     existing = [
-        q for q in qm_list_quests()
-        if q.get("slug") == slug
-        and q.get("title") == title
-        and q.get("status") in ("suggested", "active")
+        i for i in ic_list_issues(node_slug=node_slug, state="open")
+        if i.get("title") == title
     ]
     if existing:
-        return jsonify({"status": "ok", "quest": existing[0], "duplicate": True})
+        return jsonify({"status": "ok", "issue": existing[0], "duplicate": True})
 
-    quest = qm_create_quest(
-        slug=slug,
-        title=title,
-        description=description,
-        estimated_impact=estimated_impact,
-        source="portfolio-brief",
-    )
-
-    from scripts.quest_manager import QUESTS_DIR
-    quest_path = QUESTS_DIR / f"{quest['id']}.json"
-    push_file_immediately(quest_path, f"cns-vault: create quest {quest['id']} from brief")
-
-    return jsonify({"quest": quest}), 201
+    issue = ic_create_issue(node_slug=node_slug, title=title, body=body)
+    return jsonify({"issue": issue}), 201
 
 
 @app.route("/api/activity")
@@ -1708,72 +1607,20 @@ def _slugs_from_text(*texts: str) -> set[str]:
     haystack = " ".join(t for t in texts if t).lower()
     if not haystack:
         return set()
-    known = {q.get("slug") for q in qm_list_quests() if q.get("slug")}
+    known = {meta.get("slug") for meta, _ in read_all_nodes() if meta.get("slug")}
     return {slug for slug in known if slug and slug.lower() in haystack}
 
 
-def _complete_quests_for_slugs(slugs: set[str], summary: str) -> dict[str, str]:
-    """Auto-complete in_progress quests for the given slugs. Returns id->result."""
-    results: dict[str, str] = {}
-    for slug in slugs:
-        for quest in qm_list_quests(status="in_progress", slug=slug):
-            try:
-                qm_transition_quest(quest["id"], "completed")
-                qm_update_quest(quest["id"], result_summary=summary)
-                quest_path = QUESTS_DIR / f"{quest['id']}.json"
-                push_file_immediately(
-                    quest_path, f"cns-vault: auto-complete quest {quest['id']}"
-                )
-                results[quest["id"]] = "auto-completed"
-            except Exception as exc:
-                results[quest["id"]] = f"error: {exc}"
-    return results
-
-
-def _start_quests_for_slugs(slugs: set[str]) -> dict[str, str]:
-    """Move active quests to in_progress for the given slugs. Returns id->result."""
-    results: dict[str, str] = {}
-    for slug in slugs:
-        for quest in qm_list_quests(status="active", slug=slug):
-            try:
-                qm_transition_quest(quest["id"], "in_progress")
-                quest_path = QUESTS_DIR / f"{quest['id']}.json"
-                push_file_immediately(
-                    quest_path, f"cns-vault: auto-start quest {quest['id']}"
-                )
-                results[quest["id"]] = "in_progress"
-            except Exception as exc:
-                results[quest["id"]] = f"error: {exc}"
-    return results
-
-
-def _set_ci_status_for_slugs(slugs: set[str], ci_status: str) -> dict[str, str]:
-    """Record CI status on in_progress quests for the given slugs.
-
-    Stores the latest CI conclusion on the quest so the dashboard can show a
-    build badge. Persisted but not committed per-event to avoid commit churn.
-    """
-    results: dict[str, str] = {}
-    for slug in slugs:
-        for quest in qm_list_quests(status="in_progress", slug=slug):
-            try:
-                qm_update_quest(quest["id"], ci_status=ci_status)
-                results[quest["id"]] = ci_status
-            except Exception as exc:
-                results[quest["id"]] = f"error: {exc}"
-    return results
+_RETIRED = None  # quest auto-complete helpers removed — GitHub closes issues via "Closes #N"
 
 
 @app.route("/api/webhook/github", methods=["POST", "OPTIONS"])
 def api_webhook_github():
-    """Receive GitHub webhooks — quest auto-complete + eventstream logging.
+    """Receive GitHub webhooks — log activity to the eventstream.
 
-    Handled events:
-      - push: auto-complete quests + log commits to eventstream
-      - pull_request: start/complete quests + log to eventstream
-      - workflow_run: record CI conclusion + log to eventstream
-
-    Eventstream logging happens AFTER quest logic so it never interferes.
+    Handled events: push, pull_request, workflow_run, issues, issue_comment.
+    Quest auto-completion was removed: work items are GitHub Issues now, and
+    GitHub closes them natively from merged PRs ("Closes #N").
     """
     if request.method == "OPTIONS":
         return add_cors_headers(app.make_default_options_response())
@@ -1791,101 +1638,48 @@ def api_webhook_github():
 
     payload = request.get_json(silent=True) or {}
     event = request.headers.get("X-GitHub-Event", "")
-    repo = payload.get("repository", {}).get("full_name", "")
 
     affected_slugs: set[str] = set()
-    results: dict[str, str] = {}
     eventstream_count = 0  # events logged to Redis
 
-    if event == "push":
-        # --- QUEST AUTO-COMPLETE (existing, unchanged) ---
-        affected_slugs = _slugs_from_pushed_files(payload)
-        ref = payload.get("ref", "")
-        commit_msg = payload.get("head_commit", {}).get("message", "")
-        summary = (
-            f"Auto-completed via GitHub push to {repo} ({ref}). "
-            f"Commit: {commit_msg[:100]}"
+    try:
+        from scripts.eventstream import (
+            normalize_push_event,
+            normalize_pr_event,
+            normalize_workflow_run_event,
+            normalize_issue_event,
+            push_to_redis,
         )
-        results = _complete_quests_for_slugs(affected_slugs, summary)
 
-        # --- EVENTSTREAM LOGGING (after quest logic) ---
-        try:
-            from scripts.eventstream import normalize_push_event, push_to_redis
-            for evt in normalize_push_event(payload):
-                # Assign slug from affected files if available
-                if not evt.get("slug") and affected_slugs:
-                    evt["slug"] = sorted(affected_slugs)[0]
-                push_to_redis(evt)
-                eventstream_count += 1
-        except Exception as exc:
-            app.logger.warning("Eventstream push logging failed: %s", exc)
-
-    elif event == "pull_request":
-        action = payload.get("action", "")
-        pr = payload.get("pull_request", {})
-        title = pr.get("title", "")
-        body = pr.get("body", "") or ""
-        branch = pr.get("head", {}).get("ref", "")
-        affected_slugs = _slugs_from_text(title, body, branch)
-
-        if action in ("opened", "reopened"):
-            results = _start_quests_for_slugs(affected_slugs)
-        elif action == "closed" and pr.get("merged"):
-            number = pr.get("number", "")
-            summary = (
-                f"Auto-completed via merged PR #{number} in {repo}: "
-                f"{title[:100]}"
-            )
-            results = _complete_quests_for_slugs(affected_slugs, summary)
+        if event == "push":
+            affected_slugs = _slugs_from_pushed_files(payload)
+            events = normalize_push_event(payload)
+        elif event == "pull_request":
+            events = normalize_pr_event(payload)
+        elif event == "workflow_run":
+            if payload.get("action") != "completed":
+                return jsonify({
+                    "status": "ok",
+                    "message": f"Ignored workflow_run action: {payload.get('action')}",
+                })
+            events = normalize_workflow_run_event(payload)
+        elif event in ("issues", "issue_comment"):
+            events = normalize_issue_event(payload)
         else:
-            # Still log to eventstream even for ignored PR actions
-            pass
+            return jsonify({"status": "ok", "message": f"Ignored event: {event}"})
 
-        # --- EVENTSTREAM LOGGING (after quest logic) ---
-        try:
-            from scripts.eventstream import normalize_pr_event, push_to_redis
-            for evt in normalize_pr_event(payload):
-                if not evt.get("slug") and affected_slugs:
-                    evt["slug"] = sorted(affected_slugs)[0]
-                push_to_redis(evt)
-                eventstream_count += 1
-        except Exception as exc:
-            app.logger.warning("Eventstream PR logging failed: %s", exc)
-
-    elif event == "workflow_run":
-        run = payload.get("workflow_run", {})
-        # Only act on finished runs
-        if payload.get("action") != "completed":
-            return jsonify({
-                "status": "ok",
-                "message": f"Ignored workflow_run action: {payload.get('action')}",
-            })
-        conclusion = run.get("conclusion", "")  # success, failure, cancelled...
-        title = run.get("display_title", "") or run.get("name", "")
-        branch = run.get("head_branch", "")
-        affected_slugs = _slugs_from_text(title, branch)
-        ci_status = "passing" if conclusion == "success" else "failing"
-        results = _set_ci_status_for_slugs(affected_slugs, ci_status)
-
-        # --- EVENTSTREAM LOGGING (after quest logic) ---
-        try:
-            from scripts.eventstream import normalize_workflow_run_event, push_to_redis
-            for evt in normalize_workflow_run_event(payload):
-                if not evt.get("slug") and affected_slugs:
-                    evt["slug"] = sorted(affected_slugs)[0]
-                push_to_redis(evt)
-                eventstream_count += 1
-        except Exception as exc:
-            app.logger.warning("Eventstream workflow logging failed: %s", exc)
-
-    else:
-        return jsonify({"status": "ok", "message": f"Ignored event: {event}"})
+        for evt in events:
+            if not evt.get("slug") and affected_slugs:
+                evt["slug"] = sorted(affected_slugs)[0]
+            push_to_redis(evt)
+            eventstream_count += 1
+    except Exception as exc:
+        app.logger.warning("Eventstream logging failed: %s", exc)
 
     return jsonify({
         "status": "ok",
         "event": event,
         "affected_slugs": list(affected_slugs),
-        "quest_results": results,
         "eventstream_logged": eventstream_count,
     })
 

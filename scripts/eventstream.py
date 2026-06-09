@@ -349,6 +349,52 @@ def normalize_workflow_run_event(payload: dict) -> list[dict]:
     )]
 
 
+def normalize_issue_event(payload: dict) -> list[dict]:
+    """Normalize a GitHub `issues` or `issue_comment` webhook payload into an event.
+
+    The node slug is read from the issue's `node:<slug>` label.
+    """
+    issue = payload.get("issue", {})
+    repo = payload.get("repository", {}).get("full_name", "")
+    action = payload.get("action", "")
+    number = issue.get("number", "")
+
+    slug = None
+    for lab in issue.get("labels", []):
+        name = lab.get("name", "") if isinstance(lab, dict) else lab
+        if name and name.startswith("node:"):
+            slug = name[len("node:"):]
+            break
+
+    comment = payload.get("comment")
+    if comment is not None:
+        return [make_event(
+            what="issue_comment",
+            when=comment.get("updated_at", "") or comment.get("created_at", ""),
+            why=issue.get("title", ""),
+            how=f"Comment on issue #{number}",
+            who=comment.get("user", {}).get("login", ""),
+            where=f"{repo}",
+            source="github",
+            slug=slug,
+            event_id=f"evt:github:issue_comment:{comment.get('id', '')}",
+            meta={"number": number, "action": action, "url": comment.get("html_url", "")},
+        )]
+
+    return [make_event(
+        what="issue",
+        when=issue.get("updated_at", "") or issue.get("created_at", ""),
+        why=issue.get("title", ""),
+        how=f"Issue #{number} {action}",
+        who=issue.get("user", {}).get("login", ""),
+        where=f"{repo}",
+        source="github",
+        slug=slug,
+        event_id=f"evt:github:issue:{number}:{action}",
+        meta={"number": number, "action": action, "url": issue.get("html_url", "")},
+    )]
+
+
 # ---------------------------------------------------------------------------
 # GitHub API pull adapter (CI)
 # ---------------------------------------------------------------------------
