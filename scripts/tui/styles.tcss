@@ -35,3 +35,15 @@ OverviewScreen {
     background: $surface;
     padding: 1 2;
 }
+
+SessionsScreen {
+    align: center middle;
+}
+
+#sessions-box {
+    width: 75%;
+    height: 80%;
+    border: round $accent;
+    background: $surface;
+    padding: 1 2;
+}

@@ -9,12 +9,18 @@ toppnivå; issues_client importeras lazy.
 
 from __future__ import annotations
 
+import json
+import re
 import subprocess
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 # Repo-roten: scripts/tui/sources.py → parents[2].
 REPO_ROOT = Path(__file__).resolve().parents[2]
+# Workspace-roten (mappen ovanför repot, t.ex. "CNS projekt").
+WORKSPACE_ROOT = REPO_ROOT.parent
+# Claude Code-transkript: ~/.claude/projects/<kodad-workspace>/<sessionId>.jsonl
+CLAUDE_PROJECTS_DIR = Path.home() / ".claude" / "projects"
 
 
 # -- idéer -----------------------------------------------------------------
@@ -39,6 +45,27 @@ class Branch:
     name: str
     current: bool
     remote: bool
+
+
+def merged_branches() -> set[str]:
+    """Lokala brancher som redan är merge:ade in i main (= klara spår).
+
+    Pollbar 'done'-signal för loop-väntan: ett feature-spår räknas klart när
+    det landat i main. Degraderar till tom mängd om git saknas/fel.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "branch", "--merged", "main", "--format=%(refname:short)"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except Exception:
+        return set()
+    if out.returncode != 0:
+        return set()
+    return {ln.strip() for ln in out.stdout.splitlines() if ln.strip()}
 
 
 def git_branches() -> list[Branch]:
@@ -95,3 +122,102 @@ def open_issues_for_slug(slug: str) -> tuple[str | None, list[dict]]:
         return (None, issues or [])
     except Exception as exc:
         return (f"issues ej konfigurerade ({type(exc).__name__})", [])
+
+
+# -- Claude Code-sessioner (transkript, read-only, cross-boundary) ----------
+
+@dataclass
+class Transcript:
+    session_id: str
+    title: str
+    git_branch: str
+    timestamp: str
+    path: str
+    slugs: set[str] = field(default_factory=set)
+
+
+def _encoded_workspace_dirname() -> str:
+    """Claude Codes kataloghash för workspace-roten (ersätter :\\/ och blanksteg)."""
+    s = str(WORKSPACE_ROOT)
+    for ch in (":", "\\", "/", " "):
+        s = s.replace(ch, "-")
+    return s
+
+
+def _scan_transcript(
+    path: Path, slug_pattern: re.Pattern | None, max_lines: int = 4000
+) -> Transcript | None:
+    """Läs ett transkript (radbegränsat) → metadata, titel, nämnda nod-slugs."""
+    session_id = path.stem
+    title = ""
+    git_branch = ""
+    timestamp = ""
+    found_slugs: set[str] = set()
+    try:
+        with path.open(encoding="utf-8") as fh:
+            for n, line in enumerate(fh):
+                if n >= max_lines:
+                    break
+                try:
+                    obj = json.loads(line)
+                except Exception:
+                    continue
+                if not git_branch and obj.get("gitBranch"):
+                    git_branch = str(obj["gitBranch"])
+                if not timestamp and obj.get("timestamp"):
+                    timestamp = str(obj["timestamp"])
+                if obj.get("sessionId"):
+                    session_id = str(obj["sessionId"])
+                if not title and obj.get("type") == "user":
+                    title = _first_user_text(obj)
+                # Slug-detektion med ordgräns (undviker träff inne i andra ord).
+                if slug_pattern is not None:
+                    found_slugs.update(m.lower() for m in slug_pattern.findall(line))
+    except Exception:
+        return None
+    return Transcript(
+        session_id=session_id,
+        title=title or "(ingen titel)",
+        git_branch=git_branch,
+        timestamp=timestamp,
+        path=str(path),
+        slugs=found_slugs,
+    )
+
+
+def _first_user_text(obj: dict) -> str:
+    msg = obj.get("message", {}) or {}
+    content = msg.get("content")
+    text = ""
+    if isinstance(content, str):
+        text = content
+    elif isinstance(content, list):
+        for part in content:
+            if isinstance(part, dict) and part.get("type") == "text":
+                text = part.get("text", "")
+                break
+    return " ".join(text.split())[:90]
+
+
+def list_transcripts(known_slugs: set[str] | None = None, limit: int = 40) -> list[Transcript]:
+    """Lista Claude Code-sessioner för detta workspace, nyast först.
+
+    Läser ~/.claude/projects/<workspace>/<id>.jsonl. Read-only och
+    cross-boundary (harness-katalog, inte GitHub-sanning). Degraderar till [].
+    `known_slugs` används för att märka vilka noder varje session rört.
+    """
+    known = known_slugs or set()
+    proj_dir = CLAUDE_PROJECTS_DIR / _encoded_workspace_dirname()
+    if not proj_dir.exists():
+        return []
+    slug_pattern: re.Pattern | None = None
+    if known:
+        alts = "|".join(re.escape(s) for s in sorted(known, key=len, reverse=True))
+        slug_pattern = re.compile(rf"(?<![\w-])({alts})(?![\w-])", re.IGNORECASE)
+    transcripts: list[Transcript] = []
+    for path in proj_dir.glob("*.jsonl"):
+        t = _scan_transcript(path, slug_pattern)
+        if t is not None:
+            transcripts.append(t)
+    transcripts.sort(key=lambda t: t.timestamp, reverse=True)
+    return transcripts[:limit]

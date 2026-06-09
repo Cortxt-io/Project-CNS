@@ -7,12 +7,15 @@ Körs via `python -m scripts.tui`.
 
 from __future__ import annotations
 
+import shutil
+import subprocess
+
 from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen
-from textual.widgets import Footer, Header, Input, Static, Tree
+from textual.widgets import Footer, Header, Input, Label, ListItem, ListView, Static, Tree
 from textual.widgets.tree import TreeNode
 
 from scripts.tui.data import (
@@ -24,7 +27,14 @@ from scripts.tui.data import (
     filter_nodes,
     load_nodes,
 )
-from scripts.tui.sources import git_branches, load_ideas, open_issues_for_slug
+from scripts.tui.sources import (
+    Transcript,
+    git_branches,
+    list_transcripts,
+    load_ideas,
+    merged_branches,
+    open_issues_for_slug,
+)
 
 
 def _tree_label(node: NodeView) -> Text:
@@ -42,8 +52,9 @@ def _detail_markup(
     ideas: list[dict],
     issue_status: str | None,
     issues: list[dict],
+    sessions: list[Transcript],
 ) -> str:
-    """Rich-markup för detaljpanelen, inkl. länkade idéer och öppna issues."""
+    """Rich-markup för detaljpanelen, inkl. länkade idéer, issues och sessioner."""
     kind_c = KIND_COLORS.get(node.kind, "dim")
     stage_c = STAGE_COLORS.get(node.stage, "dim")
     status_c = STATUS_COLORS.get(node.status, "dim")
@@ -94,6 +105,14 @@ def _detail_markup(
     else:
         lines.append("[dim]issues: inga öppna[/dim]")
 
+    # Sessioner som rört noden (transkript-skanning, heuristisk).
+    if sessions:
+        lines.append("")
+        lines.append("[bold]🗒 Sessioner som rört noden[/bold]")
+        for t in sessions[:6]:
+            when = t.timestamp[:10]
+            lines.append(f"  • [dim]{when}[/dim] {t.title[:54]}")
+
     if node.tags:
         lines.append("")
         lines.append("[dim]tags: " + ", ".join(node.tags) + "[/dim]")
@@ -111,14 +130,32 @@ def _overview_markup() -> str:
     branches = git_branches()
     local = [b for b in branches if not b.remote]
     remote_names = {b.name.split("/", 1)[-1] for b in branches if b.remote}
+    merged = merged_branches()
 
     if not local:
         lines.append("[dim](kunde inte läsa git)[/dim]")
     for b in local:
         marker = "[green]▶[/green]" if b.current else " "
         pushed = "[dim](pushad)[/dim]" if b.name in remote_names else "[yellow](endast lokal)[/yellow]"
-        feature = "" if b.name in ("main", "master") else "  [cyan]← spår[/cyan]"
-        lines.append(f"{marker} {b.name} {pushed}{feature}")
+        is_feature = b.name not in ("main", "master")
+        if is_feature and b.name in merged:
+            state = "  [green]✓ klar (merge:ad i main)[/green]"
+        elif is_feature:
+            state = "  [cyan]← spår (ej merge:at)[/cyan]"
+        else:
+            state = ""
+        lines.append(f"{marker} {b.name} {pushed}{state}")
+
+    lines.append("")
+    lines.append("[bold]Senaste sessioner[/bold]")
+    lines.append("")
+    sessions = list_transcripts()
+    if not sessions:
+        lines.append("[dim]inga sessioner hittade[/dim]")
+    for t in sessions[:8]:
+        when = t.timestamp[:16].replace("T", " ")
+        branch = f"[dim][{t.git_branch}][/dim] " if t.git_branch else ""
+        lines.append(f"  • [dim]{when}[/dim] {branch}{t.title[:46]}")
 
     lines.append("")
     lines.append("[bold]Öppna idéer[/bold]")
@@ -133,7 +170,7 @@ def _overview_markup() -> str:
         lines.append(f"  • {text[:64]}{tag}")
 
     lines.append("")
-    lines.append("[dim]esc / o stänger[/dim]")
+    lines.append("[dim]esc / o stänger · s = bläddra/öppna sessioner[/dim]")
     return "\n".join(lines)
 
 
@@ -151,6 +188,52 @@ class OverviewScreen(ModalScreen):
             yield Static(_overview_markup(), id="overview")
 
 
+class SessionsScreen(ModalScreen):
+    """Bläddra Claude Code-sessioner; Enter återupptar markerad (claude --resume)."""
+
+    BINDINGS = [
+        Binding("escape", "dismiss", "Stäng"),
+        Binding("s", "dismiss", "Stäng"),
+        Binding("q", "dismiss", "Stäng"),
+    ]
+
+    def __init__(self, transcripts: list[Transcript]) -> None:
+        super().__init__()
+        self._transcripts = transcripts
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="sessions-box"):
+            yield Static(
+                "[bold]Sessioner[/bold]  [dim]— Enter återupptar (claude --resume), esc stänger[/dim]\n",
+                id="sessions-head",
+            )
+            items = []
+            for t in self._transcripts:
+                when = t.timestamp[:16].replace("T", " ") or "?"
+                branch = f"[{t.git_branch}] " if t.git_branch else ""
+                items.append(ListItem(Label(f"{when}  {branch}{t.title[:50]}")))
+            yield ListView(*items, id="sessions-list")
+
+    def on_list_view_selected(self, event: ListView.Selected) -> None:
+        idx = event.list_view.index
+        if idx is None or idx >= len(self._transcripts):
+            return
+        self._resume(self._transcripts[idx])
+
+    def _resume(self, t: Transcript) -> None:
+        claude = shutil.which("claude")
+        if not claude:
+            self.app.notify(
+                f"'claude' saknas i PATH. Kör manuellt: claude --resume {t.session_id}",
+                severity="warning",
+                timeout=8,
+            )
+            return
+        # Suspenda TUI:t, kör claude --resume i samma terminal, återuppta sedan.
+        with self.app.suspend():
+            subprocess.run([claude, "--resume", t.session_id])
+
+
 class CnsTuiApp(App):
     """Glanceable portföljöverblick i terminalen."""
 
@@ -161,6 +244,7 @@ class CnsTuiApp(App):
         Binding("q", "quit", "Avsluta"),
         Binding("r", "reload", "Ladda om"),
         Binding("o", "overview", "Översikt"),
+        Binding("s", "sessions", "Sessioner"),
         Binding("slash", "focus_filter", "Filter"),
         Binding("escape", "clear_filter", "Rensa filter", show=False),
     ]
@@ -169,6 +253,7 @@ class CnsTuiApp(App):
         super().__init__()
         self._all_nodes: dict[str, NodeView] = {}
         self._ideas: list[dict] = []
+        self._transcripts: list[Transcript] = []
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -184,6 +269,7 @@ class CnsTuiApp(App):
         self.query_one("#filter", Input).display = False
         self._all_nodes = load_nodes()
         self._ideas = load_ideas()
+        self._transcripts = list_transcripts(known_slugs=set(self._all_nodes))
         self._populate_tree(self._all_nodes)
 
     # -- trädbygge ---------------------------------------------------------
@@ -216,7 +302,8 @@ class CnsTuiApp(App):
         if isinstance(node, NodeView):
             ideas = [i for i in self._ideas if i.get("slug") == node.slug]
             issue_status, issues = open_issues_for_slug(node.slug)
-            detail.update(_detail_markup(node, ideas, issue_status, issues))
+            sessions = [t for t in self._transcripts if node.slug in t.slugs]
+            detail.update(_detail_markup(node, ideas, issue_status, issues, sessions))
         else:
             detail.update("Välj en nod i trädet.")
 
@@ -231,12 +318,16 @@ class CnsTuiApp(App):
     def action_reload(self) -> None:
         self._all_nodes = load_nodes()
         self._ideas = load_ideas()
+        self._transcripts = list_transcripts(known_slugs=set(self._all_nodes))
         filter_input = self.query_one("#filter", Input)
         subset = filter_nodes(self._all_nodes, filter_input.value)
         self._populate_tree(subset)
 
     def action_overview(self) -> None:
         self.push_screen(OverviewScreen())
+
+    def action_sessions(self) -> None:
+        self.push_screen(SessionsScreen(self._transcripts))
 
     def action_focus_filter(self) -> None:
         filter_input = self.query_one("#filter", Input)
