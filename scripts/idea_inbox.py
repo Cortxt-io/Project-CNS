@@ -19,7 +19,8 @@ EXPORTS_DIR = Path(__file__).resolve().parent.parent / "exports"
 IDEAS_DIR = EXPORTS_DIR / "ideas"
 
 VALID_SOURCES = {"chat", "code"}
-VALID_STATUSES = {"open", "promoted"}
+VALID_STATUSES = {"open", "promoted", "resolved"}
+VALID_RESOLUTIONS = {"done", "wontfix", "duplicate"}
 
 
 def _ensure_dir() -> None:
@@ -122,6 +123,27 @@ def mark_promoted(idea_id: str, quest_id: str) -> dict:
         raise FileNotFoundError(f"Idea not found: {idea_id}")
     idea["status"] = "promoted"
     idea["promoted_to"] = quest_id
+    _write(idea)
+    return idea
+
+
+def resolve_idea(idea_id: str, resolution: str, reason: str) -> dict:
+    """Mark an idea as resolved without promoting it to a quest or issue.
+
+    Raises FileNotFoundError if the idea doesn't exist.
+    Raises ValueError if resolution is not one of VALID_RESOLUTIONS.
+    """
+    if resolution not in VALID_RESOLUTIONS:
+        raise ValueError(
+            f"Invalid resolution '{resolution}'. Allowed: {', '.join(sorted(VALID_RESOLUTIONS))}"
+        )
+    idea = get_idea(idea_id)
+    if idea is None:
+        raise FileNotFoundError(f"Idea not found: {idea_id}")
+    idea["status"] = "resolved"
+    idea["resolution"] = resolution
+    idea["resolution_reason"] = reason
+    idea["resolved_at"] = datetime.now().isoformat(timespec="seconds")
     _write(idea)
     return idea
 

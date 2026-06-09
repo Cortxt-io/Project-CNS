@@ -85,3 +85,29 @@ def register(mcp: FastMCP) -> None:
         )
 
         return {"idea": idea, "issue": issue}
+
+    @mcp.tool()
+    def cortxt_resolve_idea(idea_id: str, resolution: str, reason: str) -> dict:
+        """Close an idea without creating an issue — for ideas that won't be acted on.
+
+        Use this when an idea is done (shipped elsewhere), a duplicate, or simply
+        not worth pursuing (`wontfix`). Valid resolutions: done, wontfix, duplicate.
+        The idea is kept on disk with status 'resolved' and disappears from
+        cortxt_list_ideas(status='open'). Raises an error if the idea is already
+        promoted or resolved.
+        """
+        from scripts.idea_inbox import get_idea, resolve_idea, IDEAS_DIR
+        from app.git_ops import push_file_immediately
+
+        idea = get_idea(idea_id)
+        if idea is None:
+            raise ToolError(f"Idea {idea_id} not found")
+        if idea.get("status") in ("promoted", "resolved"):
+            raise ToolError(
+                f"Idea {idea_id} is already {idea.get('status')} — cannot resolve again."
+            )
+
+        idea = resolve_idea(idea_id, resolution, reason)
+        idea_path = IDEAS_DIR / f"{idea_id}.json"
+        push_file_immediately(idea_path, f"cns-vault: resolve idea {idea_id} ({resolution})")
+        return idea
