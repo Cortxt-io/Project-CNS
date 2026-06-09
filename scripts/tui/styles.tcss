@@ -1,0 +1,37 @@
+/* Layout för CNS-TUI:t. Färgkodning av stage/status sköts via Rich-markup
+   på trädlabels och i detaljpanelen (scripts/tui/data.py-färgkartor). */
+
+#tree {
+    width: 42%;
+    border-right: solid $panel;
+    padding: 0 1;
+}
+
+#detail-pane {
+    width: 1fr;
+    padding: 0 1;
+}
+
+#filter {
+    margin: 0 0 1 0;
+}
+
+#detail-scroll {
+    height: 1fr;
+}
+
+#detail {
+    padding: 1 1;
+}
+
+OverviewScreen {
+    align: center middle;
+}
+
+#overview-box {
+    width: 70%;
+    height: 80%;
+    border: round $accent;
+    background: $surface;
+    padding: 1 2;
+}
