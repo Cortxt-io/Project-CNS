@@ -1,0 +1,8 @@
+{
+  "id": "idea-2b6dfaf5",
+  "text": "Bygg Claude Code-verktyg (skills / slash commands / hooks) i stället för — eller utöver — CNS MCP-verktyg.\n\nRiktningsfråga att planera NÄSTA session (Rikard har en del idéer som ska samlas då). I dag exponeras CNS som remote MCP-verktyg (app/mcp_server.py, cortxt_*). Alternativ/komplement: bygg native Claude Code-yta — skills (portabla konventioner, jfr cns-sync/cns-flush), slash commands och hooks — som driver samma datalager.\n\nAtt väga (planeras, ej beslutat nu):\n- MCP-verktyg = nåbara från telefon/webb/claude.ai (OAuth), körs på Railway. Claude Code-verktyg = lokala, snabba, ingen server/auth-runda, men bundna till Claude Code-sessionen.\n- Vilka operationer hör hemma var? Läs/överblick + bokföring kan passa som skills/hooks lokalt; multi-klient-skrivningar vill nog ligga kvar som MCP.\n- Hooks kan göra idé-inboxen aktiv (UserPromptSubmit drar in sessionens öppna idéer) — överlappar idea-337b37ff.\n- Risk: två parallella verktygsytor som driver isär. Bestäm ägarskap per operation, inte dubblera.\n\nHänger ihop med [[idea-0e52a505]] (hur långt CNS omsluter Claudes UI) — samma gräns-fråga, från verktygshållet. Avgränsning: detta är en strategisk riktningsfråga, inte en quest ännu; konkreta verktyg föds efter att riktningen satts nästa session.",
+  "created_at": "2026-06-09T06:04:46",
+  "source": "chat",
+  "slug": null,
+  "status": "open"
+}
