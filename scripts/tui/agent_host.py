@@ -21,6 +21,20 @@ from pathlib import Path
 from typing import Any, AsyncIterator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+
+# Webb-verktyg (valfritt extra — importeras lazy så browser_use ej krävs).
+# web_tools importerar INTE browser_use på modulnivå; det sker inne i varje wrapper.
+try:
+    from scripts.tui.web_tools import WEB_SERVER_NAME, WEB_TOOL_NAMES, build_web_server
+
+    _WEB_AVAILABLE = True
+except Exception:
+    _WEB_AVAILABLE = False
+    WEB_SERVER_NAME = "web"  # fallback för _deny_unlisted
+    WEB_TOOL_NAMES: list[str] = []
+
+    def build_web_server() -> Any:  # type: ignore[misc]
+        return None
 # Otrackad lokal nyckelfil (gitignored) — auto-läses till miljön om satt.
 LOCAL_KEY_FILE = REPO_ROOT / ".cns-agent-key"
 
@@ -182,8 +196,12 @@ async def _deny_unlisted(tool_name: str, _input: dict, _ctx: Any) -> Any:
     """can_use_tool: neka allt som inte är förhandsgodkänt (read-first-skydd)."""
     from claude_agent_sdk import PermissionResultAllow, PermissionResultDeny
 
-    allowed = set(READ_TOOLS + CNS_TOOL_NAMES)
-    if tool_name in allowed or tool_name.startswith(f"mcp__{CNS_SERVER_NAME}__"):
+    allowed = set(READ_TOOLS + CNS_TOOL_NAMES + WEB_TOOL_NAMES)
+    if (
+        tool_name in allowed
+        or tool_name.startswith(f"mcp__{CNS_SERVER_NAME}__")
+        or tool_name.startswith(f"mcp__{WEB_SERVER_NAME}__")
+    ):
         return PermissionResultAllow()
     return PermissionResultDeny(message=f"'{tool_name}' nekat i CNS read-läge.")
 
@@ -192,12 +210,17 @@ def build_options(slug: str | None = None, resume: str | None = None, allow_writ
     """Bygg ClaudeAgentOptions för ett agent-pass (read-first som default)."""
     from claude_agent_sdk import ClaudeAgentOptions
 
-    allowed = list(READ_TOOLS) + list(CNS_TOOL_NAMES)
+    allowed = list(READ_TOOLS) + list(CNS_TOOL_NAMES) + list(WEB_TOOL_NAMES)
     if allow_writes:
         allowed += WRITE_TOOLS
+    mcp_servers: dict[str, Any] = {CNS_SERVER_NAME: build_cns_server()}
+    if _WEB_AVAILABLE:
+        web_srv = build_web_server()
+        if web_srv is not None:
+            mcp_servers[WEB_SERVER_NAME] = web_srv
     kwargs: dict[str, Any] = {
         "system_prompt": build_seed(slug),
-        "mcp_servers": {CNS_SERVER_NAME: build_cns_server()},
+        "mcp_servers": mcp_servers,
         "allowed_tools": allowed,
         "permission_mode": "default",
         "cwd": str(REPO_ROOT),
