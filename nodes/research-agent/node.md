@@ -5,8 +5,8 @@ slug: research-agent
 title: Research Agent
 kind: component
 part_of: agent-studio
-stage: idea
-status: idea
+stage: building
+status: early_mvp
 feeds: []
 depends_on: []
 summary: Research-agent som söker på webben, verifierar källor och skriver findings till CNS wiki. Kör via Anthropic API (claude-sonnet-4-6).
