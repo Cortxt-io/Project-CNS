@@ -1,0 +1,8 @@
+{
+  "id": "idea-e0f11ef8",
+  "text": "Re-splitta strukturarbetet ur den hopbuntade commiten dca4c0b (branch structure/agents-mcp-router) till en EGEN ren commit, när de parallella sessionerna är klara. dca4c0b fick rubriken \"feat(tui): agent-host\" men innehåller även: Plan A/B-väggen (.claude/ + agents/ med README:n), config-routern .mcp.json, idé-noden nodes/mcp-gateway (depends_on cns-mcp), samt CLAUDE.md-sektionen \"Agenter, verktygslåda & minne\" + de fyra minneslagren. Inget rörde main. Mål: lyft ut just dessa filer till en separat commit med korrekt rubrik så strukturen kan granskas/mergas för sig (TUI-arbetet kvar för sig).",
+  "created_at": "2026-06-09T02:09:14",
+  "source": "chat",
+  "slug": "cns-mcp",
+  "status": "open"
+}
