@@ -193,7 +193,9 @@ Project-CNS/
     ├── perplexity_client.py <- Perplexity API client (used by `update --mode api`)
     ├── connector.py         <- edit-brief generator for connector mode
     ├── local_editor.py      <- interactive local editing
-    ├── quest.py  quest_manager.py  <- quest workflow / lifecycle
+    ├── quest.py             <- cns quest CLI (legacy quest-model)
+    ├── issues_client.py     <- work items: GitHub Issues + Milestones (quest=milestone) + todos
+    ├── session_store.py     <- sessions as first-class objects (session tree via parent_id)
     ├── portfolio_brief.py   <- daily portfolio brief
     ├── devlog.py  devwatch.py  eventstream.py  file_watcher.py  <- dev/activity tracking
     ├── install_hooks.py     <- git hook installation
