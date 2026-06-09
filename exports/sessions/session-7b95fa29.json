@@ -1,9 +1,9 @@
 {
   "id": "session-7b95fa29",
   "created_at": "2026-06-09T13:28:04",
-  "updated_at": "2026-06-09T13:28:04",
-  "status": "running",
-  "summary": "teamleader: agentur-triage av idé-backloggen → första questet (TUI/agent-host). Råd: ide-agent/stadaren/research-agent/ekonomen. Beslut (Rikard): stäng bucket A, behåll bucket B, bygg P1 TUI först.",
+  "updated_at": "2026-06-09T13:29:47",
+  "status": "done",
+  "summary": "Agentur-triage av idé-backloggen klar. Råd aktiverat: ide-agent (9 kluster), stadaren (10 stäng-som-gjort/3 ej-byggbar), research-agent (3 kräver utredning/2 avgjorda), ekonomen (vikta upp TUI+lokala modeller, deploy+agentur-skalning dyrt). Beslut (Rikard): stäng bucket A, behåll bucket B, bygg P1 TUI först. VERKSTÄLLT: quest #1 'TUI/agent-host' skapad med 3 issues (#16 branch-vy, #17 session-hub, #18 worktree-vy, alla node:cns-core). EJ verkställt: bucket A-stängning blockerad av saknad cortxt_resolve_idea — fångad som ny idé. Arbetskön gick från tom → 1 quest/3 issues.",
   "link": {
     "kind": "node",
     "ref": "cns-core"
