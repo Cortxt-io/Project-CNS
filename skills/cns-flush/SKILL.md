@@ -23,10 +23,10 @@ quests. Det är inte en kod-merge till main; det är en dataskrivning.
 
 ## Steg
 
-1. **Identifiera spåret.** Vilken nod eller quest rörde sessionen? Vid oklarhet:
-   `cortxt_list_projects` för att hitta rätt slug, eller `cortxt_list_active_quests`
-   om arbetet hör till ett quest. Fråga användaren om det fortfarande är otydligt
-   (numrera alternativen).
+1. **Identifiera spåret.** Vilken nod eller quest/issue rörde sessionen? Vid oklarhet:
+   `cortxt_list_projects` för att hitta rätt slug, `cortxt_list_quests` (milestones)
+   eller `cortxt_list_open_issues` om arbetet hör till ett issue/quest. Fråga
+   användaren om det fortfarande är otydligt (numrera alternativen).
 
 2. **Kolla överlapp först.** Kör `/cns-sync` (eller `cortxt_list_sessions` med
    `link_ref=<nod/quest>`) för att se om en annan session redan rört samma spår.
@@ -52,7 +52,7 @@ quests. Det är inte en kod-merge till main; det är en dataskrivning.
 
 5. **Fånga kvarvarande idéer.** Sidospår som inte hör till sammanfattningen men är
    värda att behålla: `cortxt_capture_idea(text=..., slug=<nod>)` — en per distinkt
-   idé. Är någon redan en konkret uppgift: `cortxt_promote_idea_to_quest`
+   idé. Är någon redan en konkret uppgift: `cortxt_promote_idea_to_issue`
    (bekräfta med användaren först).
 
 6. **Rapportera.** Lista kort vad som bokfördes: session-id, länkat spår, fångade

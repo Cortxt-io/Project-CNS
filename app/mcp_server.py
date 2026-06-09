@@ -11,7 +11,7 @@ When the OAuth env vars are unset the server starts unauthenticated, which is
 intended only for local development / Claude Desktop.
 
 This module owns auth, the GitHub allowlist middleware and the ``mcp`` instance.
-The 17 ``cortxt_*`` tools themselves live in ``app/tools/`` — one domain module
+The 19 ``cortxt_*`` tools themselves live in ``app/tools/`` — one domain module
 per area, each with a ``register(mcp)``. Add a new tool as an ``@mcp.tool`` in
 the right module (or a new module + its register call below), against the
 ``scripts/`` data layer — NOT as another decorator here. Tool names are a public
@@ -22,6 +22,7 @@ connector contract (claude.ai) and must stay stable when moved between modules.
   - ideas:    cortxt_capture_idea / list_ideas / promote_idea_to_issue
   - projects: cortxt_list_projects / get_project
   - sessions: cortxt_start_session / mark_session_done / save_session / list_sessions
+               / fork_session / get_session_tree
 """
 
 from __future__ import annotations

@@ -10,6 +10,13 @@ spår kan vänta (``/loop``) tills sessionen flippar till ``done``. Att skriva
 ``running`` kräver att passet registrerar sig vid start; annars används bara
 ``save_session`` som en done-markör i efterhand.
 
+Sessioner bildar ett **träd**: valfritt ``parent_id`` pekar på den session forken
+sprang ur (``None`` = rot/"main"-pass). ``parent_id`` är ortogonalt mot ``link``
+— en session kan samtidigt arbeta på ett issue (``link``) och vara ett barn till
+en annan session (``parent_id``). ``children``/``ancestry``/``tree`` traverserar
+trädet; ``fork_session`` skapar ett barn med ``parent_id`` satt explicit (till
+skillnad från ``/btw``, vars hook-payload saknar förälder-id).
+
 Isolerat och read/write-mot-disk. GitHub-push (som idea_inbox/quests) sker i
 MCP-/server-lagret — läggs additivt EFTER quest→issues-migreringen (het fil).
 """
@@ -63,11 +70,15 @@ def start_session(
     summary: str = "",
     source: str = "chat",
     transcript_id: str | None = None,
+    parent_id: str | None = None,
+    fork_name: str | None = None,
 ) -> dict:
     """Registrera ett pågående arbetspass (status=running).
 
     Knyt det till ett spår via (link_kind, link_ref), t.ex. ("quest", quest_id).
     transcript_id kan peka på Claude Code-sessionens .jsonl för spårbarhet.
+    parent_id pekar (om satt) på den session detta pass forkades ur — None = rot.
+    fork_name är en valfri mänsklig etikett på forken.
     """
     if source not in VALID_SOURCES:
         raise ValueError(
@@ -84,6 +95,8 @@ def start_session(
         "link": _link(link_kind, link_ref),
         "transcript_id": transcript_id,
         "source": source,
+        "parent_id": parent_id,
+        "fork_name": fork_name,
     }
     _write(session)
     return session
@@ -96,10 +109,13 @@ def save_session(
     status: str = "done",
     source: str = "chat",
     transcript_id: str | None = None,
+    parent_id: str | None = None,
+    fork_name: str | None = None,
 ) -> dict:
     """Spara ett arbetspass direkt (default status=done — done-markör i efterhand).
 
     Detta är "Spara session till CNS": en sammanfattning + länk till quest/issue/idé.
+    parent_id/fork_name knyter passet in i sessionsträdet (None = rot).
     """
     if status not in VALID_STATUSES:
         raise ValueError(
@@ -120,6 +136,8 @@ def save_session(
         "link": _link(link_kind, link_ref),
         "transcript_id": transcript_id,
         "source": source,
+        "parent_id": parent_id,
+        "fork_name": fork_name,
     }
     _write(session)
     return session
@@ -170,3 +188,85 @@ def list_sessions(
         ]
     sessions.sort(key=lambda s: s.get("created_at", ""), reverse=True)
     return sessions
+
+
+def fork_session(
+    parent_id: str,
+    summary: str = "",
+    fork_name: str | None = None,
+    link_kind: str | None = None,
+    link_ref: str | None = None,
+    source: str = "chat",
+    transcript_id: str | None = None,
+) -> dict:
+    """Skapa en barn-session (status=running) under parent_id — en explicit fork.
+
+    Till skillnad från ``/btw`` (vars hook-payload saknar förälder-id) skrivs
+    parent_id här ut explicit i posten, vilket är vad ett session-träd kräver.
+    Höjer FileNotFoundError om föräldern inte finns.
+    """
+    if get_session(parent_id) is None:
+        raise FileNotFoundError(f"Parent session '{parent_id}' not found")
+    return start_session(
+        link_kind=link_kind,
+        link_ref=link_ref,
+        summary=summary,
+        source=source,
+        transcript_id=transcript_id,
+        parent_id=parent_id,
+        fork_name=fork_name,
+    )
+
+
+def children(session_id: str) -> list[dict]:
+    """Direkta barn till en session, äldst först (forkningsordning)."""
+    kids = [s for s in load_all_sessions() if s.get("parent_id") == session_id]
+    kids.sort(key=lambda s: s.get("created_at", ""))
+    return kids
+
+
+def ancestry(session_id: str) -> list[dict]:
+    """Kedjan av förfäder, närmast förälder först, upp till roten (exkl. self).
+
+    Bryter vid saknad förälder eller cykel (besökta id:n spåras)."""
+    by_id = {s["id"]: s for s in load_all_sessions()}
+    chain: list[dict] = []
+    seen: set[str] = {session_id}
+    cur = by_id.get(session_id)
+    while cur and cur.get("parent_id"):
+        pid = cur["parent_id"]
+        if pid in seen:
+            break  # cykelskydd
+        parent = by_id.get(pid)
+        if parent is None:
+            break
+        chain.append(parent)
+        seen.add(pid)
+        cur = parent
+    return chain
+
+
+def tree(root_id: str | None = None) -> list[dict] | dict | None:
+    """Bygg sessionsträdet som nästlade noder ({**session, "children": [...]}).
+
+    root_id=None → lista av alla rötter (parent_id saknas) nästlade. Annars
+    delträdet för den givna sessionen (None om den inte finns). Barn äldst först."""
+    all_sessions = load_all_sessions()
+    by_parent: dict[str | None, list[dict]] = {}
+    for s in all_sessions:
+        by_parent.setdefault(s.get("parent_id"), []).append(s)
+    for kids in by_parent.values():
+        kids.sort(key=lambda s: s.get("created_at", ""))
+
+    seen: set[str] = set()
+
+    def build(node: dict) -> dict:
+        seen.add(node["id"])
+        kids = [k for k in by_parent.get(node["id"], []) if k["id"] not in seen]
+        return {**node, "children": [build(k) for k in kids]}
+
+    if root_id is not None:
+        node = next((s for s in all_sessions if s["id"] == root_id), None)
+        return build(node) if node else None
+    roots = by_parent.get(None, [])
+    return [build(r) for r in roots]

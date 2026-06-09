@@ -102,3 +102,46 @@ def register(mcp: FastMCP) -> None:
         """
         from scripts.session_store import list_sessions
         return list_sessions(status=status, link_ref=link_ref)
+
+    @mcp.tool()
+    def cortxt_fork_session(
+        parent_id: str,
+        summary: str = "",
+        fork_name: str | None = None,
+        link_kind: str | None = None,
+        link_ref: str | None = None,
+        source: str = "chat",
+        transcript_id: str | None = None,
+    ) -> dict:
+        """Fork a child work-pass under an existing session and push it to GitHub.
+
+        Builds the session tree: the new running session gets `parent_id` set
+        explicitly (a root/"main" pass is just one with no parent — use
+        cortxt_start_session for that). Optionally label the fork (`fork_name`)
+        and link it to its own track (link_kind one of quest|issue|idea|node).
+        """
+        from scripts.session_store import fork_session
+        try:
+            session = fork_session(
+                parent_id=parent_id,
+                summary=summary,
+                fork_name=fork_name,
+                link_kind=link_kind,
+                link_ref=link_ref,
+                source=source,
+                transcript_id=transcript_id,
+            )
+        except FileNotFoundError:
+            raise ToolError(f"Parent session {parent_id} not found")
+        _push_session(session, "fork session")
+        return session
+
+    @mcp.tool()
+    def cortxt_get_session_tree(root_id: str | None = None) -> list[dict] | dict | None:
+        """Return the session tree as nested nodes ({...session, "children": [...]}).
+
+        root_id=None gives every root pass (no parent) nested; pass a session id to
+        get just that subtree. Read-only — pairs with cortxt_fork_session.
+        """
+        from scripts.session_store import tree
+        return tree(root_id)
