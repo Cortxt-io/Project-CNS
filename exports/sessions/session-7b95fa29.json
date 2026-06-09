@@ -1,0 +1,15 @@
+{
+  "id": "session-7b95fa29",
+  "created_at": "2026-06-09T13:28:04",
+  "updated_at": "2026-06-09T13:28:04",
+  "status": "running",
+  "summary": "teamleader: agentur-triage av idé-backloggen → första questet (TUI/agent-host). Råd: ide-agent/stadaren/research-agent/ekonomen. Beslut (Rikard): stäng bucket A, behåll bucket B, bygg P1 TUI först.",
+  "link": {
+    "kind": "node",
+    "ref": "cns-core"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null
+}
