@@ -1,0 +1,8 @@
+{
+  "id": "idea-34298e57",
+  "text": "MCP-verktyg som når Anthropic-API:t för att hantera API-nycklar — t.ex. skapa/lista/rotera nycklar mot console-kontot. Motiv: idag kan en agent inte minta en Anthropic API-nyckel åt användaren (Anthropic exponerar med flit ingen programmatisk väg; nycklar skapas manuellt på console.anthropic.com → Settings → API Keys). Det blockerar flöden som agent-host i TUI:t (cns-tui, scripts/tui/agent_host.py) där `.cns-agent-key` behöver fyllas i för separat fakturering. Om Anthropic ett admin-/key-management-API kan ett MCP-verktyg wrappa det så nyckelhantering blir self-service från agenten. Att utreda: finns Anthropics Admin API (organisations-API-nycklar) och täcker det key-creation? Säkerhetsmodell/scoping innan något sånt byggs.",
+  "created_at": "2026-06-09T02:57:40",
+  "source": "chat",
+  "slug": null,
+  "status": "open"
+}
