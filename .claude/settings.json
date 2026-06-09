@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__project-cns__cortxt_list_active_quests",
+      "mcp__project-cns__cortxt_get_quest",
+      "mcp__project-cns__cortxt_list_ideas",
+      "mcp__project-cns__cortxt_list_projects",
+      "mcp__project-cns__cortxt_get_project",
+      "Bash(python cns.py list)",
+      "Bash(python cns.py validate *)",
+      "Bash(git status)",
+      "Bash(git fetch *)"
+    ]
+  }
+}

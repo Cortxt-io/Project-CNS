@@ -33,6 +33,21 @@ Filnamnet är **alltid `node.md`** oavsett kind — all kod globar `*/node.md` (
 - `skills/` — portabla konventioner: `cortxt-quests` (quest-livscykel), `cns-flush` (spola ner en sessions slutsats i CNS via `cortxt_save_session`), `cns-sync` (read-only överlappsdetektering av parallella sessioner via `cortxt_list_sessions(link_ref=…)`, körs före flush).
 - `scripts/tui/` — interaktiv terminal-överblick (textual). **Isolerad:** konsumerar bara datalagret (`read_all_nodes`), rör inte `cns.py`. Körs via `python -m scripts.tui`. Inkoppling som `cns tui`-subkommando väntar tills CLI-flytten landat (lazy import). Beroende: `textual>=0.79,<1.0`.
   - `scripts/tui/agent_host.py` — **agent-host** (tangent `c` i TUI:t): driver Claude lokalt via **Claude Agent SDK** (`claude-agent-sdk`, valfritt extra i `requirements-agent.txt`), exponerar datalagret som in-process MCP-verktyg (`create_sdk_mcp_server` + `@tool`), read-first (`can_use_tool` nekar Write/Edit/Bash). Auth: env `ANTHROPIC_API_KEY` → otrackad `.cns-agent-key` → annars Claude Code-login. Rör inte `app/mcp_server.py`.
+- `.mcp.json` — MCP-router (config), se "Agenter, verktygslåda & minne" nedan.
+- `.claude/` — verktygslådan (Plan A), versionerad. Egen `README.md`.
+- `agents/` — produktens agenter (Plan B), tom tills en verklig agent kräver det.
+
+## Agenter, verktygslåda & minne (två plan)
+Två skilda plan med **hård vägg emellan** — produktkod importerar aldrig från `.claude/`, och `.claude/` är aldrig ett produktberoende.
+- **Plan A — verktygslådan (`.claude/`, versionerad här):** subagenter (`.claude/agents/`), egna skills (`.claude/skills/`), slash-kommandon (`.claude/commands/`), delade permissions (`.claude/settings.json`). Detta är hur *vi* driver portföljen, inte produkten. Arbetsytans `.claude/` är maskinlokal och oversionerad — lägg inget varaktigt där utom btw-Stop-hooken som redan bor i arbetsytans `settings.json`.
+- **Plan B — produktens agenter (`agents/`):** om Cortxt själv ska köra agenter åt slutanvändare bor de här som produktkod, bredvid `app/` och `scripts/`. Tom tills en verklig agent kräver det.
+- **MCP-router:** `.mcp.json` (versionerad) listar MCP-servrarna agenterna når — i dag bara `project-cns`. Detta *är* routern nu (config-router). En separat gateway-process är inritad som idé-noden `mcp-gateway` (`depends_on: cns-mcp`) och byggs först när Plan B-agenter når många servrar.
+
+### Fyra minneslager (förväxla inte)
+- **Claude-minne** (`~/.claude/projects/.../memory/`) — hur Claude ska jobba med dig. Personligt, Plan A.
+- **Sessionsminne** — `exports/btw/` (btw-asides per session) **och** `exports/sessions/` (`session_store.py`, AI-arbetspass som förstklassiga objekt). Arbetstillstånd, ej kunskap.
+- **Kunskap/wiki** (`nodes/*/node.md`) — varaktig portföljkunskap, produktens sanning. `.qoder/repowiki/` är verktygsgenererat och räknas inte.
+En agent som lär sig något *bestående om portföljen* skriver en nod; något *om sessionen/arbetspasset* → btw/sessions; något *om hur Claude ska bete sig* → Claude-minnet.
 
 ## Deploy & dataflöde
 - GitHub = sanning. AI-genererat innehåll pushas via **direkt GitHub API** (`git_ops.py`), inte till Railways efemära disk.
