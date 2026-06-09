@@ -1,0 +1,4 @@
+# Valfritt extra för agent-host-läget i TUI:t (scripts/tui/agent_host.py).
+# Hålls separat från requirements.txt så Railway-deployen inte drar in det.
+# Kräver Python >=3.10, Claude Code CLI på PATH och ANTHROPIC_API_KEY.
+claude-agent-sdk>=0.2,<0.3
