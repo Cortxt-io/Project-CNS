@@ -15,7 +15,17 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen
-from textual.widgets import Footer, Header, Input, Label, ListItem, ListView, Static, Tree
+from textual.widgets import (
+    Footer,
+    Header,
+    Input,
+    Label,
+    ListItem,
+    ListView,
+    RichLog,
+    Static,
+    Tree,
+)
 from textual.widgets.tree import TreeNode
 
 from scripts.tui.data import (
@@ -285,6 +295,80 @@ class KnowledgeScreen(ModalScreen):
             yield Static(_knowledge_markup(), id="knowledge")
 
 
+class AgentScreen(ModalScreen):
+    """Fråga Claude om markerad nod (agent-host, read-first). Tangent c."""
+
+    BINDINGS = [
+        Binding("escape", "dismiss", "Stäng"),
+    ]
+
+    def __init__(self, slug: str | None) -> None:
+        super().__init__()
+        self._slug = slug
+        self._session_id: str | None = None
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="agent-box"):
+            head = f"[bold]Fråga Claude[/bold]  [dim]— nod: {self._slug or '(ingen)'} · read-first · esc stänger[/dim]"
+            yield Static(head, id="agent-head")
+            yield RichLog(id="agent-log", wrap=True, markup=True)
+            yield Input(placeholder="Fråga om noden… (Enter skickar)", id="agent-input")
+
+    def on_mount(self) -> None:
+        self.query_one("#agent-input", Input).focus()
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        if event.input.id != "agent-input":
+            return
+        prompt = event.value.strip()
+        if not prompt:
+            return
+        log = self.query_one("#agent-log", RichLog)
+        log.write(f"[bold cyan]› {prompt}[/bold cyan]")
+        event.input.value = ""
+        event.input.disabled = True
+        self.run_worker(self._run(prompt), exclusive=True)
+
+    async def _run(self, prompt: str) -> None:
+        from scripts.tui.agent_host import run_turn
+
+        log = self.query_one("#agent-log", RichLog)
+        got_text = False
+        async for kind, payload in run_turn(prompt, slug=self._slug):
+            if kind == "session":
+                self._session_id = payload
+            elif kind == "text":
+                got_text = True
+                log.write(str(payload))
+            elif kind == "tool":
+                log.write(f"[dim]· verktyg: {payload}[/dim]")
+            elif kind == "error":
+                log.write(f"[red]fel: {payload}[/red]")
+            elif kind == "result":
+                if not got_text and payload:
+                    log.write(str(payload))
+        self._record_session(prompt)
+        inp = self.query_one("#agent-input", Input)
+        inp.disabled = False
+        inp.focus()
+
+    def _record_session(self, prompt: str) -> None:
+        """Bokför passet som CNS-session-post länkad till noden (sessions-spåret)."""
+        if not self._session_id:
+            return
+        try:
+            from scripts import session_store
+
+            session_store.save_session(
+                summary=f"Agent-host: {prompt[:80]}",
+                link_kind="node" if self._slug else None,
+                link_ref=self._slug,
+                transcript_id=self._session_id,
+            )
+        except Exception:
+            pass
+
+
 class CnsTuiApp(App):
     """Glanceable portföljöverblick i terminalen."""
 
@@ -297,6 +381,7 @@ class CnsTuiApp(App):
         Binding("o", "overview", "Översikt"),
         Binding("s", "sessions", "Sessioner"),
         Binding("k", "knowledge", "Kunskap"),
+        Binding("c", "agent", "Fråga Claude"),
         Binding("slash", "focus_filter", "Filter"),
         Binding("escape", "clear_filter", "Rensa filter", show=False),
     ]
@@ -306,6 +391,7 @@ class CnsTuiApp(App):
         self._all_nodes: dict[str, NodeView] = {}
         self._ideas: list[dict] = []
         self._transcripts: list[Transcript] = []
+        self._current_slug: str | None = None
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -352,6 +438,7 @@ class CnsTuiApp(App):
         node = event.node.data
         detail = self.query_one("#detail", Static)
         if isinstance(node, NodeView):
+            self._current_slug = node.slug
             ideas = [i for i in self._ideas if i.get("slug") == node.slug]
             issue_status, issues = open_issues_for_slug(node.slug)
             sessions = [t for t in self._transcripts if node.slug in t.slugs]
@@ -383,6 +470,9 @@ class CnsTuiApp(App):
 
     def action_knowledge(self) -> None:
         self.push_screen(KnowledgeScreen())
+
+    def action_agent(self) -> None:
+        self.push_screen(AgentScreen(self._current_slug))
 
     def action_focus_filter(self) -> None:
         filter_input = self.query_one("#filter", Input)
