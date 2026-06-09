@@ -166,10 +166,13 @@ Verifiera med `python cns.py doctor`.
 
 MCP-servern (`app/mcp_server.py`) körs i två lägen: **remote Streamable HTTP**
 på Railway (huvudleveransen, nåbar från telefon/web via claude.ai) och **lokal
-stdio** som fallback för Claude Desktop. Samma 8 tools i båda:
-`cortxt_list_active_quests`, `cortxt_get_quest`, `cortxt_complete_quest`,
-`cortxt_capture_idea`, `cortxt_list_ideas`, `cortxt_promote_idea_to_quest`,
-`cortxt_list_projects`, `cortxt_get_project`.
+stdio** som fallback för Claude Desktop. Samma 21 tools i båda, i `app/tools/`
+(var sin `register(mcp)`):
+- **issues:** `cortxt_list_open_issues`, `cortxt_get_issue`, `cortxt_create_issue`, `cortxt_close_issue`, `cortxt_add_todo`, `cortxt_check_todo`
+- **quests (milestones):** `cortxt_list_quests`, `cortxt_get_quest`, `cortxt_create_quest`, `cortxt_close_quest`
+- **ideas:** `cortxt_capture_idea`, `cortxt_list_ideas`, `cortxt_promote_idea_to_issue`
+- **projects:** `cortxt_list_projects`, `cortxt_get_project`
+- **sessions:** `cortxt_start_session`, `cortxt_mark_session_done`, `cortxt_save_session`, `cortxt_list_sessions`, `cortxt_fork_session`, `cortxt_get_session_tree`
 
 ### Remote (claude.ai Custom Connector) – huvudleverans
 
@@ -207,8 +210,8 @@ Dynamic Client Registration som claude.ai kräver.
    `cortxt_list_projects`.
 
 > **⚠️ Härda innan du litar på den:** GitHub-providern släpper in *vilken*
-> GitHub-användare som helst som loggar in — och `cortxt_complete_quest`
-> muterar data och pushar till GitHub. Innan servern exponeras på riktigt,
+> GitHub-användare som helst som loggar in — och muterande verktyg
+> (`cortxt_close_issue`/`create_issue`/`capture_idea` m.fl.) pushar till GitHub. Innan servern exponeras på riktigt,
 > begränsa åtkomsten till din egen GitHub-användare (t.ex. en
 > allowlist-middleware på `mcp` som matchar inloggat användarnamn).
 

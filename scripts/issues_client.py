@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from typing import Any, Optional
 
 import requests
@@ -29,6 +30,11 @@ logger = logging.getLogger(__name__)
 GITHUB_API = "https://api.github.com"
 NODE_LABEL_PREFIX = "node:"
 _TIMEOUT = 20
+
+# A todo is a GitHub task-list checkbox in the issue body: ``- [ ] text`` / ``- [x] text``.
+# This keeps the sub-task level on GitHub (the source of truth), rendered as native
+# progress, with no side store to sync. (See CLAUDE.md: GitHub = sanning.)
+_TODO_RE = re.compile(r"^(\s*[-*]\s+)\[([ xX])\]\s+(.*)$")
 
 
 # ---------------------------------------------------------------------------
@@ -84,22 +90,45 @@ def slug_from_labels(labels: list[dict] | list[str]) -> Optional[str]:
     return None
 
 
+def parse_todos(body: Optional[str]) -> list[dict]:
+    """Parse task-list checkboxes from an issue body into ``{index, text, done}``.
+
+    ``index`` is the checkbox's ordinal in the body (0-based), the handle
+    ``set_todo``/``cortxt_check_todo`` use to flip it. Non-checkbox lines are ignored.
+    """
+    todos: list[dict] = []
+    for line in (body or "").splitlines():
+        m = _TODO_RE.match(line)
+        if m:
+            todos.append(
+                {
+                    "index": len(todos),
+                    "text": m.group(3).strip(),
+                    "done": m.group(2).lower() == "x",
+                }
+            )
+    return todos
+
+
 def _normalize(issue: dict) -> dict:
     """Shape a raw GitHub issue into the CNS-facing form the old quest dict had.
 
     Keeps the migration mechanical: number↔id, node_slug↔slug, state, urls.
+    ``todos`` are the body's task-list checkboxes (the sub-task level under an issue).
     """
+    body = issue.get("body") or ""
     return {
         "number": issue.get("number"),
         "node_slug": slug_from_labels(issue.get("labels", [])),
         "title": issue.get("title", ""),
-        "body": issue.get("body") or "",
+        "body": body,
         "state": issue.get("state"),  # open | closed
         "url": issue.get("html_url"),
         "created_at": issue.get("created_at"),
         "closed_at": issue.get("closed_at"),
         "quest": (issue.get("milestone") or {}).get("number"),
         "labels": [l.get("name") for l in issue.get("labels", []) if isinstance(l, dict)],
+        "todos": parse_todos(body),
     }
 
 
@@ -213,6 +242,71 @@ def close_issue(
     )
     resp.raise_for_status()
     return _normalize(resp.json())
+
+
+# ---------------------------------------------------------------------------
+# Todos == task-list checkboxes in the issue body (the sub-task level)
+# ---------------------------------------------------------------------------
+
+
+def update_issue_body(number: int, body: str, token: Optional[str] = None) -> dict:
+    """PATCH an issue's body wholesale. Used by add_todo/set_todo."""
+    repo, _ = _require_config(token)
+    resp = requests.patch(
+        f"{GITHUB_API}/repos/{repo}/issues/{number}",
+        headers=_headers(token),
+        json={"body": body},
+        timeout=_TIMEOUT,
+    )
+    resp.raise_for_status()
+    return _normalize(resp.json())
+
+
+def _raw_body(number: int, token: Optional[str]) -> str:
+    """Fetch an issue's raw body (not normalized). Raises ValueError if missing."""
+    repo, _ = _require_config(token)
+    resp = requests.get(
+        f"{GITHUB_API}/repos/{repo}/issues/{number}",
+        headers=_headers(token),
+        timeout=_TIMEOUT,
+    )
+    if resp.status_code == 404:
+        raise ValueError(f"Issue #{number} not found")
+    resp.raise_for_status()
+    return resp.json().get("body") or ""
+
+
+def add_todo(number: int, text: str, token: Optional[str] = None) -> dict:
+    """Append a new unchecked todo (``- [ ] text``) to the issue body."""
+    body = _raw_body(number, token)
+    new_body = body.rstrip("\n") + f"\n- [ ] {text}\n"
+    return update_issue_body(number, new_body, token=token)
+
+
+def set_todo(
+    number: int, index: int, done: bool = True, token: Optional[str] = None
+) -> dict:
+    """Flip the *index*-th checkbox (0-based, body order) to done/undone.
+
+    Raises ValueError if there is no checkbox at that index.
+    """
+    body = _raw_body(number, token)
+    lines = body.splitlines()
+    count = -1
+    for i, line in enumerate(lines):
+        m = _TODO_RE.match(line)
+        if m:
+            count += 1
+            if count == index:
+                mark = "x" if done else " "
+                lines[i] = f"{m.group(1)}[{mark}] {m.group(3)}"
+                break
+    else:
+        raise ValueError(f"No todo at index {index} on issue #{number}")
+    new_body = "\n".join(lines)
+    if body.endswith("\n"):
+        new_body += "\n"
+    return update_issue_body(number, new_body, token=token)
 
 
 # ---------------------------------------------------------------------------

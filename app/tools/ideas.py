@@ -47,12 +47,14 @@ def register(mcp: FastMCP) -> None:
         title: str,
         slug: str | None = None,
         body: str | None = None,
+        quest_number: int | None = None,
     ) -> dict:
         """Promote an inbox idea into a GitHub Issue (a node work item).
 
         The issue's node comes from the idea (or the `slug` argument if the idea has
-        none); its body defaults to the idea's text. The idea is kept and marked
-        'promoted' to the new issue. Returns {"idea": ..., "issue": ...}.
+        none); its body defaults to the idea's text. `quest_number` optionally files
+        the new issue under a quest (GitHub milestone, see cortxt_list_quests). The
+        idea is kept and marked 'promoted' to the new issue. Returns {"idea", "issue"}.
         """
         from scripts.idea_inbox import get_idea, mark_promoted, IDEAS_DIR
         from scripts.issues_client import create_issue
@@ -72,7 +74,9 @@ def register(mcp: FastMCP) -> None:
                 "Idea has no linked slug — pass `slug` to say which node the issue is for."
             )
 
-        issue = create_issue(node_slug=node_slug, title=title, body=body or idea["text"])
+        issue = create_issue(
+            node_slug=node_slug, title=title, body=body or idea["text"], milestone=quest_number
+        )
 
         idea = mark_promoted(idea_id, f"#{issue['number']}")
         idea_path = IDEAS_DIR / f"{idea_id}.json"

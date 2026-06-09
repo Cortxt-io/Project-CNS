@@ -56,3 +56,28 @@ def register(mcp: FastMCP) -> None:
         """Close a work-item issue, leaving the result summary as a closing comment."""
         from scripts.issues_client import close_issue
         return close_issue(number, comment=result_summary)
+
+    @mcp.tool()
+    def cortxt_add_todo(number: int, text: str) -> dict:
+        """Add a sub-task (todo) to an issue as a task-list checkbox in its body.
+
+        Todos are the level under an issue: a checkbox `- [ ] text` rendered as
+        native GitHub progress. Returns the updated issue (its `todos` list reflects
+        the new item). Use cortxt_check_todo to tick it off later.
+        """
+        from scripts.issues_client import add_todo
+        return add_todo(number, text)
+
+    @mcp.tool()
+    def cortxt_check_todo(number: int, index: int, done: bool = True) -> dict:
+        """Tick a todo on/off by its 0-based index (see an issue's `todos` list).
+
+        `index` is the checkbox's order in the issue body (cortxt_get_issue returns
+        the `todos` with their indices). `done=False` un-ticks it.
+        """
+        from scripts.issues_client import set_todo
+        from fastmcp.exceptions import ToolError
+        try:
+            return set_todo(number, index, done=done)
+        except ValueError as e:
+            raise ToolError(str(e))

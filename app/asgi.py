@@ -36,7 +36,7 @@ _flask_fallthrough = Mount("/", app=WSGIMiddleware(flask_app))
 # Fail closed: only expose /mcp when an OAuth provider is configured (or when a
 # developer explicitly opts into an unauthenticated server locally). Otherwise a
 # deploy without the OAuth env vars would publish an OPEN, data-mutating MCP
-# endpoint (cortxt_complete_quest pushes to GitHub). Better to serve 503 there.
+# endpoint (e.g. cortxt_close_issue / create_issue push to GitHub). Better to serve 503 there.
 _auth_configured = mcp.auth is not None
 _allow_insecure = os.getenv("MCP_ALLOW_INSECURE") == "1"
 

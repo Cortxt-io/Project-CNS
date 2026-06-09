@@ -21,8 +21,9 @@ Filnamnet är **alltid `node.md`** oavsett kind — all kod globar `*/node.md` (
 - `scripts/json_exporter.py` — exporterar alla noder till nodes.json
 - `scripts/analyst.py` — AI-analys (anropar Claude via ANTHROPIC_API_KEY)
 - `scripts/portfolio_brief.py` — daglig portföljbrief
-- `scripts/quest_manager.py` — quest-livscykel
-- `scripts/idea_inbox.py` — idé-inkorg (lättviktig fångst under quests; `exports/ideas/<id>.json`, glob `idea-*.json`). Promote → `quest_manager.create_quest`.
+- `scripts/quest_manager.py` — **legacy** quest-livscykel (JSON). Ersatt av `issues_client` (quest=milestone); kvar tills rivningssteget landar — bygg inget nytt mot den.
+- `scripts/issues_client.py` — **arbetsuppgiftslagret** (GitHub REST, ingen `git`-subprocess). Tre nivåer: nod (label `node:<slug>`) ← **quest = GitHub Milestone** (grupperar issues, progress beräknas av GitHub) ← **issue = uppgift** (open/closed). Under issue: **todos = task-list-checkboxar** i issue-body (`- [ ]`/`- [x]`, `parse_todos`/`add_todo`/`set_todo`) — delstegsnivån, sanningen lever på GitHub. Verktygen i `app/tools/{issues,quests}.py`.
+- `scripts/idea_inbox.py` — idé-inkorg (lättviktig fångst; `exports/ideas/<id>.json`, glob `idea-*.json`; valfritt `session_id`). Promote → `issues_client.create_issue` (`cortxt_promote_idea_to_issue`, ev. under en quest/milestone).
 - `scripts/btw_log.py` — btw-sessionslogg. **Personlig logg, ej produktdata:** `/btw`-asides (Claude Code-forkkommandot) grupperade per session i `exports/btw/<session-id>.json`, mjukt länkbara till quest/idé via `link_session`. Rent datalager — pushar inte själv. **Isolerat:** rör inte nodmodellen eller `cns.py`. Fångas av `scripts/btw_capture.py` (hook-entry: läser ett transkripts `/btw`-kommandon idempotent på `src_uuid`, äger pushen). Körs av en **Stop-hook** i arbetsytans `.claude/settings.json` (inte i något repo). Inkoppling som `cns`-subkommando + MCP-verktyg väntar.
 - `scripts/session_store.py` — sessioner (AI-arbetspass) som förstklassiga objekt; en post per fil i `exports/sessions/session-<id>.json` (glob `session-*.json`). Länkbar till quest/issue/idea/node via `(link_kind, link_ref)`; `transcript_id` pekar på Claude Code-`.jsonl`. `running → done` är en **pollbar signal** (en parallell session kan `/loop`:a tills en annan flippar `done` innan den mergar). **Rent datalager — pushar inte själv;** pushen ligger i MCP-wrappern (`app/tools/sessions.py`: `cortxt_start_session`/`cortxt_mark_session_done`/`cortxt_save_session`/`cortxt_list_sessions`/`cortxt_fork_session`/`cortxt_get_session_tree`), samma split som idéer/btw. `list_sessions(link_ref=<nod>)` = **överlappsfrågan** (flera sessioner på samma nod ⇒ arbete att förena). **Sessionsträd:** valfritt `parent_id` (None = rot/"main") gör forks-under-forks möjliga, ortogonalt mot `link`; `fork_session` skriver `parent_id` explicit (till skillnad från `/btw`), `children`/`ancestry`/`tree` traverserar. `cns`-subkommando väntar (samma isolation som btw/tui).
 - `scripts/git_ops.py` — direkt GitHub API-push
@@ -67,7 +68,7 @@ Efter quest-logiken loggas varje event till **eventstream (Redis)** via `scripts
 > Noden `github-webhook` *är* denna mottagare. `webhook-router` är ett fristående devtool — **inte** detta (namnkrock).
 
 **2. Utgående skrivningar (Flask/MCP → GitHub Contents API).** `app/git_ops.py` — använder REST `https://api.github.com`, **inte** `git`-subprocess (Railway saknar `.git/`). Env: `CNS_GITHUB_TOKEN` + `GITHUB_REPO`, branch `main`.
-- `push_file_immediately()` — huvudvägen: GET sha → PUT en fil. Anropas av nästan alla muterande endpoints i `server.py` (quest create/update/activate/complete/archive, projekt-edit, `export nodes.json`) och av `mcp_server.py` `cortxt_complete_quest` (agent-initierad commit).
+- `push_file_immediately()` — huvudvägen: GET sha → PUT en fil. Anropas av muterande endpoints i `server.py` (projekt-edit, `export nodes.json`) och av MCP-verktygen i `app/tools/` (idé-capture/promote, session start/save/fork). Arbetsuppgifter (issues/milestones/todos) muteras däremot via `issues_client` direkt mot GitHub Issues-API:t, inte via Contents-API:t.
 - `git_commit_and_push()` — scannar `nodes/`+`exports/` efter filer ändrade senaste 60 s.
 - `delete_file_on_github()` — DELETE. `read_file_from_github()` — GET (läsning, se nedan).
 
@@ -86,7 +87,7 @@ flowchart LR
     subgraph RW[Railway]
         FL[Flask: server.py]
         WH["/api/webhook/github<br/>HMAC-verifierad"]
-        MCP[mcp_server.py<br/>cortxt_complete_quest]
+        MCP[mcp_server.py<br/>cortxt_close_issue]
         GO[git_ops.py<br/>Contents API]
         ES[(eventstream / Redis)]
     end
