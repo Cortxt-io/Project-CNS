@@ -225,16 +225,20 @@ async def run_turn(
         return
     from claude_agent_sdk import (
         AssistantMessage,
+        ClaudeSDKClient,
         ResultMessage,
         SystemMessage,
         TextBlock,
         ToolUseBlock,
-        query,
     )
 
     options = build_options(slug=slug, resume=resume, allow_writes=allow_writes)
+    # ClaudeSDKClient kör i streaming-läge → can_use_tool fungerar med strängprompt.
+    client = ClaudeSDKClient(options=options)
     try:
-        async for message in query(prompt=prompt, options=options):
+        await client.connect()
+        await client.query(prompt)
+        async for message in client.receive_response():
             if isinstance(message, SystemMessage):
                 sid = (getattr(message, "data", {}) or {}).get("session_id")
                 if sid:
@@ -249,3 +253,8 @@ async def run_turn(
                 yield ("result", getattr(message, "result", "") or "")
     except Exception as exc:
         yield ("error", f"{type(exc).__name__}: {exc}")
+    finally:
+        try:
+            await client.disconnect()
+        except Exception:
+            pass
