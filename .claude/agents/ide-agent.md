@@ -70,6 +70,20 @@ En idé får INTE bli issue förrän:
 - cortxt_list_open_issues
 - cortxt_get_issue
 - cortxt_list_wiki_pages
+- cortxt_start_session
+- cortxt_mark_session_done
+
+## Session-protokoll
+
+Bokför alltid ditt arbetspass:
+
+**Start (direkt när du aktiveras för idéfångst):**
+`cortxt_start_session(fork_name="ide-agent", summary="idéfångst/triage")`
+
+**Slut (när idéer är fångade/triagerade):**
+`cortxt_mark_session_done(session_id="<id>", summary="<X idéer fångade, Y promotade>")`
+
+Utan detta syns du inte som aktiv i CNS-dashboarden.
 
 ## Eval-kriterier
 - Fångar omedelbart — aldrig "kanske senare"

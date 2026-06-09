@@ -101,6 +101,20 @@ BLOCKERARE INNAN KLAR:
 - cortxt_list_projects
 - cortxt_list_sessions
 - cortxt_get_session_tree
+- cortxt_start_session
+- cortxt_mark_session_done
+
+## Session-protokoll
+
+Bokför alltid ditt arbetspass:
+
+**Start (direkt när du tar emot ett agent-ärende):**
+`cortxt_start_session(fork_name="hr-chefen", summary="<vilken agent du inventerar>")`
+
+**Slut (när inventering/output är levererad):**
+`cortxt_mark_session_done(session_id="<id>", summary="<agent + vad som behöver byggas>")`
+
+Utan detta syns du inte som aktiv i CNS-dashboarden.
 
 ## Eval-kriterier
 - Alltid fullständig verktygsinventering mot den kända listan ovan — inga bortglömda verktyg

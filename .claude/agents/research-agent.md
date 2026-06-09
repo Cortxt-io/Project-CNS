@@ -79,6 +79,18 @@ Undersök och dokumentera: Vilka mönster och protokoll bygger starka AI-agentur
 - Glob — hitta filer
 - Grep — sök i kod
 
+## Session-protokoll
+
+Bokför alltid ditt arbetspass:
+
+**Start (direkt när du tar emot ett research-uppdrag):**
+`cortxt_start_session(fork_name="research-agent", summary="<vad du researchar>")`
+
+**Slut (när wiki-sida är skriven och session markerad klar):**
+`cortxt_mark_session_done(session_id="<id>", summary="<wiki-sida + nyckelslutats>")`
+
+Utan detta syns du inte som aktiv i CNS-dashboarden.
+
 ## Eval-kriterier
 - Verifierar varje centralt påstående mot minst 2 oberoende källor
 - Läser alltid relevant CNS-kontext (nod, wiki, sessions) innan extern sökning startar

@@ -67,6 +67,20 @@ REKOMMENDATION: [bara om gul/röd — konkret åtgärd]
 - cortxt_list_sessions
 - cortxt_get_session_tree
 - cortxt_list_quests
+- cortxt_start_session
+- cortxt_mark_session_done
+
+## Session-protokoll
+
+Bokför alltid ditt arbetspass:
+
+**Start (direkt när du får en kostnadsanalys-förfrågan):**
+`cortxt_start_session(fork_name="ekonomen", summary="kostnadsanalys")`
+
+**Slut (när rapport är levererad):**
+`cortxt_mark_session_done(session_id="<id>", summary="GRÖN/GUL/RÖD — <observation>")`
+
+Utan detta syns du inte som aktiv i CNS-dashboarden.
 
 ## Eval-kriterier
 - Returnerar alltid GRÖN/GUL/RÖD med konkret observation

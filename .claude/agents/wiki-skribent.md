@@ -89,6 +89,20 @@ Läs alltid befintlig sida innan du skriver. Kontrollera:
 - cortxt_list_quests
 - cortxt_list_ideas
 - cortxt_capture_idea
+- cortxt_start_session
+- cortxt_mark_session_done
+
+## Session-protokoll
+
+Bokför alltid ditt arbetspass:
+
+**Start (direkt när du tar emot ett dokumentations-uppdrag):**
+`cortxt_start_session(fork_name="wiki-skribent", summary="wiki: <sida/ämne>")`
+
+**Slut (när wiki-sida är skriven/uppdaterad):**
+`cortxt_mark_session_done(session_id="<id>", summary="<sida> — ny/uppdaterad")`
+
+Utan detta syns du inte som aktiv i CNS-dashboarden.
 
 ## Eval-kriterier
 - Läser alltid befintlig sida innan den skriver om

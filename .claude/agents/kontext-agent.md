@@ -68,6 +68,7 @@ En session väntar troligen på input om:
 - cortxt_fork_session
 - cortxt_start_session
 - cortxt_save_session
+- cortxt_mark_session_done
 - cortxt_list_quests
 - cortxt_get_quest
 - cortxt_list_open_issues
@@ -75,6 +76,18 @@ En session väntar troligen på input om:
 - cortxt_list_ideas
 - cortxt_capture_idea
 - cortxt_list_prs
+
+## Session-protokoll
+
+Bokför alltid ditt arbetspass:
+
+**Start (direkt när du aktiveras):**
+`cortxt_start_session(fork_name="kontext-agent", summary="nulägesrapport")`
+
+**Slut (när rapport är levererad):**
+`cortxt_mark_session_done(session_id="<id>", summary="<vad som rapporterades>")`
+
+Utan detta syns du inte som aktiv i CNS-dashboarden.
 
 ## Eval-kriterier
 - Output är alltid under 10 rader

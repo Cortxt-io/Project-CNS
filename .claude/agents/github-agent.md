@@ -52,6 +52,20 @@ Du mutar aldrig data. Du flaggar, du agerar inte.
 - cortxt_list_gh_projects
 - cortxt_list_linear_issues
 - cortxt_list_sessions
+- cortxt_start_session
+- cortxt_mark_session_done
+
+## Session-protokoll
+
+Bokför alltid ditt arbetspass:
+
+**Start (direkt när du aktiveras för GitHub-övervakning):**
+`cortxt_start_session(fork_name="github-agent", summary="GitHub-status: PRs/CI/issues")`
+
+**Slut (när rapport är levererad):**
+`cortxt_mark_session_done(session_id="<id>", summary="GRÖN/GUL/RÖD — <flaggning>")`
+
+Utan detta syns du inte som aktiv i CNS-dashboarden.
 
 ## Eval-kriterier
 - Rapporterar alltid i det kompakta formatet

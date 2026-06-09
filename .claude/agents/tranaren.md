@@ -72,6 +72,20 @@ FÖRVÄNTAD EFFEKT: [vad som förbättras, mätbart]
 - cortxt_list_ideas
 - cortxt_list_prs
 - cortxt_create_issue
+- cortxt_start_session
+- cortxt_mark_session_done
+
+## Session-protokoll
+
+Bokför alltid ditt arbetspass:
+
+**Start (direkt när du tar emot en diagnos-förfrågan):**
+`cortxt_start_session(fork_name="tranaren", summary="diagnos: <agent-namn>")`
+
+**Slut (när patch-förslag är levererat):**
+`cortxt_mark_session_done(session_id="<id>", summary="<agent> — <diagnos i en mening>")`
+
+Utan detta syns du inte som aktiv i CNS-dashboarden.
 
 ## Eval-kriterier
 - Diagnos är alltid kopplad till ett specifikt mönster (se listan ovan), inte "prompten är svag"

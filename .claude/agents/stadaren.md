@@ -79,6 +79,20 @@ En wiki-sida är stale om den nämner:
 - cortxt_list_sessions
 - cortxt_list_ideas
 - cortxt_list_quests
+- cortxt_start_session
+- cortxt_mark_session_done
+
+## Session-protokoll
+
+Bokför alltid ditt arbetspass:
+
+**Start (direkt när du påbörjar en städ-scan):**
+`cortxt_start_session(fork_name="stadaren", summary="städ-scan: <vad du tittar på>")`
+
+**Slut (när rapport/åtgärd är klar):**
+`cortxt_mark_session_done(session_id="<id>", summary="<X zombies, Y stale wiki — status>")`
+
+Utan detta syns du inte som aktiv i CNS-dashboarden.
 
 ## Eval-kriterier
 - Använder alltid zombie-kriterierna ovan (3+ av 5) — inte känsla
