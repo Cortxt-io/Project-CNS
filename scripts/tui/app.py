@@ -1,4 +1,4 @@
-"""CnsTuiApp — interaktiv portföljöverblick byggd med textual.
+"""CnsTuiApp — interaktiv wiki-överblick byggd med textual.
 
 Vänster: part_of-nästlat träd, färgat på stage. Höger: detaljpanel för vald
 nod (kind/stage/status/summary/feeds/depends_on). `/` filtrerar på stage/status.
@@ -37,7 +37,6 @@ from scripts.tui.data import (
     filter_nodes,
     load_nodes,
 )
-from scripts.tui.sessions_view import CnsSessionsScreen
 from scripts.tui.sources import (
     Transcript,
     git_branches,
@@ -65,9 +64,8 @@ def _detail_markup(
     ideas: list[dict],
     issue_status: str | None,
     issues: list[dict],
-    sessions: list[Transcript],
 ) -> str:
-    """Rich-markup för detaljpanelen, inkl. länkade idéer, issues och sessioner."""
+    """Rich-markup för detaljpanelen, inkl. länkade idéer och issues."""
     kind_c = KIND_COLORS.get(node.kind, "dim")
     stage_c = STAGE_COLORS.get(node.stage, "dim")
     status_c = STATUS_COLORS.get(node.status, "dim")
@@ -118,14 +116,6 @@ def _detail_markup(
     else:
         lines.append("[dim]issues: inga öppna[/dim]")
 
-    # Sessioner som rört noden (transkript-skanning, heuristisk).
-    if sessions:
-        lines.append("")
-        lines.append("[bold]🗒 Sessioner som rört noden[/bold]")
-        for t in sessions[:6]:
-            when = t.timestamp[:10]
-            lines.append(f"  • [dim]{when}[/dim] {t.title[:54]}")
-
     if node.tags:
         lines.append("")
         lines.append("[dim]tags: " + ", ".join(node.tags) + "[/dim]")
@@ -134,10 +124,10 @@ def _detail_markup(
 
 
 def _overview_markup() -> str:
-    """Portföljbred lägesbild: aktiva git-spår + öppna idéer.
+    """Lägesbild: aktiva git-spår + öppna idéer.
 
     Syftet är kollisionssynlighet — flera lokala feature-brancher = parallella
-    spår som kan krocka (precis det som blindade oss idag).
+    spår som kan krocka.
     """
     lines: list[str] = ["[bold]Aktiva git-spår[/bold]", ""]
     branches = git_branches()
@@ -371,10 +361,10 @@ class AgentScreen(ModalScreen):
 
 
 class CnsTuiApp(App):
-    """Glanceable portföljöverblick i terminalen."""
+    """Glanceable wiki-överblick i terminalen."""
 
     CSS_PATH = "styles.tcss"
-    TITLE = "CNS Portföljöverblick"
+    TITLE = "CNS Wiki"
 
     BINDINGS = [
         Binding("q", "quit", "Avsluta"),
@@ -383,7 +373,6 @@ class CnsTuiApp(App):
         Binding("s", "sessions", "Sessioner"),
         Binding("k", "knowledge", "Kunskap"),
         Binding("c", "agent", "Fråga Claude"),
-        Binding("n", "cns_sessions", "CNS-sessioner"),
         Binding("slash", "focus_filter", "Filter"),
         Binding("escape", "clear_filter", "Rensa filter", show=False),
     ]
@@ -398,7 +387,7 @@ class CnsTuiApp(App):
     def compose(self) -> ComposeResult:
         yield Header()
         with Horizontal():
-            yield Tree("Portfölj", id="tree")
+            yield Tree("Wiki", id="tree")
             with Vertical(id="detail-pane"):
                 yield Input(placeholder="Filtrera på stage/status…", id="filter")
                 with VerticalScroll(id="detail-scroll"):
@@ -409,7 +398,7 @@ class CnsTuiApp(App):
         self.query_one("#filter", Input).display = False
         self._all_nodes = load_nodes()
         self._ideas = load_ideas()
-        self._transcripts = list_transcripts(known_slugs=set(self._all_nodes))
+        self._transcripts = list_transcripts()
         self._populate_tree(self._all_nodes)
 
     # -- trädbygge ---------------------------------------------------------
@@ -422,7 +411,7 @@ class CnsTuiApp(App):
         if not roots:
             tree.root.set_label("Inga noder matchar")
             return
-        tree.root.set_label(f"Portfölj ({len(nodes)} noder)")
+        tree.root.set_label(f"Wiki ({len(nodes)} noder)")
         for root in roots:
             self._add_node(tree.root, root)
 
@@ -443,8 +432,7 @@ class CnsTuiApp(App):
             self._current_slug = node.slug
             ideas = [i for i in self._ideas if i.get("slug") == node.slug]
             issue_status, issues = open_issues_for_slug(node.slug)
-            sessions = [t for t in self._transcripts if node.slug in t.slugs]
-            detail.update(_detail_markup(node, ideas, issue_status, issues, sessions))
+            detail.update(_detail_markup(node, ideas, issue_status, issues))
         else:
             detail.update("Välj en nod i trädet.")
 
@@ -459,7 +447,7 @@ class CnsTuiApp(App):
     def action_reload(self) -> None:
         self._all_nodes = load_nodes()
         self._ideas = load_ideas()
-        self._transcripts = list_transcripts(known_slugs=set(self._all_nodes))
+        self._transcripts = list_transcripts()
         filter_input = self.query_one("#filter", Input)
         subset = filter_nodes(self._all_nodes, filter_input.value)
         self._populate_tree(subset)
@@ -475,9 +463,6 @@ class CnsTuiApp(App):
 
     def action_agent(self) -> None:
         self.push_screen(AgentScreen(self._current_slug))
-
-    def action_cns_sessions(self) -> None:
-        self.push_screen(CnsSessionsScreen())
 
     def action_focus_filter(self) -> None:
         filter_input = self.query_one("#filter", Input)
