@@ -68,7 +68,6 @@ from scripts.issues_client import (  # noqa: E402
     get_issue as ic_get_issue,
     create_issue as ic_create_issue,
     close_issue as ic_close_issue,
-    set_project_status as ic_set_project_status,
 )
 
 # ---------------------------------------------------------------------------
@@ -1037,28 +1036,6 @@ def api_issues_close(number):
     data = request.get_json(silent=True) or {}
     issue = ic_close_issue(number, comment=data.get("result_summary"))
     return jsonify({"issue": issue})
-
-
-@app.route("/api/issues/<int:number>/status", methods=["POST", "OPTIONS"])
-def api_issues_status(number):
-    """Set the issue's Projects-v2 stage column (suggested/active/in_progress/done).
-
-    No-op (returns {"configured": False}) until the board is provisioned —
-    see scripts.issues_client.set_project_status and the migration plan (decision B).
-    """
-    if request.method == "OPTIONS":
-        return add_cors_headers(app.make_default_options_response())
-    auth_err = _require_bearer_admin()
-    if auth_err:
-        return auth_err
-
-    data = request.get_json() or {}
-    status = data.get("status")
-    if not status:
-        return jsonify({"status": "error", "message": "status required"}), 400
-
-    result = ic_set_project_status(number, status)
-    return jsonify({"result": result})
 
 
 @app.route("/api/issues/from-brief", methods=["POST", "OPTIONS"])
