@@ -8,6 +8,9 @@ __pycache__/
 *.pyo
 .env
 
+# Agent-host: otrackad lokal API-nyckel (aldrig committas)
+.cns-agent-key
+
 # OS
 .DS_Store
 Thumbs.db

@@ -6,16 +6,23 @@ saknas), rör inte app/mcp_server.py. Read-first: bara läsverktyg är förhands
 godkända; skrivverktyg (Write/Edit/Bash) nekas av can_use_tool om de inte
 explicit släpps på.
 
-Auth: kräver ANTHROPIC_API_KEY (Agent SDK får ej använda prenumerationslogin).
+Auth: provar i ordning (1) ANTHROPIC_API_KEY i miljön, (2) en otrackad lokal
+fil `.cns-agent-key` i repo-roten (en rad = nyckeln; auto-läses hit), (3) din
+befintliga Claude Code-login som CLI:t redan har. Nyckeln är alltså valfri för
+personligt lokalt bruk; en egen nyckel (separat fakturering) läggs i filen en
+gång och behöver aldrig exporteras manuellt.
 """
 
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from typing import Any, AsyncIterator
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+# Otrackad lokal nyckelfil (gitignored) — auto-läses till miljön om satt.
+LOCAL_KEY_FILE = REPO_ROOT / ".cns-agent-key"
 
 # Claude Codes egna läsverktyg som agenten får använda direkt.
 READ_TOOLS = ["Read", "Glob", "Grep"]
@@ -31,23 +38,40 @@ CNS_TOOL_NAMES = [
 
 
 class AgentHostUnavailable(RuntimeError):
-    """claude_agent_sdk saknas, CLI saknas, eller ANTHROPIC_API_KEY ej satt."""
+    """claude_agent_sdk saknas eller Claude Code CLI saknas på PATH."""
+
+
+def _ensure_key_loaded() -> None:
+    """Läs in .cns-agent-key till miljön om ANTHROPIC_API_KEY inte redan är satt."""
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        return
+    try:
+        if LOCAL_KEY_FILE.exists():
+            key = LOCAL_KEY_FILE.read_text(encoding="utf-8").strip().splitlines()
+            if key and key[0].strip():
+                os.environ["ANTHROPIC_API_KEY"] = key[0].strip()
+    except Exception:
+        pass
 
 
 def availability() -> tuple[bool, str]:
-    """(ok, meddelande) — om agent-host kan köras här."""
+    """(ok, meddelande) — om agent-host kan köras här.
+
+    Nyckeln är INTE ett hårt krav: saknas den provar SDK:n din befintliga
+    Claude Code-login. ok kräver bara att SDK + CLI finns.
+    """
     try:
         import claude_agent_sdk  # noqa: F401
     except Exception:
         return (False, "claude-agent-sdk saknas (pip install -r requirements-agent.txt)")
-    import os
     import shutil
 
     if not shutil.which("claude"):
         return (False, "Claude Code CLI saknas på PATH")
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        return (False, "ANTHROPIC_API_KEY ej satt (Agent SDK kräver API-nyckel)")
-    return (True, "ok")
+    _ensure_key_loaded()
+    if os.environ.get("ANTHROPIC_API_KEY"):
+        return (True, "ok (API-nyckel)")
+    return (True, "ok (provar Claude-login; lägg ev. nyckel i .cns-agent-key)")
 
 
 # -- CNS-verktyg (read-first, wrappar det stabila datalagret) ---------------

@@ -32,6 +32,7 @@ Filnamnet är **alltid `node.md`** oavsett kind — all kod globar `*/node.md` (
 - `schemas/node_schema.json` — JSON-schema
 - `skills/` — portabla konventioner: `cortxt-quests` (quest-livscykel), `cns-flush` (spola ner en sessions slutsats i CNS via `cortxt_save_session`), `cns-sync` (read-only överlappsdetektering av parallella sessioner via `cortxt_list_sessions(link_ref=…)`, körs före flush).
 - `scripts/tui/` — interaktiv terminal-överblick (textual). **Isolerad:** konsumerar bara datalagret (`read_all_nodes`), rör inte `cns.py`. Körs via `python -m scripts.tui`. Inkoppling som `cns tui`-subkommando väntar tills CLI-flytten landat (lazy import). Beroende: `textual>=0.79,<1.0`.
+  - `scripts/tui/agent_host.py` — **agent-host** (tangent `c` i TUI:t): driver Claude lokalt via **Claude Agent SDK** (`claude-agent-sdk`, valfritt extra i `requirements-agent.txt`), exponerar datalagret som in-process MCP-verktyg (`create_sdk_mcp_server` + `@tool`), read-first (`can_use_tool` nekar Write/Edit/Bash). Auth: env `ANTHROPIC_API_KEY` → otrackad `.cns-agent-key` → annars Claude Code-login. Rör inte `app/mcp_server.py`.
 
 ## Deploy & dataflöde
 - GitHub = sanning. AI-genererat innehåll pushas via **direkt GitHub API** (`git_ops.py`), inte till Railways efemära disk.
