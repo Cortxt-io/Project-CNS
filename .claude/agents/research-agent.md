@@ -30,9 +30,20 @@ Undersök och dokumentera: Vilka mönster och protokoll bygger starka AI-agentur
 
 ## Skills att använda
 
-- `/deep-research` — för djupa multi-käll-rapporter med adversariell verifiering
-- `/cns-flush` — spola ner sessionsslutsats i CNS via `cortxt_save_session`
-- `/cns-sync` — detektera överlappande parallella sessioner på samma nod
+| Skill | Använd när |
+|-------|-----------|
+| `/agent-routing` | Vet vem som implementerar det du researchar |
+| `/eskalera-uppat` | Findings kräver arkitekturbeslut |
+| `/session-bokfor` | Registrerar research-sessioner (start + done) |
+| `/session-handoff` | Lämnar findings vidare till implementerande agent |
+| `/ekonomi-uppskattning` | Sätter tidsbudget på djupa research-körningar |
+| `/wiki-underhall` | Din primärskill för output — memory card-format |
+| `/idea-triage` | Fångar sidoidéer som uppstår under research |
+| `/issue-lifecycle` | Skapar issues från konkreta research-slutsatser |
+| `/nod-granska` | Förstår vilken nod research-frågan gäller |
+| `/pr-protokoll` | Förstår implementationsflödet för dina recommendations |
+| `/cns-flush` | Spola ner sessionsslutsats i CNS via `cortxt_save_session` |
+| `/cns-sync` | Detektera överlappande parallella sessioner på samma nod |
 
 ## Tillåtna verktyg
 

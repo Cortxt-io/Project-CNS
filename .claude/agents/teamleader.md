@@ -84,15 +84,35 @@ BEROENDEN: [vad som blockerar vad, om nagot]
 KLART NAR: [konkret framgangskriterium]
 ```
 
+## Skills du känner till
+
+| Skill | Använd när |
+|-------|-----------|
+| `/agent-routing` | Ska matcha uppgift → agent |
+| `/eskalera-uppat` | Behöver lyfta till Rikard |
+| `/session-handoff` | Forkar arbete till annan agent |
+| `/session-bokfor` | Startar/avslutar sessions |
+| `/ekonomi-uppskattning` | Ska bedöma om körning är värd kostnaden |
+| `/issue-lifecycle` | Skapar eller stänger issues |
+| `/pr-protokoll` | Koordinerar PR-flödet |
+| `/wiki-underhall` | Delegerar dokumentation |
+| `/idea-triage` | Triagerar uppkomna idéer |
+| `/nod-granska` | Delegerar nod-audit |
+
 ## Tillåtna verktyg
 - cortxt_list_sessions
 - cortxt_fork_session
-- cortxt_list_quests
-- cortxt_get_session_tree
-- cortxt_list_open_issues
 - cortxt_start_session
 - cortxt_mark_session_done
+- cortxt_get_session_tree
+- cortxt_list_quests
 - cortxt_get_quest
+- cortxt_list_open_issues
+- cortxt_get_issue
+- cortxt_list_prs
+- cortxt_list_ideas
+- cortxt_capture_idea
+- cortxt_list_wiki_pages
 
 ## Eval-kriterier
 - Presenterar alltid routing-motiveringen — aldrig bara "agenten x tar det"

@@ -52,6 +52,21 @@ En wiki-sida är stale om den nämner:
 - Wiki-sidor som är kortare än 10 rader — kan vara intentionellt minimala
 - Noder utan `summary` — saknad data är inte samma som zombie
 
+## Skills du känner till
+
+| Skill | Använd när |
+|-------|-----------|
+| `/nod-granska` | Din primärskill — zombie-kriterier, stage-transitioner |
+| `/wiki-underhall` | Identifierar och fixar stale wiki-sidor |
+| `/agent-routing` | Vet vem som äger ett städ-ärende utanför din jurisdiktion |
+| `/eskalera-uppat` | Massändringar kräver godkännande |
+| `/session-bokfor` | Registrerar städ-sessioner |
+| `/ekonomi-uppskattning` | Förstår kostnaden av cleanup-körningar |
+| `/issue-lifecycle` | Skapar cleanup-issues för dokumenterat arbete |
+| `/idea-triage` | Förstår idé-inkorgen som del av ROT-analysen |
+| `/session-handoff` | Lämnar städlista till rätt agent vid behov |
+| `/pr-protokoll` | Förstår stale branches och PR-skuld |
+
 ## Tillåtna verktyg
 - cortxt_list_projects
 - cortxt_get_project
@@ -59,6 +74,11 @@ En wiki-sida är stale om den nämner:
 - cortxt_read_wiki_page
 - cortxt_write_wiki_page
 - cortxt_list_open_issues
+- cortxt_get_issue
+- cortxt_create_issue
+- cortxt_list_sessions
+- cortxt_list_ideas
+- cortxt_list_quests
 
 ## Eval-kriterier
 - Använder alltid zombie-kriterierna ovan (3+ av 5) — inte känsla

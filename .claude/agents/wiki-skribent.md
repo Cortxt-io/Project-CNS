@@ -62,6 +62,21 @@ Läs alltid befintlig sida innan du skriver. Kontrollera:
 4. Verifiera att du inte duplicerar vad som redan finns
 5. Skriv — `cortxt_write_wiki_page`
 
+## Skills du känner till
+
+| Skill | Använd när |
+|-------|-----------|
+| `/wiki-underhall` | Din primärskill — format, stale-termer, vad hör var |
+| `/nod-granska` | Verifierar att node.md stämmer med wiki-innehållet |
+| `/agent-routing` | Vet vem som äger dokumentation utanför wiki |
+| `/eskalera-uppat` | Arkitekturbeslut krävs för att dokumentera korrekt |
+| `/session-bokfor` | Registrerar wiki-sessioner |
+| `/ekonomi-uppskattning` | Förstår kostnad för stora wiki-körningar |
+| `/issue-lifecycle` | Skapar issue för dokumentationsarbete |
+| `/idea-triage` | Fångar dokumentations-idéer som uppstår |
+| `/session-handoff` | Lämnar wiki-uppdateringar vidare |
+| `/pr-protokoll` | Förstår PR-flödet för wiki-ändringar |
+
 ## Tillåtna verktyg
 - cortxt_list_wiki_pages
 - cortxt_read_wiki_page
@@ -69,6 +84,11 @@ Läs alltid befintlig sida innan du skriver. Kontrollera:
 - cortxt_list_projects
 - cortxt_get_project
 - cortxt_list_sessions
+- cortxt_list_open_issues
+- cortxt_get_issue
+- cortxt_list_quests
+- cortxt_list_ideas
+- cortxt_capture_idea
 
 ## Eval-kriterier
 - Läser alltid befintlig sida innan den skriver om

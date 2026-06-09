@@ -93,7 +93,29 @@ model: <model-id>
 <lista>
 ```
 
-**c) Rapportera:** nod-slug, agentfil-sökväg, modell, verktygsantal.
+**c) Verifiera att filen finns på disk** — kör Glob på `.claude/agents/<slug>.md`.
+Om filen saknas: stanna här, skapa den rätt, fortsätt inte.
+
+**d) Rapportera:** nod-slug, agentfil-sökväg, modell, verktygsantal.
+
+### 8. Testa agenten (OBLIGATORISKT — sessionen är inte klar förrän detta steg är godkänt)
+
+Innan `cortxt_mark_session_done` får anropas måste agenten ha körts och svarat korrekt.
+
+**Röktest — kör detta:**
+Starta agenten med ett minimalt uppdrag som matchar dess syfte:
+- **research:** "Beskriv vad noden `cns-core` gör i ett mening."
+- **kodfokus:** "Lista de tre senaste öppna issues."
+- **orkestration:** "Visa sessionsträdet."
+
+**Godkännandekriterier:**
+1. Agenten svarar utan fel (inga tool-errors, inga auth-fel)
+2. Svaret matchar minst ett av agentens eval-kriterier
+3. Om agenten ska skriva (wiki, issue, idea) — verifiera att skrivningen faktiskt landade
+
+**Om testet misslyckas:** felsök, uppdatera agentfilen, kör testet igen. Markera inte sessionen klar.
+
+**Om testet godkänns:** uppdatera nodens `stage` från `idea` → `building` och commit.
 
 ## GitHub Agents API (undersök)
 Om GitHub Agents API är stabilt vid tidpunkten: exportera agentdefinitionen

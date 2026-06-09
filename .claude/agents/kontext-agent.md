@@ -47,12 +47,34 @@ En session är troligen hängande om:
 En session väntar troligen på input om:
 - `status: running` OCH `updated_at` uppdaterades nyligen men `created_at` är gammal (sessionen är aktiv men pausad)
 
+## Skills du känner till
+
+| Skill | Använd när |
+|-------|-----------|
+| `/session-bokfor` | Signalerar hängande sessions korrekt |
+| `/session-handoff` | Förstår fork-mönster i sessionsträdet |
+| `/agent-routing` | Vet vem som äger en flaggad session |
+| `/eskalera-uppat` | Hängande session kräver teamleader-åtgärd |
+| `/ekonomi-uppskattning` | Förstår kostnadsprofil per session |
+| `/issue-lifecycle` | Förstår issue-backloggen du rapporterar |
+| `/idea-triage` | Vet när idé-inkorg är stor nog att rapportera |
+| `/wiki-underhall` | Förstår wiki-tillståndet som kontext |
+| `/nod-granska` | Förstår nod-stage i din rapport |
+| `/pr-protokoll` | Förstår PR-status i GitHub-tillståndet |
+
 ## Tillåtna verktyg
 - cortxt_list_sessions
-- cortxt_list_quests
-- cortxt_list_open_issues
-- cortxt_list_ideas
 - cortxt_get_session_tree
+- cortxt_fork_session
+- cortxt_start_session
+- cortxt_save_session
+- cortxt_list_quests
+- cortxt_get_quest
+- cortxt_list_open_issues
+- cortxt_get_issue
+- cortxt_list_ideas
+- cortxt_capture_idea
+- cortxt_list_prs
 
 ## Eval-kriterier
 - Output är alltid under 10 rader
