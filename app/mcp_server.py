@@ -10,11 +10,15 @@ OAuth flow (GitHub by default), NOT the ``CNS_API_TOKEN`` used by the REST API.
 When the OAuth env vars are unset the server starts unauthenticated, which is
 intended only for local development / Claude Desktop.
 
-Provides 9 tools:
+Provides 13 tools:
   - cortxt_list_open_issues
   - cortxt_get_issue
   - cortxt_create_issue
   - cortxt_close_issue
+  - cortxt_list_quests        (milestones)
+  - cortxt_get_quest          (milestone + its issues)
+  - cortxt_create_quest       (milestone)
+  - cortxt_close_quest        (milestone)
   - cortxt_capture_idea
   - cortxt_list_ideas
   - cortxt_promote_idea_to_issue
@@ -188,10 +192,15 @@ def cortxt_get_issue(number: int) -> dict:
 
 
 @mcp.tool()
-def cortxt_create_issue(node_slug: str, title: str, body: str = "") -> dict:
-    """Create a work-item issue tied to a node (adds the node:<slug> label)."""
+def cortxt_create_issue(
+    node_slug: str, title: str, body: str = "", quest_number: int | None = None
+) -> dict:
+    """Create a work-item issue tied to a node, optionally inside a quest (milestone).
+
+    `quest_number` is a GitHub milestone number (see cortxt_list_quests).
+    """
     from scripts.issues_client import create_issue
-    return create_issue(node_slug=node_slug, title=title, body=body)
+    return create_issue(node_slug=node_slug, title=title, body=body, milestone=quest_number)
 
 
 @mcp.tool()
@@ -199,6 +208,41 @@ def cortxt_close_issue(number: int, result_summary: str) -> dict:
     """Close a work-item issue, leaving the result summary as a closing comment."""
     from scripts.issues_client import close_issue
     return close_issue(number, comment=result_summary)
+
+
+# --- Quests: GitHub Milestones grouping N issues (progress computed by GitHub) ---
+
+
+@mcp.tool()
+def cortxt_list_quests() -> list[dict]:
+    """List open quests (GitHub milestones) with progress (closed/total issues)."""
+    from scripts.issues_client import list_milestones
+    return list_milestones(state="open")
+
+
+@mcp.tool()
+def cortxt_get_quest(number: int) -> dict:
+    """Get a quest (milestone) with its issues. `number` is the milestone number."""
+    from scripts.issues_client import get_milestone, list_issues
+    quest = get_milestone(number)
+    if not quest:
+        return {"error": f"Quest (milestone) #{number} not found"}
+    quest["issues"] = list_issues(milestone=number, state="all")
+    return quest
+
+
+@mcp.tool()
+def cortxt_create_quest(title: str, description: str = "") -> dict:
+    """Create a quest (GitHub milestone) to group several issues under one work package."""
+    from scripts.issues_client import create_milestone
+    return create_milestone(title=title, description=description)
+
+
+@mcp.tool()
+def cortxt_close_quest(number: int) -> dict:
+    """Close a quest (milestone). Its issues keep their own open/closed state."""
+    from scripts.issues_client import close_milestone
+    return close_milestone(number)
 
 
 @mcp.tool()

@@ -68,6 +68,10 @@ from scripts.issues_client import (  # noqa: E402
     get_issue as ic_get_issue,
     create_issue as ic_create_issue,
     close_issue as ic_close_issue,
+    list_milestones as ic_list_milestones,
+    get_milestone as ic_get_milestone,
+    create_milestone as ic_create_milestone,
+    close_milestone as ic_close_milestone,
 )
 
 # ---------------------------------------------------------------------------
@@ -1016,11 +1020,12 @@ def api_issues_create():
     node_slug = data.get("node_slug") or data.get("slug")
     title = data.get("title")
     body = data.get("body") or data.get("description", "")
+    quest_number = data.get("quest_number")
 
     if not node_slug or not title:
         return jsonify({"status": "error", "message": "node_slug and title required"}), 400
 
-    issue = ic_create_issue(node_slug=node_slug, title=title, body=body)
+    issue = ic_create_issue(node_slug=node_slug, title=title, body=body, milestone=quest_number)
     return jsonify({"issue": issue}), 201
 
 
@@ -1064,6 +1069,52 @@ def api_issues_from_brief():
 
     issue = ic_create_issue(node_slug=node_slug, title=title, body=body)
     return jsonify({"issue": issue}), 201
+
+
+# --- Quests == GitHub Milestones (grouping N issues, progress computed by GitHub) ---
+
+@app.route("/api/quests")
+def api_quests_list():
+    """List quests (milestones) with progress, ?state=open|closed."""
+    state = request.args.get("state", "open")
+    return jsonify({"quests": ic_list_milestones(state=state)})
+
+
+@app.route("/api/quests/<int:number>")
+def api_quests_get(number):
+    """Get a quest (milestone) with its issues."""
+    quest = ic_get_milestone(number)
+    if quest is None:
+        return jsonify({"status": "error", "message": "Quest not found"}), 404
+    quest["issues"] = ic_list_issues(milestone=number, state="all")
+    return jsonify({"quest": quest})
+
+
+@app.route("/api/quests", methods=["POST", "OPTIONS"])
+def api_quests_create():
+    """Create a quest (milestone)."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    auth_err = _require_bearer_admin()
+    if auth_err:
+        return auth_err
+    data = request.get_json() or {}
+    title = data.get("title")
+    if not title:
+        return jsonify({"status": "error", "message": "title required"}), 400
+    quest = ic_create_milestone(title=title, description=data.get("description", ""))
+    return jsonify({"quest": quest}), 201
+
+
+@app.route("/api/quests/<int:number>/close", methods=["POST", "OPTIONS"])
+def api_quests_close(number):
+    """Close a quest (milestone). Its issues keep their own open/closed state."""
+    if request.method == "OPTIONS":
+        return add_cors_headers(app.make_default_options_response())
+    auth_err = _require_bearer_admin()
+    if auth_err:
+        return auth_err
+    return jsonify({"quest": ic_close_milestone(number)})
 
 
 @app.route("/api/activity")
@@ -1625,6 +1676,7 @@ def api_webhook_github():
             normalize_pr_event,
             normalize_workflow_run_event,
             normalize_issue_event,
+            normalize_milestone_event,
             push_to_redis,
         )
 
@@ -1642,6 +1694,8 @@ def api_webhook_github():
             events = normalize_workflow_run_event(payload)
         elif event in ("issues", "issue_comment"):
             events = normalize_issue_event(payload)
+        elif event == "milestone":
+            events = normalize_milestone_event(payload)
         else:
             return jsonify({"status": "ok", "message": f"Ignored event: {event}"})
 

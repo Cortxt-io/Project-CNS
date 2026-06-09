@@ -395,6 +395,35 @@ def normalize_issue_event(payload: dict) -> list[dict]:
     )]
 
 
+def normalize_milestone_event(payload: dict) -> list[dict]:
+    """Normalize a GitHub `milestone` webhook payload into an event (a quest).
+
+    Milestones group issues across nodes, so there is no single node slug.
+    """
+    ms = payload.get("milestone", {})
+    repo = payload.get("repository", {}).get("full_name", "")
+    action = payload.get("action", "")
+    number = ms.get("number", "")
+    return [make_event(
+        what="milestone",
+        when=ms.get("updated_at", "") or ms.get("created_at", ""),
+        why=ms.get("title", ""),
+        how=f"Quest (milestone) #{number} {action}",
+        who=(payload.get("sender") or {}).get("login", ""),
+        where=f"{repo}",
+        source="github",
+        slug=None,
+        event_id=f"evt:github:milestone:{number}:{action}",
+        meta={
+            "number": number,
+            "action": action,
+            "url": ms.get("html_url", ""),
+            "open_issues": ms.get("open_issues"),
+            "closed_issues": ms.get("closed_issues"),
+        },
+    )]
+
+
 # ---------------------------------------------------------------------------
 # GitHub API pull adapter (CI)
 # ---------------------------------------------------------------------------
