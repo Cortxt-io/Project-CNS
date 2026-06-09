@@ -117,6 +117,25 @@ flowchart LR
 - kind: component | system | framework
 - mvp_stage, risk_category: se `enums.json`
 
+## Automatisk agent-routing
+Hooken `scripts/router.py` (UserPromptSubmit) injicerar `[ROUTING] @agent → reason` per prompt baserat på nyckelord i meddelandet. **Regel: när [ROUTING] syns i kontexten, delegera direkt till angiven agent utan att fråga Rikard.** Använd Agent-verktyget med `subagent_type="<agent-slug>"` och skicka med hela originaluppgiften. Konversationella frågor (< 25 tecken) och prompts utan träff hanteras direkt.
+
+Routing-tabell (snabbref):
+
+| Agent | Triggas av |
+|---|---|
+| `ekonomen` | kostnader, token-budget, uppskattning |
+| `ide-agent` | idéer, brainstorm, roadmap |
+| `wiki-skribent` | wiki, dokumentera, memory-card |
+| `research-agent` | research, utreda, jämför |
+| `github-agent` | PR, issue, CI/CD, deploy, railway/vercel |
+| `stadaren` | städa, refaktorera, dead code |
+| `hr-chefen` | ny agent, agentprofil, teamstruktur |
+| `frontend-agent` | React, Vite, CSS, UI-komponent |
+| `backend-agent` | Flask, MCP-server, API, webhook |
+| `scripts-agent` | script, hook, automation |
+| `teamleader` | planera, sprint, orchestration, multi-agent |
+
 ## Arbetsregler
 - **Spec först:** skriv/granska en implementationsspec innan kod. Vid osäkerhet — ställ frågan i specen så den måste besvaras.
 - **Additiv migrering:** nya fält är valfria; migrera en nod i taget; behåll fallback på gamla fält så dashboarden inte bryts.
