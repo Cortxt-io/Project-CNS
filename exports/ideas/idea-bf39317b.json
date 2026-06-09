@@ -1,0 +1,9 @@
+{
+  "id": "idea-bf39317b",
+  "text": "Verktygslucka: idéer kan bara 'promotas', inte stängas/avföras. idea_inbox.py har bara mark_promoted — ingen resolve/close/reject. Triage behöver kunna stänga idéer som är (a) redan implementerade, (b) utredda/ej byggbara, (c) avvisade — utan att promota dem till fantom-issues. Bygg: idea_inbox.resolve(idea_id, reason, status in [done|wontfix|duplicate]) + MCP-verktyg cortxt_resolve_idea (pushar via git_ops). Då försvinner de ur cortxt_list_ideas(status='open') med spårbar orsak. Uppkom i agentur-triagen 2026-06-09 när bucket A (idea-e0f11ef8/4f6ac803/f7e60107 landade på main, idea-34298e57 ej byggbar, idea-ff0d863c blockerad) skulle stängas men inget verktyg fanns.",
+  "created_at": "2026-06-09T13:29:39",
+  "source": "chat",
+  "slug": "cns-core",
+  "session_id": null,
+  "status": "open"
+}
