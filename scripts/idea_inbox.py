@@ -44,7 +44,12 @@ def _write(idea: dict) -> None:
     )
 
 
-def capture_idea(text: str, source: str = "chat", slug: str | None = None) -> dict:
+def capture_idea(
+    text: str,
+    source: str = "chat",
+    slug: str | None = None,
+    session_id: str | None = None,
+) -> dict:
     """Create a new idea and persist it to disk.
 
     Args:
@@ -52,6 +57,9 @@ def capture_idea(text: str, source: str = "chat", slug: str | None = None) -> di
         source: Where it came from — "chat" or "code".
         slug: Optional node slug this idea relates to (soft link, not validated,
             matching how quests reference a slug).
+        session_id: Optional session this idea was born in (soft link, not
+            validated). Lets a session's ideas be enumerated later — the
+            prerequisite for routing a session's parts (idea-337b37ff).
 
     Returns the created idea dict.
     """
@@ -66,6 +74,7 @@ def capture_idea(text: str, source: str = "chat", slug: str | None = None) -> di
         "created_at": datetime.now().isoformat(timespec="seconds"),
         "source": source,
         "slug": slug,
+        "session_id": session_id,
         "status": "open",
     }
     _write(idea)
@@ -80,10 +89,15 @@ def get_idea(idea_id: str) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def list_ideas(status: str | None = "open", slug: str | None = None) -> list[dict]:
-    """List ideas, optionally filtered by status and/or slug, newest first.
+def list_ideas(
+    status: str | None = "open",
+    slug: str | None = None,
+    session_id: str | None = None,
+) -> list[dict]:
+    """List ideas, optionally filtered by status, slug and/or session, newest first.
 
-    Pass status=None to include every status.
+    Pass status=None to include every status. ``session_id`` enables the
+    "wake this session's open ideas" flow (idea-337b37ff).
     """
     _ensure_dir()
     ideas = load_all_ideas()
@@ -91,6 +105,8 @@ def list_ideas(status: str | None = "open", slug: str | None = None) -> list[dic
         ideas = [i for i in ideas if i.get("status") == status]
     if slug:
         ideas = [i for i in ideas if i.get("slug") == slug]
+    if session_id:
+        ideas = [i for i in ideas if i.get("session_id") == session_id]
     ideas.sort(key=lambda i: i.get("created_at", ""), reverse=True)
     return ideas
 
