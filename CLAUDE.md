@@ -23,6 +23,7 @@ Filnamnet är **alltid `node.md`** oavsett kind — all kod globar `*/node.md` (
 - `scripts/portfolio_brief.py` — daglig portföljbrief
 - `scripts/quest_manager.py` — quest-livscykel
 - `scripts/idea_inbox.py` — idé-inkorg (lättviktig fångst under quests; `exports/ideas/<id>.json`, glob `idea-*.json`). Promote → `quest_manager.create_quest`.
+- `scripts/btw_log.py` — btw-sessionslogg. **Personlig logg, ej produktdata:** `/btw`-asides (Claude Code-forkkommandot) grupperade per session i `exports/btw/<session-id>.json`, mjukt länkbara till quest/idé via `link_session`. Rent datalager — pushar inte själv. **Isolerat:** rör inte nodmodellen eller `cns.py`. Fångas av `scripts/btw_capture.py` (hook-entry: läser ett transkripts `/btw`-kommandon idempotent på `src_uuid`, äger pushen). Körs av en **Stop-hook** i arbetsytans `.claude/settings.json` (inte i något repo). Inkoppling som `cns`-subkommando + MCP-verktyg väntar.
 - `scripts/git_ops.py` — direkt GitHub API-push
 - `app/server.py` — Flask-backend (Railway)
 - `app/mcp_server.py` — MCP-server (FastMCP, GitHub OAuth, Redis token-store)
