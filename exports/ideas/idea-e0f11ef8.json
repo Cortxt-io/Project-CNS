@@ -4,5 +4,8 @@
   "created_at": "2026-06-09T02:09:14",
   "source": "chat",
   "slug": "cns-mcp",
-  "status": "open"
+  "status": "resolved",
+  "resolution": "done",
+  "resolution_reason": "re-split dca4c0b landade på main (agentur-triage 2026-06-09)",
+  "resolved_at": "2026-06-09T16:16:47"
 }
