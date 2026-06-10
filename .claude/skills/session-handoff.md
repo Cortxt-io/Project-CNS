@@ -1,5 +1,6 @@
 ---
 name: session-handoff
+department: Program
 description: Hur du överlämnar ett pågående arbete till en annan agent via session-fork med fullständigt handoff-dokument.
 ---
 
@@ -73,7 +74,7 @@ MARKERA DONE: [Vad som ska stå i cortxt_mark_session_done-summary när klart]
 Ekonomen har analyserat kostnader och lämnar vidare till Scripts-agent för att implementera tröskelvärden:
 
 ```
-HANDOFF TILL: scripts-agent
+HANDOFF TILL: plattformsingenjor
 SESSION-FORK: session-a3f812cc
 PARENT-SESSION: session-9d21b4e0
 LÄNK: issue/42

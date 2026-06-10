@@ -1,5 +1,6 @@
 ---
 name: idea-triage
+department: Produkt
 description: Fånga → triage → promote. Protokoll för hela idélivscykeln från tanke till GitHub-issue.
 ---
 
@@ -23,7 +24,7 @@ cortxt_capture_idea(
 |-------|--------|---------|--------|
 | Hög | Låg | Hög | Promote direkt |
 | Hög | Låg | Låg | Promote till backlog |
-| Hög | Hög | Hög | Promote, flagga teamleadern |
+| Hög | Hög | Hög | Promote, flagga operativ-chefn |
 | Hög | Hög | Låg | Spara, ta upp vid planering |
 | Låg | * | * | Spara, promota ej |
 

@@ -1,5 +1,6 @@
 ---
 name: wiki-underhall
+department: Kommunikation
 description: När och hur du uppdaterar CNS-wikin — memory card-format, stale-termer, vad som hör var.
 ---
 

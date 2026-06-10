@@ -1,5 +1,6 @@
 ---
 name: eskalera-uppat
+department: Gemensam
 description: Eskaleringsprotokoll — när och hur Ekonomen lyfter en röd budget eller arkitekturbeslut till Teamleader eller Rikard.
 ---
 
@@ -39,7 +40,7 @@ Teamleader eskalerar till **Rikard** när:
 ## Output-format
 
 ```
-ESKALERAR TILL: [teamleader | Rikard]
+ESKALERAR TILL: [operativ-chef | Rikard]
 ANLEDNING: [varför du inte kan hantera detta ensam — ett konkret skäl]
 KOSTNADSUNDERLAG: [STATUS från /ekonomi-uppskattning]
 KONTEXT: [vad som redan gjorts eller är känt]
@@ -53,7 +54,7 @@ TIDSKÄNSLIGHET: [kan vänta | bör hanteras denna session | akut]
 Ekonomen har kört `/ekonomi-uppskattning` på en deep-research-förfrågan:
 
 ```
-ESKALERAR TILL: teamleader
+ESKALERAR TILL: operativ-chef
 ANLEDNING: Estimat röd — 850k tokens på Opus, överstiger månadsgräns
 KOSTNADSUNDERLAG: RÖD ~850k tokens (Opus-syntes)
 KONTEXT: Användaren bad om konkurrentanalys på tre bolag med djup syntes

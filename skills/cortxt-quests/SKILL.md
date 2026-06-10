@@ -1,5 +1,6 @@
 ---
 name: cortxt-quests
+department: Gemensam
 description: CNS work-item workflow (quests/issues/todos) and project portfolio queries. Use when the user asks about open work, what to tackle next, project status, finishing tasks, breaking work into sub-tasks, or anything about their CNS portfolio. Trigger words: quest, issue, todo, task, project, portfolio, status, planning, CNS, cortxt, "vad jobbar jag med", "what should I work on".
 ---
 

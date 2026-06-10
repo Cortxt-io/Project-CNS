@@ -1,5 +1,6 @@
 ---
 name: new-session-profile
+department: Platform
 description: Skapa en ny session-profil interaktivt — fyller session-profile.schema.json via guided frågor, validerar och sparar under schemas/profiles/. Triggar på /new-session-profile. Använd när du vill definiera hur en ny typ av arbetspass ska se ut (vilken kontext det laddar, vilka verktyg det har, vad det producerar).
 ---
 

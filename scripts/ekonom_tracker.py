@@ -1,8 +1,8 @@
-"""Stop-hook: Ekonomens kostnadsstatistik och tröskelvarning.
+"""Stop-hook: Ekonomichefens kostnadsstatistik och tröskelvarning.
 
 Körs vid varje session-stop. Estimerar kostnad per agent baserat på
 sessionslängd × modell-tier, sparar ackumulerad statistik till
-exports/ekonom_stats.json, och injicerar [EKONOMEN]-varning om
+exports/ekonom_stats.json, och injicerar [EKONOMICHEF]-varning om
 trösklar överskrids.
 
 Estimering (approximation — faktisk fakturering: kör /usage):
@@ -26,22 +26,22 @@ STATS_FILE = EXPORTS_DIR / "ekonom_stats.json"
 
 # Modell-tier relativkostnad (Haiku = 1x)
 AGENT_MODEL_TIER: dict[str, float] = {
-    "ekonomen": 1.0,
-    "ide-agent": 1.0,
-    "github-agent": 1.0,
-    "kontext-agent": 1.0,
-    "dirigenten": 1.0,
-    "wiki-skribent": 10.0,
-    "research-agent": 10.0,
-    "backend-agent": 10.0,
-    "frontend-agent": 10.0,
-    "scripts-agent": 10.0,
-    "stadaren": 10.0,
-    "hr-chefen": 10.0,
-    "tui-agent": 10.0,
-    "fullstack-agent": 10.0,
-    "tranaren": 10.0,
-    "teamleader": 70.0,
+    "ekonomichef": 1.0,
+    "produktchef": 1.0,
+    "devops-ingenjor": 1.0,
+    "lagesanalytiker": 1.0,
+    "sessionskoordinator": 1.0,
+    "teknisk-skribent": 10.0,
+    "forskningsledare": 10.0,
+    "backend-utvecklare": 10.0,
+    "frontend-utvecklare": 10.0,
+    "plattformsingenjor": 10.0,
+    "underhallsingenjor": 10.0,
+    "hr-chef": 10.0,
+    "terminal-utvecklare": 10.0,
+    "fullstack-utvecklare": 10.0,
+    "kompetensutvecklare": 10.0,
+    "operativ-chef": 70.0,
 }
 DEFAULT_TIER = 10.0  # Sonnet-standard för okänd agent
 
@@ -151,12 +151,12 @@ def main() -> None:
             )[:3]
             top_str = ", ".join(f"@{a}={int(v['total_units'])}u" for a, v in top)
             print(
-                f"[EKONOMEN] 🔴 HÖG FÖRBRUKNING: ~{int(session_units)} enheter denna session "
+                f"[EKONOMICHEF] 🔴 HÖG FÖRBRUKNING: ~{int(session_units)} enheter denna session "
                 f"— kör /usage för faktisk fakturering. Dyraste totalt: {top_str}"
             )
         elif session_units >= WARN_ESTIMATED_UNITS:
             print(
-                f"[EKONOMEN] ⚠️ FÖRBRUKNING: ~{int(session_units)} enheter denna session "
+                f"[EKONOMICHEF] ⚠️ FÖRBRUKNING: ~{int(session_units)} enheter denna session "
                 f"— kör /usage för faktisk fakturering"
             )
 

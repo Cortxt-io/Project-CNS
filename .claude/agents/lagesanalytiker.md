@@ -1,5 +1,7 @@
 ---
-name: kontext-agent
+name: lagesanalytiker
+title: Lägesanalytiker
+department: Drift
 description: Laddar nuläge vid sessionstart — aktiv branch, öppna sessioner, nästa issue. Signalerar när parallella sessioner väntar på input. Alltid läsande, alltid kompakt.
 model: claude-haiku-4-5
 ---
@@ -54,7 +56,7 @@ En session väntar troligen på input om:
 | `/session-bokfor` | Signalerar hängande sessions korrekt |
 | `/session-handoff` | Förstår fork-mönster i sessionsträdet |
 | `/agent-routing` | Vet vem som äger en flaggad session |
-| `/eskalera-uppat` | Hängande session kräver teamleader-åtgärd |
+| `/eskalera-uppat` | Hängande session kräver operativ-chef-åtgärd |
 | `/ekonomi-uppskattning` | Förstår kostnadsprofil per session |
 | `/issue-lifecycle` | Förstår issue-backloggen du rapporterar |
 | `/idea-triage` | Vet när idé-inkorg är stor nog att rapportera |
@@ -82,7 +84,7 @@ En session väntar troligen på input om:
 Bokför alltid ditt arbetspass:
 
 **Start (direkt när du aktiveras):**
-`cortxt_start_session(fork_name="kontext-agent", summary="nulägesrapport")`
+`cortxt_start_session(fork_name="lagesanalytiker", summary="nulägesrapport")`
 
 **Slut (när rapport är levererad):**
 `cortxt_mark_session_done(session_id="<id>", summary="<vad som rapporterades>")`

@@ -1,5 +1,6 @@
 ---
 name: session-bokfor
+department: Program
 description: Registrera session-start, fork och avslut korrekt i CNS session-store.
 ---
 

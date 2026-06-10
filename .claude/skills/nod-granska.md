@@ -1,5 +1,6 @@
 ---
 name: nod-granska
+department: Produkt
 description: Revidera noder — zombie-kriterier, stage-transitioner, relations-audit.
 ---
 

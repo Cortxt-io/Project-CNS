@@ -25,53 +25,75 @@ if str(ROOT) not in sys.path:  # körbar som fil (hooken anropar absolut sökvä
 # Tips: `re.search` körs på `.lower()` → alla mönster i lowercase, ingen IGNORECASE-flag nödvändig.
 # Modell-tier per agent-slug. Haiku för mekaniska uppgifter, Sonnet för omdöme, Opus för strategi.
 MODEL_TIER: dict[str, str] = {
-    "ekonomen": "claude-haiku-4-5",
-    "ide-agent": "claude-haiku-4-5",
-    "github-agent": "claude-haiku-4-5",
-    "kontext-agent": "claude-haiku-4-5",
-    "wiki-skribent": "claude-sonnet-4-6",
-    "research-agent": "claude-sonnet-4-6",
-    "backend-agent": "claude-sonnet-4-6",
-    "frontend-agent": "claude-sonnet-4-6",
-    "scripts-agent": "claude-sonnet-4-6",
-    "stadaren": "claude-sonnet-4-6",
-    "hr-chefen": "claude-sonnet-4-6",
-    "tui-agent": "claude-sonnet-4-6",
-    "fullstack-agent": "claude-sonnet-4-6",
-    "tranaren": "claude-sonnet-4-6",
-    "teamleader": "claude-opus-4-8",
-    "dirigenten": "claude-haiku-4-5",
-    "session-arkitekten": "claude-sonnet-4-6",
-    "uppfinnaren": "claude-sonnet-4-6",
+    "ekonomichef": "claude-haiku-4-5",
+    "produktchef": "claude-haiku-4-5",
+    "devops-ingenjor": "claude-haiku-4-5",
+    "lagesanalytiker": "claude-haiku-4-5",
+    "teknisk-skribent": "claude-sonnet-4-6",
+    "forskningsledare": "claude-sonnet-4-6",
+    "backend-utvecklare": "claude-sonnet-4-6",
+    "frontend-utvecklare": "claude-sonnet-4-6",
+    "plattformsingenjor": "claude-sonnet-4-6",
+    "underhallsingenjor": "claude-sonnet-4-6",
+    "hr-chef": "claude-sonnet-4-6",
+    "terminal-utvecklare": "claude-sonnet-4-6",
+    "fullstack-utvecklare": "claude-sonnet-4-6",
+    "kompetensutvecklare": "claude-sonnet-4-6",
+    "operativ-chef": "claude-opus-4-8",
+    "sessionskoordinator": "claude-haiku-4-5",
+    "programledare": "claude-sonnet-4-6",
+    "losningsarkitekt": "claude-sonnet-4-6",
+}
+
+# Avdelningstillhörighet per agent-slug — org-schemat i .claude/agents/AGENTUR.md.
+DEPARTMENT: dict[str, str] = {
+    "operativ-chef": "Ledning",
+    "produktchef": "Produkt",
+    "losningsarkitekt": "Produkt",
+    "forskningsledare": "R&D",
+    "backend-utvecklare": "Engineering",
+    "frontend-utvecklare": "Engineering",
+    "fullstack-utvecklare": "Engineering",
+    "devops-ingenjor": "Engineering",
+    "terminal-utvecklare": "Engineering",
+    "plattformsingenjor": "Platform",
+    "hr-chef": "People",
+    "kompetensutvecklare": "People",
+    "programledare": "Program",
+    "sessionskoordinator": "Program",
+    "lagesanalytiker": "Drift",
+    "underhallsingenjor": "Drift",
+    "ekonomichef": "Ekonomi",
+    "teknisk-skribent": "Kommunikation",
 }
 
 ROUTING_RULES: list[tuple[str, str, str]] = [
-    # Ekonomi/kostnad — alltid ekonomen
+    # Ekonomi/kostnad — alltid ekonomichef
     (
         r"\b(kostnad(?:er)?|kostar|token[sr]?|budget|faktur[ae]?|pris|dyr[at]?"
         r"|billig[at]?|estimat|uppskattning|r[aä]kna ut vad|hur mycket)",
-        "ekonomen",
+        "ekonomichef",
         "kostnadsuppskattning",
     ),
     # Ideas/brainstorming/product
     (
         r"\b(brainstorm|ny? id[eé]|produktid[eé]|vision|product.?owner|roadmap"
         r"|prioriter(?:a|ingar?)|vilka features?|vad ska vi bygga)\b",
-        "ide-agent",
+        "produktchef",
         "idé/produkt",
     ),
     # Wiki-skrivning
     (
         r"\b(skriv (?:en |upp |till )?wiki|wiki.?sida|dokumentera (?:det|detta|hur)"
         r"|memory.?card|runbook|skapa dokumentation)\b",
-        "wiki-skribent",
+        "teknisk-skribent",
         "wiki/dokumentation",
     ),
     # Research/utredning
     (
         r"\b(research|forsk(?:a|ning)|utreda?|unders[oö]k(?:a|ning)?|j[aä]mf[oö]r"
         r"|hitta (?:alternativ|l[oö]sning|open.?source)|rapport om|studera)\b",
-        "research-agent",
+        "forskningsledare",
         "research/utredning",
     ),
     # GitHub-operations: PRs, issues, CI, deploy
@@ -79,98 +101,98 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
         r"\b(pull.?request|[oö]ppen pr|granska pr|merg[ae]?|github.?issue|milestone"
         r"|workflow.?run|ci\b|cd\b|github.?actions|deploy(?:a|ment)?|railway|vercel"
         r"|release\b|git push|git merge)\b",
-        "github-agent",
+        "devops-ingenjor",
         "GitHub/deploy",
     ),
     # Städning och refaktorering
     (
         r"\b(st[aä]da|rens(?:a|ning)|refaktor(?:era|ering)|dead.?code|cleanup"
         r"|ta bort (?:gammal|oanv[aä]nd|obsolet)|unused import|duplikat|konsolidera)\b",
-        "stadaren",
+        "underhallsingenjor",
         "städning/refaktorering",
     ),
     # HR: agent-management, teamstruktur
     (
         r"\b(ny agent|skapa agent|agent.?fil|hr\b|rekryter|teamstruktur"
         r"|agentprofil|agent.?definition|vilka agenter)\b",
-        "hr-chefen",
+        "hr-chef",
         "HR/agenthantering",
     ),
     # Frontend/UI
     (
         r"\b(react|vite|tsx?|tailwind|css\b|styled.?component|ui.?komponent"
         r"|frontend|layout|design.?system|responsiv|dashboard.?komponent)\b",
-        "frontend-agent",
+        "frontend-utvecklare",
         "frontend/UI",
     ),
     # Backend/server/MCP
     (
         r"\b(flask|mcp\b|mcp.?server|mcp.?verktyg|asgi|uvicorn|fastapi"
         r"|server\.py|api.?endpoint|webhook|backend|http.?handler)\b",
-        "backend-agent",
+        "backend-utvecklare",
         "backend/server/MCP",
     ),
     # Scripts och automation
     (
         r"\b(script(?:et)?|hook(?:en)?|automation|automatisera?|schemalägg"
         r"|cron\b|batch|pipeline\b|dash\.py|agent_host)\b",
-        "scripts-agent",
+        "plattformsingenjor",
         "scripts/automation",
     ),
-    # Uppfinnaren — teknisk design och skissning (innan teamleader exekverar)
+    # Uppfinnaren — teknisk design och skissning (innan operativ-chef exekverar)
     (
         r"\b(uppfinn(?:a|aren?|ing)|teknisk skiss|designa l[oö]sning|arkitektera"
         r"|hur ska vi bygga|v[aä]lj approach|skissa (?:l[oö]sning|arkitektur|design))\b",
-        "uppfinnaren",
+        "losningsarkitekt",
         "teknisk design/skiss",
     ),
     # Planering och orchestration (multi-step, komplex)
     (
         r"\b(planera|sprint|kvartal|q[1-4]\b|orchestr(?:era|ation)|koordinera"
         r"|delegera|parallell|multi.?agent|sessionsplan|vad ska vi g[oö]ra)\b",
-        "teamleader",
+        "operativ-chef",
         "planering/orchestration",
     ),
-    # Enkla lookups/statuskontroller → kontext-agent (Haiku)
+    # Enkla lookups/statuskontroller → lagesanalytiker (Haiku)
     (
         r"\b(visa (?:mig |upp )?(?:[oö]ppna|alla|senaste)|lista (?:issues?|quests?|sessioner|noder|id[eé]er)"
         r"|vad [aä]r [oö]ppet|status p[aå]|hur m[aå]nga|finns det n[aå]gra)\b",
-        "kontext-agent",
+        "lagesanalytiker",
         "enkel lookup/status",
     ),
     # Session-arkitekten — designa session-träd och planera arbetsstruktur
     (
         r"\b(session.?arkitekt|designa sessions?|session.?plan|session.?tr[aä]d"
         r"|planera sessions?|dela upp i sessions?|sessions.?struktur|arkitektera arbete)\b",
-        "session-arkitekten",
+        "programledare",
         "session-design/arkitektur",
     ),
     # Dirigenten — sessionkedning och daemon-övervakning
     (
         r"\b(dirig(?:era|enten?)|kedj(?:a|ning)|n[aä]sta session|vakt(?:a|ar)|daemon"
         r"|h[aä]ngande session|sessionskedjning|starta n[aä]sta)\b",
-        "dirigenten",
+        "sessionskoordinator",
         "sessionskedning/daemon",
     ),
     # Tränaren — förbättra agentdefinitioner och systemprompter
     (
         r"\b(tr[aä]n(?:a|aren?|ing)|f[oö]rb[aä]ttra (?:agent|prompt)|systemsprompt"
         r"|agentprestanda|diagnostisera agent|prompt.?patch|agent.?kvalitet)\b",
-        "tranaren",
+        "kompetensutvecklare",
         "agentträning/promptförbättring",
     ),
     # TUI-agent — terminal-cockpit och dash.py
     (
         r"\b(tui\b|dash\.py|terminal.?(?:cockpit|dashboard|[oö]verblick)"
         r"|rich\b.*(?:table|panel|layout)|scripts/tui)\b",
-        "tui-agent",
+        "terminal-utvecklare",
         "TUI/terminal-dashboard",
     ),
     # Fullstack — när ändringen spänner över både backend och frontend
     (
         r"\b(fullstack|b[aå]de (?:backend och frontend|frontend och backend)"
         r"|hela stacken|api.?(?:och|\\+).?ui|end.?to.?end.?feature)\b",
-        "fullstack-agent",
+        "fullstack-utvecklare",
         "fullstack/hela stacken",
     ),
 ]
@@ -183,10 +205,10 @@ MIN_PROMPT_LEN = 10
 # satt av /session-skillen). Håller agenturen i rätt läge hela passet.
 TYPE_DIRECTIVES: dict[str, str] = {
     "brainstorm": "dialogläge — följdfrågor i text, fånga idéer, exekvera INTE",
-    "bygg": "exekveringsläge — spec först, hela agenturen via teamleader, egen branch",
+    "bygg": "exekveringsläge — spec först, hela agenturen via operativ-chef, egen branch",
     "triage": "bokföringsläge — resolva/promota/klustra idéer proaktivt, rör ingen kod",
     "review": "granskningsläge — read-first, konvergera slutsatser, fråga före main-merge",
-    "verktygsladan": "verktygslådeläge — kalla @hr-chefen före ny agent, @tränaren för promptförbättring, ingen produktionsdeploy",
+    "verktygsladan": "verktygslådeläge — kalla @hr-chef före ny agent, @kompetensutvecklare för promptförbättring, ingen produktionsdeploy",
 }
 
 # Signaler på att prompten hör hemma i en ANNAN sessionstyp än den aktiva.

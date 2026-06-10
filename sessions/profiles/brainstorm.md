@@ -2,7 +2,7 @@
 type: brainstorm
 title: Brainstorm / idé / planering
 mode: dialog
-agents: [ide-agent, research-agent]
+agents: [produktchef, forskningsledare]
 ---
 
 # Brainstorm-session

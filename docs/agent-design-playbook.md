@@ -94,7 +94,7 @@ MCP = vertikal integration (agent → tools). A2A = horisontell integration (age
 | R1 | Behåll supervisor-topologin — Teamleader (Opus) som orchestrator | Klar ✓ |
 | R2 | Inför retry-logic: max 3 försök, backoff, `agent/stuck` issue som dead-letter | Hög |
 | R3 | Minimera kontext-payload per subagent — aldrig full sessionshistorik | Hög |
-| R4 | Parallellism med kostnadskalkyl — research-agent + wiki-skribent OK, backend + scripts på samma fil NEJ | Medium |
+| R4 | Parallellism med kostnadskalkyl — forskningsledare + teknisk-skribent OK, backend + scripts på samma fil NEJ | Medium |
 | R5 | Agent Card-format: lägg till `capabilities:` i varje `.claude/agents/*.md` | Medium |
 | R6 | Adversarial verification för research och specs — self-check: "3 ways this could be wrong" | Medium |
 | R7 | Håll aktiva agenter vid 7–10 — kärna: Teamleader + 6 specialister, stödroller vid behov | Låg |

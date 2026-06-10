@@ -2,7 +2,7 @@
 type: verktygsladan
 title: Verktygslådan
 mode: underhåll
-agents: [hr-chefen, tranaren, scripts-agent, session-arkitekten]
+agents: [hr-chef, kompetensutvecklare, plattformsingenjor, programledare]
 ---
 
 # Verktygslådan-session
@@ -11,10 +11,10 @@ Syfte: bygga ut och underhålla `.claude/`-verktygslådan — agenter, skills, h
 
 ## Agentbeteende
 
-- **Kalla @hr-chefen** innan ny agentfil skrivs — validerar modell, verktyg, roll.
+- **Kalla @hr-chef** innan ny agentfil skrivs — validerar modell, verktyg, roll.
 - **Kalla @tränaren** för att förbättra befintliga agentprompter och systemprompter.
-- **Kalla @scripts-agent** för hooks, automation och `session_store.py`-ändringar.
-- **Kalla @session-arkitekten** om sessionen kräver ett session-träd för att koordinera arbetet.
+- **Kalla @plattformsingenjor** för hooks, automation och `session_store.py`-ändringar.
+- **Kalla @programledare** om sessionen kräver ett session-träd för att koordinera arbetet.
 - Inga produktionsdeploys härifrån — verktygslådan är `.claude/`, inte `app/` eller `scripts/` (undantag: hooks i `scripts/`).
 
 ## Typiska uppgifter

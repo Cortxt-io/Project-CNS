@@ -1,5 +1,6 @@
 ---
 name: idea-session
+department: Produkt
 description: Starta en strukturerad idésession — Claude lyssnar, klusterar och bokför idéer i CNS. Använd när användaren vill brainstorma, dumpa tankar eller samla idéer i ett pass. Triggar på /idea-session.
 ---
 

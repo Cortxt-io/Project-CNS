@@ -1,5 +1,6 @@
 ---
 name: cns-flush
+department: Program
 description: Spola ner en sessions slutsats i CNS så parallella sessioner konvergerar mot samma noder (GitHub = sanning). Använd vid sessionsslut, eller när användaren säger "bokför sessionen", "spara det här i CNS", "flush", "spola ner", "avsluta sessionen", "konvergera sessionerna", eller efter en längre diskussion som landat i beslut/öppna frågor som inte får tappas mellan sessioner.
 ---
 

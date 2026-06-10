@@ -125,18 +125,18 @@ Routing-tabell (snabbref):
 
 | Agent | Triggas av |
 |---|---|
-| `ekonomen` | kostnader, token-budget, uppskattning |
-| `ide-agent` | idéer, brainstorm, roadmap |
-| `wiki-skribent` | wiki, dokumentera, memory-card |
-| `research-agent` | research, utreda, jämför |
-| `github-agent` | PR, issue, CI/CD, deploy, railway/vercel |
-| `stadaren` | städa, refaktorera, dead code |
-| `hr-chefen` | ny agent, agentprofil, teamstruktur |
-| `frontend-agent` | React, Vite, CSS, UI-komponent |
-| `backend-agent` | Flask, MCP-server, API, webhook |
-| `scripts-agent` | script, hook, automation |
-| `teamleader` | planera, sprint, orchestration, multi-agent |
-| `dirigenten` | kedja sessioner, daemon, hängande session, nästa session |
+| `ekonomichef` | kostnader, token-budget, uppskattning |
+| `produktchef` | idéer, brainstorm, roadmap |
+| `teknisk-skribent` | wiki, dokumentera, memory-card |
+| `forskningsledare` | research, utreda, jämför |
+| `devops-ingenjor` | PR, issue, CI/CD, deploy, railway/vercel |
+| `underhallsingenjor` | städa, refaktorera, dead code |
+| `hr-chef` | ny agent, agentprofil, teamstruktur |
+| `frontend-utvecklare` | React, Vite, CSS, UI-komponent |
+| `backend-utvecklare` | Flask, MCP-server, API, webhook |
+| `plattformsingenjor` | script, hook, automation |
+| `operativ-chef` | planera, sprint, orchestration, multi-agent |
+| `sessionskoordinator` | kedja sessioner, daemon, hängande session, nästa session |
 
 ## Arbetsregler
 - **Spec först:** skriv/granska en implementationsspec innan kod. Vid osäkerhet — ställ frågan i specen så den måste besvaras.

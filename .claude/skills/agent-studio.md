@@ -1,5 +1,6 @@
 ---
 name: agent-studio
+department: People
 description: Skapa en ny agent interaktivt — guided flow som validerar mot agent-definition.schema.json, sparar agenten som en CNS-nod och genererar en .claude/agents/-fil. Triggar på /agent-studio. Använd när du vill skapa, konfigurera eller dokumentera en ny agent utan att redigera JSON manuellt.
 ---
 

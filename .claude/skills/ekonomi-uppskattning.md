@@ -1,5 +1,6 @@
 ---
 name: ekonomi-uppskattning
+department: Ekonomi
 description: Kostnadsmodell för agent-körningar — Haiku/Sonnet/Opus, token-budget, go/no-go.
 ---
 

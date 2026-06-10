@@ -2,7 +2,7 @@
 type: triage
 title: Triage / städning
 mode: exekvering
-agents: [ide-agent, stadaren]
+agents: [produktchef, underhallsingenjor]
 ---
 
 # Triage-session

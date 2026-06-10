@@ -2,7 +2,7 @@
 type: review
 title: Review / konvergens
 mode: granskning
-agents: [github-agent, stadaren]
+agents: [devops-ingenjor, underhallsingenjor]
 ---
 
 # Review-session

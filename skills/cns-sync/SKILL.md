@@ -1,5 +1,6 @@
 ---
 name: cns-sync
+department: Program
 description: Upptäck och flagga överlappande parallella sessioner på samma CNS-nod/quest innan du spolar ner arbete. Använd när användaren undrar om sessioner krockar/överlappar, frågar "vad har andra sessioner gjort på den här noden", "krockar det här", "syncar vi", innan en /cns-flush, eller när flera Claude Code-sessioner jobbat mot samma del och deras kontext börjar gå isär.
 ---
 

@@ -1,31 +1,32 @@
 ---
 name: agent-routing
+department: Gemensam
 description: Komplett routing-karta för agenturen — vilken agent hanterar vad och när du ska kalla på vem.
 ---
 
 # Agent-routing: vem gör vad
 
-Använd den här kartan när du vet att en uppgift borde delegeras. Kalla alltid på **teamleadern** om du är osäker — det är hans jobb att matcha.
+Använd den här kartan när du vet att en uppgift borde delegeras. Kalla alltid på **operativ-chefn** om du är osäker — det är hans jobb att matcha.
 
 ## Routing-matris
 
 | Uppgift | Primär | Sekundär |
 |---------|--------|---------|
-| Vilka agenter finns? Vad pågår? | kontext-agent | — |
-| Koordinera flera agenter | teamleader | — |
-| Ny agent behöver skapas | hr-chefen | tranaren (validering) |
-| Förbättra en befintlig agents prompt | tranaren | hr-chefen |
-| Token-/kreditförbrukning, effektivitet | ekonomen | — |
-| Teknisk research, externa jämförelser | research-agent | — |
-| Gamla noder, stale wiki, städning | stadaren | — |
-| PR-status, CI, GitHub-issues | github-agent | — |
-| Idéer som dyker upp under arbete | ide-agent | — |
-| Arkitekturdokumentation, wiki | wiki-skribent | — |
-| Flask, FastMCP, MCP-verktyg, Railway | backend-agent | fullstack-agent |
-| React, Vite, dashboard, Tailwind | frontend-agent | fullstack-agent |
-| Feature som spänner backend + frontend | fullstack-agent | — |
-| CLI, TUI, Rich, scripts/, session-mgmt | scripts-agent | — |
-| Eskalering till Rikard | teamleader → Rikard | — |
+| Vilka agenter finns? Vad pågår? | lagesanalytiker | — |
+| Koordinera flera agenter | operativ-chef | — |
+| Ny agent behöver skapas | hr-chef | kompetensutvecklare (validering) |
+| Förbättra en befintlig agents prompt | kompetensutvecklare | hr-chef |
+| Token-/kreditförbrukning, effektivitet | ekonomichef | — |
+| Teknisk research, externa jämförelser | forskningsledare | — |
+| Gamla noder, stale wiki, städning | underhallsingenjor | — |
+| PR-status, CI, GitHub-issues | devops-ingenjor | — |
+| Idéer som dyker upp under arbete | produktchef | — |
+| Arkitekturdokumentation, wiki | teknisk-skribent | — |
+| Flask, FastMCP, MCP-verktyg, Railway | backend-utvecklare | fullstack-utvecklare |
+| React, Vite, dashboard, Tailwind | frontend-utvecklare | fullstack-utvecklare |
+| Feature som spänner backend + frontend | fullstack-utvecklare | — |
+| CLI, TUI, Rich, scripts/, session-mgmt | plattformsingenjor | — |
+| Eskalering till Rikard | operativ-chef → Rikard | — |
 
 ## Hur du kallar på en agent
 

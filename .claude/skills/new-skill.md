@@ -1,5 +1,6 @@
 ---
 name: new-skill
+department: Platform
 description: Skapa en ny skill interaktivt — guided flow som samlar namn, trigger, beteenderegler och MCP-verktyg, sedan genererar .claude/skills/<name>.md. Triggar på /new-skill. Använd när du vill koda in ett återkommande beteende (ett kommando, ett arbetsflöde, en konvention) som Claude ska följa.
 ---
 

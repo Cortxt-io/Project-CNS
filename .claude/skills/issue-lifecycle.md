@@ -1,5 +1,6 @@
 ---
 name: issue-lifecycle
+department: Engineering
 description: Skapa, uppdatera och stäng GitHub-issues korrekt i CNS-systemet.
 ---
 

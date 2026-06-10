@@ -1,5 +1,6 @@
 ---
 name: cns-fork
+department: Program
 description: Bokför en fork av det pågående arbetspasset som en barn-session i CNS sessionsträdet (main → forks → forks-under-forks). Använd när ett sidospår knoppas av från ett pass och bör kunna spåras tillbaka till sitt ursprung — t.ex. när användaren säger "forka det här", "bokför sidospåret", "det blev en egen gren", eller när en /btw-aside växer till ett eget arbetspass.
 ---
 

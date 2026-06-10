@@ -1,11 +1,11 @@
-"""Stop-hook: Dirigentens regelbaserade check utan LLM.
+"""Stop-hook: Sessionskoordinatorns regelbaserade check utan LLM.
 
 Körs vid varje session-stop. Kontrollerar:
 1. Commit-skuld: hur många commits är aktiv branch före main?
 2. Hängande running-sessioner
 3. Alla issues stängda på en quest? (merge-trigger)
 
-Injicerar [DIRIGENTEN]-varningar i stdout om något kräver beslut.
+Injicerar [SESSIONSKOORDINATOR]-varningar i stdout om något kräver beslut.
 Crash-proof: exit 0 alltid.
 """
 
@@ -71,12 +71,12 @@ def main() -> None:
         branch, ahead = git_commits_ahead()
         if ahead >= MERGE_ESCALATE_THRESHOLD:
             warnings.append(
-                f"[DIRIGENTEN] 🔴 MERGE-SKULD: {branch} är {ahead} commits före main "
-                f"— eskalerat, kalla @github-agent för merge-beslut"
+                f"[SESSIONSKOORDINATOR] 🔴 MERGE-SKULD: {branch} är {ahead} commits före main "
+                f"— eskalerat, kalla @devops-ingenjor för merge-beslut"
             )
         elif ahead >= MERGE_WARN_THRESHOLD:
             warnings.append(
-                f"[DIRIGENTEN] ⚠️ MERGE-SKULD: {branch} är {ahead} commits före main "
+                f"[SESSIONSKOORDINATOR] ⚠️ MERGE-SKULD: {branch} är {ahead} commits före main "
                 f"— dags att merga eller skapa PR?"
             )
 
@@ -95,7 +95,7 @@ def main() -> None:
                 age_min = (now - created) / 60
                 if age_min > 45 and abs(updated - created) < 5:
                     warnings.append(
-                        f"[DIRIGENTEN] ⚠️ HÄNGANDE SESSION: {s['id']} "
+                        f"[SESSIONSKOORDINATOR] ⚠️ HÄNGANDE SESSION: {s['id']} "
                         f"— {s.get('summary', '?')} — kör sedan {int(age_min)} min"
                     )
             except Exception:

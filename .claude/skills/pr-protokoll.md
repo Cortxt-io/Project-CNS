@@ -1,5 +1,6 @@
 ---
 name: pr-protokoll
+department: Engineering
 description: PR-checklista för CNS — skapa, koppla och begär review korrekt.
 ---
 
@@ -40,7 +41,7 @@ cortxt_set_pr_reviewers(
 
 - Mergar aldrig direkt — CI + Rikard beslutar
 - Pushar aldrig direkt till main
-- Öppnar aldrig draft-PRs utan att informera teamleadern
+- Öppnar aldrig draft-PRs utan att informera operativ-chefn
 - Skapar aldrig PR utan kopplad issue
 
 ## Om CI är röd
@@ -50,4 +51,4 @@ cortxt_get_workflow_run(run_id="[id]")
 ```
 
 Analysera felet. Fixa på branchen. Push. CI kör om automatiskt.
-Öppna inte PRen förrän CI är grön — det är en github-agent-uppgift att bevaka.
+Öppna inte PRen förrän CI är grön — det är en devops-ingenjor-uppgift att bevaka.
