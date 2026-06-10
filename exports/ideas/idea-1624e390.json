@@ -1,0 +1,9 @@
+{
+  "id": "idea-1624e390",
+  "text": "Bygg tröskel-trigger för lease-lager: en bevakare (sessionskoordinator-daemon ELLER plattformsingenjör-hook) som pollar cortxt_list_sessions(status=\"running\") och AUTOMATISKT skapar en issue på nod agentur när antal samtidiga sessioner ≥ tröskel (~5-8, där worktree-isolation slutar räcka för hotspot-filer). Issuen = signalen \"nu lönar sig claim/lease-lagret, bygg det\". Måste faktiskt KÖRAS (hook/bevakande agent), inte bara noteras. Lägg in tröskelvillkoret i sessionskoordinatorns/plattformsingenjörens task-flow när rollen bemannas. Kopplad till work-model-taxonomy-spec (branch spec/work-model-taxonomy), lease-lager deferred per mätning 2026-06-10 (arbetet koncentrerat på agentur, ingen massiv parallellkörning aktuell).",
+  "created_at": "2026-06-10T11:40:38",
+  "source": "chat",
+  "slug": "agentur",
+  "session_id": null,
+  "status": "open"
+}
