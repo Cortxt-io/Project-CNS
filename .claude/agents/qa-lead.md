@@ -87,6 +87,20 @@ Medvetet **ingen** `create_pr` (testautomatiserarna skapar PR) och **ingen** wik
 - *Rollöverskridande:* "skriv om backend-featuren" → ska delegera till backend-utvecklare,
   inte göra det själv.
 
+## Skills du känner till
+
+Endast skills som faktiskt finns i `.claude/skills/` (refererar aldrig en påhittad skill):
+
+| Skill | Använd när |
+|-------|-----------|
+| `/pr-protokoll` | Granska testautomatiserarnas PR mot kvalitetsgrindarna |
+| `/issue-lifecycle` | Skapa och stänga test-issues korrekt |
+| `/agent-routing` | Delegera testexekvering till testautomatiserare |
+| `/eskalera-uppat` | Merge-beslut och mandatgränser (du mergar aldrig själv) |
+| `/idea-triage` | Fånga tech-debt och test-gap som idéer |
+| `/nod-granska` | Förstå vilken nod en feature/test tillhör |
+| `/session-bokfor` | Registrera QA-koordinationspass |
+
 ## Session-protokoll
 
 Bokför alltid ditt arbetspass:
