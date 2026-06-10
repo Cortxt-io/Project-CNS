@@ -68,7 +68,7 @@ def register(mcp: FastMCP) -> None:
                 depends_on=depends_on,
             )
         except ValueError as e:
-            raise ToolError(str(e))
+            raise ToolError(str(e)) from e
 
     @mcp.tool()
     def cortxt_close_issue(number: int, result_summary: str) -> dict:
@@ -99,7 +99,7 @@ def register(mcp: FastMCP) -> None:
         try:
             return set_todo(number, index, done=done)
         except ValueError as e:
-            raise ToolError(str(e))
+            raise ToolError(str(e)) from e
 
     @mcp.tool()
     def cortxt_set_issue_type(number: int, issue_type: str) -> dict:
@@ -112,7 +112,7 @@ def register(mcp: FastMCP) -> None:
         try:
             return set_issue_type(number, issue_type)
         except ValueError as e:
-            raise ToolError(str(e))
+            raise ToolError(str(e)) from e
 
     @mcp.tool()
     def cortxt_set_depends_on(number: int, depends_on: list[int]) -> dict:
@@ -127,7 +127,7 @@ def register(mcp: FastMCP) -> None:
         try:
             return set_depends_on(number, depends_on)
         except ValueError as e:
-            raise ToolError(str(e))
+            raise ToolError(str(e)) from e
 
     @mcp.tool()
     def cortxt_add_acceptance(number: int, given: str, when: str, then: str) -> dict:
@@ -142,4 +142,4 @@ def register(mcp: FastMCP) -> None:
         try:
             return add_acceptance_criterion(number, given, when, then)
         except ValueError as e:
-            raise ToolError(str(e))
+            raise ToolError(str(e)) from e

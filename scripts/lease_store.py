@@ -42,13 +42,17 @@ end
 return 0
 """
 
-# Owner-checked heartbeat: refresh value + TTL only if the owner matches (atomic).
+# Owner-checked heartbeat: refresh heartbeat_at + TTL only if the owner matches,
+# preserving the original claimed_at (atomic — reads, merges and writes in one script).
+# ARGV: [1] owner, [2] new heartbeat_at (iso), [3] ttl seconds.
 _HEARTBEAT_LUA = """
 local v = redis.call('GET', KEYS[1])
 if not v then return 0 end
 local ok, data = pcall(cjson.decode, v)
 if ok and data['owner'] == ARGV[1] then
-    return redis.call('SET', KEYS[1], ARGV[2], 'XX', 'EX', tonumber(ARGV[3]))
+    data['heartbeat_at'] = ARGV[2]
+    data['ttl'] = tonumber(ARGV[3])
+    return redis.call('SET', KEYS[1], cjson.encode(data), 'XX', 'EX', tonumber(ARGV[3]))
         and 1 or 0
 end
 return 0
@@ -103,17 +107,16 @@ def release(number: int, owner: str) -> dict:
 
 
 def heartbeat(number: int, owner: str, ttl: int = DEFAULT_TTL_SECONDS) -> dict:
-    """Renew a lease's TTL, but only if *owner* holds it (keeps a long run alive)."""
+    """Renew a lease's TTL, but only if *owner* holds it (keeps a long run alive).
+
+    Updates ``heartbeat_at`` and TTL while preserving the original ``claimed_at``
+    (the Lua script merges into the stored value rather than rebuilding it).
+    """
     r = _get_redis()
     if r is None:
         return {"renewed": False, "reason": "redis-unavailable"}
-    now = _now_iso()
-    payload = json.dumps(
-        {"owner": owner, "claimed_at": now, "heartbeat_at": now, "ttl": ttl},
-        ensure_ascii=False,
-    )
     try:
-        renewed = r.eval(_HEARTBEAT_LUA, 1, _key(number), owner, payload, str(ttl))
+        renewed = r.eval(_HEARTBEAT_LUA, 1, _key(number), owner, _now_iso(), str(ttl))
         return {"renewed": bool(renewed)}
     except Exception as exc:  # noqa: BLE001 — fail-open
         logger.warning("Lease heartbeat failed for #%s: %s", number, exc)
