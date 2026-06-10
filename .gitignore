@@ -34,3 +34,5 @@ tmp/
 
 # Lokala git-worktrees (ej produktkod)
 .claude/worktrees/
+
+.devwatch_state.json
