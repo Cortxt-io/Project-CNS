@@ -1,0 +1,9 @@
+{
+  "id": "idea-c73f5ad4",
+  "text": "Triage-verktyg + actionable statusrad. Två delar ur triage-sessionen 2026-06-10: (1) Statusraden ska rendera HANDLINGSBAR info — sessioner som kräver input / rekommenderad session att starta — hellre än rå idésiffra (som dessutom visade stale lokaldata: exports/ är gitignored så lokala filer driver ifrån GitHub-sanningen; recommend.py bör läsa eller verifiera mot backend, alt. markera lokal data som stale). (2) Samlat triage-verktyg, tre former i prioritetsordning efter byggkostnad: a) skill /triage-flöde som driver dagens MCP-anrop i fast loop (lista → gruppera överspelade/mogna/kluster → välj → utför), b) MCP-batchverktyg cortxt_triage (grupperad inkorg + batch-resolve/promote, nåbart från alla klienter), c) TUI-triagevy med piltangentval. Rikard svarade \"alla tre?\" — börja med a, återanvänd grupperingslogiken i b och c.",
+  "created_at": "2026-06-10T04:23:46",
+  "source": "chat",
+  "slug": null,
+  "session_id": "session-522ae885",
+  "status": "open"
+}
