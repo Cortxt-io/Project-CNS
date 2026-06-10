@@ -103,6 +103,79 @@ def git_branches() -> list[Branch]:
     return branches
 
 
+# -- git-worktrees ---------------------------------------------------------
+
+@dataclass
+class Worktree:
+    path: str
+    branch: str
+    head: str
+    locked: bool
+    is_current: bool
+
+
+def list_worktrees() -> list[Worktree]:
+    """Lista git-worktrees via porcelain-format. Degraderar till [] vid fel.
+
+    is_current = worktree-path matchar REPO_ROOT. head kortas till 7 tecken.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "worktree", "list", "--porcelain"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except Exception:
+        return []
+    if out.returncode != 0:
+        return []
+
+    worktrees: list[Worktree] = []
+    # Porcelain: block separerade av tomrad; varje block: "worktree <path>", ev. "HEAD <sha>",
+    # ev. "branch refs/heads/<name>" eller "detached", ev. "bare", ev. "locked [reason]".
+    current_block: dict[str, str] = {}
+    for line in out.stdout.splitlines():
+        line = line.rstrip()
+        if line == "":
+            if current_block:
+                _flush_worktree_block(current_block, worktrees)
+                current_block = {}
+            continue
+        if line.startswith("worktree "):
+            current_block["path"] = line[len("worktree "):]
+        elif line.startswith("HEAD "):
+            current_block["head"] = line[len("HEAD "):]
+        elif line.startswith("branch "):
+            ref = line[len("branch "):]
+            # refs/heads/<name> → <name>
+            if ref.startswith("refs/heads/"):
+                current_block["branch"] = ref[len("refs/heads/"):]
+            else:
+                current_block["branch"] = ref
+        elif line == "detached":
+            current_block["detached"] = "1"
+        elif line == "bare":
+            current_block["bare"] = "1"
+        elif line.startswith("locked"):
+            current_block["locked"] = "1"
+    # Sista blocket (ingen avslutande tomrad).
+    if current_block:
+        _flush_worktree_block(current_block, worktrees)
+    return worktrees
+
+
+def _flush_worktree_block(block: dict[str, str], out: list[Worktree]) -> None:
+    path = block.get("path", "")
+    head_full = block.get("head", "")
+    head = head_full[:7] if head_full else "?"
+    branch = block.get("branch") or ("[detached]" if "detached" in block else "[bare]")
+    locked = "locked" in block
+    is_current = Path(path).resolve() == REPO_ROOT
+    out.append(Worktree(path=path, branch=branch, head=head, locked=locked, is_current=is_current))
+
+
 # -- issues per nod (grindad) ----------------------------------------------
 
 def open_issues_for_slug(slug: str) -> tuple[str | None, list[dict]]:

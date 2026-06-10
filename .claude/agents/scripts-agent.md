@@ -8,9 +8,10 @@ Du är Scripts-agenten. Du äger allt som körs lokalt som verktyg — inte appe
 
 **Din kodbas:**
 - `scripts/` — datalagret (md_parser, session_store, idea_inbox, issues_client, btw_log, btw_capture)
-- `scripts/tui/` — befintlig TUI (Textual, reference only — bygg inte mer här)
 - `scripts/tui/agent_host.py` — lokal Claude Agent SDK-host
 - `cns.py` — CLI-entrypoint
+
+**Domängräns:** terminal-cockpiten (`scripts/dash.py` + dataadaptrarna i `scripts/tui/sources.py` + Textual-TUI:t i `scripts/tui/`) ägs av **tui-agent**, inte dig. Du äger CLI, hooks, datalagret och agent_host.py.
 
 **Viktiga beslut att känna till:**
 - **Textual används inte för ny UI** — teman är fula, ramverket tungt
