@@ -174,11 +174,32 @@ def recommend(state: dict | None = None) -> list[dict]:
     return sorted(recs, key=lambda r: r["score"], reverse=True)
 
 
+# Emoji per sessionstyp för snabb visuell identifiering i statusraden
+SESSION_ICONS: dict[str, str] = {
+    "brainstorm": "🟣",
+    "bygg": "🟢",
+    "triage": "🟡",
+    "review": "🔵",
+}
+
+
 def statusline(state: dict | None = None) -> str:
     """Kompakt enrading för Claude Codes statusrad."""
     state = state or gather_state()
     recs = recommend(state)
-    parts = [f"\U0001f4a1 {len(state['ideas'])} idéer"]
+
+    try:
+        from scripts.session_store import get_active
+        active = (get_active() or {}).get("type")
+    except Exception:
+        active = None
+
+    if active:
+        icon = SESSION_ICONS.get(active, "⚪")
+        parts = [f"{icon} {active}"]
+    else:
+        parts = [f"💡 {len(state['ideas'])} idéer"]
+
     running = len(state["running_sessions"])
     if running:
         parts.append(f"{running} pass igång")

@@ -23,6 +23,25 @@ if str(ROOT) not in sys.path:  # körbar som fil (hooken anropar absolut sökvä
 # (mönster, agent-slug, beskrivning) — prioritetsordning, första träff vinner.
 # Mer specifika mönster längre upp än generella.
 # Tips: `re.search` körs på `.lower()` → alla mönster i lowercase, ingen IGNORECASE-flag nödvändig.
+# Modell-tier per agent-slug. Haiku för mekaniska uppgifter, Sonnet för omdöme, Opus för strategi.
+MODEL_TIER: dict[str, str] = {
+    "ekonomen": "claude-haiku-4-5",
+    "ide-agent": "claude-haiku-4-5",
+    "github-agent": "claude-haiku-4-5",
+    "kontext-agent": "claude-haiku-4-5",
+    "wiki-skribent": "claude-sonnet-4-6",
+    "research-agent": "claude-sonnet-4-6",
+    "backend-agent": "claude-sonnet-4-6",
+    "frontend-agent": "claude-sonnet-4-6",
+    "scripts-agent": "claude-sonnet-4-6",
+    "stadaren": "claude-sonnet-4-6",
+    "hr-chefen": "claude-sonnet-4-6",
+    "tui-agent": "claude-sonnet-4-6",
+    "fullstack-agent": "claude-sonnet-4-6",
+    "tranaren": "claude-sonnet-4-6",
+    "teamleader": "claude-opus-4-8",
+}
+
 ROUTING_RULES: list[tuple[str, str, str]] = [
     # Ekonomi/kostnad — alltid ekonomen
     (
@@ -101,6 +120,13 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
         r"|delegera|parallell|multi.?agent|sessionsplan|vad ska vi g[oö]ra)\b",
         "teamleader",
         "planering/orchestration",
+    ),
+    # Enkla lookups/statuskontroller → kontext-agent (Haiku)
+    (
+        r"\b(visa (?:mig |upp )?(?:[oö]ppna|alla|senaste)|lista (?:issues?|quests?|sessioner|noder|id[eé]er)"
+        r"|vad [aä]r [oö]ppet|status p[aå]|hur m[aå]nga|finns det n[aå]gra)\b",
+        "kontext-agent",
+        "enkel lookup/status",
     ),
 ]
 
@@ -193,7 +219,9 @@ def main() -> None:
         if not agent:
             return
 
+        model = MODEL_TIER.get(agent, "claude-sonnet-4-6")
         print(f"[ROUTING] @{agent} → {reason}")
+        print(f"[MODEL: {model}] — spawna subagent med denna modell, kör inte inline i Sonnet")
 
     except Exception:
         # Crash-proof: hooken ska aldrig blockera en prompt

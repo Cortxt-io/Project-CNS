@@ -119,7 +119,7 @@ flowchart LR
 - mvp_stage, risk_category: se `enums.json`
 
 ## Automatisk agent-routing
-Hooken `scripts/router.py` (UserPromptSubmit) injicerar `[ROUTING] @agent → reason` per prompt baserat på nyckelord i meddelandet. **Regel: när [ROUTING] syns i kontexten, delegera direkt till angiven agent utan att fråga Rikard.** Använd Agent-verktyget med `subagent_type="<agent-slug>"` och skicka med hela originaluppgiften. Konversationella frågor (< 25 tecken) och prompts utan träff hanteras direkt.
+Hooken `scripts/router.py` (UserPromptSubmit) injicerar `[ROUTING] @agent → reason` per prompt baserat på nyckelord i meddelandet. **Regel: när [ROUTING] syns i kontexten, delegera direkt till angiven agent utan att fråga Rikard.** Använd Agent-verktyget med `subagent_type="<agent-slug>"` och skicka med hela originaluppgiften. **När [MODEL: X] också injiceras — sätt `model="X"` på Agent-anropet så uppgiften körs på rätt modellnivå istället för Sonnet-huvudloopen.** Konversationella frågor (< 25 tecken) och prompts utan träff hanteras direkt.
 
 Routing-tabell (snabbref):
 
