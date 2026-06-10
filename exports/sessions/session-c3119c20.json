@@ -1,9 +1,9 @@
 {
   "id": "session-c3119c20",
   "created_at": "2026-06-10T09:39:36",
-  "updated_at": "2026-06-10T09:39:36",
-  "status": "running",
-  "summary": "verktygsladan-session: aktivera qa-lead via tunga /bemanna + lead-policy för pods utan lead",
+  "updated_at": "2026-06-10T10:03:21",
+  "status": "done",
+  "summary": "qa-lead aktiverad end-to-end (research-grundad: QA-lead-roll + Anthropic agent-prompt-praxis) — körbar agent i .claude/agents/, router-regel för QA-prompts, manifest active=true. Lead-policy R1-R3 kodad i bemanning_matris.json (research: span-of-control + Spotify chapter-lead + Anthropic multi-agent): 0 nya leads, 16 ledarlösa pods matris-rapporterar uppåt, 4 obemannade avdelnings-leads interimt → operativ-chef. Pushad till main f6773e8. Sidofynd: validate_agent-revision av 22 befintliga agenter — 2 ERROR (forskningsledare saknar Verktyg, sessionskoordinator saknar Eval), 13 bred verktygsyta; rekommenderad recertifiering via /org-underhall. Öppna frågor fångade: idea-0d7efee2 (skills-kvalitet/skills-studio), idea-8bf3b303 (verktygsladan↔studio-skills).",
   "link": {
     "kind": "node",
     "ref": "agentur"
