@@ -1,9 +1,9 @@
 {
   "id": "session-98d00552",
   "created_at": "2026-06-10T20:10:32",
-  "updated_at": "2026-06-10T20:10:32",
-  "status": "running",
-  "summary": "triage-session: förena två parallella spår på agentur-noden (operativa-lagrets fundament: Roll/Session-tvålagermodell här vs work-modell/taxonomi+Linear i körande f5e4ee3f); besluta ägare, vika in taxonomi-spec som underlag, rekommendera handoff av f5e4ee3f innan gen_agentur/agentfiler rörs (git-krock-risk)",
+  "updated_at": "2026-06-10T20:14:46",
+  "status": "done",
+  "summary": "Konsoliderad in i session-c4f4f7fb. Triage-slutsatsen (en ägare, vik in taxonomi-spec, sekventiell hantering av gen_agentur/agentfiler för att undvika git-krock) lever vidare där.",
   "link": {
     "kind": "node",
     "ref": "agentur"
