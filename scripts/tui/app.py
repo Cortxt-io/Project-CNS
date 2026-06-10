@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+from pathlib import Path
 
 from rich.text import Text
 from textual.app import App, ComposeResult
@@ -38,9 +39,12 @@ from scripts.tui.data import (
     load_nodes,
 )
 from scripts.tui.sources import (
+    REPO_ROOT,
+    WORKSPACE_ROOT,
     Transcript,
     git_branches,
     list_transcripts,
+    load_env,
     load_ideas,
     load_memory_cards,
     load_skills,
@@ -59,11 +63,23 @@ def _tree_label(node: NodeView) -> Text:
     return label
 
 
+def _node_sections(slug: str) -> dict[str, str]:
+    """Nodens node.md-sektioner via datalagret. Degraderar till {}."""
+    try:
+        from scripts.md_parser import read_node
+
+        _meta, sections, _raw = read_node(slug)
+        return {k: v for k, v in (sections or {}).items() if (v or "").strip()}
+    except Exception:
+        return {}
+
+
 def _detail_markup(
     node: NodeView,
     ideas: list[dict],
     issue_status: str | None,
     issues: list[dict],
+    sections: dict[str, str] | None = None,
 ) -> str:
     """Rich-markup för detaljpanelen, inkl. länkade idéer och issues."""
     kind_c = KIND_COLORS.get(node.kind, "dim")
@@ -85,6 +101,17 @@ def _detail_markup(
 
     if node.summary:
         lines.append(node.summary)
+        lines.append("")
+
+    # Nodens faktiska innehåll (node.md-sektioner): rubrik + första stycket.
+    if sections:
+        lines.append("[bold]📄 Innehåll[/bold]")
+        for heading, body in sections.items():
+            first_para = body.strip().split("\n\n")[0]
+            first_para = " ".join(first_para.split())
+            lines.append(f"  [cyan]{heading}[/cyan]")
+            if first_para:
+                lines.append(f"    {first_para[:220]}{'…' if len(first_para) > 220 else ''}")
         lines.append("")
 
     if node.feeds:
@@ -293,6 +320,14 @@ class AgentScreen(ModalScreen):
         Binding("escape", "dismiss", "Stäng"),
     ]
 
+    # Snabbkommandon: skriv bara siffran + Enter i input-fältet.
+    QUICK_PROMPTS = {
+        "1": "Sammanfatta noden: vad den är, var den står och vad som är viktigast just nu.",
+        "2": "Vad är nästa konkreta steg för den här noden? Motivera utifrån stage, idéer och issues.",
+        "3": "Hitta luckor i noden: tomma/tunna sektioner, saknade relationer, otydligheter.",
+        "4": "Föreslå 2–3 nya idéer för den här noden, baserat på dess innehåll och relationer.",
+    }
+
     def __init__(self, slug: str | None) -> None:
         super().__init__()
         self._slug = slug
@@ -300,10 +335,13 @@ class AgentScreen(ModalScreen):
 
     def compose(self) -> ComposeResult:
         with Vertical(id="agent-box"):
-            head = f"[bold]Fråga Claude[/bold]  [dim]— nod: {self._slug or '(ingen)'} · read-first · esc stänger[/dim]"
+            head = (
+                f"[bold]Fråga Claude[/bold]  [dim]— nod: {self._slug or '(ingen)'} · read-first · esc stänger[/dim]\n"
+                "[dim]Snabb: 1 sammanfatta · 2 nästa steg · 3 hitta luckor · 4 föreslå idéer[/dim]"
+            )
             yield Static(head, id="agent-head")
             yield RichLog(id="agent-log", wrap=True, markup=True)
-            yield Input(placeholder="Fråga om noden… (Enter skickar)", id="agent-input")
+            yield Input(placeholder="Fråga om noden… (Enter skickar, 1–4 = snabbkommando)", id="agent-input")
 
     def on_mount(self) -> None:
         self.query_one("#agent-input", Input).focus()
@@ -314,6 +352,7 @@ class AgentScreen(ModalScreen):
         prompt = event.value.strip()
         if not prompt:
             return
+        prompt = self.QUICK_PROMPTS.get(prompt, prompt)
         log = self.query_one("#agent-log", RichLog)
         log.write(f"[bold cyan]› {prompt}[/bold cyan]")
         event.input.value = ""
@@ -395,6 +434,7 @@ class CnsTuiApp(App):
         yield Footer()
 
     def on_mount(self) -> None:
+        load_env()  # GITHUB_REPO/CNS_GITHUB_TOKEN till issues_client (graceful).
         self.query_one("#filter", Input).display = False
         self._all_nodes = load_nodes()
         self._ideas = load_ideas()
@@ -432,7 +472,8 @@ class CnsTuiApp(App):
             self._current_slug = node.slug
             ideas = [i for i in self._ideas if i.get("slug") == node.slug]
             issue_status, issues = open_issues_for_slug(node.slug)
-            detail.update(_detail_markup(node, ideas, issue_status, issues))
+            sections = _node_sections(node.slug)
+            detail.update(_detail_markup(node, ideas, issue_status, issues, sections))
         else:
             detail.update("Välj en nod i trädet.")
 

@@ -23,6 +23,32 @@ WORKSPACE_ROOT = REPO_ROOT.parent
 CLAUDE_PROJECTS_DIR = Path.home() / ".claude" / "projects"
 
 
+# -- miljö (.env) ------------------------------------------------------------
+
+def load_env() -> None:
+    """Läs .env till miljön (setdefault) så issues_client får GITHUB_REPO/token.
+
+    Provar repo-roten först, sedan huvudarbetskopian Project-CNS (worktrees som
+    cns-tui saknar egen .env — den är gitignored och delas inte av git).
+    Degraderar tyst; samma radformat som scripts/recommend.py:_load_env.
+    """
+    import os
+
+    for env_file in (REPO_ROOT / ".env", WORKSPACE_ROOT / "Project-CNS" / ".env"):
+        try:
+            if not env_file.exists():
+                continue
+            for line in env_file.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
+            return
+        except Exception:
+            continue
+
+
 # -- idéer -----------------------------------------------------------------
 
 def load_ideas(slug: str | None = None) -> list[dict]:

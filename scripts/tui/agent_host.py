@@ -153,27 +153,72 @@ def build_cns_server() -> Any:
 
 # -- kontext-seed -----------------------------------------------------------
 
+# Max tecken per node.md-sektion i seeden — håller systemprompten rimlig.
+SEED_SECTION_MAX = 2000
+
+
 def build_seed(slug: str | None) -> str:
-    """Systemprompt: ramar in agenten kring en markerad nod (read-first)."""
+    """Systemprompt: ramar in agenten kring en markerad nod (read-first).
+
+    Full nodkontext: hela node.md (frontmatter + sektioner, trunkerade) plus
+    öppna idéer och issues. Verktygen finns kvar för grannar/jämförelser.
+    """
     base = (
         "Du är CNS-agenten, inbäddad i ett terminal-UI för en produktportfölj. "
         "CNS äger strukturen (noder/relationer); GitHub äger uppgifter. "
         "Använd mcp__cns__*-verktygen för portföljdata och Read/Glob/Grep för kod. "
-        "Du är i LÄS-LÄGE: föreslå ändringar i text, skriv/kör inte själv."
+        "Du är i LÄS-LÄGE: föreslå ändringar i text, skriv/kör inte själv. "
+        "Svara nodfokuserat: utgå från arbetsnoden nedan; slå bara upp andra "
+        "noder när frågan kräver jämförelse eller relationer."
     )
     if not slug:
         return base
+    parts = [base]
     try:
         from scripts.md_parser import read_node
 
-        meta, _sections, _raw = read_node(slug)
+        meta, sections, _raw = read_node(slug)
         ctx = {
             k: meta.get(k)
-            for k in ("slug", "title", "kind", "stage", "status", "summary")
+            for k in ("slug", "title", "kind", "stage", "status", "summary",
+                      "part_of", "feeds", "depends_on", "tags")
+            if meta.get(k)
         }
-        return base + f"\n\nArbetsnod (kontext):\n{json.dumps(ctx, ensure_ascii=False)}"
+        parts.append(f"Arbetsnod (frontmatter):\n{json.dumps(ctx, ensure_ascii=False)}")
+        body_lines: list[str] = []
+        for heading, text in (sections or {}).items():
+            text = (text or "").strip()
+            if not text:
+                continue
+            if len(text) > SEED_SECTION_MAX:
+                text = text[:SEED_SECTION_MAX] + "\n[…trunkerad — hela via mcp__cns__get_node]"
+            body_lines.append(f"## {heading}\n{text}")
+        if body_lines:
+            parts.append("Arbetsnodens node.md-sektioner:\n" + "\n\n".join(body_lines))
     except Exception:
-        return base + f"\n\nArbetsnod: {slug}"
+        parts.append(f"Arbetsnod: {slug}")
+        return "\n\n".join(parts)
+    try:
+        from scripts.idea_inbox import list_ideas
+
+        ideas = list_ideas(status="open", slug=slug)
+        if ideas:
+            rows = [" ".join((i.get("text", "") or "").split())[:160] for i in ideas]
+            parts.append("Öppna idéer för noden:\n" + "\n".join(f"- {r}" for r in rows))
+    except Exception:
+        pass
+    try:
+        from scripts.tui.sources import open_issues_for_slug
+
+        status, issues = open_issues_for_slug(slug)
+        if issues:
+            rows = [f"- #{it.get('number', '?')} {(it.get('title') or '')[:120]}" for it in issues]
+            parts.append("Öppna issues för noden:\n" + "\n".join(rows))
+        elif status:
+            parts.append(f"Issues: {status}")
+    except Exception:
+        pass
+    return "\n\n".join(parts)
 
 
 # -- options + körning ------------------------------------------------------
