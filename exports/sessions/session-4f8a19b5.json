@@ -1,9 +1,9 @@
 {
   "id": "session-4f8a19b5",
   "created_at": "2026-06-10T20:23:05",
-  "updated_at": "2026-06-10T20:23:05",
-  "status": "running",
-  "summary": "Sammanslagning: brainstorm (städning + fundament) + operational-layer-foundation-tråden → EN konsoliderad spec.",
+  "updated_at": "2026-06-10T20:23:28",
+  "status": "done",
+  "summary": "Konsoliderad fundament-spec (slår ihop denna brainstorm med operational-layer-foundation-tråden f5e4ee3f). UTFÖRT: Spår A — städning + CLI-inkoppling, committat+pushat (ej main): Project-CNS chore/spar-a-cli-inkoppling (cns session/btw/tui-subkommandon + utf-8-säker console), cortxt chore/spar-a-rensa-doda-vyer (5 döda vyer + tomt @cortxt/ui; dashboard+landing bygger). Verifierat: dash.py + migrate_quests_to_issues.py behålls (ej döda/ej körd migrering); 7 \"döda\" moduler lever via hooks/skills. SPEC (plan ~/.claude/plans/gentle-puzzling-ladybug.md, ersätter clever-prancing-moore.md): operativa fundamentet = tvålager Roll(statisk)+Session(temporal), ref-agnostiskt, 4 steg (session actor+tvinga type+MCP-paritet → role_schema → flytta .claude/agents→roles/<slug>/role.md vänd generator → on-demand roll-projektion). Linear kopplas till GitHub via native-integration (manuellt, ingen egen sync-kod; bespoke linear.py blir ev. överflödig). ÖPPEN FRÅGA (ej blockerande): node.md↔bärare — node.md vs git-branches vs Linear/Vercel som produktgraf (\"noderna är mina branches\"); operativa lagret byggt ref-agnostiskt så det inte låses. Shopify-venture ej hett. node.md orörd per beslut.",
   "link": {
     "kind": "node",
     "ref": "agentur"
