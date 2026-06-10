@@ -1,0 +1,16 @@
+{
+  "id": "session-92e7d989",
+  "created_at": "2026-06-10T06:22:42",
+  "updated_at": "2026-06-10T06:22:42",
+  "status": "running",
+  "summary": "agent studio — dirigenten live + ekonom_tracker-koppling + startmeddelande-lösning",
+  "link": {
+    "kind": "node",
+    "ref": "agentur"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null
+}
