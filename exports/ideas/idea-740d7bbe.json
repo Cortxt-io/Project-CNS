@@ -1,0 +1,9 @@
+{
+  "id": "idea-740d7bbe",
+  "text": "RETRO-åtgärd: Skräddarsydda agenter (programledare/hr-chef m.fl.) kan inte spawnas som subagent_type mitt i en session (kräver omladdning), och programledaren producerade förvirrande halv-simulerade MCP-anrop + 4 fantom-sessioner. Klargör i programledarens prompt att den FÖRESLÅR ett session-träd när den körs headless, inte skapar det; och dokumentera att nya agenter blir tillgängliga som subagenter först efter omstart.",
+  "created_at": "2026-06-10T08:10:25",
+  "source": "chat",
+  "slug": null,
+  "session_id": null,
+  "status": "open"
+}
