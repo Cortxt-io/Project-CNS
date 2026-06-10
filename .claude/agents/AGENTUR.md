@@ -36,10 +36,10 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 | slug | titel | modell | roll | squad | status |
 |------|-------|--------|------|-------|--------|
 | `produktchef` | Produktchef | haiku-4-5 | lead | — | aktiv |
-| `produktledare-core` | Produktledare CNS-core | sonnet-4-6 | — | Foundation | skal |
-| `produktledare-dashboard` | Produktledare Dashboard | sonnet-4-6 | — | Dashboard | skal |
-| `produktledare-mcp` | Produktledare MCP-plattform | sonnet-4-6 | — | Platform | skal |
-| `produktledare-tui` | Produktledare TUI | sonnet-4-6 | — | Cockpit | skal |
+| `produktledare-core` | Produktledare CNS-core | sonnet-4-6 | — | Modellering | skal |
+| `produktledare-dashboard` | Produktledare Dashboard | sonnet-4-6 | — | Insikter | skal |
+| `produktledare-mcp` | Produktledare MCP-plattform | sonnet-4-6 | — | Integrationer | skal |
+| `produktledare-tui` | Produktledare TUI | sonnet-4-6 | — | Överblick | skal |
 
 ### Design
 
@@ -84,7 +84,7 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 | slug | titel | modell | roll | squad | status |
 |------|-------|--------|------|-------|--------|
 | `backend-lead` | Backend-lead | sonnet-4-6 | lead | — | skal |
-| `backend-utvecklare` | Backend-utvecklare | sonnet-4-6 | — | Platform | aktiv |
+| `backend-utvecklare` | Backend-utvecklare | sonnet-4-6 | — | Integrationer | aktiv |
 | `backend-utvecklare-2` | Backend-utvecklare | haiku-4-5 | — | — | skal |
 | `backend-utvecklare-3` | Backend-utvecklare | haiku-4-5 | — | — | skal |
 | `backend-utvecklare-4` | Backend-utvecklare | haiku-4-5 | — | — | skal |
@@ -100,11 +100,11 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 | slug | titel | modell | roll | squad | status |
 |------|-------|--------|------|-------|--------|
 | `frontend-lead` | Frontend-lead | sonnet-4-6 | lead | — | skal |
-| `frontend-utvecklare` | Frontend-utvecklare | sonnet-4-6 | — | Dashboard | aktiv |
+| `frontend-utvecklare` | Frontend-utvecklare | sonnet-4-6 | — | Insikter | aktiv |
 | `frontend-utvecklare-2` | Frontend-utvecklare | haiku-4-5 | — | — | skal |
 | `frontend-utvecklare-3` | Frontend-utvecklare | haiku-4-5 | — | — | skal |
-| `terminal-utvecklare` | Terminal-UI-utvecklare | sonnet-4-6 | — | Cockpit | aktiv |
-| `terminal-utvecklare-2` | Terminal-UI-utvecklare | haiku-4-5 | — | Cockpit | skal |
+| `terminal-utvecklare` | Terminal-UI-utvecklare | sonnet-4-6 | — | Överblick | aktiv |
+| `terminal-utvecklare-2` | Terminal-UI-utvecklare | haiku-4-5 | — | Överblick | skal |
 
 ### Fullstack
 
@@ -295,7 +295,7 @@ Ortogonalt mot avdelning: *vad* vi bygger (produktområde), tvärfunktionellt be
 
 | squad | medlemmar |
 |-------|-----------|
-| **Cockpit** | `terminal-utvecklare`, `terminal-utvecklare-2`, `produktledare-tui` |
-| **Dashboard** | `frontend-utvecklare`, `produktledare-dashboard` |
-| **Foundation** | `produktledare-core` |
-| **Platform** | `backend-utvecklare`, `produktledare-mcp` |
+| **Insikter** | `frontend-utvecklare`, `produktledare-dashboard` |
+| **Integrationer** | `backend-utvecklare`, `produktledare-mcp` |
+| **Modellering** | `produktledare-core` |
+| **Överblick** | `terminal-utvecklare`, `terminal-utvecklare-2`, `produktledare-tui` |

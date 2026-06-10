@@ -4,7 +4,7 @@ title: Produktledare Dashboard
 department: Produkt
 sub_department: PM
 chapter: null
-squad: Dashboard
+squad: Insikter
 lead: false
 model: claude-sonnet-4-6
 status: roster

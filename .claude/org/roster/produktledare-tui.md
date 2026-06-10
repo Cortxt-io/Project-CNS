@@ -4,7 +4,7 @@ title: Produktledare TUI
 department: Produkt
 sub_department: PM
 chapter: null
-squad: Cockpit
+squad: Överblick
 lead: false
 model: claude-sonnet-4-6
 status: roster

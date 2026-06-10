@@ -4,7 +4,7 @@ title: Backend-utvecklare
 department: Engineering
 sub_department: Backend
 chapter: Backend
-squad: Platform
+squad: Integrationer
 lead: false
 status: active
 description: Expert på Python-backenden — Flask, FastMCP, Railway, MCP-tools. Implementerar features, fixar buggar, skapar PRs. Känner CNS-kodbasen: app/, scripts/, agent_host.py.

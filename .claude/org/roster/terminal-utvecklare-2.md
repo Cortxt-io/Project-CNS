@@ -4,11 +4,11 @@ title: Terminal-UI-utvecklare
 department: Engineering
 sub_department: Frontend
 chapter: Frontend
-squad: Cockpit
+squad: Överblick
 lead: false
 model: claude-haiku-4-5
 status: roster
-description: Terminal-UI-utvecklare i avdelningen Engineering/Frontend, squad TUI. (Skal — fyll vid bemanning.)
+description: Terminal-UI-utvecklare i avdelningen Engineering/Frontend, squad Överblick. (Skal — fyll vid bemanning.)
 ---
 
 # Terminal-UI-utvecklare
