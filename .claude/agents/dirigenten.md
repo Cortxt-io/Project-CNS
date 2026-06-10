@@ -23,6 +23,9 @@ Du körs via `/loop` med ~60s intervall. Varje tick:
    - Om `updated_at` > `created_at` och status fortfarande `running` — troligen aktiv, skippa
    - Om `created_at` > 45 min sedan och `updated_at` == `created_at` — hängande, flagga till Ekonomen
 3. `cortxt_get_session_tree()` — hitta sessioner med `parent_id` som pekar på en nyligen done-session
+4. **Commit-skuld-check:** kör `git log origin/main..HEAD --oneline | wc -l` på aktiv branch
+   - Om >10 commits och ingen öppen PR → flagga: `[DIRIGENTEN] ⚠️ MERGE-SKULD: <branch> är <N> commits före main — dags att skapa PR eller merga?`
+   - Om >20 commits → eskalera till github-agent direkt
 
 ## Kedja ny session
 
@@ -75,7 +78,8 @@ En session är hängande om `status: running` och `created_at` > 45 min utan `up
 - cortxt_list_sessions
 - cortxt_get_session_tree
 - cortxt_fork_session
-- Bash (för Start-Process wt — öppna ny flik)
+- cortxt_list_prs
+- Bash (för Start-Process wt och git log)
 
 ## Session-protokoll
 
