@@ -28,7 +28,14 @@ from scripts.md_parser import (
 from scripts.xlsx_exporter import export_xlsx
 from scripts.json_exporter import export_json
 
-console = Console()
+# Tvinga utf-8 på stdout så Rich inte kraschar på cp1252-konsoler när nod-/
+# sessiondata innehåller unicode (pilar, em-dash m.m.) — samma skydd som dash.py.
+import io as _io
+
+console = Console(
+    file=_io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace"),
+    highlight=False,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -654,6 +661,169 @@ def cmd_eventstream_import(args: argparse.Namespace) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Session commands (AI-arbetspass — lokalt datalager; push sker via MCP)
+# ---------------------------------------------------------------------------
+
+def _session_link_str(s: dict) -> str:
+    link = s.get("link") or {}
+    return f"({link.get('kind', '?')}:{link.get('ref', '?')}) " if link else ""
+
+
+def cmd_session_list(args: argparse.Namespace) -> None:
+    """Lista sessioner (nyast först), valfritt filtrerade på status."""
+    from scripts.session_store import list_sessions
+
+    sessions = list_sessions(status=args.status)
+    if not sessions:
+        console.print("[dim]Inga sessioner bokförda.[/dim]")
+        return
+    for s in sessions:
+        dot = "[bold green]*[/bold green]" if s.get("status") == "running" else "[dim]-[/dim]"
+        stype = s.get("session_type") or "-"
+        summary = (s.get("summary") or "-")[:70]
+        console.print(f"{dot} [cyan]{s.get('id', '?')}[/cyan]  [dim]{stype}[/dim]  {_session_link_str(s)}{summary}")
+
+
+def cmd_session_show(args: argparse.Namespace) -> None:
+    """Visa en session i detalj (rå JSON)."""
+    from scripts.session_store import get_session
+
+    s = get_session(args.session_id)
+    if s is None:
+        console.print(f"[red]Session '{args.session_id}' hittades inte.[/red]")
+        sys.exit(1)
+    console.print_json(data=s)
+
+
+def cmd_session_fork(args: argparse.Namespace) -> None:
+    """Forka en barn-session under en förälder (bokför i sessionsträdet)."""
+    from scripts.session_store import fork_session
+
+    try:
+        s = fork_session(args.parent_id, summary=args.summary or "", fork_name=args.name)
+    except FileNotFoundError as exc:
+        console.print(f"[red]{exc}[/red]")
+        sys.exit(1)
+    console.print(f"[green]Forkade session [cyan]{s.get('id')}[/cyan] under {args.parent_id}.[/green]")
+
+
+def cmd_session_tree(args: argparse.Namespace) -> None:
+    """Visa sessionsträdet (forks-under-forks)."""
+    from scripts.session_store import tree
+
+    result = tree(args.root_id)
+    roots = ([result] if result else []) if args.root_id is not None else (result or [])
+    if not roots:
+        console.print("[dim]Inga sessioner.[/dim]")
+        return
+
+    def render(node: dict, depth: int = 0) -> None:
+        dot = "[bold green]*[/bold green]" if node.get("status") == "running" else "[dim]-[/dim]"
+        name = node.get("fork_name") or node.get("id", "?")
+        summary = (node.get("summary") or "")[:55]
+        console.print(f"{'  ' * depth}{dot} [cyan]{name}[/cyan] [dim]{summary}[/dim]")
+        for kid in node.get("children", []):
+            render(kid, depth + 1)
+
+    for r in roots:
+        render(r)
+
+
+def cmd_session_set_active(args: argparse.Namespace) -> None:
+    """Sätt lokal aktiv sessionstyp-markör (läses av router-hooken)."""
+    from scripts.session_store import set_active
+
+    try:
+        state = set_active(args.session_type, session_id=args.session_id)
+    except Exception as exc:
+        console.print(f"[red]{exc}[/red]")
+        sys.exit(1)
+    console.print(f"[green]Aktiv sessionstyp: [bold]{state['type']}[/bold][/green]")
+
+
+def cmd_session_get_active(args: argparse.Namespace) -> None:
+    """Visa aktiv sessionstyp-markör."""
+    from scripts.session_store import get_active
+
+    state = get_active()
+    if not state:
+        console.print("[dim]Ingen aktiv sessionstyp satt.[/dim]")
+        return
+    console.print(
+        f"[bold]{state.get('type')}[/bold]  "
+        f"[dim]session_id={state.get('session_id')}  set_at={state.get('set_at')}[/dim]"
+    )
+
+
+def cmd_session_clear_active(args: argparse.Namespace) -> None:
+    """Rensa aktiv sessionstyp-markör."""
+    from scripts.session_store import clear_active
+
+    clear_active()
+    console.print("[dim]Aktiv sessionstyp rensad.[/dim]")
+
+
+# ---------------------------------------------------------------------------
+# btw commands (personlig sessionslogg — lokalt datalager; push via MCP)
+# ---------------------------------------------------------------------------
+
+def cmd_btw_list(args: argparse.Namespace) -> None:
+    """Lista btw-sessionsloggar (senast uppdaterad först)."""
+    from scripts.btw_log import list_sessions
+
+    sessions = list_sessions()
+    if not sessions:
+        console.print("[dim]Inga btw-loggar.[/dim]")
+        return
+    for s in sessions:
+        n = len(s.get("asides", []))
+        console.print(
+            f"[cyan]{s.get('session_id', '?')}[/cyan]  "
+            f"[dim]{n} asides  {s.get('updated_at', '')}[/dim]"
+        )
+
+
+def cmd_btw_show(args: argparse.Namespace) -> None:
+    """Visa asides i en btw-session."""
+    from scripts.btw_log import get_session
+
+    s = get_session(args.session_id)
+    if s is None:
+        console.print(f"[red]btw-session '{args.session_id}' hittades inte.[/red]")
+        sys.exit(1)
+    asides = s.get("asides", [])
+    if not asides:
+        console.print("[dim]Inga asides.[/dim]")
+        return
+    for a in asides:
+        fork = a.get("fork") or ""
+        console.print(f"[dim]{a.get('ts', '')}[/dim] [yellow]{fork}[/yellow] {a.get('text', '')}")
+
+
+def cmd_btw_link(args: argparse.Namespace) -> None:
+    """Soft-länka en btw-session till quest och/eller idé."""
+    from scripts.btw_log import link_session
+
+    try:
+        link_session(args.session_id, quest_id=args.quest, idea_id=args.idea)
+    except ValueError as exc:
+        console.print(f"[red]{exc}[/red]")
+        sys.exit(1)
+    console.print(f"[green]Länkade btw-session {args.session_id}.[/green]")
+
+
+# ---------------------------------------------------------------------------
+# TUI command (lazy import — textual laddas inte vid varje cns-anrop)
+# ---------------------------------------------------------------------------
+
+def cmd_tui(args: argparse.Namespace) -> None:
+    """Starta den interaktiva terminal-överblicken (Textual)."""
+    from scripts.tui.app import main as tui_main
+
+    tui_main()
+
+
+# ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
 
@@ -871,6 +1041,60 @@ def main() -> None:
         help="Delete the import file after successful import",
     )
     sp_es_import.set_defaults(func=cmd_eventstream_import)
+
+    # cns session {list|show|fork|tree|set-active|get-active|clear-active}
+    sp_session = subparsers.add_parser("session", help="AI-arbetspass (sessioner) — lokalt datalager")
+    session_sub = sp_session.add_subparsers(dest="session_command")
+
+    sp_s_list = session_sub.add_parser("list", help="Lista sessioner (nyast först)")
+    sp_s_list.add_argument("--status", default=None, help="Filtrera på status, t.ex. running/done")
+    sp_s_list.set_defaults(func=cmd_session_list)
+
+    sp_s_show = session_sub.add_parser("show", help="Visa en session i detalj")
+    sp_s_show.add_argument("session_id", help="Sessions-id")
+    sp_s_show.set_defaults(func=cmd_session_show)
+
+    sp_s_fork = session_sub.add_parser("fork", help="Forka en barn-session under en förälder")
+    sp_s_fork.add_argument("parent_id", help="Förälderns sessions-id")
+    sp_s_fork.add_argument("--summary", default=None, help="Sammanfattning för barn-sessionen")
+    sp_s_fork.add_argument("--name", default=None, help="Fork-namn (t.ex. agent-slug)")
+    sp_s_fork.set_defaults(func=cmd_session_fork)
+
+    sp_s_tree = session_sub.add_parser("tree", help="Visa sessionsträdet")
+    sp_s_tree.add_argument("root_id", nargs="?", default=None, help="Valfri rot (annars alla rötter)")
+    sp_s_tree.set_defaults(func=cmd_session_tree)
+
+    sp_s_seta = session_sub.add_parser("set-active", help="Sätt lokal aktiv sessionstyp")
+    sp_s_seta.add_argument("session_type", help="brainstorm|spec|bygg|triage|review|verktygsladan|retro")
+    sp_s_seta.add_argument("--session-id", dest="session_id", default=None, help="Koppla markören till ett sessions-id")
+    sp_s_seta.set_defaults(func=cmd_session_set_active)
+
+    sp_s_geta = session_sub.add_parser("get-active", help="Visa aktiv sessionstyp")
+    sp_s_geta.set_defaults(func=cmd_session_get_active)
+
+    sp_s_clra = session_sub.add_parser("clear-active", help="Rensa aktiv sessionstyp")
+    sp_s_clra.set_defaults(func=cmd_session_clear_active)
+
+    # cns btw {list|show|link}
+    sp_btw = subparsers.add_parser("btw", help="Personlig btw-sessionslogg — lokalt datalager")
+    btw_sub = sp_btw.add_subparsers(dest="btw_command")
+
+    sp_b_list = btw_sub.add_parser("list", help="Lista btw-loggar")
+    sp_b_list.set_defaults(func=cmd_btw_list)
+
+    sp_b_show = btw_sub.add_parser("show", help="Visa asides i en btw-session")
+    sp_b_show.add_argument("session_id", help="Sessions-id")
+    sp_b_show.set_defaults(func=cmd_btw_show)
+
+    sp_b_link = btw_sub.add_parser("link", help="Soft-länka en btw-session till quest/idé")
+    sp_b_link.add_argument("session_id", help="Sessions-id")
+    sp_b_link.add_argument("--quest", default=None, help="Quest-id att länka till")
+    sp_b_link.add_argument("--idea", default=None, help="Idé-id att länka till")
+    sp_b_link.set_defaults(func=cmd_btw_link)
+
+    # cns tui
+    sp_tui = subparsers.add_parser("tui", help="Starta interaktiv terminal-överblick (Textual)")
+    sp_tui.set_defaults(func=cmd_tui)
 
     args = parser.parse_args()
 
