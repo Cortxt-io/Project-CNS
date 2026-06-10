@@ -41,6 +41,7 @@ MODEL_TIER: dict[str, str] = {
     "tranaren": "claude-sonnet-4-6",
     "teamleader": "claude-opus-4-8",
     "dirigenten": "claude-haiku-4-5",
+    "session-arkitekten": "claude-sonnet-4-6",
 }
 
 ROUTING_RULES: list[tuple[str, str, str]] = [
@@ -129,6 +130,13 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
         "kontext-agent",
         "enkel lookup/status",
     ),
+    # Session-arkitekten — designa session-träd och planera arbetsstruktur
+    (
+        r"\b(session.?arkitekt|designa sessions?|session.?plan|session.?tr[aä]d"
+        r"|planera sessions?|dela upp i sessions?|sessions.?struktur|arkitektera arbete)\b",
+        "session-arkitekten",
+        "session-design/arkitektur",
+    ),
     # Dirigenten — sessionkedning och daemon-övervakning
     (
         r"\b(dirig(?:era|enten?)|kedj(?:a|ning)|n[aä]sta session|vakt(?:a|ar)|daemon"
@@ -170,6 +178,7 @@ TYPE_DIRECTIVES: dict[str, str] = {
     "bygg": "exekveringsläge — spec först, hela agenturen via teamleader, egen branch",
     "triage": "bokföringsläge — resolva/promota/klustra idéer proaktivt, rör ingen kod",
     "review": "granskningsläge — read-first, konvergera slutsatser, fråga före main-merge",
+    "verktygsladan": "verktygslådeläge — kalla @hr-chefen före ny agent, @tränaren för promptförbättring, ingen produktionsdeploy",
 }
 
 # Signaler på att prompten hör hemma i en ANNAN sessionstyp än den aktiva.
@@ -180,6 +189,7 @@ TYPE_SIGNALS: dict[str, str] = {
     "brainstorm": r"\b(brainstorm|ny id[eé]|t[aä]nka h[oö]gt|spåna|vad ska vi bygga|riktningsfr[aå]ga)\b",
     "triage": r"\b(triagera|st[aä]da inkorgen|resolva id[eé]er|rensa id[eé]er|g[aå] igenom id[eé]erna)\b",
     "review": r"\b(granska (?:pr|branch|koden)|konvergera|merga slutsatser|review.?session)\b",
+    "verktygsladan": r"\b(verktygsl[aå]d(?:an?)|ny agent|skill|hook|smedjan|agent.?studio|skills.?studio)\b",
 }
 
 
