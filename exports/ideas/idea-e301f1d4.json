@@ -5,5 +5,8 @@
   "source": "chat",
   "slug": "agentur",
   "session_id": "session-c3119c20",
-  "status": "open"
+  "status": "resolved",
+  "resolution": "done",
+  "resolution_reason": "Bemannade alla 4 obemannade avdelnings-leads: teknisk-direktor (Ledning|exec, opus), plattformschef (Platform|lead), driftchef (Drift|lead), kommunikationschef (Kommunikation|lead) — alla sonnet utom CTO. Författade mot bemanningsmatrisens celler + qa-lead-mallen, passerade validate_agent, aktiverade via bemanna.py (status active, flyttade till .claude/agents/, registret 26 aktiva). validate_org 0 ERROR. R3-eskaleringen i lead_policy stängd: de 16 ledarlösa poddarna rapporterar nu till aktiva targets i stället för provisoriskt till operativ-chef.",
+  "resolved_at": "2026-06-10T18:58:45"
 }
