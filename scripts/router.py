@@ -44,9 +44,10 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
     # Org Design — strukturens korrekthet (disciplin vs produktområde, manifest, konsekvens)
     (
         r"\b(org.?struktur|organisationsstruktur|org.?arkitekt|avdelning(?:ar|en)?|chapter"
-        r"|sub.?department|roll.?konsekvens|manifest|omorganisera|validate.?org|taxonomi)\b",
+        r"|sub.?department|roll.?konsekvens|manifest|omorganisera|validate.?org|taxonomi"
+        r"|org.?underh[aå]ll|bemanningsbeh|bemanningsmatris|arketyp)\b",
         "org-arkitekt",
-        "org-struktur/konsekvens",
+        "org-struktur/konsekvens/underhåll",
     ),
     # Agile Coach — team topologies, squads, arbetssätt
     (

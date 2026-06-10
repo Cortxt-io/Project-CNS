@@ -101,6 +101,19 @@ MCP = vertikal integration (agent → tools). A2A = horisontell integration (age
 
 ---
 
+## Onboarding-pelarna (bemanning av en ny agent)
+
+När en roll bemannas (`/bemanna`-skillen) gäller fyra pelare, grindade av `scripts/validate_agent.py`:
+
+1. **Systemprompt = DNA.** Numrerat task-flow (viktigast), skarpa gränser, "verifiera X innan
+   nästa steg", rollkonfusionsskydd (deklarera åtgärder före exekvering). Lägg ej manualer i
+   prompten; övergeneralisera/överspecificera inte.
+2. **Verktyg = least privilege (Zero Trust).** Minsta nödvändiga MCP-verktyg, read-first,
+   destruktiv-op-skydd, minimal kontext-payload.
+3. **Eval + red-team.** Ett konkret mätbart testuppdrag; adversariell self-check; red-team mot
+   prompt-injection / instruction-override / rollöverskridande före aktivering.
+4. **Gate 0 (anti-bloat):** behövs rollen ENS aktiv? 2–5 vassa slår 20 smala; håll aktiva 7–10.
+
 ## Källor
 
 - [A2A Protocol — Zylos Research](https://zylos.ai/research/2026-05-16-agent-to-agent-communication-protocols-a2a-mcp/)
@@ -114,3 +127,7 @@ MCP = vertikal integration (agent → tools). A2A = horisontell integration (age
 - [Survey of Agent Interoperability Protocols — arXiv](https://arxiv.org/html/2505.02279v1)
 - [CAMEL Framework — GitHub](https://github.com/camel-ai/camel)
 - [OpenAI Swarm — GitHub](https://github.com/openai/swarm)
+- [System Prompts shaping AI agents — Maxim](https://www.getmaxim.ai/articles/the-importance-of-system-prompts-in-shaping-ai-agent-responses/)
+- [Least Privilege for LLM Agents — Medium](https://medium.com/@michael.hannecke/least-privilege-for-llm-agents-applying-security-principles-to-model-selection-57760accb041)
+- [LLM Guardrails Best Practices — Datadog](https://www.datadoghq.com/blog/llm-guardrails-best-practices/)
+- [Evaluation and Benchmarking of LLM Agents: A Survey — arXiv](https://arxiv.org/html/2507.21504v1)

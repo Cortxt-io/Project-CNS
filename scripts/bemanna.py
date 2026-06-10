@@ -20,7 +20,7 @@ MANIFEST = ROOT / ".claude" / "org" / "manifest.json"
 SKELETON_MARKERS = ("(TODO", "Skal —", "Skal-roll")
 
 
-def bemanna(slug: str) -> int:
+def bemanna(slug: str, force: bool = False) -> int:
     src = ROSTER_DIR / f"{slug}.md"
     dst = AGENTS_DIR / f"{slug}.md"
     if not src.exists():
@@ -30,10 +30,16 @@ def bemanna(slug: str) -> int:
         print(f"FEL: '{slug}' finns redan som aktiv agent i {AGENTS_DIR}")
         return 1
 
+    # Kvalitetsgrind: en halvfärdig agent får inte aktiveras (om inte --force)
+    gate = subprocess.run(
+        [sys.executable, str(ROOT / "scripts" / "validate_agent.py"), slug]
+    )
+    if gate.returncode != 0 and not force:
+        print(f"\nBLOCKERAD: {slug} klarar inte kvalitetsgrinden (validate_agent). "
+              f"Fyll kroppen enligt /bemanna-skillen, eller kör med --force.")
+        return 1
+
     text = src.read_text(encoding="utf-8")
-    if any(m in text for m in SKELETON_MARKERS):
-        print(f"VARNING: {slug} har kvar skelettmarkörer (TODO/Skal) — "
-              f"kroppen bör fyllas (roll/verktyg/eval) före bemanning. Fortsätter ändå.")
 
     # 1. status: roster -> active i frontmatter
     text = re.sub(r"^status:.*$", "status: active", text, count=1, flags=re.MULTILINE)
@@ -62,10 +68,12 @@ def bemanna(slug: str) -> int:
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) != 1:
-        print("Användning: python scripts/bemanna.py <slug>")
+    force = "--force" in argv
+    args = [a for a in argv if a != "--force"]
+    if len(args) != 1:
+        print("Användning: python scripts/bemanna.py <slug> [--force]")
         return 2
-    return bemanna(argv[0])
+    return bemanna(args[0], force=force)
 
 
 if __name__ == "__main__":

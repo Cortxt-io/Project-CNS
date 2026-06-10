@@ -22,6 +22,8 @@ Skiljer sig från `review` (som granskar produktkod/PR) — retro granskar arbet
   prompter behöver finslipas (lämnar patch-förslag, implementerar inte här).
 - **Read-first:** retron muterar inte kod. Den producerar slutsatser och åtgärdsförslag.
 - Konkreta åtgärder fångas som idéer (`cortxt_capture_idea`) eller issues — inte löst prat.
+- **Stående punkt — @org-arkitekt kör `/org-underhall`:** hänger bemanningsunderlaget med
+  (matris-täckning, bemanna-pelarna, validate_agent-kriterier) mot hur agenturen ser ut nu?
 
 ## Underlag att läsa
 

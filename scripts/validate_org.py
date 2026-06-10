@@ -42,6 +42,7 @@ def main() -> int:
     data = json.loads(MANIFEST.read_text(encoding="utf-8"))
 
     seen_slugs: dict[str, str] = {}
+    dept_levels: set[str] = set()
     manifest_count = 0
     active_count = 0
     for dept, subs in data["departments"].items():
@@ -62,6 +63,8 @@ def main() -> int:
                     errors.append(f"{slug}: okänd modell '{model}' (ej {MODELS})")
                 if lead:
                     leads += 1
+                level = "exec" if dept == "Ledning" else ("lead" if lead else "ic")
+                dept_levels.add(f"{dept}|{level}")
                 if active:
                     active_count += 1
                     if not (AGENTS_DIR / f"{slug}.md").exists():
@@ -77,6 +80,19 @@ def main() -> int:
         for m in members:
             if m not in seen_slugs:
                 errors.append(f"Squad '{squad}': medlem '{m}' finns inte som roll i manifest")
+
+    # Bemanningsmatris-täckning: varje (department|nivå) som finns i manifest ska ha en cell
+    matris_path = ROOT / ".claude" / "org" / "bemanning_matris.json"
+    if matris_path.exists():
+        cells = set(json.loads(matris_path.read_text(encoding="utf-8")).get("cells", {}))
+        for key in sorted(dept_levels):
+            if key not in cells:
+                warns.append(f"Bemanningsmatris saknar cell '{key}' — kör org-underhall (org-arkitekt)")
+        for key in sorted(cells):
+            if key not in dept_levels:
+                warns.append(f"Bemanningsmatris har förlegad cell '{key}' (ingen sådan roll finns)")
+    else:
+        warns.append("bemanning_matris.json saknas — /bemanna har ingen baslinje per nivå/department")
 
     # Föräldralösa aktiva agentfiler (i .claude/agents men ej i manifest)
     for path in AGENTS_DIR.glob("*.md"):

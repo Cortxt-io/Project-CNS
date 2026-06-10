@@ -1,0 +1,187 @@
+{
+  "_doc": "Bemanningsmatris: per (department|nivå) en mall som /bemanna använder som baslinje. Nivå härleds: exec=Ledning, lead=lead:true, ic=övriga. Org-arkitekten äger; validate_org grindar täckning mot manifest. Avvik från cellen bara med motivering.",
+  "cells": {
+    "Ledning|exec": {
+      "model": "claude-opus-4-8",
+      "tool_families": [
+        "sessions",
+        "quests",
+        "projects"
+      ],
+      "guardrails": "strategisk; läser brett, muterar lite; delegerar exekvering; beslut förbereds, Rikard godkänner",
+      "eval_focus": "koherens och rätt strategiskt beslut, inte enskild leverans",
+      "prompt_focus": "operating model + delegering; deklarera avsedda åtgärder före exekvering"
+    },
+    "Produkt|lead": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "ideas",
+        "issues",
+        "quests"
+      ],
+      "guardrails": "äger roadmap/prioritering; delegerar byggande; muterar ej kod",
+      "eval_focus": "rätt prioritering och vad/varför, inte hur",
+      "prompt_focus": "produktomdöme; håll bred nog att generalisera"
+    },
+    "Produkt|ic": {
+      "model": "claude-haiku-4-5",
+      "tool_families": [
+        "ideas",
+        "issues"
+      ],
+      "guardrails": "smal produktyta; read-first",
+      "eval_focus": "konkret leverans inom sitt område",
+      "prompt_focus": "smalt fokus, numrerat task-flow"
+    },
+    "R&D|lead": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "wiki",
+        "ideas"
+      ],
+      "guardrails": "verifiera mot ≥2 källor; skriver findings till wiki, ej produktkod",
+      "eval_focus": "källbelagda findings, inte åsikter",
+      "prompt_focus": "research-stringens; adversariell self-check"
+    },
+    "R&D|ic": {
+      "model": "claude-haiku-4-5",
+      "tool_families": [
+        "wiki"
+      ],
+      "guardrails": "read/fetch-first; ingen mutation av nodmodellen",
+      "eval_focus": "korrekta, verifierade fynd",
+      "prompt_focus": "faktainsamling, smalt"
+    },
+    "Engineering|ic": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "issues",
+        "prs"
+      ],
+      "guardrails": "egen branch, aldrig direkt main; skapar PR; bekräfta före destruktiv git",
+      "eval_focus": "korrekt kod med test; återanvänder befintligt",
+      "prompt_focus": "implementera mot spec; smalt, numrerat flöde"
+    },
+    "Platform|lead": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "actions",
+        "prs"
+      ],
+      "guardrails": "intern infra; read-first; PR-protokoll",
+      "eval_focus": "stabil automation/hook som inte kraschar sessionen",
+      "prompt_focus": "plattformsomdöme; isolering mot datalagret"
+    },
+    "Platform|ic": {
+      "model": "claude-haiku-4-5",
+      "tool_families": [
+        "actions"
+      ],
+      "guardrails": "read-first; bekräfta destruktivt; crash-proof hooks",
+      "eval_focus": "fungerande, idempotent script/hook",
+      "prompt_focus": "smalt automationsfokus"
+    },
+    "People|lead": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "sessions"
+      ],
+      "guardrails": "validerar individer/struktur; muterar ej kod utan flöde",
+      "eval_focus": "komplett inventering/validering, inga luckor",
+      "prompt_focus": "omdöme om roller och behov"
+    },
+    "People|ic": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "sessions"
+      ],
+      "guardrails": "read-first; stödjande, ej beslutande",
+      "eval_focus": "korrekt onboarding-/kompetensstöd",
+      "prompt_focus": "stödjande, checklistedrivet"
+    },
+    "Program|lead": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "sessions"
+      ],
+      "guardrails": "orkestrerar pass; muterar ej kod; max 5 sessioner/plan",
+      "eval_focus": "rätt session-träd och beroenden",
+      "prompt_focus": "planering/koordinering; lämnar exekvering till andra"
+    },
+    "Program|ic": {
+      "model": "claude-haiku-4-5",
+      "tool_families": [
+        "sessions"
+      ],
+      "guardrails": "read-first daemon; muterar aldrig session-trädet; eskalerar hängande",
+      "eval_focus": "korrekt kedjning/rapport utan tyst mutation",
+      "prompt_focus": "regelbaserad bevakning, inget omdöme om innehåll"
+    },
+    "Drift|lead": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "actions",
+        "sessions"
+      ],
+      "guardrails": "incident read-first; bekräfta destruktivt; släck först, dokumentera sen",
+      "eval_focus": "rätt incident-respons och rotorsak",
+      "prompt_focus": "lägesbild → beslut; lugnt under tryck"
+    },
+    "Drift|ic": {
+      "model": "claude-haiku-4-5",
+      "tool_families": [
+        "sessions"
+      ],
+      "guardrails": "read-first; observerar och rapporterar, agerar ej",
+      "eval_focus": "korrekt nuläge/städförslag",
+      "prompt_focus": "observera + rapportera, snabbt"
+    },
+    "Ekonomi|lead": {
+      "model": "claude-haiku-4-5",
+      "tool_families": [
+        "sessions"
+      ],
+      "guardrails": "läser metadata; muterar aldrig; stoppar inte, rekommenderar",
+      "eval_focus": "grön/gul/röd med konkret observation",
+      "prompt_focus": "kostnadsanalys, max 5 rader, relativa modellkostnader"
+    },
+    "Ekonomi|ic": {
+      "model": "claude-haiku-4-5",
+      "tool_families": [
+        "sessions"
+      ],
+      "guardrails": "read-only",
+      "eval_focus": "korrekt estimat med tier-uppdelning",
+      "prompt_focus": "mekanisk uppskattning"
+    },
+    "Kommunikation|lead": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "wiki"
+      ],
+      "guardrails": "GitHub = sanning; uppdaterar stale termer",
+      "eval_focus": "korrekt, aktuell, läsbar dokumentation",
+      "prompt_focus": "tydlighet och struktur"
+    },
+    "Kommunikation|ic": {
+      "model": "claude-haiku-4-5",
+      "tool_families": [
+        "wiki"
+      ],
+      "guardrails": "read + write wiki; rör ej produktkod",
+      "eval_focus": "korrekt enskild sida",
+      "prompt_focus": "skrivfokus, smalt"
+    },
+    "Engineering|lead": {
+      "model": "claude-sonnet-4-6",
+      "tool_families": [
+        "issues",
+        "prs",
+        "actions"
+      ],
+      "guardrails": "egen branch, aldrig main; PR-protokoll; koordinerar disciplinen",
+      "eval_focus": "styrde teamet rätt; spec före kod",
+      "prompt_focus": "delegering + teknisk riktning; deklarera åtgärder före exekvering"
+    }
+  }
+}
