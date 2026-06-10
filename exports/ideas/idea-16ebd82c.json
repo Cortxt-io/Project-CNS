@@ -5,5 +5,8 @@
   "source": "chat",
   "slug": "agentur",
   "session_id": null,
-  "status": "open"
+  "status": "resolved",
+  "resolution": "done",
+  "resolution_reason": "Byggt: spec-passet är nu en sjunde sessionstyp mellan triage och bygg. Profil sessions/profiles/spec.md (produktchef definierar vad/varför + acceptanskriterier, losningsarkitekt skissar hur + risker, ingen kod), inkopplat i VALID_SESSION_TYPES (session_store.py), router.py TYPE_DIRECTIVES + TYPE_SIGNALS, recommend.py (spec-rek för färska quests) och CLAUDE.md.",
+  "resolved_at": "2026-06-10T18:53:09"
 }
