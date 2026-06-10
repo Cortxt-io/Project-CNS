@@ -42,6 +42,7 @@ MODEL_TIER: dict[str, str] = {
     "teamleader": "claude-opus-4-8",
     "dirigenten": "claude-haiku-4-5",
     "session-arkitekten": "claude-sonnet-4-6",
+    "uppfinnaren": "claude-sonnet-4-6",
 }
 
 ROUTING_RULES: list[tuple[str, str, str]] = [
@@ -115,6 +116,13 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
         r"|cron\b|batch|pipeline\b|dash\.py|agent_host)\b",
         "scripts-agent",
         "scripts/automation",
+    ),
+    # Uppfinnaren — teknisk design och skissning (innan teamleader exekverar)
+    (
+        r"\b(uppfinn(?:a|aren?|ing)|teknisk skiss|designa l[oö]sning|arkitektera"
+        r"|hur ska vi bygga|v[aä]lj approach|skissa (?:l[oö]sning|arkitektur|design))\b",
+        "uppfinnaren",
+        "teknisk design/skiss",
     ),
     # Planering och orchestration (multi-step, komplex)
     (
