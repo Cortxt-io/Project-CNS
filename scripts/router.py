@@ -209,6 +209,7 @@ TYPE_DIRECTIVES: dict[str, str] = {
     "triage": "bokföringsläge — resolva/promota/klustra idéer proaktivt, rör ingen kod",
     "review": "granskningsläge — read-first, konvergera slutsatser, fråga före main-merge",
     "verktygsladan": "verktygslådeläge — kalla @hr-chef före ny agent, @kompetensutvecklare för promptförbättring, ingen produktionsdeploy",
+    "retro": "retroläge — granska agenturens prestanda (ej produkt); kalla @ekonomichef + @hr-chef + @kompetensutvecklare, read-first, fånga åtgärder som idéer",
 }
 
 # Signaler på att prompten hör hemma i en ANNAN sessionstyp än den aktiva.
@@ -220,6 +221,7 @@ TYPE_SIGNALS: dict[str, str] = {
     "triage": r"\b(triagera|st[aä]da inkorgen|resolva id[eé]er|rensa id[eé]er|g[aå] igenom id[eé]erna)\b",
     "review": r"\b(granska (?:pr|branch|koden)|konvergera|merga slutsatser|review.?session)\b",
     "verktygsladan": r"\b(verktygsl[aå]d(?:an?)|ny agent|skill|hook|smedjan|agent.?studio|skills.?studio)\b",
+    "retro": r"\b(retro|retrospektiv|hur (?:gick|presterade) (?:vi|agenturen)|utv[aä]rdera arbetss[aä]ttet|agenturens prestanda)\b",
 }
 
 
