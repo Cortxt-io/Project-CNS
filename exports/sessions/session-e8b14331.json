@@ -1,0 +1,16 @@
+{
+  "id": "session-e8b14331",
+  "created_at": "2026-06-10T20:25:02",
+  "updated_at": "2026-06-10T20:25:02",
+  "status": "running",
+  "summary": "Konsoliderad fundament-spec — slår ihop denna brainstorm-session in i den samlade operational-layer-sessionen. Full slutsats nedan vid done.",
+  "link": {
+    "kind": "node",
+    "ref": "agentur"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": "session-c4f4f7fb",
+  "fork_name": "fundament-konsolidering",
+  "type": null
+}
