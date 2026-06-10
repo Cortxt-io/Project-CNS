@@ -208,6 +208,7 @@ MIN_PROMPT_LEN = 10
 # satt av /session-skillen). Håller agenturen i rätt läge hela passet.
 TYPE_DIRECTIVES: dict[str, str] = {
     "brainstorm": "dialogläge — följdfrågor i text, fånga idéer, exekvera INTE",
+    "spec": "definitionsläge — @produktchef sätter vad/varför + acceptanskriterier, @losningsarkitekt skissar hur + risker; ingen kod, output = granskningsbar spec som bygg-passet exekverar mot",
     "bygg": "exekveringsläge — spec först, hela agenturen via operativ-chef, egen branch",
     "triage": "bokföringsläge — resolva/promota/klustra idéer proaktivt, rör ingen kod",
     "review": "granskningsläge — read-first, konvergera slutsatser, fråga före main-merge",
@@ -221,6 +222,7 @@ TYPE_DIRECTIVES: dict[str, str] = {
 TYPE_SIGNALS: dict[str, str] = {
     "bygg": r"\b(nu bygger vi|implementera|skriv koden|b[oö]rja koda|godk[aä]nd spec|k[oö]r p[aå] planen)\b",
     "brainstorm": r"\b(brainstorm|ny id[eé]|t[aä]nka h[oö]gt|spåna|vad ska vi bygga|riktningsfr[aå]ga)\b",
+    "spec": r"\b(spec(?:a|ificera|en|.?f[oö]rst)?|definiera kravet|acceptanskriterier|hur ska vi bygga|skissa l[oö]sningen)\b",
     "triage": r"\b(triagera|st[aä]da inkorgen|resolva id[eé]er|rensa id[eé]er|g[aå] igenom id[eé]erna)\b",
     "review": r"\b(granska (?:pr|branch|koden)|konvergera|merga slutsatser|review.?session)\b",
     "verktygsladan": r"\b(verktygsl[aå]d(?:an?)|ny agent|skill|hook|smedjan|agent.?studio|skills.?studio)\b",

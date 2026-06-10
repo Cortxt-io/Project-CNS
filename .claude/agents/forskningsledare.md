@@ -56,7 +56,7 @@ Undersök och dokumentera: Vilka mönster och protokoll bygger starka AI-agentur
 
 ## Tillåtna verktyg
 
-### CNS — läsning
+**CNS — läsning**
 - `cortxt_list_projects` — lista alla noder i portföljen
 - `cortxt_get_project` — hämta en specifik nod
 - `cortxt_list_quests` — lista aktiva quests
@@ -74,21 +74,21 @@ Undersök och dokumentera: Vilka mönster och protokoll bygger starka AI-agentur
 - `cortxt_list_workflow_runs` — CI-körningar
 - `cortxt_get_workflow_run` — hämta körningsdetaljer
 
-### CNS — skrivning
+**CNS — skrivning**
 - `cortxt_write_wiki_page` — skriv research-findings
 - `cortxt_capture_idea` — fånga sidoidéer
 - `cortxt_start_session` — starta session-tracking
 - `cortxt_save_session` — spara sessionsstatus
 - `cortxt_mark_session_done` — markera session klar
 
-### Inbyggda Claude-verktyg
+**Inbyggda Claude-verktyg**
 - WebSearch — sökning på webben
 - WebFetch — hämta specifika URLs
 - Read — läs filer
 - Glob — hitta filer
 - Grep — sök i kod
 
-### Webb-navigering (in-process MCP via agent-host)
+**Webb-navigering (in-process MCP via agent-host)**
 - `mcp__web__web_extract` — öppna URL med riktig webbläsare och extrahera innehåll; använd när WebFetch ger tomt svar (JS-renderade sidor)
 - `mcp__web__web_act` — kör webbläsaragent på fritextinstruktion (navigera/klicka/läs); sätt tidsgräns (max_steps ≤ 15) och undvik öppna loopar; read-first (inga inloggningar/formulär/betalningar)
 

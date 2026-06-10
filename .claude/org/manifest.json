@@ -4,7 +4,7 @@
     "Ledning": {
       "Exec": [
         ["operativ-chef", "Operativ chef (COO)", "opus", true, true],
-        ["teknisk-direktor", "Teknisk direktör (CTO)", "opus", true, false],
+        ["teknisk-direktor", "Teknisk direktör (CTO)", "opus", true, true],
         ["produktdirektor", "Produktdirektör (CPO)", "opus", true, false],
         ["stabschef", "Stabschef (Chief of Staff)", "sonnet", true, true],
         ["strategichef", "Strategichef", "opus", true, false]
@@ -83,7 +83,7 @@
     },
     "Platform": {
       "Infra": [
-        ["plattformschef", "Plattformschef", "sonnet", true, false],
+        ["plattformschef", "Plattformschef", "sonnet", true, true],
         ["plattformsingenjor", "Plattformsingenjör", "sonnet", false, true],
         ["plattformsingenjor-2", "Plattformsingenjör", "haiku", false, false]
       ],
@@ -133,7 +133,7 @@
     },
     "Drift": {
       "SRE": [
-        ["driftchef", "Driftchef", "sonnet", true, false],
+        ["driftchef", "Driftchef", "sonnet", true, true],
         ["sre-ingenjor", "SRE-ingenjör", "sonnet", false, false],
         ["sre-ingenjor-2", "SRE-ingenjör", "haiku", false, false]
       ],
@@ -166,7 +166,7 @@
         ["community-ansvarig", "Community-ansvarig", "haiku", false, false]
       ],
       "Docs": [
-        ["kommunikationschef", "Kommunikationschef", "sonnet", true, false],
+        ["kommunikationschef", "Kommunikationschef", "sonnet", true, true],
         ["teknisk-skribent", "Teknisk skribent", "sonnet", false, true],
         ["teknisk-skribent-2", "Teknisk skribent", "haiku", false, false]
       ],

@@ -37,7 +37,7 @@ VALID_SOURCES = {"chat", "code"}
 
 # Standardiserade sessionstyper — profiler i sessions/profiles/<typ>.md.
 # Valfritt fält: None på gamla poster och pass utan uttalad typ.
-VALID_SESSION_TYPES = {"brainstorm", "bygg", "triage", "review", "verktygsladan", "retro"}
+VALID_SESSION_TYPES = {"brainstorm", "spec", "bygg", "triage", "review", "verktygsladan", "retro"}
 
 # Lokal markör för aktiv sessionstyp — läses av router-hooken varje prompt,
 # skrivs av /session-skillen. Sidofil, inte en session-post: hooken behöver
