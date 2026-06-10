@@ -34,6 +34,13 @@ except Exception:
     DEPARTMENT: dict[str, str] = {}
 
 ROUTING_RULES: list[tuple[str, str, str]] = [
+    # Bemanning — aktivera en roster-roll, rekrytering/onboarding (hr-chef äger)
+    (
+        r"\b(bemanna|bemanning|aktivera (?:roll|agent|en roll)|rekrytera|onboard"
+        r"|fyll rollen|g[oö]r rollen k[oö]rbar)\b",
+        "hr-chef",
+        "bemanning/aktivering av roll",
+    ),
     # Org Design — strukturens korrekthet (disciplin vs produktområde, manifest, konsekvens)
     (
         r"\b(org.?struktur|organisationsstruktur|org.?arkitekt|avdelning(?:ar|en)?|chapter"
