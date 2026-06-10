@@ -1,6 +1,6 @@
 # Spec: Work-modell & branschstandard-taxonomi för CNS-agenturen
 
-**Status:** UTKAST FÖR GRANSKNING — ändrar ingen kod. Implementering först efter Rikards godkännande.
+**Status:** GRANSKAD — öppna frågor besvarade 2026-06-10 (se §10). Redo för implementering enligt §7.
 **Datum:** 2026-06-10 · **Nod:** `agentur` · **Källa:** session-c3119c20 (verktygsladan)
 
 ---
@@ -49,8 +49,8 @@ Spike = tidsboxad research (kunskap≠kod). Bug/chore estimeras ej. Hierarki och
 
 **Lager 2 — MCP-verktygsnamn (deferred, dyrt):** `cortxt_create_issue` m.fl. är **connector-kontrakt mot claude.ai** — rename bryter integration + kräver re-auth (CLAUDE.md). Strategi: **alias-skikt** — nya standard-namn exponeras som alias, gamla namn lever kvar tills en planerad connector-migrering. Ingen hård rename i denna spec.
 
-> ÖPPEN FRÅGA 1: Vill Rikard ha `initiative`-toppnivån alls nu, eller räcker `epic` tills portföljen kräver det? (Anti-bloat: lägg till när ett verkligt behov finns.)
-> ÖPPEN FRÅGA 2: `sessions→runs` — värt vokabulärbytet, eller behåll "session" som etablerad CNS-term? (Lågt värde, viss kostnad.)
+> **BESLUT 1 (2026-06-10):** `initiative`-toppnivån **läggs till nu** som valfri toppnivå över epic.
+> **BESLUT 2 (2026-06-10):** `sessions→runs` **genomförs** — run-vokabulär i begreppsmodellen (Lager 1).
 
 ---
 
@@ -62,7 +62,7 @@ Spike = tidsboxad research (kunskap≠kod). Bug/chore estimeras ej. Hierarki och
 
 Alla tre additiva: nya fält valfria, gamla fält/flöden fallback (dashboarden bryts ej).
 
-> ÖPPEN FRÅGA 3: Acceptanskriterier som strukturerat fält i issues_client, eller konvention i issue-body (likt todos `- [ ]`)? Body-konvention = mindre kod, GitHub-native; fält = maskinläsbart utan parsing.
+> **BESLUT 3 (2026-06-10):** Acceptanskriterier som **body-konvention** (Given/When/Then i issue-body, likt todos `- [ ]`) — mindre kod, GitHub-native, sanningen lever på GitHub.
 
 ---
 
@@ -70,9 +70,9 @@ Alla tre additiva: nya fält valfria, gamla fält/flöden fallback (dashboarden 
 
 För 100-agent claim-koordination: Redis-lease med TTL + heartbeat ovanpå issues (återanvänd CNS befintliga Redis i `eventstream.py`); optimistisk claim (`UPDATE WHERE open` → 0 rader = redan tagen). Issues förblir synlig artefakt; live-claimen lever i koordinationslagret.
 
-**Byggs INTE nu.** Mätningen (§2) visar att arbetet inte är dekomponerat i oberoende slices — lease-lagret har inget att koordinera än. Bygg det när `depends_on` + dekomposition gett genuint parallellt arbete.
+> **BESLUT 4 (2026-06-10):** Lease-lagret **byggs nu, parallellt** med dekomposition. Avsteg från utkastets rekommendation (mätningen i §2 pekade mot att vänta) — motiverat av ett konkret scenario med agenter som redan krockar om samma uppgifter. **Förutsättning att bekräfta vid implementering:** dokumentera scenariot (vilka agenter, vilka issues krockar) så lease-designen dimensioneras mot verkligt behov, inte hypotetiskt.
 
-> ÖPPEN FRÅGA 4: Bekräfta sekvensen — dekompositions-primitiver (§5) först, lease-lager (§6) när arbetsformen kräver det? Eller finns redan ett konkret 100-agent-scenario som motiverar lease-lagret omgående?
+**Designskiss (oförändrad):** Redis-lease med TTL + heartbeat ovanpå issues (återanvänd CNS befintliga Redis i `eventstream.py`); optimistisk claim. Egen detaljspec innan kod (se §7 steg 6).
 
 ---
 
@@ -80,10 +80,10 @@ För 100-agent claim-koordination: Redis-lease med TTL + heartbeat ovanpå issue
 
 1. `type`-fält på issues (`scripts/issues_client.py`) — default `story`, fallback om saknas.
 2. `depends_on` på issues (`issues_client.py`) — valfri lista.
-3. Acceptanskriterier (per Öppen fråga 3).
-4. Begreppsmodell-rename i docs/prompts/CLAUDE.md + alias-skikt i `app/tools/*` (connector-namn intakta).
-5. `schemas/` uppdateras om enums berörs.
-6. Lease-lager — separat spec när §6-sekvensen bekräftats.
+3. Acceptanskriterier som body-konvention (Beslut 3) — Given/When/Then i issue-body.
+4. Begreppsmodell-rename i docs/prompts/CLAUDE.md + alias-skikt i `app/tools/*` (connector-namn intakta). Inkluderar `initiative` (Beslut 1, valfri toppnivå) och `sessions→runs` (Beslut 2).
+5. `schemas/` uppdateras om enums berörs (bl.a. `type`-enum, ev. `initiative`).
+6. Lease-lager — **egen detaljspec, byggs parallellt** (Beslut 4). Dokumentera krockscenariot först.
 
 Varje steg: bakåtkompatibelt, validera mot dashboarden, commit en i taget.
 
@@ -102,8 +102,8 @@ Varje steg: bakåtkompatibelt, validera mot dashboarden, commit en i taget.
 - Acceptanskriterier: en agent läser kriterierna och kan avgöra done binärt.
 - Lease (när byggt): kör 2 agenter mot samma issue → bara en tar claimen.
 
-## 10. Sammanfattning av öppna frågor (kräver Rikards svar före implementering)
-1. `initiative`-toppnivå nu eller vänta?
-2. `sessions→runs` — byt eller behåll?
-3. Acceptanskriterier — strukturerat fält eller body-konvention?
-4. Bekräfta sekvens dekomposition→lease, eller finns akut 100-agent-scenario?
+## 10. Öppna frågor — BESVARADE 2026-06-10
+1. `initiative`-toppnivå nu eller vänta? → **Lägg till nu** (valfri toppnivå).
+2. `sessions→runs` — byt eller behåll? → **Byt till run** (begreppsmodell, Lager 1).
+3. Acceptanskriterier — strukturerat fält eller body-konvention? → **Body-konvention** (Given/When/Then).
+4. Bekräfta sekvens dekomposition→lease, eller akut 100-agent-scenario? → **Lease byggs nu parallellt** (avsteg från §2-rekommendation; kräver dokumenterat krockscenario vid implementering).
