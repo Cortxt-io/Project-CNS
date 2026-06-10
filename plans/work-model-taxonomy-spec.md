@@ -2,7 +2,7 @@
 
 **Status:** GRANSKAD — öppna frågor 1–4 besvarade av Rikard (se §10). Ändrar ingen kod; implementering följer additivt per migreringsplanen.
 **Datum:** 2026-06-10 · **Nod:** `agentur` · **Källa:** session-c3119c20 (verktygsladan)
-**Scope-not:** Linear är SLÄPPT — rent GitHub/CNS, en sanningskälla. GitHub förblir sanning; all taxonomi läggs PÅ GitHub Issues/Milestones.
+**Scope-not:** Linear körs PARALLELLT med GitHub via Linears **native integration**, **GitHub kanon** (en sanning per item; ingen egenbyggd sync). GitHub förblir sanning; all taxonomi läggs PÅ GitHub Issues/Milestones.
 
 ---
 
@@ -108,4 +108,4 @@ Varje steg: bakåtkompatibelt, validera mot dashboarden, commit en i taget.
 2. **sessions→run:** ✅ JA, byt term till `run` i begreppsmodellen. MCP-tool-namnen (`cortxt_*_session`) behålls som connector-alias (ingen hård rename → bryter ej claude.ai); vokabulärbyte nu, tool-rename deferred.
 3. **acceptanskriterier:** ✅ body-konvention som speglar todos — ett `## Acceptans`-block (Given/When/Then), parsat likt `_TODO_RE` i `issues_client.py`. GitHub-native, lite kod, maskinläsbart.
 4. **sekvens:** ✅ bekräftad — dekomposition (type + depends_on + acceptanskriterier) FÖRST; lease-lager (B) deferred tills parallellkörning faktiskt drar igång (mätningen visar koncentrerat arbete, inget akut 100-agent-scenario).
-5. **Linear:** ✅ SLÄPPT — rent GitHub/CNS. Ingen extern arbetsdata; GitHub = sanning.
+5. **Linear:** ✅ ÅTERINFÖRT — parallellt med GitHub via **native integration, GitHub kanon** (research: undvik dubbelriktad dup, "never let the same item live in both"; [Linear Docs](https://linear.app/docs/github-integration)). Linear = människo-board/triage-UI + PR-automatik; GitHub = sanning för work items. **Ingen egenbyggd sync-kod** — Linears native GitHub-integration konfigureras i Linear (OAuth, välj Project-CNS-repot), manuell engångsåtgärd. Befintliga `cortxt_*_linear`-verktyg kvarstår som komplement.
