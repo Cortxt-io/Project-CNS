@@ -2,7 +2,7 @@
   {
     "id": "evt:devwatch:md_change:agent-studio:958587b697fdc92c",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "agent-studio: node.md",
     "how": "1 files: node.md",
     "who": "",
@@ -10,7 +10,7 @@
     "source": "devwatch",
     "slug": "agent-studio",
     "meta": {
-      "devwatch_id": "devwatch:agent-studio:958587b697fdc92c:20260609T102941Z",
+      "devwatch_id": "devwatch:agent-studio:958587b697fdc92c:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -49,7 +49,7 @@
   {
     "id": "evt:devwatch:md_change:ai-ticket-triage:6cd39fec2277e3be",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "ai-ticket-triage: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -57,7 +57,7 @@
     "source": "devwatch",
     "slug": "ai-ticket-triage",
     "meta": {
-      "devwatch_id": "devwatch:ai-ticket-triage:6cd39fec2277e3be:20260609T102941Z",
+      "devwatch_id": "devwatch:ai-ticket-triage:6cd39fec2277e3be:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -119,7 +119,7 @@
   {
     "id": "evt:devwatch:md_change:cns-analyst:43a35cc81622a32f",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cns-analyst: node.md, planning/quests.md",
     "how": "2 files: node.md, planning/quests.md",
     "who": "",
@@ -127,7 +127,7 @@
     "source": "devwatch",
     "slug": "cns-analyst",
     "meta": {
-      "devwatch_id": "devwatch:cns-analyst:43a35cc81622a32f:20260609T102941Z",
+      "devwatch_id": "devwatch:cns-analyst:43a35cc81622a32f:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -174,7 +174,7 @@
   {
     "id": "evt:devwatch:md_change:cns-brief:c906f77cde289d2c",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cns-brief: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/README.md",
     "how": "6 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/README.md",
     "who": "",
@@ -182,7 +182,7 @@
     "source": "devwatch",
     "slug": "cns-brief",
     "meta": {
-      "devwatch_id": "devwatch:cns-brief:c906f77cde289d2c:20260609T102941Z",
+      "devwatch_id": "devwatch:cns-brief:c906f77cde289d2c:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -243,7 +243,7 @@
   {
     "id": "evt:devwatch:md_change:cns-core:35058a24b20c740a",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cns-core: node.md",
     "how": "1 files: node.md",
     "who": "",
@@ -251,7 +251,7 @@
     "source": "devwatch",
     "slug": "cns-core",
     "meta": {
-      "devwatch_id": "devwatch:cns-core:35058a24b20c740a:20260609T102941Z",
+      "devwatch_id": "devwatch:cns-core:35058a24b20c740a:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -290,7 +290,7 @@
   {
     "id": "evt:devwatch:md_change:cns-devlog:5ee44eff28b567c0",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cns-devlog: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -298,7 +298,7 @@
     "source": "devwatch",
     "slug": "cns-devlog",
     "meta": {
-      "devwatch_id": "devwatch:cns-devlog:5ee44eff28b567c0:20260609T102941Z",
+      "devwatch_id": "devwatch:cns-devlog:5ee44eff28b567c0:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -360,7 +360,7 @@
   {
     "id": "evt:devwatch:md_change:cns-devwatch:a0fea4a7366e6d89",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cns-devwatch: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -368,7 +368,7 @@
     "source": "devwatch",
     "slug": "cns-devwatch",
     "meta": {
-      "devwatch_id": "devwatch:cns-devwatch:a0fea4a7366e6d89:20260609T102941Z",
+      "devwatch_id": "devwatch:cns-devwatch:a0fea4a7366e6d89:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -430,7 +430,7 @@
   {
     "id": "evt:devwatch:md_change:cns-hosting-infra:8e6de78fa2c218d0",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cns-hosting-infra: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -438,7 +438,7 @@
     "source": "devwatch",
     "slug": "cns-hosting-infra",
     "meta": {
-      "devwatch_id": "devwatch:cns-hosting-infra:8e6de78fa2c218d0:20260609T102941Z",
+      "devwatch_id": "devwatch:cns-hosting-infra:8e6de78fa2c218d0:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -500,7 +500,7 @@
   {
     "id": "evt:devwatch:md_change:cns-mcp:abd77085a3300ca3",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cns-mcp: node.md, planning/route-session-spec.md, planning/session-ideas-hook-spec.md",
     "how": "3 files: node.md, planning/route-session-spec.md, planning/session-ideas-hook-spec.md",
     "who": "",
@@ -508,7 +508,7 @@
     "source": "devwatch",
     "slug": "cns-mcp",
     "meta": {
-      "devwatch_id": "devwatch:cns-mcp:abd77085a3300ca3:20260609T102941Z",
+      "devwatch_id": "devwatch:cns-mcp:abd77085a3300ca3:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -567,7 +567,7 @@
   {
     "id": "evt:devwatch:md_change:cns-vault-app:4706816211de649d",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cns-vault-app: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -575,7 +575,7 @@
     "source": "devwatch",
     "slug": "cns-vault-app",
     "meta": {
-      "devwatch_id": "devwatch:cns-vault-app:4706816211de649d:20260609T102941Z",
+      "devwatch_id": "devwatch:cns-vault-app:4706816211de649d:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -637,7 +637,7 @@
   {
     "id": "evt:devwatch:md_change:cortxt-dashboard-app:53b9a16468cf8a1a",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cortxt-dashboard-app: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/README.md",
     "how": "6 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/README.md",
     "who": "",
@@ -645,7 +645,7 @@
     "source": "devwatch",
     "slug": "cortxt-dashboard-app",
     "meta": {
-      "devwatch_id": "devwatch:cortxt-dashboard-app:53b9a16468cf8a1a:20260609T102941Z",
+      "devwatch_id": "devwatch:cortxt-dashboard-app:53b9a16468cf8a1a:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -713,7 +713,7 @@
   {
     "id": "evt:devwatch:md_change:cortxt-eventstream:c9250469a1156053",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cortxt-eventstream: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -721,7 +721,7 @@
     "source": "devwatch",
     "slug": "cortxt-eventstream",
     "meta": {
-      "devwatch_id": "devwatch:cortxt-eventstream:c9250469a1156053:20260609T102941Z",
+      "devwatch_id": "devwatch:cortxt-eventstream:c9250469a1156053:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -781,7 +781,7 @@
   {
     "id": "evt:devwatch:md_change:cortxt-graph-view:868f6f3b9cb51c1f",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cortxt-graph-view: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/README.md",
     "how": "6 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/README.md",
     "who": "",
@@ -789,7 +789,7 @@
     "source": "devwatch",
     "slug": "cortxt-graph-view",
     "meta": {
-      "devwatch_id": "devwatch:cortxt-graph-view:868f6f3b9cb51c1f:20260609T102941Z",
+      "devwatch_id": "devwatch:cortxt-graph-view:868f6f3b9cb51c1f:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -857,7 +857,7 @@
   {
     "id": "evt:devwatch:md_change:cortxt-landing:74b310f08628800b",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cortxt-landing: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/README.md",
     "how": "6 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/README.md",
     "who": "",
@@ -865,7 +865,7 @@
     "source": "devwatch",
     "slug": "cortxt-landing",
     "meta": {
-      "devwatch_id": "devwatch:cortxt-landing:74b310f08628800b:20260609T102941Z",
+      "devwatch_id": "devwatch:cortxt-landing:74b310f08628800b:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -930,7 +930,7 @@
   {
     "id": "evt:devwatch:md_change:cortxt:0a05a6e4db29b544",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "cortxt: ARCHITECTURE.md, node.md",
     "how": "2 files: ARCHITECTURE.md, node.md",
     "who": "",
@@ -938,7 +938,7 @@
     "source": "devwatch",
     "slug": "cortxt",
     "meta": {
-      "devwatch_id": "devwatch:cortxt:0a05a6e4db29b544:20260609T102941Z",
+      "devwatch_id": "devwatch:cortxt:0a05a6e4db29b544:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -995,7 +995,7 @@
   {
     "id": "evt:devwatch:md_change:dev-changelog-engine-mini:420179e2ab5fe5f1",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "dev-changelog-engine-mini: node.md",
     "how": "1 files: node.md",
     "who": "",
@@ -1003,7 +1003,7 @@
     "source": "devwatch",
     "slug": "dev-changelog-engine-mini",
     "meta": {
-      "devwatch_id": "devwatch:dev-changelog-engine-mini:420179e2ab5fe5f1:20260609T102941Z",
+      "devwatch_id": "devwatch:dev-changelog-engine-mini:420179e2ab5fe5f1:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1041,7 +1041,7 @@
   {
     "id": "evt:devwatch:md_change:dev-changelog-engine:8b3bd9e0a668dd4c",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "dev-changelog-engine: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -1049,7 +1049,7 @@
     "source": "devwatch",
     "slug": "dev-changelog-engine",
     "meta": {
-      "devwatch_id": "devwatch:dev-changelog-engine:8b3bd9e0a668dd4c:20260609T102941Z",
+      "devwatch_id": "devwatch:dev-changelog-engine:8b3bd9e0a668dd4c:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1111,7 +1111,7 @@
   {
     "id": "evt:devwatch:md_change:docs-watch:5b401814019a06b5",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "docs-watch: node.md",
     "how": "1 files: node.md",
     "who": "",
@@ -1119,7 +1119,7 @@
     "source": "devwatch",
     "slug": "docs-watch",
     "meta": {
-      "devwatch_id": "devwatch:docs-watch:5b401814019a06b5:20260609T102941Z",
+      "devwatch_id": "devwatch:docs-watch:5b401814019a06b5:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1157,7 +1157,7 @@
   {
     "id": "evt:devwatch:md_change:github-webhook:e401a985683dc093",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "github-webhook: node.md",
     "how": "1 files: node.md",
     "who": "",
@@ -1165,7 +1165,7 @@
     "source": "devwatch",
     "slug": "github-webhook",
     "meta": {
-      "devwatch_id": "devwatch:github-webhook:e401a985683dc093:20260609T102941Z",
+      "devwatch_id": "devwatch:github-webhook:e401a985683dc093:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1204,7 +1204,7 @@
   {
     "id": "evt:devwatch:md_change:infrastructure:3cd8838395215013",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "infrastructure: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -1212,7 +1212,7 @@
     "source": "devwatch",
     "slug": "infrastructure",
     "meta": {
-      "devwatch_id": "devwatch:infrastructure:3cd8838395215013:20260609T102941Z",
+      "devwatch_id": "devwatch:infrastructure:3cd8838395215013:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1272,7 +1272,7 @@
   {
     "id": "evt:devwatch:md_change:interface:daec4dde97ed0306",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "interface: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -1280,7 +1280,7 @@
     "source": "devwatch",
     "slug": "interface",
     "meta": {
-      "devwatch_id": "devwatch:interface:daec4dde97ed0306:20260609T102941Z",
+      "devwatch_id": "devwatch:interface:daec4dde97ed0306:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1340,7 +1340,7 @@
   {
     "id": "evt:devwatch:md_change:local-ai:d2531159af57edee",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "local-ai: node.md, planning/local-ai-research.md",
     "how": "2 files: node.md, planning/local-ai-research.md",
     "who": "",
@@ -1348,7 +1348,7 @@
     "source": "devwatch",
     "slug": "local-ai",
     "meta": {
-      "devwatch_id": "devwatch:local-ai:d2531159af57edee:20260609T102941Z",
+      "devwatch_id": "devwatch:local-ai:d2531159af57edee:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1395,7 +1395,7 @@
   {
     "id": "evt:devwatch:md_change:mcp-gateway:120a6076453fe1c4",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "mcp-gateway: node.md",
     "how": "1 files: node.md",
     "who": "",
@@ -1403,7 +1403,7 @@
     "source": "devwatch",
     "slug": "mcp-gateway",
     "meta": {
-      "devwatch_id": "devwatch:mcp-gateway:120a6076453fe1c4:20260609T102941Z",
+      "devwatch_id": "devwatch:mcp-gateway:120a6076453fe1c4:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1441,7 +1441,7 @@
   {
     "id": "evt:devwatch:md_change:pipeline-extern:a5adb677b6ca534c",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "pipeline-extern: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -1449,7 +1449,7 @@
     "source": "devwatch",
     "slug": "pipeline-extern",
     "meta": {
-      "devwatch_id": "devwatch:pipeline-extern:a5adb677b6ca534c:20260609T102941Z",
+      "devwatch_id": "devwatch:pipeline-extern:a5adb677b6ca534c:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1509,7 +1509,7 @@
   {
     "id": "evt:devwatch:md_change:pipeline-intern:436539c28b36c663",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "pipeline-intern: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -1517,7 +1517,7 @@
     "source": "devwatch",
     "slug": "pipeline-intern",
     "meta": {
-      "devwatch_id": "devwatch:pipeline-intern:436539c28b36c663:20260609T102941Z",
+      "devwatch_id": "devwatch:pipeline-intern:436539c28b36c663:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1577,7 +1577,7 @@
   {
     "id": "evt:devwatch:md_change:pipeline-review:253285dba9ac728a",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "pipeline-review: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "7 files: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -1585,7 +1585,7 @@
     "source": "devwatch",
     "slug": "pipeline-review",
     "meta": {
-      "devwatch_id": "devwatch:pipeline-review:253285dba9ac728a:20260609T102941Z",
+      "devwatch_id": "devwatch:pipeline-review:253285dba9ac728a:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1645,7 +1645,7 @@
   {
     "id": "evt:devwatch:md_change:project-vault-dashboard:f0df4ad92b4cf2b7",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "project-vault-dashboard: assets/README.md, dashboard/data/README.md, node.md, notes/README.md, notes/design-ideas.md, planning/api-schema.md, planning/dashboard-views.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "11 files: assets/README.md, dashboard/data/README.md, node.md, notes/README.md, notes/design-ideas.md, planning/api-schema.md, planning/dashboard-views.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -1653,7 +1653,7 @@
     "source": "devwatch",
     "slug": "project-vault-dashboard",
     "meta": {
-      "devwatch_id": "devwatch:project-vault-dashboard:f0df4ad92b4cf2b7:20260609T102941Z",
+      "devwatch_id": "devwatch:project-vault-dashboard:f0df4ad92b4cf2b7:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1762,7 +1762,7 @@
   {
     "id": "evt:devwatch:md_change:quest-engine:64482e4b5dee7f55",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "quest-engine: node.md, planning/quest-to-issues-spec.md",
     "how": "2 files: node.md, planning/quest-to-issues-spec.md",
     "who": "",
@@ -1770,7 +1770,7 @@
     "source": "devwatch",
     "slug": "quest-engine",
     "meta": {
-      "devwatch_id": "devwatch:quest-engine:64482e4b5dee7f55:20260609T102941Z",
+      "devwatch_id": "devwatch:quest-engine:64482e4b5dee7f55:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1823,9 +1823,55 @@
     }
   },
   {
+    "id": "evt:devwatch:md_change:research-agent:ab0647d17ce130fd",
+    "what": "md_change",
+    "when": "2026-06-10T10:49:18Z",
+    "why": "research-agent: node.md",
+    "how": "1 files: node.md",
+    "who": "",
+    "where": "devwatch:research-agent",
+    "source": "devwatch",
+    "slug": "research-agent",
+    "meta": {
+      "devwatch_id": "devwatch:research-agent:ab0647d17ce130fd:20260610T104918Z",
+      "changed_fields": [
+        "created",
+        "depends_on",
+        "feeds",
+        "kind",
+        "part_of",
+        "slug",
+        "stage",
+        "status",
+        "summary",
+        "title",
+        "updated",
+        "url_live",
+        "url_repo"
+      ],
+      "changed_files": [
+        {
+          "file": "node.md",
+          "sections": [
+            "Anteckningar",
+            "Arbetslogg",
+            "Beroenden",
+            "Nästa steg",
+            "Risker",
+            "Status",
+            "Syfte"
+          ]
+        }
+      ],
+      "node_title": "Research Agent",
+      "stage_from": null,
+      "stage_to": "building"
+    }
+  },
+  {
     "id": "evt:devwatch:md_change:scoring-studio:5db909c1b18b7944",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "scoring-studio: node.md",
     "how": "1 files: node.md",
     "who": "",
@@ -1833,7 +1879,7 @@
     "source": "devwatch",
     "slug": "scoring-studio",
     "meta": {
-      "devwatch_id": "devwatch:scoring-studio:5db909c1b18b7944:20260609T102941Z",
+      "devwatch_id": "devwatch:scoring-studio:5db909c1b18b7944:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",
@@ -1872,7 +1918,7 @@
   {
     "id": "evt:devwatch:md_change:site-change-monitor:ff7446ff3b09a5f5",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "site-change-monitor: README.md, planning/decisions.md, planning/mvp-scope.md, planning/report-review-checklist.md, planning/roadmap.md",
     "how": "5 files: README.md, planning/decisions.md, planning/mvp-scope.md, planning/report-review-checklist.md, planning/roadmap.md",
     "who": "",
@@ -1880,7 +1926,7 @@
     "source": "devwatch",
     "slug": "site-change-monitor",
     "meta": {
-      "devwatch_id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260609T102941Z",
+      "devwatch_id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260610T104918Z",
       "changed_fields": [],
       "changed_files": [
         {
@@ -1929,7 +1975,7 @@
   {
     "id": "evt:devwatch:md_change:webhook-router:de15e9fc8c04929c",
     "what": "md_change",
-    "when": "2026-06-09T10:29:41Z",
+    "when": "2026-06-10T10:49:18Z",
     "why": "webhook-router: README.md, assets/README.md, docs/architecture.md, docs/configuration.md, docs/integration-guide.md, node.md, notes/README.md, planning/decisions.md, planning/mvp-scope.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "how": "12 files: README.md, assets/README.md, docs/architecture.md, docs/configuration.md, docs/integration-guide.md, node.md, notes/README.md, planning/decisions.md, planning/mvp-scope.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
     "who": "",
@@ -1937,7 +1983,7 @@
     "source": "devwatch",
     "slug": "webhook-router",
     "meta": {
-      "devwatch_id": "devwatch:webhook-router:de15e9fc8c04929c:20260609T102941Z",
+      "devwatch_id": "devwatch:webhook-router:de15e9fc8c04929c:20260610T104918Z",
       "changed_fields": [
         "created",
         "depends_on",

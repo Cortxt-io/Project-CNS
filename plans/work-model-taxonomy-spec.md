@@ -1,7 +1,8 @@
 # Spec: Work-modell & branschstandard-taxonomi för CNS-agenturen
 
-**Status:** GRANSKAD — öppna frågor besvarade 2026-06-10 (se §10). Redo för implementering enligt §7.
+**Status:** IMPLEMENTERAD — öppna frågor 1–4 besvarade av Rikard (se §10); migreringsplanen §7 levererad additivt (PR #34).
 **Datum:** 2026-06-10 · **Nod:** `agentur` · **Källa:** session-c3119c20 (verktygsladan)
+**Scope-not:** Linear körs PARALLELLT med GitHub via Linears **native integration**, **GitHub kanon** (en sanning per item; ingen egenbyggd sync). GitHub förblir sanning; all taxonomi läggs PÅ GitHub Issues/Milestones.
 
 ---
 
@@ -102,8 +103,9 @@ Varje steg: bakåtkompatibelt, validera mot dashboarden, commit en i taget.
 - Acceptanskriterier: en agent läser kriterierna och kan avgöra done binärt.
 - Lease (när byggt): kör 2 agenter mot samma issue → bara en tar claimen.
 
-## 10. Öppna frågor — BESVARADE 2026-06-10
-1. `initiative`-toppnivå nu eller vänta? → **Lägg till nu** (valfri toppnivå).
-2. `sessions→runs` — byt eller behåll? → **Byt till run** (begreppsmodell, Lager 1).
-3. Acceptanskriterier — strukturerat fält eller body-konvention? → **Body-konvention** (Given/When/Then).
-4. Bekräfta sekvens dekomposition→lease, eller akut 100-agent-scenario? → **Lease byggs nu parallellt** (avsteg från §2-rekommendation; kräver dokumenterat krockscenario vid implementering).
+## 10. Öppna frågor — BESVARADE av Rikard (2026-06-10)
+1. **initiative-toppnivå:** ✅ JA, lägg till nu — full hierarki `initiative > epic > story > sub-task`.
+2. **sessions→run:** ✅ JA, byt term till `run` i begreppsmodellen. MCP-tool-namnen (`cortxt_*_session`) behålls som connector-alias (ingen hård rename → bryter ej claude.ai); vokabulärbyte nu, tool-rename deferred.
+3. **acceptanskriterier:** ✅ body-konvention som speglar todos — ett `## Acceptanskriterier`-block (Given/When/Then), parsat likt `_TODO_RE` i `issues_client.py`. GitHub-native, lite kod, maskinläsbart.
+4. **sekvens:** ✅ dekomposition (type + depends_on + acceptanskriterier) levererad FÖRST. Lease-lager (B) **byggdes ändå nu, parallellt** (Beslut 4, §6) på Rikards begäran — avsteg från utkastets defer-rekommendation. Koden är additiv och fail-open; krockscenariot är **förväntat, ej empiriskt bekräftat** (mätningen §2 visar koncentrerat arbete) och dokumenteras i `plans/lease-layer-spec.md` — bekräfta verkligt krockscenario innan lease görs till hård grind i agentflödet.
+5. **Linear:** ✅ ÅTERINFÖRT — parallellt med GitHub via **native integration, GitHub kanon** (research: undvik dubbelriktad dup, "never let the same item live in both"; [Linear Docs](https://linear.app/docs/github-integration)). Linear = människo-board/triage-UI + PR-automatik; GitHub = sanning för work items. **Ingen egenbyggd sync-kod** — Linears native GitHub-integration konfigureras i Linear (OAuth, välj Project-CNS-repot), manuell engångsåtgärd. Befintliga `cortxt_*_linear`-verktyg kvarstår som komplement.

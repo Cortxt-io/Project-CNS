@@ -1,0 +1,27 @@
+{
+  "session_id": "11b5c2fc-6b26-451a-88e5-f180f28a0d9e",
+  "created_at": "2026-06-10T12:20:01",
+  "updated_at": "2026-06-10T14:08:30",
+  "linked_quest": null,
+  "linked_idea": null,
+  "asides": [
+    {
+      "ts": "2026-06-10T10:19:16.483Z",
+      "text": "efter detta vad bör vi utveckla i agenturen? ä det skills till agenterna ? eller mer research?",
+      "fork": "efter-detta-vad (2e6a)",
+      "src_uuid": "c658e0dc-ab6c-4fe5-a008-14d50481422a"
+    },
+    {
+      "ts": "2026-06-10T10:48:46.515Z",
+      "text": "jag har idag: issues`/`quests`/`ideas`/`projects`/`sessions` Men jag vill egentligen undersöka vad jag ska byta ut dessa med för att passa min nya agila agentur",
+      "fork": "jag-har-idag (738b)",
+      "src_uuid": "48f10894-f2aa-4421-9e6b-ec3fdfef4be4"
+    },
+    {
+      "ts": "2026-06-10T12:06:59.500Z",
+      "text": "jag vet inte varför jag inte är inne i ett av våra \"pass\" i denna session. den är inte kopplad till någon ? med färdiga verktyg och agenter och så",
+      "fork": "jag-vet-inte (e76d)",
+      "src_uuid": "8daeafd7-7625-4b6f-b46b-555959ff6b5f"
+    }
+  ]
+}
