@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-06-09T10:29:41.728700",
+  "exported_at": "2026-06-10T10:49:18.773504",
   "version": "2.0",
   "nodes": [
     {
@@ -898,6 +898,37 @@
       "mvp_steps": [],
       "top_risk": "",
       "syfte": "Quest-systemet (quest_manager.py + /api/quests/*): skapar, uppdaterar och transitionerar quests genom en livscykel. Quests föreslås (manuellt eller från cns-brief), aktiveras, sätts in_progress och completas — delvis automatiskt via github-webhook (push/PR/CI). Lagras som JSON, pushas till GitHub."
+    },
+    {
+      "slug": "research-agent",
+      "title": "Research Agent",
+      "kind": "component",
+      "stage": "building",
+      "part_of": "agent-studio",
+      "feeds": [],
+      "depends_on": [],
+      "layer": "",
+      "pipeline": "",
+      "status": "early_mvp",
+      "mvp_stage": "",
+      "cost_sek": 0,
+      "value_sek": 0,
+      "roi_percent": 0,
+      "tags": [],
+      "created": "2026-06-09",
+      "updated": "2026-06-09",
+      "summary": "Research-agent som söker på webben, verifierar källor och skriver findings till CNS wiki. Kör via Anthropic API (claude-sonnet-4-6).",
+      "family": "",
+      "url_live": "",
+      "url_repo": "",
+      "current_slice": "",
+      "problem": "",
+      "solution": "",
+      "primary_audience": "",
+      "assumptions": [],
+      "mvp_steps": [],
+      "top_risk": "",
+      "syfte": "Söka, verifiera och sammanställa faktabaserade rapporter för CNS/Cortxt-projektet. Agenten används för att besvara öppna forskningsfrågor (arkitekturval, API-stabilitet, teknologijämförelser) och skriver alltid findings till en wiki-sida innan sessionen avslutas."
     },
     {
       "slug": "scoring-studio",

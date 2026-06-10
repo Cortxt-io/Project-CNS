@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-06-09T10:29:41Z",
-  "run_id": "20260609_102941",
-  "baseline": "2026-06-08T07:00:00",
+  "exported_at": "2026-06-10T10:49:18Z",
+  "run_id": "20260610_104918",
+  "baseline": "2026-06-09T07:00:00",
   "events": [
     {
-      "id": "devwatch:agent-studio:958587b697fdc92c:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:agent-studio:958587b697fdc92c:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "agent-studio",
         "name": "Agent Studio",
@@ -21,8 +21,8 @@
         "agent-studio"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "agent-studio",
         "node_title": "Agent Studio",
         "changed_fields": [
@@ -59,8 +59,8 @@
       }
     },
     {
-      "id": "devwatch:ai-ticket-triage:6cd39fec2277e3be:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:ai-ticket-triage:6cd39fec2277e3be:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "ai-ticket-triage",
         "name": "AI Ticket Triage",
@@ -75,8 +75,8 @@
         "ai-ticket-triage"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "ai-ticket-triage",
         "node_title": "AI Ticket Triage",
         "changed_fields": [
@@ -136,8 +136,8 @@
       }
     },
     {
-      "id": "devwatch:cns-analyst:43a35cc81622a32f:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cns-analyst:43a35cc81622a32f:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cns-analyst",
         "name": "CNS Analyst",
@@ -152,8 +152,8 @@
         "cns-analyst"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cns-analyst",
         "node_title": "CNS Analyst",
         "changed_fields": [
@@ -198,8 +198,8 @@
       }
     },
     {
-      "id": "devwatch:cns-brief:c906f77cde289d2c:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cns-brief:c906f77cde289d2c:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cns-brief",
         "name": "CNS Brief",
@@ -214,8 +214,8 @@
         "cns-brief"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cns-brief",
         "node_title": "CNS Brief",
         "changed_fields": [
@@ -274,8 +274,8 @@
       }
     },
     {
-      "id": "devwatch:cns-core:35058a24b20c740a:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cns-core:35058a24b20c740a:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cns-core",
         "name": "CNS Core",
@@ -290,8 +290,8 @@
         "cns-core"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cns-core",
         "node_title": "CNS Core",
         "changed_fields": [
@@ -328,8 +328,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devlog:5ee44eff28b567c0:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cns-devlog:5ee44eff28b567c0:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cns-devlog",
         "name": "CNS Devlog",
@@ -344,8 +344,8 @@
         "cns-devlog"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cns-devlog",
         "node_title": "CNS Devlog",
         "changed_fields": [
@@ -405,8 +405,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devwatch:a0fea4a7366e6d89:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cns-devwatch:a0fea4a7366e6d89:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cns-devwatch",
         "name": "CNS Devwatch",
@@ -421,8 +421,8 @@
         "cns-devwatch"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cns-devwatch",
         "node_title": "CNS Devwatch",
         "changed_fields": [
@@ -482,8 +482,8 @@
       }
     },
     {
-      "id": "devwatch:cns-hosting-infra:8e6de78fa2c218d0:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cns-hosting-infra:8e6de78fa2c218d0:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cns-hosting-infra",
         "name": "CNS Hosting Infra",
@@ -498,8 +498,8 @@
         "cns-hosting-infra"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cns-hosting-infra",
         "node_title": "CNS Hosting Infra",
         "changed_fields": [
@@ -559,8 +559,8 @@
       }
     },
     {
-      "id": "devwatch:cns-mcp:abd77085a3300ca3:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cns-mcp:abd77085a3300ca3:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cns-mcp",
         "name": "CNS MCP Server",
@@ -575,8 +575,8 @@
         "cns-mcp"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cns-mcp",
         "node_title": "CNS MCP Server",
         "changed_fields": [
@@ -633,8 +633,8 @@
       }
     },
     {
-      "id": "devwatch:cns-vault-app:4706816211de649d:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cns-vault-app:4706816211de649d:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cns-vault-app",
         "name": "CNS Vault App",
@@ -649,8 +649,8 @@
         "cns-vault-app"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cns-vault-app",
         "node_title": "CNS Vault App",
         "changed_fields": [
@@ -710,8 +710,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-dashboard-app:53b9a16468cf8a1a:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cortxt-dashboard-app:53b9a16468cf8a1a:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cortxt-dashboard-app",
         "name": "Cortxt Dashboard App",
@@ -726,8 +726,8 @@
         "cortxt-dashboard-app"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cortxt-dashboard-app",
         "node_title": "Cortxt Dashboard App",
         "changed_fields": [
@@ -793,8 +793,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-eventstream:c9250469a1156053:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cortxt-eventstream:c9250469a1156053:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cortxt-eventstream",
         "name": "Cortxt Eventstream",
@@ -809,8 +809,8 @@
         "cortxt-eventstream"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cortxt-eventstream",
         "node_title": "Cortxt Eventstream",
         "changed_fields": [
@@ -868,8 +868,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-graph-view:868f6f3b9cb51c1f:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cortxt-graph-view:868f6f3b9cb51c1f:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cortxt-graph-view",
         "name": "Cortxt Graph View",
@@ -884,8 +884,8 @@
         "cortxt-graph-view"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cortxt-graph-view",
         "node_title": "Cortxt Graph View",
         "changed_fields": [
@@ -951,8 +951,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-landing:74b310f08628800b:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cortxt-landing:74b310f08628800b:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cortxt-landing",
         "name": "Cortxt Landing",
@@ -967,8 +967,8 @@
         "cortxt-landing"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cortxt-landing",
         "node_title": "Cortxt Landing",
         "changed_fields": [
@@ -1031,8 +1031,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt:0a05a6e4db29b544:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:cortxt:0a05a6e4db29b544:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "cortxt",
         "name": "Cortxt",
@@ -1047,8 +1047,8 @@
         "cortxt"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "cortxt",
         "node_title": "Cortxt",
         "changed_fields": [
@@ -1103,8 +1103,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine-mini:420179e2ab5fe5f1:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:dev-changelog-engine-mini:420179e2ab5fe5f1:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "dev-changelog-engine-mini",
         "name": "Dev Changelog Engine Mini",
@@ -1119,8 +1119,8 @@
         "dev-changelog-engine-mini"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "dev-changelog-engine-mini",
         "node_title": "Dev Changelog Engine Mini",
         "changed_fields": [
@@ -1156,8 +1156,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine:8b3bd9e0a668dd4c:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:dev-changelog-engine:8b3bd9e0a668dd4c:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "dev-changelog-engine",
         "name": "Dev Changelog Engine",
@@ -1172,8 +1172,8 @@
         "dev-changelog-engine"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "dev-changelog-engine",
         "node_title": "Dev Changelog Engine",
         "changed_fields": [
@@ -1233,8 +1233,8 @@
       }
     },
     {
-      "id": "devwatch:docs-watch:5b401814019a06b5:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:docs-watch:5b401814019a06b5:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "docs-watch",
         "name": "DocsWatch",
@@ -1249,8 +1249,8 @@
         "docs-watch"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "docs-watch",
         "node_title": "DocsWatch",
         "changed_fields": [
@@ -1286,8 +1286,8 @@
       }
     },
     {
-      "id": "devwatch:github-webhook:e401a985683dc093:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:github-webhook:e401a985683dc093:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "github-webhook",
         "name": "GitHub Webhook Receiver",
@@ -1302,8 +1302,8 @@
         "github-webhook"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "github-webhook",
         "node_title": "GitHub Webhook Receiver",
         "changed_fields": [
@@ -1340,8 +1340,8 @@
       }
     },
     {
-      "id": "devwatch:infrastructure:3cd8838395215013:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:infrastructure:3cd8838395215013:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "infrastructure",
         "name": "Infrastructure",
@@ -1356,8 +1356,8 @@
         "infrastructure"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "infrastructure",
         "node_title": "Infrastructure",
         "changed_fields": [
@@ -1415,8 +1415,8 @@
       }
     },
     {
-      "id": "devwatch:interface:daec4dde97ed0306:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:interface:daec4dde97ed0306:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "interface",
         "name": "Interface",
@@ -1431,8 +1431,8 @@
         "interface"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "interface",
         "node_title": "Interface",
         "changed_fields": [
@@ -1490,8 +1490,8 @@
       }
     },
     {
-      "id": "devwatch:local-ai:d2531159af57edee:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:local-ai:d2531159af57edee:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "local-ai",
         "name": "Local AI",
@@ -1506,8 +1506,8 @@
         "local-ai"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "local-ai",
         "node_title": "Local AI",
         "changed_fields": [
@@ -1552,8 +1552,8 @@
       }
     },
     {
-      "id": "devwatch:mcp-gateway:120a6076453fe1c4:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:mcp-gateway:120a6076453fe1c4:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "mcp-gateway",
         "name": "MCP Gateway (router)",
@@ -1568,8 +1568,8 @@
         "mcp-gateway"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "mcp-gateway",
         "node_title": "MCP Gateway (router)",
         "changed_fields": [
@@ -1605,8 +1605,8 @@
       }
     },
     {
-      "id": "devwatch:pipeline-extern:a5adb677b6ca534c:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:pipeline-extern:a5adb677b6ca534c:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "pipeline-extern",
         "name": "Pipeline Extern",
@@ -1621,8 +1621,8 @@
         "pipeline-extern"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "pipeline-extern",
         "node_title": "Pipeline Extern",
         "changed_fields": [
@@ -1680,8 +1680,8 @@
       }
     },
     {
-      "id": "devwatch:pipeline-intern:436539c28b36c663:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:pipeline-intern:436539c28b36c663:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "pipeline-intern",
         "name": "Pipeline Intern",
@@ -1696,8 +1696,8 @@
         "pipeline-intern"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "pipeline-intern",
         "node_title": "Pipeline Intern",
         "changed_fields": [
@@ -1755,8 +1755,8 @@
       }
     },
     {
-      "id": "devwatch:pipeline-review:253285dba9ac728a:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:pipeline-review:253285dba9ac728a:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "pipeline-review",
         "name": "Pipeline Review",
@@ -1771,8 +1771,8 @@
         "pipeline-review"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "pipeline-review",
         "node_title": "Pipeline Review",
         "changed_fields": [
@@ -1830,8 +1830,8 @@
       }
     },
     {
-      "id": "devwatch:project-vault-dashboard:f0df4ad92b4cf2b7:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:project-vault-dashboard:f0df4ad92b4cf2b7:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "project-vault-dashboard",
         "name": "Project Vault Dashboard",
@@ -1846,8 +1846,8 @@
         "project-vault-dashboard"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "project-vault-dashboard",
         "node_title": "Project Vault Dashboard",
         "changed_fields": [
@@ -1954,8 +1954,8 @@
       }
     },
     {
-      "id": "devwatch:quest-engine:64482e4b5dee7f55:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:quest-engine:64482e4b5dee7f55:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "quest-engine",
         "name": "Quest Engine",
@@ -1970,8 +1970,8 @@
         "quest-engine"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "quest-engine",
         "node_title": "Quest Engine",
         "changed_fields": [
@@ -2024,8 +2024,61 @@
       }
     },
     {
-      "id": "devwatch:scoring-studio:5db909c1b18b7944:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:research-agent:ab0647d17ce130fd:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
+      "source": {
+        "id": "research-agent",
+        "name": "Research Agent",
+        "type": "devwatch",
+        "url": null
+      },
+      "title": "research-agent: node.md",
+      "rawContent": "### node.md\n## Syfte\n+Söka, verifiera och sammanställa faktabaserade rapporter för CNS/Cortxt-projektet. Agenten används för att besvara öppna forskningsfrågor (arkitekturval, API-stabilitet, teknologijämförelser) och skriver alltid findings till en wiki-sida innan sessionen avslutas.\n+\n\n## Beroenden\n+- Anthropic API (`ANTHROPIC_API_KEY`) — ingen lokal AI krävs\n+- CNS MCP-server (Railway) för wiki-verktyg\n+\n\n## Status\n+Agentfil skapad. Ej testad i produktion.\n+\n\n## Nästa steg\n+- Testa agenten mot ett konkret research-uppdrag (t.ex. Claw Code-utvärdering)\n+- Lägg till WebSearch/WebFetch i tillåtna verktyg när MCP-routing är klar\n+\n\n## Risker\n+- API-kostnad okontrollerad vid långa söksessioner — sätt token-budget per uppdrag\n+- Wiki-sidor kan bli fragmenterade om agenten skapar ny sida per körning\n+\n\n## Arbetslogg\n+- 2026-06-09: Skapad via /agent-studio\n+\n\n## Anteckningar\n+```json\n+{\n+  \"name\": \"research-agent\",\n+  \"description\": \"Söker, verifierar och sammanställer faktabaserade rapporter. Skriver findings till CNS wiki.\",\n+  \"provider\": \"anthropic\",\n+  \"model\": \"claude-sonnet-4-6\",\n+  \"fallback_model\": \"claude-haiku-4-5\",\n+  \"prompt\": \"Du är research-agent i CNS/Cortxt. Sök, verifiera mot minst 2 källor, skriv findings till wiki.\",\n+  \"tools\": [\n+    \"cortxt_list_projects\", \"cortxt_get_project\",\n+    \"cortxt_list_quests\", \"cortxt_get_quest\",\n+    \"cortxt_list_o\n...[truncated]",
+      "url": null,
+      "kind": "changed",
+      "tags": [
+        "research-agent"
+      ],
+      "meta": {
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
+        "slug": "research-agent",
+        "node_title": "Research Agent",
+        "changed_fields": [
+          "created",
+          "depends_on",
+          "feeds",
+          "kind",
+          "part_of",
+          "slug",
+          "stage",
+          "status",
+          "summary",
+          "title",
+          "updated",
+          "url_live",
+          "url_repo"
+        ],
+        "changed_files": [
+          {
+            "file": "node.md",
+            "sections": [
+              "Anteckningar",
+              "Arbetslogg",
+              "Beroenden",
+              "Nästa steg",
+              "Risker",
+              "Status",
+              "Syfte"
+            ]
+          }
+        ],
+        "noise_filtered": false
+      }
+    },
+    {
+      "id": "devwatch:scoring-studio:5db909c1b18b7944:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "scoring-studio",
         "name": "Scoring Studio",
@@ -2040,8 +2093,8 @@
         "scoring-studio"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "scoring-studio",
         "node_title": "Scoring Studio",
         "changed_fields": [
@@ -2078,8 +2131,8 @@
       }
     },
     {
-      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "site-change-monitor",
         "name": "site-change-monitor",
@@ -2094,8 +2147,8 @@
         "site-change-monitor"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "site-change-monitor",
         "node_title": "site-change-monitor",
         "changed_fields": [],
@@ -2142,8 +2195,8 @@
       }
     },
     {
-      "id": "devwatch:webhook-router:de15e9fc8c04929c:20260609T102941Z",
-      "detectedAt": "2026-06-09T10:29:41Z",
+      "id": "devwatch:webhook-router:de15e9fc8c04929c:20260610T104918Z",
+      "detectedAt": "2026-06-10T10:49:18Z",
       "source": {
         "id": "webhook-router",
         "name": "Webhook Router",
@@ -2158,8 +2211,8 @@
         "webhook-router"
       ],
       "meta": {
-        "run_id": "20260609_102941",
-        "run_timestamp": "20260609T102941Z",
+        "run_id": "20260610_104918",
+        "run_timestamp": "20260610T104918Z",
         "slug": "webhook-router",
         "node_title": "Webhook Router",
         "changed_fields": [
@@ -2275,9 +2328,9 @@
     }
   ],
   "meta": {
-    "nodes_scanned": 30,
-    "nodes_changed": 31,
-    "events_exported": 31,
+    "nodes_scanned": 31,
+    "nodes_changed": 32,
+    "events_exported": 32,
     "noise_filtered": 0,
     "no_changes": false
   }
