@@ -1,7 +1,7 @@
 {
   "session_id": "f902791b-08e4-4cb1-8b5d-763f02aab19e",
   "created_at": "2026-06-10T05:46:29",
-  "updated_at": "2026-06-10T05:57:08",
+  "updated_at": "2026-06-10T07:34:53",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -22,6 +22,12 @@
       "text": "jag vill att min research agent lär sig av deep-research verktyget jag har igång nu",
       "fork": "jag-vill-att (720b)",
       "src_uuid": "d3190d1e-e8ce-4f3a-b9f7-54632dd1f9d1"
+    },
+    {
+      "ts": "2026-06-10T04:43:26.481Z",
+      "text": "min CNS agentur fick inte alls samma uppmärksamhet",
+      "fork": "min-cns-agentur (1acb)",
+      "src_uuid": "c38b6dcf-545e-42e5-865d-8e62db68d58f"
     }
   ]
 }
