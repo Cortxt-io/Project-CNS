@@ -223,6 +223,17 @@ def main() -> None:
         print(f"[ROUTING] @{agent} → {reason}")
         print(f"[MODEL: {model}] — spawna subagent med denna modell, kör inte inline i Sonnet")
 
+        # Skriv aktiv routing till sidfil så statusraden kan visa modell + agent
+        try:
+            routing_file = ROOT / "exports" / "active_routing.json"
+            routing_file.parent.mkdir(exist_ok=True)
+            routing_file.write_text(
+                json.dumps({"model": model, "agent": agent, "reason": reason}),
+                encoding="utf-8",
+            )
+        except Exception:
+            pass
+
     except Exception:
         # Crash-proof: hooken ska aldrig blockera en prompt
         pass

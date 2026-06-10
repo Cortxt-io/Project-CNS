@@ -194,11 +194,23 @@ def statusline(state: dict | None = None) -> str:
     except Exception:
         active = None
 
+    # Aktiv routing (modell + agent) från router.py-sidfil
+    try:
+        routing_file = ROOT / "exports" / "active_routing.json"
+        routing = json.loads(routing_file.read_text(encoding="utf-8")) if routing_file.exists() else {}
+    except Exception:
+        routing = {}
+
     if active:
         icon = SESSION_ICONS.get(active, "⚪")
         parts = [f"{icon} {active}"]
     else:
         parts = [f"💡 {len(state['ideas'])} idéer"]
+
+    if routing.get("model"):
+        model_short = routing["model"].replace("claude-", "").replace("-4-5", " haiku").replace("-4-6", " sonnet").replace("-4-8", " opus")
+        agent_part = f"@{routing['agent']}" if routing.get("agent") else ""
+        parts.append(f"{model_short}{' · ' + agent_part if agent_part else ''}")
 
     running = len(state["running_sessions"])
     if running:
