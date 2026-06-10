@@ -1,0 +1,9 @@
+{
+  "id": "idea-2cc3ae24",
+  "text": "Sessioner får automatiska färger och namn beroende på sessionstyp. Visuell identitet per typ: triage = gul, bygg = blå, brainstorm = lila, review = grön (eller liknande). Påverkar: (1) statusraden (färgkodad typ-label), (2) TUI-sessionslistan, (3) terminalfliks-titeln via /flik-skillet (Windows Terminal stödjer tab-titel via escape-sekvenser). Namnmönster t.ex. \"Triage #3 – 10 jun\" genereras automatiskt vid cortxt_start_session om summary saknas eller är generisk. Hänger ihop med actionable statusrad (idea-c73f5ad4) och /session-skillets bokföring.",
+  "created_at": "2026-06-10T04:35:05",
+  "source": "chat",
+  "slug": null,
+  "session_id": "session-522ae885",
+  "status": "open"
+}
