@@ -1,0 +1,16 @@
+{
+  "id": "session-f5e4ee3f",
+  "created_at": "2026-06-10T12:08:04",
+  "updated_at": "2026-06-10T12:08:04",
+  "status": "running",
+  "summary": "verktygsladan (fortsättning): work-modell/taxonomi-spec + Linear-beslut; återkopplar pass efter att c3119c20 stängdes av parallell flik",
+  "link": {
+    "kind": "node",
+    "ref": "agentur"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null
+}
