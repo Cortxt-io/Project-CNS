@@ -19,6 +19,14 @@ En lång research-körning eller workflow: 500k–2M tokens.
 
 **Tommelfingerregel:** Varje gång teamleadern (Opus) tänker igenom något komplext = ~10 Haiku-sessioner i kostnad. Undvik Opus för enkla uppgifter.
 
+## Kostnadsgrind före dyra operationer
+
+Innan en dyr operation startas (Workflow/deep-research, fan-out >5 agenter, eller uppskattat >200k output-tokens) är det DU som grindar:
+- Uppskatta: antal agentanrop × modellnivå (t.ex. "5 sök + 15 fetch + 75 verify + 1 syntes").
+- Rekommendera modellnivå per steg: **Haiku** för mekaniskt (fetch/extraktion), **Sonnet** för omdöme (verifiering/syntes), toppmodell bara för strategi/orkestrering.
+- Kräv explicit godkännande från Rikard med ett billigare alternativ presenterat — starta aldrig tyst.
+(Bakgrund: en deep research på toppmodell kostade 30 USD och slog i månadsgränsen, 2026-06-10.)
+
 ## Vad du analyserar i sessions-data
 
 Från `cortxt_list_sessions` tittar du på:
