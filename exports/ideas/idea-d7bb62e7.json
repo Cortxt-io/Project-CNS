@@ -5,5 +5,8 @@
   "source": "chat",
   "slug": "cns-core",
   "session_id": null,
-  "status": "open"
+  "status": "resolved",
+  "resolution": "duplicate",
+  "resolution_reason": "Defer-villkoret (RAG först vid externt dokumentkorpus) är redan bokfört i quest 2:s beskrivning — dubblett i inkorgen.",
+  "resolved_at": "2026-06-10T03:16:21"
 }
