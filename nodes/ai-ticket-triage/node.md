@@ -1,15 +1,15 @@
 ---
 created: '2026-05-02'
-updated: '2026-06-08'
+updated: '2026-06-10'
 slug: ai-ticket-triage
-title: AI Ticket Triage
+title: CNS Triage
 kind: component
-part_of: ''
-stage: idea
-status: idea
+part_of: cns-core
+stage: working
+status: early_mvp
 feeds: []
 depends_on: []
-summary: AI-driven triagering av supportärenden baserat på historik och ärendetyp.
+summary: Intern triage av CNS idé-inkorg och noder — gruppera, resolva/promota idéer och föreslå nästa session.
 tags: []
 url_live: ''
 url_repo: ''
@@ -17,21 +17,22 @@ url_repo: ''
 
 ## Syfte
 
-AI-driven triagering och automatisk kategorisering av supportärenden baserat på historik och ärendetyp, för att minska manuell handläggningstid och förbättra svarstider.
+Intern triage-förmåga för att hålla CNS rent och handlingsbart: gå igenom idé-inkorgen (`idea_inbox.py`), gruppera överspelade/mogna/klustrade idéer, resolva (`cortxt_resolve_idea`) eller promota (`cortxt_promote_idea_to_issue`) dem, och städa nodmodellen (föräldralösa idé-noder, dubbletter, felplacerade noder). Driver dessutom sessionsrekommendationer via `recommend.py` och triage-sessionsprofilen.
 
 ## Beroenden
 
+Läser idé-inkorgen och nodgrafen via datalagret; skrivningar (resolve/promote) går via MCP-verktygen mot GitHub.
+
 ## Status
+
+Fungerande: idé-resolve/promote-verktygen och triage-flödet används aktivt. Vidareutveckling pågår (samlat `cortxt_triage`-batchverktyg + TUI-triagevy är fortsatt idéer i inkorgen).
 
 ## Nästa steg
 
 ## Risker
 
-- **technical**: AI-modellens precision vid triagering kan vara otillräcklig för kritiska ärenden, vilket riskerar felbedömningar och missnöjda kunder
-- **adoption**: Supportteam kan vara skeptiska till AI-driven triagering och sakna förtroende för systemets bedömningar
-- **ops**: Integration med befintliga ticketsystem (Zendesk, Freshdesk etc.) kan kräva omfattande anpassningar och underhåll
-- **market**: Konkurrens från etablerade supportplattformar som redan bygger in AI-triagering som standardfunktion
-
 ## Arbetslogg
 
 ## Anteckningar
+
+Repurposad 2026-06-10: noden beskrev tidigare en extern supportärende-triage-produkt (auto-genererad framing). Den representerar nu CNS:s interna triage som faktiskt byggts. Slug `ai-ticket-triage` är legacy och missvisande — ev. rename till `cns-triage` är ett separat steg (bryter `node:<slug>`-referenser, gör med eftertanke).
