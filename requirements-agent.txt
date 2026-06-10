@@ -2,3 +2,8 @@
 # Hålls separat från requirements.txt så Railway-deployen inte drar in det.
 # Kräver Python >=3.10, Claude Code CLI på PATH och ANTHROPIC_API_KEY.
 claude-agent-sdk>=0.2,<0.3
+
+# Valfritt extra för interaktiv webbnavigering (scripts/tui/web_tools.py).
+# Krävs bara om web_extract/web_act ska fungera i agent-hosten.
+# Aktiveras automatiskt om installerat; degraderar annars tydligt.
+browser-use

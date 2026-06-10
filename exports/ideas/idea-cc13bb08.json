@@ -1,0 +1,10 @@
+{
+  "id": "idea-cc13bb08",
+  "text": "TUI-agentur: koppla agenturen till TUI:ns C-läge (router + ny tui-agent), full node.md-kontext i seeden, skrivåtgärder med bekräftelse, fylligare nodsidor (innehållssektion + B=berika), snabbkommandon på nod, samt S=starta rekommenderade sessionstyper i ny flik via recommend.py. Inkl. bugfix: TUI läser inte .env → IssuesConfigError. Spec: cns-tui/plans/tui-agentur-spec.md (utkast för granskning).",
+  "created_at": "2026-06-10T03:15:08",
+  "source": "chat",
+  "slug": null,
+  "session_id": null,
+  "status": "promoted",
+  "promoted_to": "#32"
+}

@@ -4,5 +4,8 @@
   "created_at": "2026-06-09T02:57:40",
   "source": "chat",
   "slug": null,
-  "status": "open"
+  "status": "resolved",
+  "resolution": "wontfix",
+  "resolution_reason": "Anthropic key-creation ej programmatiskt byggbart (utredd slutsats)",
+  "resolved_at": "2026-06-09T16:16:47"
 }

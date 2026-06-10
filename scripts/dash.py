@@ -171,6 +171,59 @@ def _ideas_table():
     return t, len(ideas)
 
 
+def _worktrees_table():
+    from rich.table import Table
+    from scripts.tui.sources import list_worktrees
+
+    wts = list_worktrees()
+
+    t = Table(show_header=True, header_style="bold blue", box=None, padding=(0, 1))
+    t.add_column("", width=2)
+    t.add_column("Branch", width=24)
+    t.add_column("HEAD", width=9, style="dim")
+    t.add_column("Sökväg")
+
+    for wt in wts:
+        dot = "[bold green]●[/bold green]" if wt.is_current else "[dim]○[/dim]"
+        branch = wt.branch
+        # Komprimera sökvägen: visa bara de två sista delarna för läsbarhet.
+        try:
+            p = Path(wt.path)
+            rel = str(p.relative_to(REPO_ROOT.parent))
+        except Exception:
+            rel = wt.path
+        lock_tag = " [yellow]🔒[/yellow]" if wt.locked else ""
+        t.add_row(dot, branch, wt.head, f"[dim]{rel}[/dim]{lock_tag}")
+
+    return t, len(wts)
+
+
+def _branches_table():
+    from rich.table import Table
+    from scripts.tui.sources import git_branches, merged_branches
+
+    branches = git_branches()
+    merged = merged_branches()
+
+    t = Table(show_header=True, header_style="bold cyan", box=None, padding=(0, 1))
+    t.add_column("", width=2)
+    t.add_column("Branch", width=40)
+    t.add_column("Typ/status")
+
+    for b in branches:
+        dot = "[bold green]●[/bold green]" if b.current else "[dim]○[/dim]"
+        name = b.name
+        tags: list[str] = []
+        if b.remote:
+            tags.append("[dim]remote[/dim]")
+        if name in merged:
+            tags.append("[dim]✓merged[/dim]")
+        tag_str = "  ".join(tags) if tags else ""
+        t.add_row(dot, name, tag_str)
+
+    return t, len(branches)
+
+
 def _render(console) -> None:
     from rich.panel import Panel
 
@@ -201,6 +254,24 @@ def _render(console) -> None:
     except Exception as exc:
         console.print(f"[red]Sessioner: {exc}[/red]")
 
+    # Worktrees
+    try:
+        wt_table, wt_count = _worktrees_table()
+        console.print(
+            Panel(wt_table, title=f"[bold]Worktrees[/bold] ({wt_count})", border_style="blue")
+        )
+    except Exception as exc:
+        console.print(f"[red]Worktrees: {exc}[/red]")
+
+    # Brancher
+    try:
+        br_table, br_count = _branches_table()
+        console.print(
+            Panel(br_table, title=f"[bold]Brancher[/bold] ({br_count})", border_style="cyan")
+        )
+    except Exception as exc:
+        console.print(f"[red]Brancher: {exc}[/red]")
+
     # Kommunikationslogg (btw-asides)
     try:
         btw_table, btw_count = _btw_feed()
@@ -228,10 +299,22 @@ def _render(console) -> None:
 
 
 def main() -> None:
+    import io
     from rich.console import Console
 
     watch = "--watch" in sys.argv
-    console = Console()
+    hub = "--hub" in sys.argv
+
+    # --hub: starta interaktiv session-hub och avsluta direkt.
+    if hub:
+        sys.path.insert(0, str(REPO_ROOT))
+        from scripts.tui.session_hub import run as _run_hub
+        _run_hub()
+        return
+
+    # Sätt stdout till utf-8 för att undvika cp1252-krasch på Windows med unicode-tecken.
+    utf8_stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    console = Console(file=utf8_stdout, highlight=False)
 
     if watch:
         try:

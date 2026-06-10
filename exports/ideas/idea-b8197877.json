@@ -1,0 +1,10 @@
+{
+  "id": "idea-b8197877",
+  "text": "P1: Ge research-agent interaktiv webbnavigering via Browser Use, som lokal agent-host @tool (mcp__web__web_open/web_extract/web_act). Tung runtime (headless Chromium) → lokalt-först, dep i requirements-agent.txt med lazy-import + tydlig degradering. Read-först via _deny_unlisted (släpp mcp__web__*, neka fortsatt Write/Edit/Bash). Mönster: scripts/tui/agent_host.py _build_cns_tools. Äkta lucka: interaktiv webb bortom Claudes WebFetch.",
+  "created_at": "2026-06-09T13:52:23",
+  "source": "chat",
+  "slug": "cns-core",
+  "session_id": null,
+  "status": "promoted",
+  "promoted_to": "#21"
+}

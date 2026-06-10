@@ -4,5 +4,8 @@
   "created_at": "2026-06-09T01:48:05",
   "source": "chat",
   "slug": null,
-  "status": "open"
+  "status": "resolved",
+  "resolution": "duplicate",
+  "resolution_reason": "Stenåldersman-tonläget ingår redan i idea-aa9cd7aa (kollapsbara svar + enkelt tonläge) — samma funktion beskriven två gånger.",
+  "resolved_at": "2026-06-10T04:26:48"
 }
