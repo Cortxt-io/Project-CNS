@@ -1,0 +1,9 @@
+{
+  "id": "idea-e301f1d4",
+  "text": "Bemanna de 4 obemannade avdelnings-leads som lead-policyns (R2) reporting-targets pekar på: teknisk-direktor (Engineering), plattformschef (Platform), driftchef (Drift), kommunikationschef (Kommunikation). Tills de bemannas rapporterar deras ledarlösa pods provisoriskt till operativ-chef (COO). Detta stänger R3-eskaleringen i bemanning_matris.json lead_policy.",
+  "created_at": "2026-06-10T09:56:55",
+  "source": "chat",
+  "slug": "agentur",
+  "session_id": "session-c3119c20",
+  "status": "open"
+}
