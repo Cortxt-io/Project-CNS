@@ -14,6 +14,11 @@ from __future__ import annotations
 import json
 import re
 import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:  # körbar som fil (hooken anropar absolut sökväg)
+    sys.path.insert(0, str(ROOT))
 
 # (mönster, agent-slug, beskrivning) — prioritetsordning, första träff vinner.
 # Mer specifika mönster längre upp än generella.
@@ -102,6 +107,52 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
 # Prompts kortare än detta är troligen konversationella frågor (tack, ok, ja, etc.)
 MIN_PROMPT_LEN = 10
 
+# --- Sessionstyper (profiler i sessions/profiles/<typ>.md) -----------------
+# Direktiv som injiceras per prompt när en typ är aktiv (exports/active_session.json,
+# satt av /session-skillen). Håller agenturen i rätt läge hela passet.
+TYPE_DIRECTIVES: dict[str, str] = {
+    "brainstorm": "dialogläge — följdfrågor i text, fånga idéer, exekvera INTE",
+    "bygg": "exekveringsläge — spec först, hela agenturen via teamleader, egen branch",
+    "triage": "bokföringsläge — resolva/promota/klustra idéer proaktivt, rör ingen kod",
+    "review": "granskningsläge — read-first, konvergera slutsatser, fråga före main-merge",
+}
+
+# Signaler på att prompten hör hemma i en ANNAN sessionstyp än den aktiva.
+# Regelbaserat (ingen LLM, inga tokens); Claude bekräftar misstänkt byte med
+# väljaren och forkar ett barn-pass — byter aldrig tyst.
+TYPE_SIGNALS: dict[str, str] = {
+    "bygg": r"\b(nu bygger vi|implementera|skriv koden|b[oö]rja koda|godk[aä]nd spec|k[oö]r p[aå] planen)\b",
+    "brainstorm": r"\b(brainstorm|ny id[eé]|t[aä]nka h[oö]gt|spåna|vad ska vi bygga|riktningsfr[aå]ga)\b",
+    "triage": r"\b(triagera|st[aä]da inkorgen|resolva id[eé]er|rensa id[eé]er|g[aå] igenom id[eé]erna)\b",
+    "review": r"\b(granska (?:pr|branch|koden)|konvergera|merga slutsatser|review.?session)\b",
+}
+
+
+def _active_type() -> str | None:
+    try:
+        from scripts.session_store import get_active
+
+        state = get_active()
+        return (state or {}).get("type")
+    except Exception:
+        return None
+
+
+def session_lines(prompt_lower: str) -> list[str]:
+    """[SESSION]-direktiv + ev. typbytes-flagga för aktiv sessionstyp."""
+    active = _active_type()
+    if not active or active not in TYPE_DIRECTIVES:
+        return []
+    lines = [f"[SESSION: {active} — {TYPE_DIRECTIVES[active]}]"]
+    for other, pattern in TYPE_SIGNALS.items():
+        if other != active and re.search(pattern, prompt_lower):
+            lines.append(
+                f"[SESSION-SKIFTE?] {active} → {other} — bekräfta med väljaren; "
+                f"vid ja: markera passet done och forka ett {other}-pass (/session {other})"
+            )
+            break
+    return lines
+
 
 def classify(prompt: str) -> tuple[str | None, str | None]:
     stripped = prompt.strip()
@@ -116,7 +167,13 @@ def classify(prompt: str) -> tuple[str | None, str | None]:
 
 def main() -> None:
     try:
-        raw = sys.stdin.read()
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8")
+        if hasattr(sys.stdin, "reconfigure"):
+            # utf-8-sig: Windows-konsoler defaultar till cp1252 och PowerShell-pipar
+            # med BOM \u2014 annars blir payloaden ol\u00e4sbar och hooken tyst.
+            sys.stdin.reconfigure(encoding="utf-8-sig")
+        raw = sys.stdin.read().lstrip("\ufeff")
         if not raw.strip():
             return
         payload = json.loads(raw)
@@ -128,6 +185,9 @@ def main() -> None:
         )
         if not prompt:
             return
+
+        for line in session_lines(str(prompt).lower()):
+            print(line)
 
         agent, reason = classify(str(prompt))
         if not agent:
