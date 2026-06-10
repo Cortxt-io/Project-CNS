@@ -1,5 +1,31 @@
 {
   "_doc": "Bemanningsmatris: per (department|nivå) en mall som /bemanna använder som baslinje. Nivå härleds: exec=Ledning, lead=lead:true, ic=övriga. Org-arkitekten äger; validate_org grindar täckning mot manifest. Avvik från cellen bara med motivering.",
+  "lead_policy": {
+    "_doc": "R1-R3, beslutad av Rikard 2026-06-10, research-grundad (span-of-control: små spann ineffektiva; Spotify chapter-lead: små enheter matris-rapporterar; Anthropic multi-agent: orchestrator lönar sig bara vid äkta koordinationsbörda). Förklarar varför validate_org:s 'ingen lead utsedd'-WARN för dessa 16 pods är AVSIKTLIGA, inte defekter.",
+    "R1_egen_lead": "En pod (sub_department) får lead:true endast om den har >=3 medlemmar OCH >=1 sonnet/opus-roll att utse. Annars skapas ingen egen lead.",
+    "R2_matris": "Pods under tröskeln rapporterar dotted-line uppåt till sin avdelnings lead-roll (chapter-lead-modell). Ingen egen lead skapas.",
+    "R3_eskalering": "Saknar avdelningen en lead-roll helt -> flagga för Rikard. Finns lead-roll men obemannad -> rapportera till närmaste aktiva exec (operativ-chef) tills den bemannas.",
+    "utfall_2026-06-10": "0 av 16 ledarlösa pods kvalificerar under R1 (alla 1-3 agenter; de med 3 är all-haiku) -> alla 16 matris-rapporterar. Inga nya lead:true skapade.",
+    "reporting_targets": {
+      "Produkt/Arkitektur": "produktchef",
+      "Produkt/ProductOps": "produktchef",
+      "Engineering/Fullstack": "teknisk-direktor",
+      "Engineering/Data": "teknisk-direktor",
+      "Engineering/Integrations": "teknisk-direktor",
+      "Platform/DevOps": "plattformschef",
+      "Platform/DevEx": "plattformschef",
+      "People/L&D": "hr-chef",
+      "People/Culture": "hr-chef",
+      "Program/Coordination": "programledare",
+      "Program/Coaching": "programledare",
+      "Drift/Monitoring": "driftchef",
+      "Drift/Maintenance": "driftchef",
+      "Ekonomi/FinOps": "ekonomichef",
+      "Kommunikation/DevRel": "kommunikationschef",
+      "Kommunikation/Marketing": "kommunikationschef"
+    },
+    "obemannad_target_eskalering": "Reporting-targets ej aktiva (status roster) per 2026-06-10: teknisk-direktor (Engineering), plattformschef (Platform), driftchef (Drift), kommunikationschef (Kommunikation). Tills de bemannas rapporterar deras pods till operativ-chef (aktiv COO). Att bemanna dessa fyra avdelnings-leads rekommenderas härnäst."
+  },
   "cells": {
     "Ledning|exec": {
       "model": "claude-opus-4-8",

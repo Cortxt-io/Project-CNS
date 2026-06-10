@@ -91,6 +91,14 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
         "forskningsledare",
         "research/utredning",
     ),
+    # QA — teststrategi, kvalitetsgrindar, testtäckning (qa-lead koordinerar disciplinen)
+    (
+        r"\b(qa\b|qa.?lead|teststrategi|testt[aä]ckning|testautomation|test.?coverage"
+        r"|coverage|kvalitetsgrind|kvalitetss[aä]kr(?:a|ing)|regressionstest|enhetstest"
+        r"|e2e.?test|testplan)\b",
+        "qa-lead",
+        "QA/teststrategi/kvalitetsgrind",
+    ),
     # GitHub-operations: PRs, issues, CI, deploy
     (
         r"\b(pull.?request|[oö]ppen pr|granska pr|merg[ae]?|github.?issue|milestone"

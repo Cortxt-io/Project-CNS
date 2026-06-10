@@ -3,7 +3,7 @@
 > Genererad av `scripts/gen_agentur.py` ur agent-frontmatter. **Redigera inte för hand** —
 > ändra rollerna i `.claude/agents/*.md` (aktiva) / `.claude/org/roster/*.md` (skal) och kör om.
 
-**88 roller** i registret, varav **21 aktiva** (körbara i `.claude/agents/`).
+**88 roller** i registret, varav **22 aktiva** (körbara i `.claude/agents/`).
 Resten är skal i org-registret (`.claude/org/roster/`) — bemannas vid behov.
 
 Princip: agenter = anställda, skills = kompetenser. Matris (Spotify): department +
@@ -113,6 +113,15 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 | `fullstack-utvecklare` | Fullstack-utvecklare | sonnet-4-6 | — | — | aktiv |
 | `fullstack-utvecklare-2` | Fullstack-utvecklare | haiku-4-5 | — | — | skal |
 
+### QA
+
+| slug | titel | modell | roll | squad | status |
+|------|-------|--------|------|-------|--------|
+| `qa-lead` | QA-lead | sonnet-4-6 | lead | — | aktiv |
+| `testautomatiserare` | Testautomatiserare | haiku-4-5 | — | — | skal |
+| `testautomatiserare-2` | Testautomatiserare | haiku-4-5 | — | — | skal |
+| `testautomatiserare-3` | Testautomatiserare | haiku-4-5 | — | — | skal |
+
 ### Data
 
 | slug | titel | modell | roll | squad | status |
@@ -126,15 +135,6 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 |------|-------|--------|------|-------|--------|
 | `integrationsutvecklare` | Integrationsutvecklare | sonnet-4-6 | — | — | skal |
 | `integrationsutvecklare-2` | Integrationsutvecklare | haiku-4-5 | — | — | skal |
-
-### QA
-
-| slug | titel | modell | roll | squad | status |
-|------|-------|--------|------|-------|--------|
-| `qa-lead` | QA-lead | sonnet-4-6 | lead | — | skal |
-| `testautomatiserare` | Testautomatiserare | haiku-4-5 | — | — | skal |
-| `testautomatiserare-2` | Testautomatiserare | haiku-4-5 | — | — | skal |
-| `testautomatiserare-3` | Testautomatiserare | haiku-4-5 | — | — | skal |
 
 ## Platform
 

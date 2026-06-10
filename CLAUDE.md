@@ -134,6 +134,7 @@ Routing-tabell (snabbref):
 | `hr-chef` | ny agent, agentprofil, teamstruktur |
 | `frontend-utvecklare` | React, Vite, CSS, UI-komponent |
 | `backend-utvecklare` | Flask, MCP-server, API, webhook |
+| `qa-lead` | QA, teststrategi, testtäckning, kvalitetsgrind, coverage |
 | `plattformsingenjor` | script, hook, automation |
 | `operativ-chef` | planera, sprint, orchestration, multi-agent |
 | `sessionskoordinator` | kedja sessioner, daemon, hängande session, nästa session |

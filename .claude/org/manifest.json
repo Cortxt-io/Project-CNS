@@ -71,7 +71,7 @@
         ["data-ingenjor-2", "Data-ingenjör", "haiku", false, false]
       ],
       "QA": [
-        ["qa-lead", "QA-lead", "sonnet", true, false],
+        ["qa-lead", "QA-lead", "sonnet", true, true],
         ["testautomatiserare", "Testautomatiserare", "haiku", false, false],
         ["testautomatiserare-2", "Testautomatiserare", "haiku", false, false],
         ["testautomatiserare-3", "Testautomatiserare", "haiku", false, false]
