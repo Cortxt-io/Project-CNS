@@ -40,6 +40,7 @@ MODEL_TIER: dict[str, str] = {
     "fullstack-agent": "claude-sonnet-4-6",
     "tranaren": "claude-sonnet-4-6",
     "teamleader": "claude-opus-4-8",
+    "dirigenten": "claude-haiku-4-5",
 }
 
 ROUTING_RULES: list[tuple[str, str, str]] = [
@@ -127,6 +128,13 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
         r"|vad [aä]r [oö]ppet|status p[aå]|hur m[aå]nga|finns det n[aå]gra)\b",
         "kontext-agent",
         "enkel lookup/status",
+    ),
+    # Dirigenten — sessionkedning och daemon-övervakning
+    (
+        r"\b(dirig(?:era|enten?)|kedj(?:a|ning)|n[aä]sta session|vakt(?:a|ar)|daemon"
+        r"|h[aä]ngande session|sessionskedjning|starta n[aä]sta)\b",
+        "dirigenten",
+        "sessionskedning/daemon",
     ),
 ]
 

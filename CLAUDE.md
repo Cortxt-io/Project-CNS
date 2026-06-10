@@ -136,6 +136,7 @@ Routing-tabell (snabbref):
 | `backend-agent` | Flask, MCP-server, API, webhook |
 | `scripts-agent` | script, hook, automation |
 | `teamleader` | planera, sprint, orchestration, multi-agent |
+| `dirigenten` | kedja sessioner, daemon, hängande session, nästa session |
 
 ## Arbetsregler
 - **Spec först:** skriv/granska en implementationsspec innan kod. Vid osäkerhet — ställ frågan i specen så den måste besvaras.
