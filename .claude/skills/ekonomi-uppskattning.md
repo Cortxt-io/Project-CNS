@@ -3,51 +3,66 @@ name: ekonomi-uppskattning
 description: Kostnadsmodell för agent-körningar — Haiku/Sonnet/Opus, token-budget, go/no-go.
 ---
 
-# Ekonomi-uppskattning
+# /ekonomi-uppskattning
 
-## Relativa kostnader
+## Syfte
+Beräkna uppskattad token-kostnad för en planerad operation och returnera GRÖN/GUL/RÖD go/no-go med konkret rekommendation.
 
-| Modell | Relativ kostnad | Använd för |
-|--------|----------------|------------|
-| Haiku 4.5 | 1x | Enkla uppgifter, orientering, läsning, kompakt output |
-| Sonnet 4.6 | 10–15x | Kodgenerering, analys, dokumentation |
-| Opus 4.8 | 60–80x | Orkestrering, djup analys, strategiska beslut |
+## När du använder den
+- Innan en dyr operation startas: Workflow, deep-research, fan-out med fler än 5 agenter
+- När du behöver välja modellnivå per delsteg i en plan
+- När du fått en förfrågan som involverar flera parallella agenter
+- Som underlag för `/eskalera-uppat` (röd budget kräver eskalering)
 
-## Typiska sessions-kostnader
+## Steg
 
-| Typ | Token-spann |
-|-----|------------|
-| Kort orientering/planering | 20–80k |
-| Kodsession (läs, skriv, iterera) | 200–600k |
-| Lång research / workflow | 500k–2M |
+1. **Inventera delstegen** — lista varje agentanrop som krävs (läs, skriv, analys, syntes).
 
-**Tumregel:** Varje Opus-tänkesteg = ~10 Haiku-sessioner. Undvik Opus för enkla uppgifter.
+2. **Tilldela modellnivå per steg** med dessa regler:
+   - Haiku 4.5: mekaniskt arbete — hämtning, extraktion, läsning, enkla kontroller
+   - Sonnet 4.6: omdöme — kodgenerering, analys, dokumentation, verifiering
+   - Opus 4.8 (toppmodell): orkestrering, djup strategi, komplexa synteser — undvik annars
 
-## Go/No-go-beslutsregler
+3. **Uppskatta tokens per steg:**
+   - Varje fil som läses: 5–20k tokens
+   - Varje skrivoperation/iteration: 10–30k tokens
+   - Lägg på 50 % buffert
 
-**Grön (kör direkt):**
-- Haiku-uppgift, oavsett längd
-- Sonnet, <200k tokens uppskattning
+4. **Multiplicera med relativ modellkostnad:**
 
-**Gul (kolla med teamleadern):**
-- Sonnet >300k tokens
-- Opus för uppgifter som borde vara Sonnet
-- 4+ parallella sessioner igång
+   | Modell | Relativ kostnad | Typisk användning |
+   |--------|----------------|-------------------|
+   | Haiku 4.5 | 1x | Orientering, läsning, enkel output |
+   | Sonnet 4.6 | 10–15x | Kod, analys, dokumentation |
+   | Opus 4.8 | 60–80x | Orkestrering, strategi |
 
-**Röd (eskalera till Rikard):**
-- Opus-session >2h
-- Loop-mönster (samma uppdrag 3+ gånger)
-- >5 parallella sessioner
+   Tumregel: ett Opus-tänkesteg = ~10 Haiku-sessioner.
 
-## Hur du uppskatttar
+5. **Sätt status** baserat på total uppskattad token-kostnad (Haiku-normaliserat):
+   - **GRÖN** — under 50k tokens totalt, eller Haiku-uppgift av valfri längd, eller Sonnet under 200k
+   - **GUL** — Sonnet 200–500k, eller Opus för uppgift som borde vara Sonnet, eller 4–5 parallella sessioner
+   - **RÖD** — över 500k tokens, eller Opus-session förväntad >2h, eller fan-out >5 agenter
 
-1. Räkna antal filer som läses: varje fil ~5–20k tokens
-2. Räkna antal skrivoperationer: varje Write-iteration ~10–30k tokens
-3. Multipla med modellkostnad
-4. Lägg på 50% buffert
+6. **Vid GUL/RÖD:** presentera ett billigare alternativ och kräv explicit godkännande innan körning startas.
 
-Rapportera alltid i formatet:
+## Output-format
+
 ```
-UPPSKATTNING: ~[X]k tokens (Haiku/Sonnet/Opus)
+UPPSKATTNING: ~[X]k tokens ([Haiku/Sonnet/Opus per steg])
 STATUS: GRÖN | GUL | RÖD
+OBSERVATION: [ett konkret skäl till statusen]
+REKOMMENDATION: [bara vid GUL/RÖD — konkret billigare alternativ]
+```
+
+Max 5 rader. Rapportera aldrig exakta kronor/dollar — enheterna är relativa estimat.
+
+## Exempel
+
+Förfrågan: "Kör deep-research på tre konkurrenter med Opus-syntes"
+
+```
+UPPSKATTNING: ~850k tokens (15 fetch@Haiku + 9 verify@Sonnet + 1 syntes@Opus)
+STATUS: RÖD
+OBSERVATION: Opus-syntes på 1 M+ tokens — motsvarar ~80 Haiku-sessioner i kostnad
+REKOMMENDATION: Kör verify på Haiku istället för Sonnet → ~400k tokens (GUL). Godkänn innan start.
 ```

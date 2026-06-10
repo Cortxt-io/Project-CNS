@@ -1,63 +1,91 @@
 ---
 name: session-handoff
-description: Hur du överlämnar ett pågående arbete till en annan agent via session-fork.
+description: Hur du överlämnar ett pågående arbete till en annan agent via session-fork med fullständigt handoff-dokument.
 ---
 
-# Session-handoff
+# /session-handoff
 
-Använd när du ska överlämna ett pågående arbete till en annan agent — eller när en agent forkas ur din session.
+## Syfte
+Strukturera överlämning av ett pågående arbete till en annan agent (eller nästa session) så att kontexten inte tappas och nästa agent kan starta utan frågor.
 
-## Handoff-protokollet
+## När du använder den
+- Du har gjort din del och nästa steg tillhör en annan agent
+- En lång session forkas ut till en specialistagent (t.ex. Ekonomen lämnar vidare till Backend-agent)
+- Parallella agenter ska köra delar av ett uppdrag och du orkestrerar återsamlingen
+- Session avslutas men arbete återstår — lämna underlag för nästa pass
 
-### 1. Spara ditt nuläge
-```python
-cortxt_save_session(
-    summary="[Vad du gjort + vad som återstår]",
-    link_kind="issue",  # eller "quest", "node"
-    link_ref="[id]",
-    status="running"  # om arbetet fortsätter i en fork
-)
-```
+## Steg
 
-### 2. Skapa en fork för nästa agent
-```python
-cortxt_fork_session(
-    parent_id="[din session-id]",
-    fork_name="[agent-namn]: [uppgift]",
-    summary="[Vad forken ska göra]",
-    link_kind="issue",
-    link_ref="[id]"
-)
-```
+1. **Spara nuläget** med `cortxt_save_session` innan du forkar:
+   ```
+   cortxt_save_session(
+     summary="[Vad som gjorts] + [Vad som återstår]",
+     link_kind="issue" | "quest" | "node",
+     link_ref="[id]",
+     status="running"   # om arbetet fortsätter i fork
+   )
+   ```
 
-### 3. Formulera överlämningen
+2. **Skapa fork** för nästa agent med `cortxt_fork_session`:
+   ```
+   cortxt_fork_session(
+     parent_id="[din session-id]",
+     fork_name="[agent-namn]: [kort uppgiftsbeskrivning]",
+     summary="[Vad forken ska göra och leverera]",
+     link_kind="issue" | "quest" | "node",
+     link_ref="[id]"
+   )
+   ```
+
+3. **Formulera handoff-dokumentet** (se Output-format nedan) och inkludera `fork-id` från steg 2.
+
+4. **Vid parallella forkar** (flera agenter samtidigt):
+   - Varje fork får sin egna `cortxt_fork_session`
+   - Inga överlappande ansvar — en fil/uppgift ägs av exakt en agent
+   - Dokumentera ägarskap explicit i varje forks `summary`
+
+5. **Återsamling** när parallella agenter är klara:
+   - Kör `/cns-sync` för att detektera om sessioner överlappar på samma nod
+   - Kör `/cns-flush` för att spola ner slutsatsen i CNS
+
+## Output-format
 
 ```
 HANDOFF TILL: [agent-namn]
-SESSION-FORK: [fork-id]
-UPPGIFT: [exakt vad de ska göra]
+SESSION-FORK: [fork-id från cortxt_fork_session]
+PARENT-SESSION: [din session-id]
+LÄNK: [link_kind]/[link_ref]
+
+UPPGIFT: [Exakt vad nästa agent ska göra — en tydlig mening]
+
 KONTEXT:
-  - Vad som är klart: [lista]
-  - Vad som återstår: [lista]
-  - Blockerare: [om några]
-FÖRVÄNTAT RESULTAT: [vad de ska leverera]
+  Klart:       [lista över vad som redan är gjort]
+  Återstår:    [lista över vad som ska göras]
+  Blockerare:  [lista, eller "inga"]
+  Beslut tagna:[relevanta beslut eller antaganden som gjorts]
+
+FÖRVÄNTAT RESULTAT: [Vad nästa agent ska leverera när den är klar]
+MARKERA DONE: [Vad som ska stå i cortxt_mark_session_done-summary när klart]
 ```
 
-## Parallell fork (flera agenter samtidigt)
+## Exempel
 
-Om du forkar till flera agenter:
-- Varje fork får sin egna fork-session
-- Markera tydligt vem som äger vad
-- Inga överlappande ansvar — en fil/uppgift → en agent
+Ekonomen har analyserat kostnader och lämnar vidare till Scripts-agent för att implementera tröskelvärden:
 
-## Återsamling
-
-När parallella agenter är klara och du ska synka:
 ```
-/cns-sync  ← detekterar om sessioner överlappar på samma nod
-```
+HANDOFF TILL: scripts-agent
+SESSION-FORK: session-a3f812cc
+PARENT-SESSION: session-9d21b4e0
+LÄNK: issue/42
 
-Sedan:
-```
-/cns-flush ← spola ner slutsatsen i CNS
+UPPGIFT: Implementera GUL/RÖD-trösklar i ekonom_tracker.py baserat på beslutad spec
+
+KONTEXT:
+  Klart:       Kostnadsanalys klar, trösklar beslutade (GUL >200k, RÖD >500k Haiku-normaliserat)
+  Återstår:    Lägga till threshold-logik i ekonom_tracker.py + uppdatera exports/ekonom_stats.json-schemat
+  Blockerare:  Inga
+  Beslut tagna: Haiku-normalisering används, inte absoluta tokens; buffert 50 %
+
+FÖRVÄNTAT RESULTAT: Fungerande threshold-check i ekonom_tracker.py med test
+MARKERA DONE: "ekonom_tracker threshold implementerad — GUL/RÖD live"
 ```
