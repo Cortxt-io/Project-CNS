@@ -1,7 +1,7 @@
 {
   "session_id": "11b5c2fc-6b26-451a-88e5-f180f28a0d9e",
   "created_at": "2026-06-10T12:20:01",
-  "updated_at": "2026-06-10T12:20:01",
+  "updated_at": "2026-06-10T12:55:19",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -10,6 +10,12 @@
       "text": "efter detta vad bör vi utveckla i agenturen? ä det skills till agenterna ? eller mer research?",
       "fork": "efter-detta-vad (2e6a)",
       "src_uuid": "c658e0dc-ab6c-4fe5-a008-14d50481422a"
+    },
+    {
+      "ts": "2026-06-10T10:48:46.515Z",
+      "text": "jag har idag: issues`/`quests`/`ideas`/`projects`/`sessions` Men jag vill egentligen undersöka vad jag ska byta ut dessa med för att passa min nya agila agentur",
+      "fork": "jag-har-idag (738b)",
+      "src_uuid": "48f10894-f2aa-4421-9e6b-ec3fdfef4be4"
     }
   ]
 }
