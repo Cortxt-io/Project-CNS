@@ -4,7 +4,7 @@ title: Terminal-UI-utvecklare
 department: Engineering
 sub_department: Frontend
 chapter: Frontend
-squad: TUI
+squad: Cockpit
 lead: false
 model: claude-haiku-4-5
 status: roster

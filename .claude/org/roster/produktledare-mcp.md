@@ -4,7 +4,7 @@ title: Produktledare MCP-plattform
 department: Produkt
 sub_department: PM
 chapter: null
-squad: MCP-plattform
+squad: Platform
 lead: false
 model: claude-sonnet-4-6
 status: roster

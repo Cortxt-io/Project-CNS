@@ -178,9 +178,9 @@
   },
   "_squads_doc": "Tvärfunktionella missionsteam (vad vi bygger) — ortogonalt mot department (hur vi bygger). squad → medlems-slugs ur valfria avdelningar.",
   "squads": {
-    "TUI": ["terminal-utvecklare", "terminal-utvecklare-2", "produktledare-tui"],
+    "Cockpit": ["terminal-utvecklare", "terminal-utvecklare-2", "produktledare-tui"],
     "Dashboard": ["frontend-utvecklare", "produktledare-dashboard"],
-    "MCP-plattform": ["backend-utvecklare", "produktledare-mcp"],
-    "CNS-core": ["produktledare-core"]
+    "Platform": ["backend-utvecklare", "produktledare-mcp"],
+    "Foundation": ["produktledare-core"]
   }
 }
