@@ -1,0 +1,9 @@
+{
+  "id": "idea-0d7efee2",
+  "text": "Skills-kvalitet: verifiera att skills som agentfiler refererar i \"Skills du känner till\" faktiskt finns (oro om \"påhittade skills till ekonomen\"). Överväg en dedikerad skills-studio-session som kallar @kompetensutvecklare (tränaren) för att skapa/validera skills systematiskt — analogt med agent-studio. Föddes ur /btw 2026-06-10.",
+  "created_at": "2026-06-10T10:00:40",
+  "source": "chat",
+  "slug": "agentur",
+  "session_id": "session-c3119c20",
+  "status": "open"
+}
