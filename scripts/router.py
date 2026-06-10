@@ -136,6 +136,27 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
         "dirigenten",
         "sessionskedning/daemon",
     ),
+    # Tränaren — förbättra agentdefinitioner och systemprompter
+    (
+        r"\b(tr[aä]n(?:a|aren?|ing)|f[oö]rb[aä]ttra (?:agent|prompt)|systemsprompt"
+        r"|agentprestanda|diagnostisera agent|prompt.?patch|agent.?kvalitet)\b",
+        "tranaren",
+        "agentträning/promptförbättring",
+    ),
+    # TUI-agent — terminal-cockpit och dash.py
+    (
+        r"\b(tui\b|dash\.py|terminal.?(?:cockpit|dashboard|[oö]verblick)"
+        r"|rich\b.*(?:table|panel|layout)|scripts/tui)\b",
+        "tui-agent",
+        "TUI/terminal-dashboard",
+    ),
+    # Fullstack — när ändringen spänner över både backend och frontend
+    (
+        r"\b(fullstack|b[aå]de (?:backend och frontend|frontend och backend)"
+        r"|hela stacken|api.?(?:och|\\+).?ui|end.?to.?end.?feature)\b",
+        "fullstack-agent",
+        "fullstack/hela stacken",
+    ),
 ]
 
 # Prompts kortare än detta är troligen konversationella frågor (tack, ok, ja, etc.)
