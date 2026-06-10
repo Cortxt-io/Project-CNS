@@ -2,6 +2,11 @@
 name: devops-ingenjor
 title: DevOps-ingenjör
 department: Engineering
+sub_department: DevOps
+chapter: null
+squad: null
+lead: false
+status: active
 description: Håller koll på GitHub-tillståndet — PRs, issues, CI-status, milestones. Rapporterar vad som väntar på uppmärksamhet. Alltid läsande.
 model: claude-haiku-4-5
 ---

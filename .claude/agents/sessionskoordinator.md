@@ -2,6 +2,11 @@
 name: sessionskoordinator
 title: Sessionskoordinator
 department: Program
+sub_department: Coordination
+chapter: null
+squad: null
+lead: false
+status: active
 description: Daemon-agent som övervakar sessionsträdet och kedjar sessioner automatiskt. Pollar running-sessioner, detekterar done-signal och öppnar ny flik med startmeddelande via /flik-skillen.
 model: claude-haiku-4-5
 ---

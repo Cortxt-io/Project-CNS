@@ -2,6 +2,11 @@
 name: produktchef
 title: Produktchef
 department: Produkt
+sub_department: PM
+chapter: null
+squad: null
+lead: true
+status: active
 description: Fångar och triagerar idéer löpande i bakgrunden utan att avbryta arbetsflödet. Vet när en idé är redo att bli en issue och när den inte är det.
 model: claude-haiku-4-5
 ---

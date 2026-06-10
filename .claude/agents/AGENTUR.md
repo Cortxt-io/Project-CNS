@@ -1,123 +1,283 @@
-# AGENTUR.md — org-schema (Plan A)
+# AGENTUR.md — org-schema (Plan A) — GENERERAD
 
-Agenturen är hur **vi driver portföljen** (Plan A, `.claude/`) — inte produktkod.
-Den är strukturerad som ett riktigt produktbolag: avdelningar, roller, titlar.
+> Genererad av `scripts/gen_agentur.py` ur agent-frontmatter. **Redigera inte för hand** —
+> ändra rollerna i `.claude/agents/*.md` (aktiva) / `.claude/org/roster/*.md` (skal) och kör om.
 
-**Bärande princip:** *agenterna ÄR de anställda, skills ÄR deras kompetenser.*
-Att skapa en agent = rekrytering (HR-chef). Att förbättra en = utbildning (Kompetensutvecklare).
-Det som bygger agenturen själv är därför **People + Platform** — inte en verkstad.
+**86 roller** i registret, varav **18 aktiva** (körbara i `.claude/agents/`).
+Resten är skal i org-registret (`.claude/org/roster/`) — bemannas vid behov.
 
-Varje agent har `name` (slug = routing-nyckel), `title` (jobbtitel) och `department` i frontmatter.
-`department` speglas i `scripts/router.py:DEPARTMENT`.
+Princip: agenter = anställda, skills = kompetenser. Matris (Spotify): department +
+sub_department (linjen) × squad (mission) × chapter (disciplin) × guild (skills `Gemensam`).
 
-## Org-schema
+Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (ej agentfil).
 
-```
-                         Rikard — VD
-                              │
-                   operativ-chef (Operativ chef, COO)
-                              │
-   ┌──────────┬──────────┬───┴────┬──────────┬──────────┬──────────┬──────────┐
- Produkt     R&D     Engineering Platform  People    Program     Drift   Ekonomi/Komm
-```
+## Ledning
 
-## Avdelningar
+### Exec
 
-### Ledning
-| slug | titel |
-|------|-------|
-| `operativ-chef` | Operativ chef (COO) |
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `operativ-chef` | Operativ chef (COO) | opus-4-8 | lead | aktiv |
+| `produktdirektor` | Produktdirektör (CPO) | opus-4-8 | lead | skal |
+| `stabschef` | Stabschef | sonnet-4-6 | lead | skal |
+| `strategichef` | Strategichef | opus-4-8 | lead | skal |
+| `teknisk-direktor` | Teknisk direktör (CTO) | opus-4-8 | lead | skal |
 
-Driver orkestrering och strategiska beslut; eskaleringspunkt under VD (Rikard).
+## Produkt
 
-### Produkt — *vad ska vi bygga*
-| slug | titel |
-|------|-------|
-| `produktchef` | Produktchef |
-| `losningsarkitekt` | Lösningsarkitekt |
+### Arkitektur
 
-Produktchefen fångar och triagerar idéer; lösningsarkitekten tar en idé med känd riktning
-och levererar teknisk skiss (flöde: produktchef → losningsarkitekt → operativ-chef).
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `losningsarkitekt` | Lösningsarkitekt | sonnet-4-6 | — | aktiv |
 
-### R&D — *vad finns där ute*
-| slug | titel |
-|------|-------|
-| `forskningsledare` | Forskningsledare |
+### PM
 
-Webb-research och verifiering mot minst två källor; skriver findings till wiki.
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `produktchef` | Produktchef | haiku-4-5 | lead | aktiv |
+| `produktledare-core` | Produktledare CNS-core | sonnet-4-6 | — | skal |
+| `produktledare-dashboard` | Produktledare Dashboard | sonnet-4-6 | — | skal |
+| `produktledare-mcp` | Produktledare MCP-plattform | sonnet-4-6 | — | skal |
+| `produktledare-tui` | Produktledare TUI | sonnet-4-6 | — | skal |
 
-### Engineering — *bygg det*
-| slug | titel |
-|------|-------|
-| `backend-utvecklare` | Backend-utvecklare |
-| `frontend-utvecklare` | Frontend-utvecklare |
-| `fullstack-utvecklare` | Fullstack-utvecklare |
-| `devops-ingenjor` | DevOps-ingenjör |
-| `terminal-utvecklare` | Terminal-UI-utvecklare |
+### Design
 
-### Platform — *intern infrastruktur*
-| slug | titel |
-|------|-------|
-| `plattformsingenjor` | Plattformsingenjör |
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `ux-lead` | UX-lead | sonnet-4-6 | lead | skal |
+| `interaktionsdesigner` | Interaktionsdesigner | sonnet-4-6 | — | skal |
+| `ux-designer` | UX-designer | sonnet-4-6 | — | skal |
+| `ux-researcher` | UX-researcher | sonnet-4-6 | — | skal |
 
-Hooks, automation, `session_store.py`, agent-host — agenturens egen infrastruktur.
+### ProductOps
 
-### People — *agenturen själv*
-| slug | titel |
-|------|-------|
-| `hr-chef` | HR-chef (CHRO) |
-| `kompetensutvecklare` | Kompetensutvecklare (L&D) |
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `product-ops` | Product Ops | haiku-4-5 | — | skal |
+| `produktanalytiker` | Produktanalytiker | haiku-4-5 | — | skal |
 
-HR-chefen rekryterar (validerar ny agent före skapande); kompetensutvecklaren tränar
-(förbättrar agentprompter).
+## R&D
 
-### Program — *orkestrering av arbetspass*
-| slug | titel |
-|------|-------|
-| `programledare` | Programledare |
-| `sessionskoordinator` | Sessionskoordinator |
+### Research
 
-Programledaren designar session-trädet (innan arbete); sessionskoordinatorn kedjar pass
-(reagerar på done-signal) och flaggar hängande arbete.
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `forskningsledare` | Forskningsledare | sonnet-4-6 | lead | aktiv |
+| `konkurrentanalytiker` | Konkurrentanalytiker | sonnet-4-6 | — | skal |
+| `marknadsanalytiker` | Marknadsanalytiker | sonnet-4-6 | — | skal |
+| `teknikspanare` | Teknikspanare | sonnet-4-6 | — | skal |
+| `webbresearcher` | Webbresearcher | haiku-4-5 | — | skal |
 
-### Drift — *operations*
-| slug | titel |
-|------|-------|
-| `lagesanalytiker` | Lägesanalytiker |
-| `underhallsingenjor` | Underhållsingenjör |
+### Innovation
 
-Lägesanalytikern ger nulägesrapport vid passstart; underhållsingenjören städar zombie-noder
-och stale wiki.
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `innovationsledare` | Innovationsledare | sonnet-4-6 | lead | skal |
+| `datavetare` | Datavetare | sonnet-4-6 | — | skal |
+| `prototypare` | Prototypare | sonnet-4-6 | — | skal |
 
-### Ekonomi
-| slug | titel |
-|------|-------|
-| `ekonomichef` | Ekonomichef (CFO) |
+## Engineering
 
-Vaktar token-/credits-förbrukning; grindar dyra operationer (grön/gul/röd).
+### Backend
 
-### Kommunikation
-| slug | titel |
-|------|-------|
-| `teknisk-skribent` | Teknisk skribent |
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `backend-lead` | Backend-lead | sonnet-4-6 | lead | skal |
+| `backend-utvecklare` | Backend-utvecklare | sonnet-4-6 | — | aktiv |
+| `backend-utvecklare-2` | Backend-utvecklare | haiku-4-5 | — | skal |
+| `backend-utvecklare-3` | Backend-utvecklare | haiku-4-5 | — | skal |
+| `backend-utvecklare-4` | Backend-utvecklare | haiku-4-5 | — | skal |
 
-Skriver wiki-sidor (arkitektur, memory cards), uppdaterar stale termer.
+### DevOps
 
-## Kompetenser (skills) per avdelning
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `devops-ingenjor` | DevOps-ingenjör | haiku-4-5 | — | aktiv |
 
-Skills bär `department` i frontmatter. **Gemensam** = delas brett, ägs ej av en avdelning.
+### Frontend
 
-| Avdelning | Skills |
-|-----------|--------|
-| Ekonomi | `ekonomi-uppskattning` |
-| Program | `session-bokfor`, `session-handoff`, `cns-fork`, `cns-sync`, `cns-flush` |
-| Engineering | `issue-lifecycle`, `pr-protokoll` |
-| Produkt | `idea-triage`, `idea-session`, `nod-granska` |
-| Kommunikation | `wiki-underhall` |
-| People | `agent-studio` |
-| Platform | `new-skill`, `new-session-profile` |
-| Gemensam | `eskalera-uppat`, `agent-routing`, `cortxt-quests` |
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `frontend-lead` | Frontend-lead | sonnet-4-6 | lead | skal |
+| `frontend-utvecklare` | Frontend-utvecklare | sonnet-4-6 | — | aktiv |
+| `frontend-utvecklare-2` | Frontend-utvecklare | haiku-4-5 | — | skal |
+| `frontend-utvecklare-3` | Frontend-utvecklare | haiku-4-5 | — | skal |
 
-## Underhåll
-Lägg till en ny agent → uppdatera detta org-schema OCH `scripts/router.py` (`MODEL_TIER`,
-`ROUTING_RULES`, `DEPARTMENT`) i samma ändring. Slugen är ett routing-kontrakt — byt inte löst.
+### Fullstack
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `fullstack-utvecklare` | Fullstack-utvecklare | sonnet-4-6 | — | aktiv |
+| `fullstack-utvecklare-2` | Fullstack-utvecklare | haiku-4-5 | — | skal |
+
+### TUI
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `terminal-utvecklare` | Terminal-UI-utvecklare | sonnet-4-6 | — | aktiv |
+| `terminal-utvecklare-2` | Terminal-UI-utvecklare | haiku-4-5 | — | skal |
+
+### Data
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `data-ingenjor` | Data-ingenjör | sonnet-4-6 | — | skal |
+| `data-ingenjor-2` | Data-ingenjör | haiku-4-5 | — | skal |
+
+### Integrations
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `integrationsutvecklare` | Integrationsutvecklare | sonnet-4-6 | — | skal |
+| `integrationsutvecklare-2` | Integrationsutvecklare | haiku-4-5 | — | skal |
+
+### QA
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `qa-lead` | QA-lead | sonnet-4-6 | lead | skal |
+| `testautomatiserare` | Testautomatiserare | haiku-4-5 | — | skal |
+| `testautomatiserare-2` | Testautomatiserare | haiku-4-5 | — | skal |
+| `testautomatiserare-3` | Testautomatiserare | haiku-4-5 | — | skal |
+
+## Platform
+
+### Infra
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `plattformschef` | Plattformschef | sonnet-4-6 | lead | skal |
+| `plattformsingenjor` | Plattformsingenjör | sonnet-4-6 | — | aktiv |
+| `plattformsingenjor-2` | Plattformsingenjör | haiku-4-5 | — | skal |
+
+### DevEx
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `build-ingenjor` | Build-ingenjör | haiku-4-5 | — | skal |
+| `devex-ingenjor` | Developer-Experience-ingenjör | sonnet-4-6 | — | skal |
+
+### DevOps
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `devops-ingenjor-2` | DevOps-ingenjör | haiku-4-5 | — | skal |
+
+## People
+
+### Talent
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `hr-chef` | HR-chef (CHRO) | sonnet-4-6 | lead | aktiv |
+| `rekryterare` | Rekryterare | sonnet-4-6 | — | skal |
+| `rekryterare-2` | Rekryterare | haiku-4-5 | — | skal |
+
+### L&D
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `kompetensutvecklare` | Kompetensutvecklare (L&D) | sonnet-4-6 | — | aktiv |
+| `kompetensutvecklare-2` | Kompetensutvecklare | sonnet-4-6 | — | skal |
+
+### Culture
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `kulturansvarig` | Kulturansvarig | sonnet-4-6 | — | skal |
+
+## Program
+
+### Delivery
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `programledare` | Programledare | sonnet-4-6 | lead | aktiv |
+| `scrum-master` | Scrum Master | haiku-4-5 | — | skal |
+| `scrum-master-2` | Scrum Master | haiku-4-5 | — | skal |
+
+### Coordination
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `sessionskoordinator` | Sessionskoordinator | haiku-4-5 | — | aktiv |
+| `sessionskoordinator-2` | Sessionskoordinator | haiku-4-5 | — | skal |
+
+### Release
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `leveranschef` | Leveranschef | sonnet-4-6 | lead | skal |
+| `release-koordinator` | Release-koordinator | haiku-4-5 | — | skal |
+
+## Drift
+
+### Monitoring
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `lagesanalytiker` | Lägesanalytiker | haiku-4-5 | — | aktiv |
+| `overvakningsanalytiker` | Övervakningsanalytiker | haiku-4-5 | — | skal |
+
+### Maintenance
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `underhallsingenjor` | Underhållsingenjör | sonnet-4-6 | — | aktiv |
+| `underhallsingenjor-2` | Underhållsingenjör | haiku-4-5 | — | skal |
+
+### SRE
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `driftchef` | Driftchef | sonnet-4-6 | lead | skal |
+| `sre-ingenjor` | SRE-ingenjör | sonnet-4-6 | — | skal |
+| `sre-ingenjor-2` | SRE-ingenjör | haiku-4-5 | — | skal |
+
+### Incident
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `incidentledare` | Incidentledare | sonnet-4-6 | lead | skal |
+
+## Ekonomi
+
+### Controlling
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `ekonomichef` | Ekonomichef (CFO) | haiku-4-5 | lead | aktiv |
+| `controller` | Controller | haiku-4-5 | — | skal |
+
+### FinOps
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `faktureringsansvarig` | Faktureringsansvarig | haiku-4-5 | — | skal |
+| `finops-analytiker` | FinOps-analytiker | haiku-4-5 | — | skal |
+| `inkop` | Inköpsansvarig | haiku-4-5 | — | skal |
+
+## Kommunikation
+
+### Docs
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `kommunikationschef` | Kommunikationschef | sonnet-4-6 | lead | skal |
+| `teknisk-skribent` | Teknisk skribent | sonnet-4-6 | — | aktiv |
+| `teknisk-skribent-2` | Teknisk skribent | haiku-4-5 | — | skal |
+
+### DevRel
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `community-ansvarig` | Community-ansvarig | haiku-4-5 | — | skal |
+| `devrel-ansvarig` | DevRel-ansvarig | sonnet-4-6 | — | skal |
+
+### Marketing
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `innehallsskapare` | Innehållsskapare | haiku-4-5 | — | skal |
+| `marknadsforare` | Marknadsförare | sonnet-4-6 | — | skal |

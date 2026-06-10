@@ -1,0 +1,175 @@
+{
+  "_doc": "Org-register för agenturen. Roll-format: [slug, title, model(opus|sonnet|haiku), lead, active]. active=true ⇒ redan en agentfil i .claude/agents/ (skapas ej som skal). Generera via scripts/scaffold_roster.py + scripts/gen_agentur.py.",
+  "departments": {
+    "Ledning": {
+      "Exec": [
+        ["operativ-chef", "Operativ chef (COO)", "opus", true, true],
+        ["teknisk-direktor", "Teknisk direktör (CTO)", "opus", true, false],
+        ["produktdirektor", "Produktdirektör (CPO)", "opus", true, false],
+        ["stabschef", "Stabschef", "sonnet", true, false],
+        ["strategichef", "Strategichef", "opus", true, false]
+      ]
+    },
+    "Produkt": {
+      "PM": [
+        ["produktchef", "Produktchef", "sonnet", true, true],
+        ["produktledare-dashboard", "Produktledare Dashboard", "sonnet", false, false],
+        ["produktledare-mcp", "Produktledare MCP-plattform", "sonnet", false, false],
+        ["produktledare-tui", "Produktledare TUI", "sonnet", false, false],
+        ["produktledare-core", "Produktledare CNS-core", "sonnet", false, false]
+      ],
+      "Arkitektur": [
+        ["losningsarkitekt", "Lösningsarkitekt", "sonnet", false, true]
+      ],
+      "Design": [
+        ["ux-lead", "UX-lead", "sonnet", true, false],
+        ["ux-designer", "UX-designer", "sonnet", false, false],
+        ["interaktionsdesigner", "Interaktionsdesigner", "sonnet", false, false],
+        ["ux-researcher", "UX-researcher", "sonnet", false, false]
+      ],
+      "ProductOps": [
+        ["product-ops", "Product Ops", "haiku", false, false],
+        ["produktanalytiker", "Produktanalytiker", "haiku", false, false]
+      ]
+    },
+    "R&D": {
+      "Research": [
+        ["forskningsledare", "Forskningsledare", "sonnet", true, true],
+        ["webbresearcher", "Webbresearcher", "haiku", false, false],
+        ["marknadsanalytiker", "Marknadsanalytiker", "sonnet", false, false],
+        ["konkurrentanalytiker", "Konkurrentanalytiker", "sonnet", false, false],
+        ["teknikspanare", "Teknikspanare", "sonnet", false, false]
+      ],
+      "Innovation": [
+        ["datavetare", "Datavetare", "sonnet", false, false],
+        ["prototypare", "Prototypare", "sonnet", false, false],
+        ["innovationsledare", "Innovationsledare", "sonnet", true, false]
+      ]
+    },
+    "Engineering": {
+      "Backend": [
+        ["backend-lead", "Backend-lead", "sonnet", true, false],
+        ["backend-utvecklare", "Backend-utvecklare", "sonnet", false, true],
+        ["backend-utvecklare-2", "Backend-utvecklare", "haiku", false, false],
+        ["backend-utvecklare-3", "Backend-utvecklare", "haiku", false, false],
+        ["backend-utvecklare-4", "Backend-utvecklare", "haiku", false, false]
+      ],
+      "Frontend": [
+        ["frontend-lead", "Frontend-lead", "sonnet", true, false],
+        ["frontend-utvecklare", "Frontend-utvecklare", "sonnet", false, true],
+        ["frontend-utvecklare-2", "Frontend-utvecklare", "haiku", false, false],
+        ["frontend-utvecklare-3", "Frontend-utvecklare", "haiku", false, false]
+      ],
+      "Fullstack": [
+        ["fullstack-utvecklare", "Fullstack-utvecklare", "sonnet", false, true],
+        ["fullstack-utvecklare-2", "Fullstack-utvecklare", "haiku", false, false]
+      ],
+      "Data": [
+        ["data-ingenjor", "Data-ingenjör", "sonnet", false, false],
+        ["data-ingenjor-2", "Data-ingenjör", "haiku", false, false]
+      ],
+      "QA": [
+        ["qa-lead", "QA-lead", "sonnet", true, false],
+        ["testautomatiserare", "Testautomatiserare", "haiku", false, false],
+        ["testautomatiserare-2", "Testautomatiserare", "haiku", false, false],
+        ["testautomatiserare-3", "Testautomatiserare", "haiku", false, false]
+      ],
+      "TUI": [
+        ["terminal-utvecklare", "Terminal-UI-utvecklare", "sonnet", false, true],
+        ["terminal-utvecklare-2", "Terminal-UI-utvecklare", "haiku", false, false]
+      ],
+      "Integrations": [
+        ["integrationsutvecklare", "Integrationsutvecklare", "sonnet", false, false],
+        ["integrationsutvecklare-2", "Integrationsutvecklare", "haiku", false, false]
+      ]
+    },
+    "Platform": {
+      "Infra": [
+        ["plattformschef", "Plattformschef", "sonnet", true, false],
+        ["plattformsingenjor", "Plattformsingenjör", "sonnet", false, true],
+        ["plattformsingenjor-2", "Plattformsingenjör", "haiku", false, false]
+      ],
+      "DevOps": [
+        ["devops-ingenjor", "DevOps-ingenjör", "haiku", false, true],
+        ["devops-ingenjor-2", "DevOps-ingenjör", "haiku", false, false]
+      ],
+      "DevEx": [
+        ["build-ingenjor", "Build-ingenjör", "haiku", false, false],
+        ["devex-ingenjor", "Developer-Experience-ingenjör", "sonnet", false, false]
+      ]
+    },
+    "People": {
+      "Talent": [
+        ["hr-chef", "HR-chef (CHRO)", "sonnet", true, true],
+        ["rekryterare", "Rekryterare", "sonnet", false, false],
+        ["rekryterare-2", "Rekryterare", "haiku", false, false]
+      ],
+      "L&D": [
+        ["kompetensutvecklare", "Kompetensutvecklare (L&D)", "sonnet", false, true],
+        ["kompetensutvecklare-2", "Kompetensutvecklare", "sonnet", false, false]
+      ],
+      "Culture": [
+        ["kulturansvarig", "Kulturansvarig", "sonnet", false, false]
+      ]
+    },
+    "Program": {
+      "Delivery": [
+        ["programledare", "Programledare", "sonnet", true, true],
+        ["scrum-master", "Scrum Master", "haiku", false, false],
+        ["scrum-master-2", "Scrum Master", "haiku", false, false]
+      ],
+      "Release": [
+        ["release-koordinator", "Release-koordinator", "haiku", false, false],
+        ["leveranschef", "Leveranschef", "sonnet", true, false]
+      ],
+      "Coordination": [
+        ["sessionskoordinator", "Sessionskoordinator", "haiku", false, true],
+        ["sessionskoordinator-2", "Sessionskoordinator", "haiku", false, false]
+      ]
+    },
+    "Drift": {
+      "SRE": [
+        ["driftchef", "Driftchef", "sonnet", true, false],
+        ["sre-ingenjor", "SRE-ingenjör", "sonnet", false, false],
+        ["sre-ingenjor-2", "SRE-ingenjör", "haiku", false, false]
+      ],
+      "Incident": [
+        ["incidentledare", "Incidentledare", "sonnet", true, false]
+      ],
+      "Monitoring": [
+        ["overvakningsanalytiker", "Övervakningsanalytiker", "haiku", false, false],
+        ["lagesanalytiker", "Lägesanalytiker", "haiku", false, true]
+      ],
+      "Maintenance": [
+        ["underhallsingenjor", "Underhållsingenjör", "sonnet", false, true],
+        ["underhallsingenjor-2", "Underhållsingenjör", "haiku", false, false]
+      ]
+    },
+    "Ekonomi": {
+      "Controlling": [
+        ["ekonomichef", "Ekonomichef (CFO)", "haiku", true, true],
+        ["controller", "Controller", "haiku", false, false]
+      ],
+      "FinOps": [
+        ["finops-analytiker", "FinOps-analytiker", "haiku", false, false],
+        ["inkop", "Inköpsansvarig", "haiku", false, false],
+        ["faktureringsansvarig", "Faktureringsansvarig", "haiku", false, false]
+      ]
+    },
+    "Kommunikation": {
+      "DevRel": [
+        ["devrel-ansvarig", "DevRel-ansvarig", "sonnet", false, false],
+        ["community-ansvarig", "Community-ansvarig", "haiku", false, false]
+      ],
+      "Docs": [
+        ["kommunikationschef", "Kommunikationschef", "sonnet", true, false],
+        ["teknisk-skribent", "Teknisk skribent", "sonnet", false, true],
+        ["teknisk-skribent-2", "Teknisk skribent", "haiku", false, false]
+      ],
+      "Marketing": [
+        ["marknadsforare", "Marknadsförare", "sonnet", false, false],
+        ["innehallsskapare", "Innehållsskapare", "haiku", false, false]
+      ]
+    }
+  }
+}

@@ -2,6 +2,11 @@
 name: programledare
 title: Programledare
 department: Program
+sub_department: Delivery
+chapter: null
+squad: null
+lead: true
+status: active
 description: Designar session-träd utifrån ett vagt mål — innan arbete börjar. Inventerar nuläget, bestämmer vilka sessions som behövs (typ, ordning, beroenden, ansvarig agent) och skapar strukturen via MCP-verktyg.
 model: claude-sonnet-4-6
 ---

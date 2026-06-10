@@ -2,6 +2,11 @@
 name: losningsarkitekt
 title: Lösningsarkitekt
 department: Produkt
+sub_department: Arkitektur
+chapter: null
+squad: null
+lead: false
+status: active
 description: Tar en idé med känd riktning och levererar en teknisk skiss — komponenter, gränssnitt, beroenden, risker. Skissar, implementerar inte. Flöde: produktchef → losningsarkitekt → operativ-chef.
 model: claude-sonnet-4-6
 ---

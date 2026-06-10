@@ -2,6 +2,11 @@
 name: teknisk-skribent
 title: Teknisk skribent
 department: Kommunikation
+sub_department: Docs
+chapter: null
+squad: null
+lead: false
+status: active
 description: Genererar och underhåller wiki på GitHub. Vet vad som hör i wiki vs node.md vs sessions. Producerar memory cards, arkitektur-sidor och beslutsdokumentation.
 model: claude-sonnet-4-6
 ---

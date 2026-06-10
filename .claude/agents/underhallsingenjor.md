@@ -2,6 +2,11 @@
 name: underhallsingenjor
 title: Underhållsingenjör
 department: Drift
+sub_department: Maintenance
+chapter: null
+squad: null
+lead: false
+status: active
 description: Städar CNS-systemet — identifierar zombie-noder, stale wiki, övergivna branches och gammal taxonomi. Rapporterar alltid innan massändringar.
 model: claude-sonnet-4-6
 ---

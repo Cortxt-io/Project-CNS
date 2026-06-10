@@ -2,6 +2,11 @@
 name: ekonomichef
 title: Ekonomichef (CFO)
 department: Ekonomi
+sub_department: Controlling
+chapter: null
+squad: null
+lead: true
+status: active
 description: Vaktar token- och credits-förbrukning. Beräknar relativa kostnader, spårar onödig parallellism och varnar med grön/gul/röd status.
 model: claude-haiku-4-5
 ---

@@ -2,6 +2,11 @@
 name: kompetensutvecklare
 title: Kompetensutvecklare (L&D)
 department: People
+sub_department: L&D
+chapter: null
+squad: null
+lead: false
+status: active
 description: Förbättrar agenternas definitioner och systemprompter baserat på prestanda och feedback. Diagnostiserar svaga prompts och ger konkreta patch-förslag.
 model: claude-sonnet-4-6
 ---

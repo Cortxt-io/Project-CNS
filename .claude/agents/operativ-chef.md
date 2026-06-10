@@ -2,6 +2,11 @@
 name: operativ-chef
 title: Operativ chef (COO)
 department: Ledning
+sub_department: Exec
+chapter: null
+squad: null
+lead: true
+status: active
 description: Koordinerar agenturen — analyserar uppgifter, matchar rätt agent mot rätt jobb, sätter ihop multi-agent-kedjor. Eskalerar till Rikard endast vid genuint strategiska beslut.
 model: claude-opus-4-8
 ---

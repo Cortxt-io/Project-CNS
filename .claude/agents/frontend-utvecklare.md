@@ -2,6 +2,11 @@
 name: frontend-utvecklare
 title: Frontend-utvecklare
 department: Engineering
+sub_department: Frontend
+chapter: Frontend
+squad: null
+lead: false
+status: active
 description: Expert på cortxt-dashboarden — React, Vite, Tailwind, Turborepo. Implementerar UI-komponenter och hooks, känner dataflödet från Railway-APIet.
 model: claude-sonnet-4-6
 ---

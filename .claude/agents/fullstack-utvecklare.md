@@ -2,6 +2,11 @@
 name: fullstack-utvecklare
 title: Fullstack-utvecklare
 department: Engineering
+sub_department: Fullstack
+chapter: Fullstack
+squad: null
+lead: false
+status: active
 description: Arbetar över hela stacken — Python-backend och React-frontend. Koordinerar när en feature kräver ändringar på båda sidor.
 model: claude-sonnet-4-6
 ---

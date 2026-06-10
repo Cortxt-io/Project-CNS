@@ -2,6 +2,11 @@
 name: forskningsledare
 title: Forskningsledare
 department: R&D
+sub_department: Research
+chapter: null
+squad: null
+lead: true
+status: active
 description: Söker på webben och i CNS-systemet, verifierar påståenden mot flera källor och skriver findings till CNS wiki. Använd för arkitekturval, API-utvärderingar och teknologijämförelser i CNS/Cortxt-projektet.
 model: claude-sonnet-4-6
 ---

@@ -23,49 +23,15 @@ if str(ROOT) not in sys.path:  # körbar som fil (hooken anropar absolut sökvä
 # (mönster, agent-slug, beskrivning) — prioritetsordning, första träff vinner.
 # Mer specifika mönster längre upp än generella.
 # Tips: `re.search` körs på `.lower()` → alla mönster i lowercase, ingen IGNORECASE-flag nödvändig.
-# Modell-tier per agent-slug. Haiku för mekaniska uppgifter, Sonnet för omdöme, Opus för strategi.
-MODEL_TIER: dict[str, str] = {
-    "ekonomichef": "claude-haiku-4-5",
-    "produktchef": "claude-haiku-4-5",
-    "devops-ingenjor": "claude-haiku-4-5",
-    "lagesanalytiker": "claude-haiku-4-5",
-    "teknisk-skribent": "claude-sonnet-4-6",
-    "forskningsledare": "claude-sonnet-4-6",
-    "backend-utvecklare": "claude-sonnet-4-6",
-    "frontend-utvecklare": "claude-sonnet-4-6",
-    "plattformsingenjor": "claude-sonnet-4-6",
-    "underhallsingenjor": "claude-sonnet-4-6",
-    "hr-chef": "claude-sonnet-4-6",
-    "terminal-utvecklare": "claude-sonnet-4-6",
-    "fullstack-utvecklare": "claude-sonnet-4-6",
-    "kompetensutvecklare": "claude-sonnet-4-6",
-    "operativ-chef": "claude-opus-4-8",
-    "sessionskoordinator": "claude-haiku-4-5",
-    "programledare": "claude-sonnet-4-6",
-    "losningsarkitekt": "claude-sonnet-4-6",
-}
-
-# Avdelningstillhörighet per agent-slug — org-schemat i .claude/agents/AGENTUR.md.
-DEPARTMENT: dict[str, str] = {
-    "operativ-chef": "Ledning",
-    "produktchef": "Produkt",
-    "losningsarkitekt": "Produkt",
-    "forskningsledare": "R&D",
-    "backend-utvecklare": "Engineering",
-    "frontend-utvecklare": "Engineering",
-    "fullstack-utvecklare": "Engineering",
-    "devops-ingenjor": "Engineering",
-    "terminal-utvecklare": "Engineering",
-    "plattformsingenjor": "Platform",
-    "hr-chef": "People",
-    "kompetensutvecklare": "People",
-    "programledare": "Program",
-    "sessionskoordinator": "Program",
-    "lagesanalytiker": "Drift",
-    "underhallsingenjor": "Drift",
-    "ekonomichef": "Ekonomi",
-    "teknisk-skribent": "Kommunikation",
-}
+#
+# MODEL_TIER (modell per aktiv agent) och DEPARTMENT (avdelning per slug) GENERERAS av
+# scripts/gen_agentur.py ur agent-frontmatter. Vi importerar dem; faller tillbaka till
+# tomma dictar om registret saknas (router är crash-proof och får aldrig dö på import).
+try:
+    from scripts.agent_registry import MODEL_TIER, DEPARTMENT  # genererad
+except Exception:
+    MODEL_TIER: dict[str, str] = {}
+    DEPARTMENT: dict[str, str] = {}
 
 ROUTING_RULES: list[tuple[str, str, str]] = [
     # Ekonomi/kostnad — alltid ekonomichef

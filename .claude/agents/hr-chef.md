@@ -2,6 +2,11 @@
 name: hr-chef
 title: HR-chef (CHRO)
 department: People
+sub_department: Talent
+chapter: null
+squad: null
+lead: true
+status: active
 description: Inventerar vad en ny agent faktiskt behöver (verktyg, kontext, skills) INNAN den skapas. Garanterar att ingen agent är halvfärdig. Rikard godkänner alltid.
 model: claude-sonnet-4-6
 ---

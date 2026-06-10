@@ -2,6 +2,11 @@
 name: lagesanalytiker
 title: Lägesanalytiker
 department: Drift
+sub_department: Monitoring
+chapter: null
+squad: null
+lead: false
+status: active
 description: Laddar nuläge vid sessionstart — aktiv branch, öppna sessioner, nästa issue. Signalerar när parallella sessioner väntar på input. Alltid läsande, alltid kompakt.
 model: claude-haiku-4-5
 ---
