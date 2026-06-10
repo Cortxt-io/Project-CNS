@@ -1,1 +1,1 @@
-# ai-ticket-triage / market notes
+# cns-triage / market notes

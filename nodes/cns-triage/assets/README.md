@@ -1,3 +1,3 @@
-# ai-ticket-triage / assets
+# cns-triage / assets
 
 Add assets files here.

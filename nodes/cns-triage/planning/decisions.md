@@ -1,1 +1,1 @@
-# ai-ticket-triage / decisions
+# cns-triage / decisions

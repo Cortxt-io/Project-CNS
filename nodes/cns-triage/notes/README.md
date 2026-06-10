@@ -1,3 +1,3 @@
-# ai-ticket-triage / notes
+# cns-triage / notes
 
 Add notes files here.

@@ -1,7 +1,7 @@
 ---
 created: '2026-05-02'
 updated: '2026-06-10'
-slug: ai-ticket-triage
+slug: cns-triage
 title: CNS Triage
 kind: component
 part_of: cns-core
@@ -35,4 +35,4 @@ Fungerande: idé-resolve/promote-verktygen och triage-flödet används aktivt. V
 
 ## Anteckningar
 
-Repurposad 2026-06-10: noden beskrev tidigare en extern supportärende-triage-produkt (auto-genererad framing). Den representerar nu CNS:s interna triage som faktiskt byggts. Slug `ai-ticket-triage` är legacy och missvisande — ev. rename till `cns-triage` är ett separat steg (bryter `node:<slug>`-referenser, gör med eftertanke).
+Repurposad 2026-06-10: noden beskrev tidigare en extern supportärende-triage-produkt (auto-genererad framing). Den representerar nu CNS:s interna triage som faktiskt byggts. Slug bytt från legacy `ai-ticket-triage` → `cns-triage` 2026-06-10 (inga GitHub-issues eller barn-noder pekade på gamla sluggen). Historiska loggar (`nodes/cortxt/ARCHITECTURE.md`-exempel, `cns-analyst/planning/quests.md`, quest-f90c4ef6) behåller medvetet gamla namnet.
