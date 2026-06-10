@@ -1,9 +1,9 @@
 {
   "id": "session-92e7d989",
   "created_at": "2026-06-10T06:22:42",
-  "updated_at": "2026-06-10T06:22:42",
-  "status": "running",
-  "summary": "agent studio — dirigenten live + ekonom_tracker-koppling + startmeddelande-lösning",
+  "updated_at": "2026-06-10T07:08:11",
+  "status": "done",
+  "summary": "verktygslåde-session klar: session-arkitekten skapad, dirigenten fixad (pending_next-kontrakt), ekonomen rensat, verktygsladan som femte sessionstyp — committad och pushad",
   "link": {
     "kind": "node",
     "ref": "agentur"
