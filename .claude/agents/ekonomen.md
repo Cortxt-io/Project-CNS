@@ -71,12 +71,24 @@ REKOMMENDATION: [bara om gul/röd — konkret åtgärd]
 | `/idea-triage` | Förstår promote-kostnader |
 | `/wiki-underhall` | Förstår wiki-skrivkostnader |
 
+## Agentursstatistik
+
+Kumulativ statistik finns i `exports/ekonom_stats.json` — skrivs av Stop-hooken `ekonom_tracker.py` efter varje session. Innehåller:
+- `agents`: per-agent-förbrukning (`sessions`, `total_units` i relativa Haiku-enheter)
+- `total_units`: totalt ackumulerat
+- `sessions_tracked`: antal spårade sessioner
+
+Läs statistiken med: `python scripts/ekonom_tracker.py` (kör direkt för senaste data).
+
+**Påminnelse:** enheterna är estimat baserade på sessionslängd × modell-tier — för faktisk fakturering: kör `/usage` i Claude Code.
+
 ## Tillåtna verktyg
 - cortxt_list_sessions
 - cortxt_get_session_tree
 - cortxt_list_quests
 - cortxt_start_session
 - cortxt_mark_session_done
+- Read (för exports/ekonom_stats.json)
 
 ## Session-protokoll
 
