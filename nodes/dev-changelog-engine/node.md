@@ -1,12 +1,12 @@
 ---
 created: '2026-05-02'
-updated: '2026-06-08'
+updated: '2026-06-10'
 slug: dev-changelog-engine
 title: Dev Changelog Engine
 kind: component
 part_of: ''
 stage: idea
-status: idea
+status: shelved
 feeds: []
 depends_on: []
 summary: Fullskalig pipeline för changelog-digest med source-adaptrar, LLM-analys och multi-format output.
@@ -30,3 +30,5 @@ Fullskalig pipeline för att generera changelog-digests med source-adaptrar, LLM
 ## Arbetslogg
 
 ## Anteckningar
+
+Shelved 2026-06-10 — superseded av `dev-changelog-engine-mini` (part_of pipeline-extern, working/early_mvp, eget repo), som levererade en nedskalad version av samma idé. Behållen för historik.

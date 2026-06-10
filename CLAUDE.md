@@ -22,11 +22,11 @@ Filnamnet är **alltid `node.md`** oavsett kind — all kod globar `*/node.md` (
 - `scripts/analyst.py` — AI-analys (anropar Claude via ANTHROPIC_API_KEY)
 - `scripts/portfolio_brief.py` — daglig portföljbrief
 - `scripts/quest_manager.py` — **legacy** quest-livscykel (JSON). Ersatt av `issues_client` (quest=milestone); kvar tills rivningssteget landar — bygg inget nytt mot den.
-- `scripts/issues_client.py` — **arbetsuppgiftslagret** (GitHub REST, ingen `git`-subprocess). Tre nivåer: nod (label `node:<slug>`) ← **quest = GitHub Milestone** (grupperar issues, progress beräknas av GitHub) ← **issue = uppgift** (open/closed). Under issue: **todos = task-list-checkboxar** i issue-body (`- [ ]`/`- [x]`, `parse_todos`/`add_todo`/`set_todo`) — delstegsnivån, sanningen lever på GitHub. Verktygen i `app/tools/{issues,quests}.py`.
+- `scripts/issues_client.py` — **arbetsuppgiftslagret** (GitHub REST, ingen `git`-subprocess). Tre nivåer: nod (label `node:<slug>`) ← **quest = GitHub Milestone** (progress beräknas av GitHub) ← **issue = uppgift** (open/closed). Under issue: **todos = task-list-checkboxar** i issue-body — sanningen lever på GitHub. Verktygen i `app/tools/{issues,quests}.py`. **Dekompositionsprimitiver på issues** (härleds i `_normalize` med tomma defaults — gamla issues/dashboarden bryts ej): `type` (label `type:<value>`, story|bug|spike|chore, default story; enkälla `VALID_ISSUE_TYPES`), `depends_on` (body-rad `Depends-on: #12, #34`), `acceptance_criteria` (Given/When/Then-checkboxar under `## Acceptanskriterier`, sektionsmedvetet skilda från todos = agent-DoD). **`initiative`** = valfri toppnivå över quest, `Initiative: <namn>` i milestone-description. Spec: `plans/work-model-taxonomy-spec.md`.
 - `scripts/idea_inbox.py` — idé-inkorg (lättviktig fångst; `exports/ideas/<id>.json`, glob `idea-*.json`; valfritt `session_id`). Promote → `issues_client.create_issue` (`cortxt_promote_idea_to_issue`, ev. under en quest/milestone).
 - `scripts/btw_log.py` — btw-sessionslogg. **Personlig logg, ej produktdata:** `/btw`-asides (Claude Code-forkkommandot) grupperade per session i `exports/btw/<session-id>.json`, mjukt länkbara till quest/idé via `link_session`. Rent datalager — pushar inte själv. **Isolerat:** rör inte nodmodellen eller `cns.py`. Fångas av `scripts/btw_capture.py` (hook-entry: läser ett transkripts `/btw`-kommandon idempotent på `src_uuid`, äger pushen). Körs av en **Stop-hook** i arbetsytans `.claude/settings.json` (inte i något repo). Inkoppling som `cns`-subkommando + MCP-verktyg väntar.
-- `scripts/session_store.py` — sessioner (AI-arbetspass) som förstklassiga objekt; en post per fil i `exports/sessions/session-<id>.json` (glob `session-*.json`). Länkbar till quest/issue/idea/node via `(link_kind, link_ref)`; `transcript_id` pekar på Claude Code-`.jsonl`. `running → done` är en **pollbar signal** (en parallell session kan `/loop`:a tills en annan flippar `done` innan den mergar). **Rent datalager — pushar inte själv;** pushen ligger i MCP-wrappern (`app/tools/sessions.py`: `cortxt_start_session`/`cortxt_mark_session_done`/`cortxt_save_session`/`cortxt_list_sessions`/`cortxt_fork_session`/`cortxt_get_session_tree`), samma split som idéer/btw. `list_sessions(link_ref=<nod>)` = **överlappsfrågan** (flera sessioner på samma nod ⇒ arbete att förena). **Sessionsträd:** valfritt `parent_id` (None = rot/"main") gör forks-under-forks möjliga, ortogonalt mot `link`; `fork_session` skriver `parent_id` explicit (till skillnad från `/btw`), `children`/`ancestry`/`tree` traverserar. `cns`-subkommando väntar (samma isolation som btw/tui). **Sessionstyp:** valfritt `type`-fält (brainstorm | bygg | triage | review, `VALID_SESSION_TYPES`; None på gamla poster) + lokal aktiv-typ-markör `exports/active_session.json` (`set_active`/`get_active`/`clear_active`, mini-CLI `python scripts/session_store.py set-active <typ>`). Markören läses av `router.py`-hooken som injicerar `[SESSION: <typ> — <direktiv>]` per prompt och flaggar `[SESSION-SKIFTE?]` när prompten signalerar annan typ (regelbaserat, ingen LLM) — bekräftat byte = markera done + forka barn-pass, aldrig tyst mutation. Markören är en sidofil (inte en session-post) eftersom hooken behöver omedelbar lokal synlighet medan kanonisk bokföring går via GitHub.
-- `scripts/recommend.py` — **sessionsrekommendationer**: regelbaserat lager ovanpå datalagret (idéer lokalt, quests via `issues_client` med TTL-cache i `exports/recommend_cache.json`, sessioner). Ger `--json` (för `/sessions`-skillen i arbetsytan) och `--statusline` (Claude Codes statusrad, konfigurerad i arbetsytans `.claude/settings.json`). Rekommenderar en av de **standardiserade sessionstyperna** i `sessions/profiles/<typ>.md` (brainstorm | bygg | triage | review — YAML-frontmatter + agentbeteende per typ; `/session <typ>`-skillen läser profilen och ställer om beteendet, bokför via `cortxt_start_session`). Rent datalager-konsument, pushar inget.
+- `scripts/session_store.py` — sessioner (AI-arbetspass) som förstklassiga objekt; en post per fil i `exports/sessions/session-*.json`, länkbar till quest/issue/idea/node och till Claude Code-transkriptet. **`running → done` är en pollbar signal** (en parallell session kan `/loop`:a tills en annan flippar `done` innan merge). **Rent datalager — pushar inte själv;** pushen ligger i MCP-wrappern (`app/tools/sessions.py`), samma split som idéer/btw. Överlappsfrågan = flera sessioner på samma nod ⇒ arbete att förena. **Sessionsträd** via valfritt `parent_id` (forks-under-forks, ortogonalt mot link). **Sessionstyp** (brainstorm | bygg | triage | review) + lokal aktiv-typ-markör `exports/active_session.json` som `router.py`-hooken läser för att injicera `[SESSION: <typ>]` per prompt och flagga `[SESSION-SKIFTE?]` (regelbaserat) — bekräftat byte = markera done + forka barn-pass, aldrig tyst mutation. Markören är en sidofil (inte en session-post) för att hooken behöver omedelbar lokal synlighet medan kanonisk bokföring går via GitHub. `cns`-subkommando väntar.
+- `scripts/recommend.py` — **sessionsrekommendationer**: regelbaserat lager ovanpå datalagret. Ger `--json` (för `/sessions`-skillen) och `--statusline` (Claude Codes statusrad). Rekommenderar en av de **standardiserade sessionstyperna** i `sessions/profiles/<typ>.md` (brainstorm | bygg | triage | review — profil per typ; `/session <typ>` läser profilen och ställer om beteendet, bokför via `cortxt_start_session`). Rent datalager-konsument, pushar inget.
 - `scripts/git_ops.py` — direkt GitHub API-push
 - `app/server.py` — Flask-backend (Railway)
 - `app/mcp_server.py` — MCP-server (FastMCP, GitHub OAuth, Redis token-store). Äger auth + allowlist + `mcp`-instansen; verktygen själva bor i `app/tools/` (`issues`/`quests`/`ideas`/`projects`/`sessions`, var sin `register(mcp)`).
@@ -62,54 +62,7 @@ En agent som lär sig något *bestående om portföljen* skriver en nod; något 
 - **En nod är inte "tillagd" förrän den är committad, pushad OCH exporterad.** Nya mappar måste `git add`:as explicit — `git commit -am` missar otrackade filer.
 
 ## GitHub-interaktion
-Tre kanaler, lätta att förväxla:
-
-**1. Inkommande webhooks (GitHub → Flask).** `app/server.py` → `/api/webhook/github`. HMAC-SHA256 mot `CNS_WEBHOOK_SECRET` (header `X-Hub-Signature-256`; fel → 401). Tre events (via `X-GitHub-Event`):
-- `push` → slug ur ändrade filvägar → **auto-completar quests** (`_slugs_from_pushed_files`, `_complete_quests_for_slugs`).
-- `pull_request` → slug ur titel/body/branch → `opened` **startar**, `merged` **completar** quest.
-- `workflow_run` (completed) → sätter **CI-status** (`passing`/`failing`).
-Efter quest-logiken loggas varje event till **eventstream (Redis)** via `scripts/eventstream.py` (`normalize_*` → `push_to_redis`).
-> Noden `github-webhook` *är* denna mottagare. `webhook-router` är ett fristående devtool — **inte** detta (namnkrock).
-
-**2. Utgående skrivningar (Flask/MCP → GitHub Contents API).** `app/git_ops.py` — använder REST `https://api.github.com`, **inte** `git`-subprocess (Railway saknar `.git/`). Env: `CNS_GITHUB_TOKEN` + `GITHUB_REPO`, branch `main`.
-- `push_file_immediately()` — huvudvägen: GET sha → PUT en fil. Anropas av muterande endpoints i `server.py` (projekt-edit, `export nodes.json`) och av MCP-verktygen i `app/tools/` (idé-capture/promote, session start/save/fork). Arbetsuppgifter (issues/milestones/todos) muteras däremot via `issues_client` direkt mot GitHub Issues-API:t, inte via Contents-API:t.
-- `git_commit_and_push()` — scannar `nodes/`+`exports/` efter filer ändrade senaste 60 s.
-- `delete_file_on_github()` — DELETE. `read_file_from_github()` — GET (läsning, se nedan).
-
-**3. Pollande läsning (CNS → GitHub API).** `scripts/eventstream.py` pollar `GET /repos/{repo}/commits` och `/actions/runs`. `read_file_from_github()` läser tillbaka genererad JSON (devwatch/devlog/eventstream) i `server.py` och `scripts/portfolio_brief.py`.
-
-**4. GitHub Actions (körs *på* GitHub).** `.github/workflows/export-dashboard.yml` — cron 07:00 UTC + manuell. Genererar export → committar som `github-actions[bot]` med riktig `git push` (checkout-miljö, inte Contents API) → deployar GitHub Pages → triggar `docs-watch`-repot via `repository_dispatch` (PAT_TOKEN).
-
-```mermaid
-flowchart LR
-    subgraph GH[GitHub - sanning]
-        REPO[(repo main)]
-        ACT[Actions: export-dashboard.yml<br/>cron 07:00 UTC]
-        PAGES[GitHub Pages]
-        DW[docs-watch repo]
-    end
-    subgraph RW[Railway]
-        FL[Flask: server.py]
-        WH["/api/webhook/github<br/>HMAC-verifierad"]
-        MCP[mcp_server.py<br/>cortxt_close_issue]
-        GO[git_ops.py<br/>Contents API]
-        ES[(eventstream / Redis)]
-    end
-    DASH[cortxt dashboard<br/>Vercel] -->|/api/* proxy| FL
-    AGENT[claude.ai / agent] -->|OAuth| MCP
-
-    REPO -->|push / PR / workflow_run webhook| WH
-    WH -->|quest-transitioner| FL
-    WH -->|normaliserade events| ES
-    FL -->|push_file_immediately| GO
-    MCP -->|push_file_immediately| GO
-    GO -->|GET sha + PUT/DELETE| REPO
-    ES -.->|poll /commits, /actions/runs| REPO
-    FL -.->|read_file_from_github| REPO
-    ACT -->|git push dashboard-data| REPO
-    ACT --> PAGES
-    ACT -->|repository_dispatch| DW
-```
+Tre kanaler, lätta att förväxla: inkommande webhooks (GitHub → Flask, quest-transitioner), utgående skrivningar (Contents API via `git_ops.py`, **inte** `git`-subprocess), pollande läsning (`eventstream.py`) och GitHub Actions (`export-dashboard.yml`). **Detaljer + sekvensdiagram:** `.claude/rules/github-interaction.md` (path-scopad, laddas on-demand när du rör `app/`, `git_ops.py`, `eventstream.py` eller `.github/workflows/`).
 
 ## Enums
 **Enkälla: `schemas/enums.json`** — läses av `scripts/validator.py` (Python, som `set`; därifrån importerar analyst.py/server.py) och av `cortxt/packages/cns-schema` (JS, genererad via dess `generate.mjs`). Ändra värden där, inte handkodat. Lägg INTE in layer/pipeline/family (legacy, ovaliderade — kvar som referens i validator.py).
@@ -118,26 +71,15 @@ flowchart LR
 - kind: component | system | framework
 - mvp_stage, risk_category: se `enums.json`
 
+## Begreppsmodell (branschstandard-mappning)
+CNS-termerna mappar mot branschstandard (granskad spec: `plans/work-model-taxonomy-spec.md`). Standardtermen är vokabulär i dok/prompter; **MCP-verktygsnamn (`cortxt_*`) är connector-kontrakt och behålls oförändrade** — ny standardterm exponeras vid behov som alias, inte som hård rename.
+- `projects`/noder → **component** · `ideas` → **opportunity** · `quests` (GitHub Milestone) → **epic** · `issues` → **story/bug/spike/chore** (`type`-fält) · `todos` → **sub-task** · `sessions` → **run** (pollbart `running→done`-arbetspass).
+- Valfri toppnivå **initiative** över epic. `issue_type`-enkälla: `VALID_ISSUE_TYPES` i `issues_client.py` (inte `enums.json` — issues schemavalideras inte).
+
 ## Automatisk agent-routing
-Hooken `scripts/router.py` (UserPromptSubmit) injicerar `[ROUTING] @agent → reason` per prompt baserat på nyckelord i meddelandet. **Regel: när [ROUTING] syns i kontexten, delegera direkt till angiven agent utan att fråga Rikard.** Använd Agent-verktyget med `subagent_type="<agent-slug>"` och skicka med hela originaluppgiften. **När [MODEL: X] också injiceras — sätt `model="X"` på Agent-anropet så uppgiften körs på rätt modellnivå istället för Sonnet-huvudloopen.** Konversationella frågor (< 25 tecken) och prompts utan träff hanteras direkt.
+Routing sker via hooken `scripts/router.py` (UserPromptSubmit): den injicerar `[ROUTING] @agent → reason` + `[MODEL: X]` per prompt ur `ROUTING_RULES` (nyckelordsmatchning) och den genererade `agent_registry` (modellnivå/avdelning ur agent-frontmatter). **Regel: när `[ROUTING]` syns, delegera direkt — anropa Agent-verktyget med `subagent_type="<agent-slug>"`, `model="X"` (från `[MODEL: X]`) och hela originaluppgiften; fråga inte Rikard.** Konversationella frågor och prompts utan träff hanteras direkt.
 
-Routing-tabell (snabbref):
-
-| Agent | Triggas av |
-|---|---|
-| `ekonomichef` | kostnader, token-budget, uppskattning |
-| `produktchef` | idéer, brainstorm, roadmap |
-| `teknisk-skribent` | wiki, dokumentera, memory-card |
-| `forskningsledare` | research, utreda, jämför |
-| `devops-ingenjor` | PR, issue, CI/CD, deploy, railway/vercel |
-| `underhallsingenjor` | städa, refaktorera, dead code |
-| `hr-chef` | ny agent, agentprofil, teamstruktur |
-| `frontend-utvecklare` | React, Vite, CSS, UI-komponent |
-| `backend-utvecklare` | Flask, MCP-server, API, webhook |
-| `qa-lead` | QA, teststrategi, testtäckning, kvalitetsgrind, coverage |
-| `plattformsingenjor` | script, hook, automation |
-| `operativ-chef` | planera, sprint, orchestration, multi-agent |
-| `sessionskoordinator` | kedja sessioner, daemon, hängande session, nästa session |
+Agenturens fulla roster: `.claude/agents/AGENTUR.md` (**genererad** av `gen_agentur.py` ur frontmatter — redigera inte för hand). **Lägg/ändra routing i `router.py`, inte här** — en handhållen tabell driver isär från hooken.
 
 ## Arbetsregler
 - **Spec först:** skriv/granska en implementationsspec innan kod. Vid osäkerhet — ställ frågan i specen så den måste besvaras.
