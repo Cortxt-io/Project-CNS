@@ -2,6 +2,7 @@
 
 # Modell-tier för AKTIVA agenter (router-override).
 MODEL_TIER = {
+    'agile-coach': 'claude-sonnet-4-6',
     'backend-utvecklare': 'claude-sonnet-4-6',
     'devops-ingenjor': 'claude-haiku-4-5',
     'ekonomichef': 'claude-haiku-4-5',
@@ -13,10 +14,12 @@ MODEL_TIER = {
     'lagesanalytiker': 'claude-haiku-4-5',
     'losningsarkitekt': 'claude-sonnet-4-6',
     'operativ-chef': 'claude-opus-4-8',
+    'org-arkitekt': 'claude-sonnet-4-6',
     'plattformsingenjor': 'claude-sonnet-4-6',
     'produktchef': 'claude-haiku-4-5',
     'programledare': 'claude-sonnet-4-6',
     'sessionskoordinator': 'claude-haiku-4-5',
+    'stabschef': 'claude-sonnet-4-6',
     'teknisk-skribent': 'claude-sonnet-4-6',
     'terminal-utvecklare': 'claude-sonnet-4-6',
     'underhallsingenjor': 'claude-sonnet-4-6',
@@ -24,6 +27,7 @@ MODEL_TIER = {
 
 # Avdelning per slug (alla roller, aktiva + skal).
 DEPARTMENT = {
+    'agile-coach': 'Program',
     'backend-lead': 'Engineering',
     'backend-utvecklare': 'Engineering',
     'backend-utvecklare-2': 'Engineering',
@@ -69,6 +73,7 @@ DEPARTMENT = {
     'marknadsanalytiker': 'R&D',
     'marknadsforare': 'Kommunikation',
     'operativ-chef': 'Ledning',
+    'org-arkitekt': 'People',
     'overvakningsanalytiker': 'Drift',
     'plattformschef': 'Platform',
     'plattformsingenjor': 'Platform',
@@ -158,12 +163,13 @@ ROSTER = [
     {'slug': 'marknadsforare', 'title': 'Marknadsförare', 'department': 'Kommunikation', 'sub_department': 'Marketing', 'model': 'claude-sonnet-4-6', 'lead': False, 'active': False},
     {'slug': 'operativ-chef', 'title': 'Operativ chef (COO)', 'department': 'Ledning', 'sub_department': 'Exec', 'model': 'claude-opus-4-8', 'lead': True, 'active': True},
     {'slug': 'produktdirektor', 'title': 'Produktdirektör (CPO)', 'department': 'Ledning', 'sub_department': 'Exec', 'model': 'claude-opus-4-8', 'lead': True, 'active': False},
-    {'slug': 'stabschef', 'title': 'Stabschef', 'department': 'Ledning', 'sub_department': 'Exec', 'model': 'claude-sonnet-4-6', 'lead': True, 'active': False},
+    {'slug': 'stabschef', 'title': 'Stabschef (Chief of Staff)', 'department': 'Ledning', 'sub_department': 'Exec', 'model': 'claude-sonnet-4-6', 'lead': True, 'active': True},
     {'slug': 'strategichef', 'title': 'Strategichef', 'department': 'Ledning', 'sub_department': 'Exec', 'model': 'claude-opus-4-8', 'lead': True, 'active': False},
     {'slug': 'teknisk-direktor', 'title': 'Teknisk direktör (CTO)', 'department': 'Ledning', 'sub_department': 'Exec', 'model': 'claude-opus-4-8', 'lead': True, 'active': False},
     {'slug': 'kulturansvarig', 'title': 'Kulturansvarig', 'department': 'People', 'sub_department': 'Culture', 'model': 'claude-sonnet-4-6', 'lead': False, 'active': False},
     {'slug': 'kompetensutvecklare', 'title': 'Kompetensutvecklare (L&D)', 'department': 'People', 'sub_department': 'L&D', 'model': 'claude-sonnet-4-6', 'lead': False, 'active': True},
     {'slug': 'kompetensutvecklare-2', 'title': 'Kompetensutvecklare', 'department': 'People', 'sub_department': 'L&D', 'model': 'claude-sonnet-4-6', 'lead': False, 'active': False},
+    {'slug': 'org-arkitekt', 'title': 'Organisationsarkitekt', 'department': 'People', 'sub_department': 'Org Design', 'model': 'claude-sonnet-4-6', 'lead': True, 'active': True},
     {'slug': 'hr-chef', 'title': 'HR-chef (CHRO)', 'department': 'People', 'sub_department': 'Talent', 'model': 'claude-sonnet-4-6', 'lead': True, 'active': True},
     {'slug': 'rekryterare', 'title': 'Rekryterare', 'department': 'People', 'sub_department': 'Talent', 'model': 'claude-sonnet-4-6', 'lead': False, 'active': False},
     {'slug': 'rekryterare-2', 'title': 'Rekryterare', 'department': 'People', 'sub_department': 'Talent', 'model': 'claude-haiku-4-5', 'lead': False, 'active': False},
@@ -185,6 +191,7 @@ ROSTER = [
     {'slug': 'produktledare-tui', 'title': 'Produktledare TUI', 'department': 'Produkt', 'sub_department': 'PM', 'model': 'claude-sonnet-4-6', 'lead': False, 'active': False},
     {'slug': 'product-ops', 'title': 'Product Ops', 'department': 'Produkt', 'sub_department': 'ProductOps', 'model': 'claude-haiku-4-5', 'lead': False, 'active': False},
     {'slug': 'produktanalytiker', 'title': 'Produktanalytiker', 'department': 'Produkt', 'sub_department': 'ProductOps', 'model': 'claude-haiku-4-5', 'lead': False, 'active': False},
+    {'slug': 'agile-coach', 'title': 'Agile Coach', 'department': 'Program', 'sub_department': 'Coaching', 'model': 'claude-sonnet-4-6', 'lead': False, 'active': True},
     {'slug': 'sessionskoordinator', 'title': 'Sessionskoordinator', 'department': 'Program', 'sub_department': 'Coordination', 'model': 'claude-haiku-4-5', 'lead': False, 'active': True},
     {'slug': 'sessionskoordinator-2', 'title': 'Sessionskoordinator', 'department': 'Program', 'sub_department': 'Coordination', 'model': 'claude-haiku-4-5', 'lead': False, 'active': False},
     {'slug': 'programledare', 'title': 'Programledare', 'department': 'Program', 'sub_department': 'Delivery', 'model': 'claude-sonnet-4-6', 'lead': True, 'active': True},

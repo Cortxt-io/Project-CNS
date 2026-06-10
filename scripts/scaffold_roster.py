@@ -62,9 +62,15 @@ def iter_roles():
 def main() -> None:
     ROSTER_DIR.mkdir(parents=True, exist_ok=True)
     created, skipped_active, skipped_exists = 0, 0, 0
+    removed_stale = 0
     for dept, sub, slug, title, model, lead, active in iter_roles():
         if active:
             skipped_active += 1
+            # Städa: en aktiverad roll får inte ligga kvar som roster-skal (dubbelräkning)
+            stale = ROSTER_DIR / f"{slug}.md"
+            if stale.exists():
+                stale.unlink()
+                removed_stale += 1
             continue
         path = ROSTER_DIR / f"{slug}.md"
         if path.exists():
@@ -81,7 +87,8 @@ def main() -> None:
         created += 1
     total = created + skipped_active + skipped_exists
     print(f"Roster: {created} skapade, {skipped_exists} fanns redan, "
-          f"{skipped_active} aktiva (i .claude/agents/). Totalt {total} roller i manifest.")
+          f"{skipped_active} aktiva (i .claude/agents/), {removed_stale} stale roster-filer städade. "
+          f"Totalt {total} roller i manifest.")
 
 
 if __name__ == "__main__":

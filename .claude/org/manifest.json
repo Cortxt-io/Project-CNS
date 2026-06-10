@@ -6,7 +6,7 @@
         ["operativ-chef", "Operativ chef (COO)", "opus", true, true],
         ["teknisk-direktor", "Teknisk direktör (CTO)", "opus", true, false],
         ["produktdirektor", "Produktdirektör (CPO)", "opus", true, false],
-        ["stabschef", "Stabschef", "sonnet", true, false],
+        ["stabschef", "Stabschef (Chief of Staff)", "sonnet", true, true],
         ["strategichef", "Strategichef", "opus", true, false]
       ]
     },
@@ -110,6 +110,9 @@
       ],
       "Culture": [
         ["kulturansvarig", "Kulturansvarig", "sonnet", false, false]
+      ],
+      "Org Design": [
+        ["org-arkitekt", "Organisationsarkitekt", "sonnet", true, true]
       ]
     },
     "Program": {
@@ -125,6 +128,9 @@
       "Coordination": [
         ["sessionskoordinator", "Sessionskoordinator", "haiku", false, true],
         ["sessionskoordinator-2", "Sessionskoordinator", "haiku", false, false]
+      ],
+      "Coaching": [
+        ["agile-coach", "Agile Coach", "sonnet", false, true]
       ]
     },
     "Drift": {

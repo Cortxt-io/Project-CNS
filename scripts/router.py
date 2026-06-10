@@ -34,6 +34,27 @@ except Exception:
     DEPARTMENT: dict[str, str] = {}
 
 ROUTING_RULES: list[tuple[str, str, str]] = [
+    # Org Design — strukturens korrekthet (disciplin vs produktområde, manifest, konsekvens)
+    (
+        r"\b(org.?struktur|organisationsstruktur|org.?arkitekt|avdelning(?:ar|en)?|chapter"
+        r"|sub.?department|roll.?konsekvens|manifest|omorganisera|validate.?org|taxonomi)\b",
+        "org-arkitekt",
+        "org-struktur/konsekvens",
+    ),
+    # Agile Coach — team topologies, squads, arbetssätt
+    (
+        r"\b(team.?topolog|squad|arbetss[aä]tt|ceremoni|hur (?:teamen|vi) jobbar"
+        r"|s[aä]tt ihop (?:ett )?team|agile.?coach)\b",
+        "agile-coach",
+        "team topologies/arbetssätt",
+    ),
+    # Stabschef — operating model, strategisk koherens
+    (
+        r"\b(operating model|stabschef|chief of staff|koherens|h[aä]nger ihop"
+        r"|hur (?:[aä]r vi|ska vi vara) organiserade|organisationsmodell)\b",
+        "stabschef",
+        "operating model/koherens",
+    ),
     # Ekonomi/kostnad — alltid ekonomichef
     (
         r"\b(kostnad(?:er)?|kostar|token[sr]?|budget|faktur[ae]?|pris|dyr[at]?"

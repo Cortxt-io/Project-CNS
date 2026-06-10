@@ -3,7 +3,7 @@
 > Genererad av `scripts/gen_agentur.py` ur agent-frontmatter. **Redigera inte för hand** —
 > ändra rollerna i `.claude/agents/*.md` (aktiva) / `.claude/org/roster/*.md` (skal) och kör om.
 
-**86 roller** i registret, varav **18 aktiva** (körbara i `.claude/agents/`).
+**88 roller** i registret, varav **21 aktiva** (körbara i `.claude/agents/`).
 Resten är skal i org-registret (`.claude/org/roster/`) — bemannas vid behov.
 
 Princip: agenter = anställda, skills = kompetenser. Matris (Spotify): department +
@@ -19,7 +19,7 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 |------|-------|--------|------|--------|
 | `operativ-chef` | Operativ chef (COO) | opus-4-8 | lead | aktiv |
 | `produktdirektor` | Produktdirektör (CPO) | opus-4-8 | lead | skal |
-| `stabschef` | Stabschef | sonnet-4-6 | lead | skal |
+| `stabschef` | Stabschef (Chief of Staff) | sonnet-4-6 | lead | aktiv |
 | `strategichef` | Strategichef | opus-4-8 | lead | skal |
 | `teknisk-direktor` | Teknisk direktör (CTO) | opus-4-8 | lead | skal |
 
@@ -181,6 +181,12 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 | `kompetensutvecklare` | Kompetensutvecklare (L&D) | sonnet-4-6 | — | aktiv |
 | `kompetensutvecklare-2` | Kompetensutvecklare | sonnet-4-6 | — | skal |
 
+### Org Design
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `org-arkitekt` | Organisationsarkitekt | sonnet-4-6 | lead | aktiv |
+
 ### Culture
 
 | slug | titel | modell | roll | status |
@@ -188,6 +194,12 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 | `kulturansvarig` | Kulturansvarig | sonnet-4-6 | — | skal |
 
 ## Program
+
+### Coaching
+
+| slug | titel | modell | roll | status |
+|------|-------|--------|------|--------|
+| `agile-coach` | Agile Coach | sonnet-4-6 | — | aktiv |
 
 ### Delivery
 
