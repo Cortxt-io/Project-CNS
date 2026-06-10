@@ -313,6 +313,96 @@ class KnowledgeScreen(ModalScreen):
             yield Static(_knowledge_markup(), id="knowledge")
 
 
+def _tab_targets() -> list[tuple[str, Path]]:
+    """Mappar man kan öppna en flik i: arbetsytan + befintliga repon/worktrees."""
+    targets: list[tuple[str, Path]] = [("arbetsytan", WORKSPACE_ROOT)]
+    candidates = [REPO_ROOT] + [
+        WORKSPACE_ROOT / name for name in ("Project-CNS", "cns-tui", "cortxt")
+    ]
+    seen = {WORKSPACE_ROOT.resolve()}
+    for path in candidates:
+        try:
+            resolved = path.resolve()
+        except Exception:
+            continue
+        if resolved in seen or not path.is_dir():
+            continue
+        seen.add(resolved)
+        targets.append((path.name, path))
+    return targets
+
+
+def open_terminal_tab(directory: Path, command: str | None = None) -> str | None:
+    """Öppna en ny Windows Terminal-flik i `directory` (samma mönster som /flik).
+
+    `command` (t.ex. "claude") körs i en kvarlevande powershell; utan command
+    blir fliken en tom prompt. Returnerar feltext, eller None vid lyckat anrop.
+    """
+    wt = shutil.which("wt")
+    if not wt:
+        return "wt (Windows Terminal) saknas i PATH"
+    args = [wt, "-w", "0", "nt", "-d", str(directory)]
+    if command:
+        args += ["powershell", "-NoExit", "-ExecutionPolicy", "Bypass", "-Command", command]
+    try:
+        subprocess.Popen(args)
+    except Exception as exc:
+        return f"{type(exc).__name__}: {exc}"
+    return None
+
+
+class NewTabScreen(ModalScreen):
+    """Öppna ny terminalflik i vald mapp (tangent t). Enter = tom flik, c = med claude."""
+
+    BINDINGS = [
+        Binding("escape", "dismiss", "Stäng"),
+        Binding("t", "dismiss", "Stäng"),
+        Binding("q", "dismiss", "Stäng"),
+        Binding("c", "open_claude", "Flik med claude"),
+    ]
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._targets = _tab_targets()
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="newtab-box"):
+            yield Static(
+                "[bold]Ny terminalflik[/bold]  [dim]— Enter öppnar tom flik, c öppnar med claude, esc stänger[/dim]\n",
+                id="newtab-head",
+            )
+            items = [
+                ListItem(Label(f"{name}  [dim]{path}[/dim]"))
+                for name, path in self._targets
+            ]
+            yield ListView(*items, id="newtab-list")
+
+    def _highlighted(self) -> tuple[str, Path] | None:
+        idx = self.query_one("#newtab-list", ListView).index
+        if idx is None or idx >= len(self._targets):
+            return None
+        return self._targets[idx]
+
+    def _open(self, command: str | None) -> None:
+        target = self._highlighted()
+        if target is None:
+            return
+        name, path = target
+        error = open_terminal_tab(path, command)
+        if error:
+            self.app.notify(error, severity="warning", timeout=8)
+            return
+        what = "claude-flik" if command else "flik"
+        self.app.notify(f"Öppnade {what} i {name}", timeout=4)
+        self.dismiss()
+
+    def on_list_view_selected(self, event: ListView.Selected) -> None:
+        self._open(None)
+
+    def action_open_claude(self) -> None:
+        self._open("claude")
+
+
 class AgentScreen(ModalScreen):
     """Fråga Claude om markerad nod (agent-host, read-first). Tangent c."""
 
@@ -412,6 +502,7 @@ class CnsTuiApp(App):
         Binding("s", "sessions", "Sessioner"),
         Binding("k", "knowledge", "Kunskap"),
         Binding("c", "agent", "Fråga Claude"),
+        Binding("t", "new_tab", "Ny flik"),
         Binding("slash", "focus_filter", "Filter"),
         Binding("escape", "clear_filter", "Rensa filter", show=False),
     ]
@@ -504,6 +595,9 @@ class CnsTuiApp(App):
 
     def action_agent(self) -> None:
         self.push_screen(AgentScreen(self._current_slug))
+
+    def action_new_tab(self) -> None:
+        self.push_screen(NewTabScreen())
 
     def action_focus_filter(self) -> None:
         filter_input = self.query_one("#filter", Input)

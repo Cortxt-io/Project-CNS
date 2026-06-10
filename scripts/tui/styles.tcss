@@ -60,6 +60,18 @@ KnowledgeScreen {
     padding: 1 2;
 }
 
+NewTabScreen {
+    align: center middle;
+}
+
+#newtab-box {
+    width: 70%;
+    height: 60%;
+    border: round $accent;
+    background: $surface;
+    padding: 1 2;
+}
+
 AgentScreen {
     align: center middle;
 }
