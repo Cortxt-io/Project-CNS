@@ -57,7 +57,7 @@ En agent som lär sig något *bestående om portföljen* skriver en nod; något 
 
 ## Deploy & dataflöde
 - GitHub = sanning. AI-genererat innehåll pushas via **direkt GitHub API** (`git_ops.py`), inte till Railways efemära disk.
-- Backend på Railway: `https://project-cns-production.up.railway.app`. `/api/nodes` kör `git_pull()` + `export_json()` live.
+- Backend på Railway: `https://project-cns-production.up.railway.app`. `/api/nodes` kör `export_json()` mot den kod/de noder som checkades ut **vid deploy-tillfället**. OBS: `git_pull()` i `app/git_ops.py` är en **no-op** (`return True, "ok"`) — backenden pullar *inte* vid runtime. Färskheten beror helt på att **Railway auto-redeployar** vid push till main. Syns inte en ändring i dashboarden trots att den ligger på main ⇒ Railway har inte redeployat (kolla Deployments-loggen).
 - Dashboarden (separat `cortxt`-repo på Vercel) proxar `/api/*` hit via sin `vercel.json`.
 - **En nod är inte "tillagd" förrän den är committad, pushad OCH exporterad.** Nya mappar måste `git add`:as explicit — `git commit -am` missar otrackade filer.
 
