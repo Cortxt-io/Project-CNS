@@ -1,9 +1,9 @@
 {
   "id": "session-f5e4ee3f",
   "created_at": "2026-06-10T12:08:04",
-  "updated_at": "2026-06-10T12:08:04",
-  "status": "running",
-  "summary": "verktygsladan (fortsättning): work-modell/taxonomi-spec + Linear-beslut; återkopplar pass efter att c3119c20 stängdes av parallell flik",
+  "updated_at": "2026-06-10T20:15:00",
+  "status": "done",
+  "summary": "Konsoliderad in i session-c4f4f7fb. Work-modell/taxonomi-spec + Linear-beslut fortsätter i den samlade sessionen.",
   "link": {
     "kind": "node",
     "ref": "agentur"
