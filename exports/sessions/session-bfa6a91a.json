@@ -1,9 +1,9 @@
 {
   "id": "session-bfa6a91a",
   "created_at": "2026-06-10T06:44:07",
-  "updated_at": "2026-06-10T06:44:07",
-  "status": "running",
-  "summary": "Skills-studio bygg: /ekonomi-uppskattning, /eskalera-uppat, /session-handoff",
+  "updated_at": "2026-06-10T06:46:55",
+  "status": "done",
+  "summary": "Skills-studio bygg klar: /ekonomi-uppskattning, /eskalera-uppat, /session-handoff omstrukturerade till fullständigt skill-format. HR-chefen validerade, Tränaren skrev innehåll. Committad fe995b7.",
   "link": null,
   "transcript_id": null,
   "source": "chat",
