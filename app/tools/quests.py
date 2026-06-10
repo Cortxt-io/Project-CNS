@@ -29,10 +29,16 @@ def register(mcp: FastMCP) -> None:
         return quest
 
     @mcp.tool()
-    def cortxt_create_quest(title: str, description: str = "") -> dict:
-        """Create a quest (GitHub milestone) to group several issues under one work package."""
+    def cortxt_create_quest(
+        title: str, description: str = "", initiative: str | None = None
+    ) -> dict:
+        """Create a quest (GitHub milestone) to group several issues under one work package.
+
+        `initiative` (optional) names the top level above this epic — recorded as an
+        `Initiative: <name>` line in the milestone description (no separate store).
+        """
         from scripts.issues_client import create_milestone
-        return create_milestone(title=title, description=description)
+        return create_milestone(title=title, description=description, initiative=initiative)
 
     @mcp.tool()
     def cortxt_close_quest(number: int) -> dict:

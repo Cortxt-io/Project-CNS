@@ -18,8 +18,9 @@ the right module (or a new module + its register call below), against the
 connector contract (claude.ai) and must stay stable when moved between modules.
 
   - issues:      cortxt_list_open_issues / get_issue / create_issue / close_issue
-                 / add_todo / check_todo
-  - quests:      cortxt_list_quests / get_quest / create_quest / close_quest  (milestones)
+                 / add_todo / check_todo / set_issue_type / set_depends_on / add_acceptance
+  - quests:      cortxt_list_quests / get_quest / create_quest / close_quest  (milestones,
+                 epics; create_quest takes an optional initiative top level)
   - ideas:       cortxt_capture_idea / list_ideas / promote_idea_to_issue
   - projects:    cortxt_list_projects / get_project  (CNS nodes)
   - sessions:    cortxt_start_session / mark_session_done / save_session / list_sessions
