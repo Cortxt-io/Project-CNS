@@ -30,6 +30,8 @@ connector contract (claude.ai) and must stay stable when moved between modules.
   - actions:     cortxt_list_workflow_runs / trigger_workflow / get_workflow_run
   - wiki:        cortxt_list_wiki_pages / read_wiki_page / write_wiki_page
   - linear:      cortxt_list_linear_issues / create_linear_issue / link_linear_to_cns
+  - leases:      cortxt_claim_issue / release_issue / heartbeat_issue / list_leases
+                 (ephemeral Redis claims for multi-agent issue coordination, fail-open)
 """
 
 from __future__ import annotations
@@ -159,7 +161,7 @@ elif mcp.auth is not None:
 
 # Attach the cortxt_* tools. Each domain module owns its tools via register(mcp).
 from app.tools import issues, quests, ideas, projects, sessions
-from app.tools import prs, gh_projects, actions, wiki, linear
+from app.tools import prs, gh_projects, actions, wiki, linear, leases
 
 issues.register(mcp)
 quests.register(mcp)
@@ -171,6 +173,7 @@ gh_projects.register(mcp)
 actions.register(mcp)
 wiki.register(mcp)
 linear.register(mcp)
+leases.register(mcp)
 
 
 if __name__ == "__main__":
