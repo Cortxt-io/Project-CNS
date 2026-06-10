@@ -303,6 +303,15 @@ def main() -> None:
     from rich.console import Console
 
     watch = "--watch" in sys.argv
+    hub = "--hub" in sys.argv
+
+    # --hub: starta interaktiv session-hub och avsluta direkt.
+    if hub:
+        sys.path.insert(0, str(REPO_ROOT))
+        from scripts.tui.session_hub import run as _run_hub
+        _run_hub()
+        return
+
     # Sätt stdout till utf-8 för att undvika cp1252-krasch på Windows med unicode-tecken.
     utf8_stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
     console = Console(file=utf8_stdout, highlight=False)
