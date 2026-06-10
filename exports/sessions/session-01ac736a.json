@@ -1,0 +1,16 @@
+{
+  "id": "session-01ac736a",
+  "created_at": "2026-06-10T08:09:12",
+  "updated_at": "2026-06-10T08:09:12",
+  "status": "running",
+  "summary": "retro-session: granska dagens agentur-arbete",
+  "link": {
+    "kind": "node",
+    "ref": "agentur"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null
+}
