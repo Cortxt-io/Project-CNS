@@ -35,6 +35,16 @@ VALID_STATUSES = {"running", "done"}
 VALID_LINK_KINDS = {"quest", "issue", "idea", "node"}
 VALID_SOURCES = {"chat", "code"}
 
+# Standardiserade sessionstyper — profiler i sessions/profiles/<typ>.md.
+# Valfritt fält: None på gamla poster och pass utan uttalad typ.
+VALID_SESSION_TYPES = {"brainstorm", "bygg", "triage", "review"}
+
+# Lokal markör för aktiv sessionstyp — läses av router-hooken varje prompt,
+# skrivs av /session-skillen. Sidofil, inte en session-post: hooken behöver
+# omedelbar lokal synlighet medan den kanoniska bokföringen (cortxt_*) går
+# via GitHub och först syns lokalt efter pull.
+ACTIVE_FILE = EXPORTS_DIR / "active_session.json"
+
 
 def _ensure_dir() -> None:
     SESSIONS_DIR.mkdir(parents=True, exist_ok=True)
@@ -64,6 +74,14 @@ def _link(link_kind: str | None, link_ref: str | None) -> dict | None:
     return {"kind": link_kind, "ref": str(link_ref)}
 
 
+def _validate_type(session_type: str | None) -> None:
+    if session_type is not None and session_type not in VALID_SESSION_TYPES:
+        raise ValueError(
+            f"Invalid session_type '{session_type}'. "
+            f"Allowed: {', '.join(sorted(VALID_SESSION_TYPES))}"
+        )
+
+
 def start_session(
     link_kind: str | None = None,
     link_ref: str | None = None,
@@ -72,6 +90,7 @@ def start_session(
     transcript_id: str | None = None,
     parent_id: str | None = None,
     fork_name: str | None = None,
+    session_type: str | None = None,
 ) -> dict:
     """Registrera ett pågående arbetspass (status=running).
 
@@ -84,6 +103,7 @@ def start_session(
         raise ValueError(
             f"Invalid source '{source}'. Allowed: {', '.join(sorted(VALID_SOURCES))}"
         )
+    _validate_type(session_type)
     _ensure_dir()
     now = datetime.now().isoformat(timespec="seconds")
     session = {
@@ -97,6 +117,7 @@ def start_session(
         "source": source,
         "parent_id": parent_id,
         "fork_name": fork_name,
+        "type": session_type,
     }
     _write(session)
     return session
@@ -111,6 +132,7 @@ def save_session(
     transcript_id: str | None = None,
     parent_id: str | None = None,
     fork_name: str | None = None,
+    session_type: str | None = None,
 ) -> dict:
     """Spara ett arbetspass direkt (default status=done — done-markör i efterhand).
 
@@ -125,6 +147,7 @@ def save_session(
         raise ValueError(
             f"Invalid source '{source}'. Allowed: {', '.join(sorted(VALID_SOURCES))}"
         )
+    _validate_type(session_type)
     _ensure_dir()
     now = datetime.now().isoformat(timespec="seconds")
     session = {
@@ -138,6 +161,7 @@ def save_session(
         "source": source,
         "parent_id": parent_id,
         "fork_name": fork_name,
+        "type": session_type,
     }
     _write(session)
     return session
@@ -198,6 +222,7 @@ def fork_session(
     link_ref: str | None = None,
     source: str = "chat",
     transcript_id: str | None = None,
+    session_type: str | None = None,
 ) -> dict:
     """Skapa en barn-session (status=running) under parent_id — en explicit fork.
 
@@ -215,6 +240,7 @@ def fork_session(
         transcript_id=transcript_id,
         parent_id=parent_id,
         fork_name=fork_name,
+        session_type=session_type,
     )
 
 
@@ -270,3 +296,72 @@ def tree(root_id: str | None = None) -> list[dict] | dict | None:
         return build(node) if node else None
     roots = by_parent.get(None, [])
     return [build(r) for r in roots]
+
+
+# ---------------------------------------------------------------------------
+# Aktiv sessionstyp (lokal markör för router-hooken)
+# ---------------------------------------------------------------------------
+
+
+def set_active(session_type: str, session_id: str | None = None) -> dict:
+    """Markera vilken sessionstyp som är aktiv lokalt (skrivs av /session-skillen)."""
+    _validate_type(session_type)
+    _ensure_dir()
+    state = {
+        "type": session_type,
+        "session_id": session_id,
+        "set_at": datetime.now().isoformat(timespec="seconds"),
+    }
+    ACTIVE_FILE.write_text(
+        json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+    return state
+
+
+def get_active() -> dict | None:
+    """Aktiv sessionstyp-markör, eller None om ingen är satt."""
+    try:
+        return json.loads(ACTIVE_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+
+
+def clear_active() -> None:
+    """Ta bort markören (passet avslutat eller typen släppt)."""
+    try:
+        ACTIVE_FILE.unlink()
+    except FileNotFoundError:
+        pass
+
+
+def _cli(argv: list[str]) -> int:
+    """Minimal CLI för skills/hooks: set-active | get-active | clear-active.
+
+    Fullt subkommando under ``cns`` väntar (samma isolation som btw/tui)."""
+    import sys
+
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+    if not argv:
+        print("usage: session_store.py set-active <typ> [session-id] | get-active | clear-active")
+        return 1
+    cmd = argv[0]
+    if cmd == "set-active" and len(argv) >= 2:
+        print(json.dumps(set_active(argv[1], argv[2] if len(argv) > 2 else None), ensure_ascii=False))
+        return 0
+    if cmd == "get-active":
+        print(json.dumps(get_active(), ensure_ascii=False))
+        return 0
+    if cmd == "clear-active":
+        clear_active()
+        print("null")
+        return 0
+    print(f"unknown command: {' '.join(argv)}")
+    return 1
+
+
+if __name__ == "__main__":
+    import sys
+
+    sys.exit(_cli(sys.argv[1:]))
+

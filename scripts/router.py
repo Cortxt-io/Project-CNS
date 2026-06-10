@@ -14,10 +14,35 @@ from __future__ import annotations
 import json
 import re
 import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:  # körbar som fil (hooken anropar absolut sökväg)
+    sys.path.insert(0, str(ROOT))
 
 # (mönster, agent-slug, beskrivning) — prioritetsordning, första träff vinner.
 # Mer specifika mönster längre upp än generella.
 # Tips: `re.search` körs på `.lower()` → alla mönster i lowercase, ingen IGNORECASE-flag nödvändig.
+# Modell-tier per agent-slug. Haiku för mekaniska uppgifter, Sonnet för omdöme, Opus för strategi.
+MODEL_TIER: dict[str, str] = {
+    "ekonomen": "claude-haiku-4-5",
+    "ide-agent": "claude-haiku-4-5",
+    "github-agent": "claude-haiku-4-5",
+    "kontext-agent": "claude-haiku-4-5",
+    "wiki-skribent": "claude-sonnet-4-6",
+    "research-agent": "claude-sonnet-4-6",
+    "backend-agent": "claude-sonnet-4-6",
+    "frontend-agent": "claude-sonnet-4-6",
+    "scripts-agent": "claude-sonnet-4-6",
+    "stadaren": "claude-sonnet-4-6",
+    "hr-chefen": "claude-sonnet-4-6",
+    "tui-agent": "claude-sonnet-4-6",
+    "fullstack-agent": "claude-sonnet-4-6",
+    "tranaren": "claude-sonnet-4-6",
+    "teamleader": "claude-opus-4-8",
+    "dirigenten": "claude-haiku-4-5",
+}
+
 ROUTING_RULES: list[tuple[str, str, str]] = [
     # Ekonomi/kostnad — alltid ekonomen
     (
@@ -97,10 +122,70 @@ ROUTING_RULES: list[tuple[str, str, str]] = [
         "teamleader",
         "planering/orchestration",
     ),
+    # Enkla lookups/statuskontroller → kontext-agent (Haiku)
+    (
+        r"\b(visa (?:mig |upp )?(?:[oö]ppna|alla|senaste)|lista (?:issues?|quests?|sessioner|noder|id[eé]er)"
+        r"|vad [aä]r [oö]ppet|status p[aå]|hur m[aå]nga|finns det n[aå]gra)\b",
+        "kontext-agent",
+        "enkel lookup/status",
+    ),
+    # Dirigenten — sessionkedning och daemon-övervakning
+    (
+        r"\b(dirig(?:era|enten?)|kedj(?:a|ning)|n[aä]sta session|vakt(?:a|ar)|daemon"
+        r"|h[aä]ngande session|sessionskedjning|starta n[aä]sta)\b",
+        "dirigenten",
+        "sessionskedning/daemon",
+    ),
 ]
 
 # Prompts kortare än detta är troligen konversationella frågor (tack, ok, ja, etc.)
 MIN_PROMPT_LEN = 10
+
+# --- Sessionstyper (profiler i sessions/profiles/<typ>.md) -----------------
+# Direktiv som injiceras per prompt när en typ är aktiv (exports/active_session.json,
+# satt av /session-skillen). Håller agenturen i rätt läge hela passet.
+TYPE_DIRECTIVES: dict[str, str] = {
+    "brainstorm": "dialogläge — följdfrågor i text, fånga idéer, exekvera INTE",
+    "bygg": "exekveringsläge — spec först, hela agenturen via teamleader, egen branch",
+    "triage": "bokföringsläge — resolva/promota/klustra idéer proaktivt, rör ingen kod",
+    "review": "granskningsläge — read-first, konvergera slutsatser, fråga före main-merge",
+}
+
+# Signaler på att prompten hör hemma i en ANNAN sessionstyp än den aktiva.
+# Regelbaserat (ingen LLM, inga tokens); Claude bekräftar misstänkt byte med
+# väljaren och forkar ett barn-pass — byter aldrig tyst.
+TYPE_SIGNALS: dict[str, str] = {
+    "bygg": r"\b(nu bygger vi|implementera|skriv koden|b[oö]rja koda|godk[aä]nd spec|k[oö]r p[aå] planen)\b",
+    "brainstorm": r"\b(brainstorm|ny id[eé]|t[aä]nka h[oö]gt|spåna|vad ska vi bygga|riktningsfr[aå]ga)\b",
+    "triage": r"\b(triagera|st[aä]da inkorgen|resolva id[eé]er|rensa id[eé]er|g[aå] igenom id[eé]erna)\b",
+    "review": r"\b(granska (?:pr|branch|koden)|konvergera|merga slutsatser|review.?session)\b",
+}
+
+
+def _active_type() -> str | None:
+    try:
+        from scripts.session_store import get_active
+
+        state = get_active()
+        return (state or {}).get("type")
+    except Exception:
+        return None
+
+
+def session_lines(prompt_lower: str) -> list[str]:
+    """[SESSION]-direktiv + ev. typbytes-flagga för aktiv sessionstyp."""
+    active = _active_type()
+    if not active or active not in TYPE_DIRECTIVES:
+        return []
+    lines = [f"[SESSION: {active} — {TYPE_DIRECTIVES[active]}]"]
+    for other, pattern in TYPE_SIGNALS.items():
+        if other != active and re.search(pattern, prompt_lower):
+            lines.append(
+                f"[SESSION-SKIFTE?] {active} → {other} — bekräfta med väljaren; "
+                f"vid ja: markera passet done och forka ett {other}-pass (/session {other})"
+            )
+            break
+    return lines
 
 
 def classify(prompt: str) -> tuple[str | None, str | None]:
@@ -116,7 +201,13 @@ def classify(prompt: str) -> tuple[str | None, str | None]:
 
 def main() -> None:
     try:
-        raw = sys.stdin.read()
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8")
+        if hasattr(sys.stdin, "reconfigure"):
+            # utf-8-sig: Windows-konsoler defaultar till cp1252 och PowerShell-pipar
+            # med BOM \u2014 annars blir payloaden ol\u00e4sbar och hooken tyst.
+            sys.stdin.reconfigure(encoding="utf-8-sig")
+        raw = sys.stdin.read().lstrip("\ufeff")
         if not raw.strip():
             return
         payload = json.loads(raw)
@@ -129,11 +220,27 @@ def main() -> None:
         if not prompt:
             return
 
+        for line in session_lines(str(prompt).lower()):
+            print(line)
+
         agent, reason = classify(str(prompt))
         if not agent:
             return
 
+        model = MODEL_TIER.get(agent, "claude-sonnet-4-6")
         print(f"[ROUTING] @{agent} → {reason}")
+        print(f"[MODEL: {model}] — spawna subagent med denna modell, kör inte inline i Sonnet")
+
+        # Skriv aktiv routing till sidfil så statusraden kan visa modell + agent
+        try:
+            routing_file = ROOT / "exports" / "active_routing.json"
+            routing_file.parent.mkdir(exist_ok=True)
+            routing_file.write_text(
+                json.dumps({"model": model, "agent": agent, "reason": reason}),
+                encoding="utf-8",
+            )
+        except Exception:
+            pass
 
     except Exception:
         # Crash-proof: hooken ska aldrig blockera en prompt
