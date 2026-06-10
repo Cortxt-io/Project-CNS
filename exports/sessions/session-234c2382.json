@@ -1,9 +1,9 @@
 {
   "id": "session-234c2382",
   "created_at": "2026-06-10T07:11:40",
-  "updated_at": "2026-06-10T07:11:40",
-  "status": "running",
-  "summary": "session-plan för: verktygslådan — inventering och nästa steg",
+  "updated_at": "2026-06-10T08:02:24",
+  "status": "done",
+  "summary": "stängd — artefakt från session-arkitekt-subagent, ej riktigt pass",
   "link": {
     "kind": "node",
     "ref": "agentur"
