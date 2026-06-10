@@ -1,0 +1,16 @@
+{
+  "id": "session-58028bf3",
+  "created_at": "2026-06-10T07:11:47",
+  "updated_at": "2026-06-10T07:11:47",
+  "status": "running",
+  "summary": "bygg: /session-skill listas verktygsladan korrekt + bokför via cortxt_start_session med type=verktygsladan. pending_next: hr-chefen-audit",
+  "link": {
+    "kind": "node",
+    "ref": "agentur"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": "session-234c2382",
+  "fork_name": "session-skill-fix",
+  "type": null
+}
