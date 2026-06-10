@@ -1,0 +1,9 @@
+{
+  "id": "idea-14f4f799",
+  "text": "Författa en dedikerad cockpit-ägande agent (\"tui-agent\"/cockpit-ansvarig) FÄRSKT i agenturformat via /bemanna, om en sådan roll behövs utöver terminal-utvecklare. Den gamla feat/tui-cockpit-branchens tui-agent.md var i pre-rebuild-format (saknade department/sub_department/status/matriscell) och stängdes med branchen. Cockpit-panelerna (worktree/branch-tabeller i dash.py, list_worktrees i sources.py) ligger redan i main. Bemanna mot Engineering/DevEx- eller Platform-cell, äger scripts/dash.py (Rich) + scripts/tui/sources.py, read-first, Rich aldrig ny Textual.",
+  "created_at": "2026-06-10T19:19:36",
+  "source": "chat",
+  "slug": "agentur",
+  "session_id": null,
+  "status": "open"
+}
