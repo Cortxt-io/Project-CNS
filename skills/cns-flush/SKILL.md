@@ -50,6 +50,11 @@ quests. Det är inte en kod-merge till main; det är en dataskrivning.
    med `cortxt_mark_session_done` — då blir `running → done` en pollbar signal som
    en parallell session kan `/loop`:a på innan den mergar sitt arbete.
 
+   **Innan `cortxt_mark_session_done` anropas — done-checklista (alla tre krävs):**
+   - [ ] Ursprungsuppgiften är identifierad och levererad (inte bara "arbete gjordes")
+   - [ ] Kod/ändringar är committade och pushade (om sessionen inkluderade kodändringar)
+   - [ ] Öppna delfrågor är fångade som idéer eller todos — ingenting tappas i luften
+
 5. **Fånga kvarvarande idéer.** Sidospår som inte hör till sammanfattningen men är
    värda att behålla: `cortxt_capture_idea(text=..., slug=<nod>)` — en per distinkt
    idé. Är någon redan en konkret uppgift: `cortxt_promote_idea_to_issue`

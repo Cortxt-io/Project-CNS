@@ -143,6 +143,7 @@ Routing-tabell (snabbref):
 - **Övergeneralisera inte mallar:** inga mallvarianter förrän en verklig nod kräver det.
 - Validera (`cns validate <slug>`) innan commit — särskilt handskrivna noder.
 - AI-funktioner (analyze, suggest-quest, brief, devlog) kräver `ANTHROPIC_API_KEY` satt på Railway.
+- **`cortxt_mark_session_done` kräver explicit done-checklista:** (1) ursprungsuppgiften är levererad, (2) kod är committad och pushad om kodändringar gjordes, (3) öppna delfrågor är fångade som idéer/todos. Anropa aldrig done om någon av dessa inte stämmer.
 
 ## Underhåll av denna fil
 Denna fil läses in varje session och är din primära kontext. **Uppdatera den i samma ändring som du ändrar något den beskriver** — arkitektur, dataflöde, repo-layout, konventioner, nya/omdöpta noder, eller en gotcha du snubblat på. Håll den koncis och högsignalerad: det här är inte fullständig dokumentation, utan det du behöver för att inte göra fel. Låter du den driva börjar varje framtida session från felaktiga antaganden.
