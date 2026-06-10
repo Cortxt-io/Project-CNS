@@ -1,0 +1,15 @@
+{
+  "session_id": "aa230948-185e-4436-83de-434e90b5edba",
+  "created_at": "2026-06-10T04:56:57",
+  "updated_at": "2026-06-10T04:56:57",
+  "linked_quest": null,
+  "linked_idea": null,
+  "asides": [
+    {
+      "ts": "2026-06-10T02:56:31.283Z",
+      "text": "detta kommer vara något som landar som egen framework? eller? kanske kan ligga under cortxt fast som en del av försäljningskanal? Jag vet inte",
+      "fork": "detta-kommer-vara (b34c)",
+      "src_uuid": "59b760d8-0dce-4ba3-b446-2dc34d95d658"
+    }
+  ]
+}
