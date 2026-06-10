@@ -1,7 +1,8 @@
 # Spec: Work-modell & branschstandard-taxonomi för CNS-agenturen
 
-**Status:** UTKAST FÖR GRANSKNING — ändrar ingen kod. Implementering först efter Rikards godkännande.
+**Status:** GRANSKAD — öppna frågor 1–4 besvarade av Rikard (se §10). Ändrar ingen kod; implementering följer additivt per migreringsplanen.
 **Datum:** 2026-06-10 · **Nod:** `agentur` · **Källa:** session-c3119c20 (verktygsladan)
+**Scope-not:** Linear är SLÄPPT — rent GitHub/CNS, en sanningskälla. GitHub förblir sanning; all taxonomi läggs PÅ GitHub Issues/Milestones.
 
 ---
 
@@ -102,8 +103,9 @@ Varje steg: bakåtkompatibelt, validera mot dashboarden, commit en i taget.
 - Acceptanskriterier: en agent läser kriterierna och kan avgöra done binärt.
 - Lease (när byggt): kör 2 agenter mot samma issue → bara en tar claimen.
 
-## 10. Sammanfattning av öppna frågor (kräver Rikards svar före implementering)
-1. `initiative`-toppnivå nu eller vänta?
-2. `sessions→runs` — byt eller behåll?
-3. Acceptanskriterier — strukturerat fält eller body-konvention?
-4. Bekräfta sekvens dekomposition→lease, eller finns akut 100-agent-scenario?
+## 10. Öppna frågor — BESVARADE av Rikard (2026-06-10)
+1. **initiative-toppnivå:** ✅ JA, lägg till nu — full hierarki `initiative > epic > story > sub-task`.
+2. **sessions→run:** ✅ JA, byt term till `run` i begreppsmodellen. MCP-tool-namnen (`cortxt_*_session`) behålls som connector-alias (ingen hård rename → bryter ej claude.ai); vokabulärbyte nu, tool-rename deferred.
+3. **acceptanskriterier:** ✅ body-konvention som speglar todos — ett `## Acceptans`-block (Given/When/Then), parsat likt `_TODO_RE` i `issues_client.py`. GitHub-native, lite kod, maskinläsbart.
+4. **sekvens:** ✅ bekräftad — dekomposition (type + depends_on + acceptanskriterier) FÖRST; lease-lager (B) deferred tills parallellkörning faktiskt drar igång (mätningen visar koncentrerat arbete, inget akut 100-agent-scenario).
+5. **Linear:** ✅ SLÄPPT — rent GitHub/CNS. Ingen extern arbetsdata; GitHub = sanning.
