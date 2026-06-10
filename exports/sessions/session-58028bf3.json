@@ -1,9 +1,9 @@
 {
   "id": "session-58028bf3",
   "created_at": "2026-06-10T07:11:47",
-  "updated_at": "2026-06-10T07:11:47",
-  "status": "running",
-  "summary": "bygg: /session-skill listas verktygsladan korrekt + bokför via cortxt_start_session med type=verktygsladan. pending_next: hr-chefen-audit",
+  "updated_at": "2026-06-10T08:02:28",
+  "status": "done",
+  "summary": "stängd — artefakt från session-arkitekt-subagent",
   "link": {
     "kind": "node",
     "ref": "agentur"
