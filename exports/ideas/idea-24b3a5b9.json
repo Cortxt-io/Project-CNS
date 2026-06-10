@@ -1,0 +1,9 @@
+{
+  "id": "idea-24b3a5b9",
+  "text": "Idé-medvetet sessionsnav i inline-UI:t (vänster piltangent): panelen längst till vänster ska rendera (1) antal öppna idéer (live från cortxt_list_ideas, t.ex. \"27 öppna idéer\"), och (2) en rekommendation: utifrån idéläget föreslå en session att starta — inkl. sessionstyp och hur agenterna bör agera i den. Bygger på konceptet standardiserade sessionstyper som diskuterats: typ 1 = brainstorm/idé/planering, typ 2 = byggande/implementation, (fler typer TBD — t.ex. triage/städning, review/konvergens). Varje sessionstyp bär en profil: vilka agenter kallas, vilket beteende (dialog vs exekvering), vilka verktyg. Rekommendationsmotorn kan vara enkel först: många öppna otriagerade idéer → föreslå triage/brainstorm-session; quest med öppna issues → föreslå byggsession. Knyter an till [[idea-07177682]] (kommandostatistik+rekommendationer — samma rekommendationslager), [[idea-7f358730]] (sessioner som förstklassiga objekt) och [[idea-0e52a505]] (hur långt CNS omsluter Claudes UI).",
+  "created_at": "2026-06-10T02:26:09",
+  "source": "chat",
+  "slug": "interface",
+  "session_id": null,
+  "status": "open"
+}
