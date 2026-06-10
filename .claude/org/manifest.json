@@ -58,7 +58,9 @@
         ["frontend-lead", "Frontend-lead", "sonnet", true, false],
         ["frontend-utvecklare", "Frontend-utvecklare", "sonnet", false, true],
         ["frontend-utvecklare-2", "Frontend-utvecklare", "haiku", false, false],
-        ["frontend-utvecklare-3", "Frontend-utvecklare", "haiku", false, false]
+        ["frontend-utvecklare-3", "Frontend-utvecklare", "haiku", false, false],
+        ["terminal-utvecklare", "Terminal-UI-utvecklare", "sonnet", false, true],
+        ["terminal-utvecklare-2", "Terminal-UI-utvecklare", "haiku", false, false]
       ],
       "Fullstack": [
         ["fullstack-utvecklare", "Fullstack-utvecklare", "sonnet", false, true],
@@ -73,10 +75,6 @@
         ["testautomatiserare", "Testautomatiserare", "haiku", false, false],
         ["testautomatiserare-2", "Testautomatiserare", "haiku", false, false],
         ["testautomatiserare-3", "Testautomatiserare", "haiku", false, false]
-      ],
-      "TUI": [
-        ["terminal-utvecklare", "Terminal-UI-utvecklare", "sonnet", false, true],
-        ["terminal-utvecklare-2", "Terminal-UI-utvecklare", "haiku", false, false]
       ],
       "Integrations": [
         ["integrationsutvecklare", "Integrationsutvecklare", "sonnet", false, false],
@@ -177,5 +175,12 @@
         ["innehallsskapare", "Innehållsskapare", "haiku", false, false]
       ]
     }
+  },
+  "_squads_doc": "Tvärfunktionella missionsteam (vad vi bygger) — ortogonalt mot department (hur vi bygger). squad → medlems-slugs ur valfria avdelningar.",
+  "squads": {
+    "TUI": ["terminal-utvecklare", "terminal-utvecklare-2", "produktledare-tui"],
+    "Dashboard": ["frontend-utvecklare", "produktledare-dashboard"],
+    "MCP-plattform": ["backend-utvecklare", "produktledare-mcp"],
+    "CNS-core": ["produktledare-core"]
   }
 }

@@ -4,7 +4,7 @@ title: Produktledare CNS-core
 department: Produkt
 sub_department: PM
 chapter: null
-squad: null
+squad: CNS-core
 lead: false
 model: claude-sonnet-4-6
 status: roster

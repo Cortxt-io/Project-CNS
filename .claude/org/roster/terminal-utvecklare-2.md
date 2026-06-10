@@ -2,13 +2,13 @@
 name: terminal-utvecklare-2
 title: Terminal-UI-utvecklare
 department: Engineering
-sub_department: TUI
-chapter: TUI
-squad: null
+sub_department: Frontend
+chapter: Frontend
+squad: TUI
 lead: false
 model: claude-haiku-4-5
 status: roster
-description: Terminal-UI-utvecklare i avdelningen Engineering/TUI. (Skal — fyll vid bemanning.)
+description: Terminal-UI-utvecklare i avdelningen Engineering/Frontend, squad TUI. (Skal — fyll vid bemanning.)
 ---
 
 # Terminal-UI-utvecklare

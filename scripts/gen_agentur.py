@@ -9,11 +9,14 @@ router.py importerar MODEL_TIER/DEPARTMENT härifrån istället för handkodning
 Kör: python scripts/gen_agentur.py
 """
 from __future__ import annotations
+import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 AGENTS_DIR = ROOT / ".claude" / "agents"
 ROSTER_DIR = ROOT / ".claude" / "org" / "roster"
+MANIFEST = ROOT / ".claude" / "org" / "manifest.json"
 REGISTRY = ROOT / "scripts" / "agent_registry.py"
 AGENTUR = AGENTS_DIR / "AGENTUR.md"
 
@@ -37,6 +40,36 @@ def parse_frontmatter(text: str) -> dict:
     return fm
 
 
+def load_squads() -> dict[str, list[str]]:
+    """squad-namn -> medlems-slugs, ur manifest.json."""
+    data = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    return data.get("squads", {})
+
+
+def stamp_squads(slug2squad: dict[str, str]) -> int:
+    """Skriv in squad-fältet i varje medlems frontmatter (idempotent)."""
+    stamped = 0
+    for d in (AGENTS_DIR, ROSTER_DIR):
+        if not d.exists():
+            continue
+        for path in d.glob("*.md"):
+            if path.name == "AGENTUR.md":
+                continue
+            text = path.read_text(encoding="utf-8")
+            fm = parse_frontmatter(text)
+            slug = fm.get("name")
+            if not slug or "squad" not in fm:
+                continue
+            want = slug2squad.get(slug, "null")
+            if fm.get("squad") == want:
+                continue
+            new = re.sub(r"^squad:.*$", f"squad: {want}", text, count=1, flags=re.MULTILINE)
+            if new != text:
+                path.write_text(new, encoding="utf-8")
+                stamped += 1
+    return stamped
+
+
 def load_agents() -> list[dict]:
     agents = []
     for path in sorted(AGENTS_DIR.glob("*.md")):
@@ -56,7 +89,7 @@ def load_agents() -> list[dict]:
     return agents
 
 
-def write_registry(agents: list[dict]) -> None:
+def write_registry(agents: list[dict], squads: dict[str, list[str]]) -> None:
     active = [a for a in agents if a["_active"]]
     model_tier = {a["name"]: a.get("model", "claude-haiku-4-5") for a in active}
     department = {a["name"]: a.get("department", "?") for a in agents}
@@ -64,6 +97,7 @@ def write_registry(agents: list[dict]) -> None:
         "slug": a["name"], "title": a.get("title", a["name"]),
         "department": a.get("department", "?"),
         "sub_department": a.get("sub_department", "null"),
+        "squad": a.get("squad", "null"),
         "model": a.get("model", "claude-haiku-4-5"),
         "lead": a.get("lead", "false") == "true",
         "active": a["_active"],
@@ -88,10 +122,16 @@ def write_registry(agents: list[dict]) -> None:
         lines.append(f"    {r!r},")
     lines.append("]")
     lines.append("")
+    lines.append("# Tvärfunktionella squads (mission-team) -> medlems-slugs.")
+    lines.append("SQUADS = {")
+    for name, members in sorted(squads.items()):
+        lines.append(f"    {name!r}: {list(members)!r},")
+    lines.append("}")
+    lines.append("")
     REGISTRY.write_text("\n".join(lines), encoding="utf-8")
 
 
-def write_agentur(agents: list[dict]) -> None:
+def write_agentur(agents: list[dict], squads: dict[str, list[str]]) -> None:
     # gruppera department -> sub_department -> roller
     tree: dict[str, dict[str, list[dict]]] = {}
     for a in agents:
@@ -123,23 +163,39 @@ def write_agentur(agents: list[dict]) -> None:
         for sub, roles in tree[dept].items():
             out.append(f"### {sub}")
             out.append("")
-            out.append("| slug | titel | modell | roll | status |")
-            out.append("|------|-------|--------|------|--------|")
+            out.append("| slug | titel | modell | roll | squad | status |")
+            out.append("|------|-------|--------|------|-------|--------|")
             for r in sorted(roles, key=lambda x: (x.get("lead") != "true", x["name"])):
                 lead = "lead" if r.get("lead") == "true" else "—"
                 status = "aktiv" if r["_active"] else "skal"
                 model = r.get("model", "?").replace("claude-", "")
-                out.append(f"| `{r['name']}` | {r.get('title','')} | {model} | {lead} | {status} |")
+                squad = r.get("squad", "null")
+                squad_cell = squad if squad and squad != "null" else "—"
+                out.append(f"| `{r['name']}` | {r.get('title','')} | {model} | {lead} | {squad_cell} | {status} |")
             out.append("")
+    if squads:
+        out.append("## Squads (tvärfunktionella mission-team)")
+        out.append("")
+        out.append("Ortogonalt mot avdelning: *vad* vi bygger (produktområde), tvärfunktionellt bemannat.")
+        out.append("")
+        out.append("| squad | medlemmar |")
+        out.append("|-------|-----------|")
+        for name, members in sorted(squads.items()):
+            out.append(f"| **{name}** | {', '.join(f'`{m}`' for m in members)} |")
+        out.append("")
     AGENTUR.write_text("\n".join(out), encoding="utf-8")
 
 
 def main() -> None:
-    agents = load_agents()
-    write_registry(agents)
-    write_agentur(agents)
+    squads = load_squads()
+    slug2squad = {slug: name for name, members in squads.items() for slug in members}
+    stamped = stamp_squads(slug2squad)
+    agents = load_agents()  # läs efter stämpling så squad-fältet är aktuellt
+    write_registry(agents, squads)
+    write_agentur(agents, squads)
     n_active = sum(1 for a in agents if a["_active"])
-    print(f"Genererat: {len(agents)} roller ({n_active} aktiva) -> agent_registry.py + AGENTUR.md")
+    print(f"Genererat: {len(agents)} roller ({n_active} aktiva), {len(squads)} squads, "
+          f"{stamped} squad-stämplingar -> agent_registry.py + AGENTUR.md")
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ title: Frontend-utvecklare
 department: Engineering
 sub_department: Frontend
 chapter: Frontend
-squad: null
+squad: Dashboard
 lead: false
 status: active
 description: Expert på cortxt-dashboarden — React, Vite, Tailwind, Turborepo. Implementerar UI-komponenter och hooks, känner dataflödet från Railway-APIet.

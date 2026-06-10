@@ -72,6 +72,12 @@ def main() -> int:
             if leads == 0:
                 warns.append(f"{dept}/{sub}: ingen lead utsedd")
 
+    # Squads: varje medlem måste finnas som roll
+    for squad, members in data.get("squads", {}).items():
+        for m in members:
+            if m not in seen_slugs:
+                errors.append(f"Squad '{squad}': medlem '{m}' finns inte som roll i manifest")
+
     # Föräldralösa aktiva agentfiler (i .claude/agents men ej i manifest)
     for path in AGENTS_DIR.glob("*.md"):
         if path.name == "AGENTUR.md":

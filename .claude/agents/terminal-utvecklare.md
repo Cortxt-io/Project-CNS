@@ -2,9 +2,9 @@
 name: terminal-utvecklare
 title: Terminal-UI-utvecklare
 department: Engineering
-sub_department: TUI
-chapter: TUI
-squad: null
+sub_department: Frontend
+chapter: Frontend
+squad: TUI
 lead: false
 status: active
 description: Äger CNS terminal-cockpit — scripts/dash.py (Rich) och dataadaptrarna i scripts/tui/sources.py. Bygger live-överblick över parallellt arbete (sessioner, worktrees, branches). Rich, aldrig ny Textual.
