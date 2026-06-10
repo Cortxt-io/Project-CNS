@@ -1,0 +1,16 @@
+{
+  "id": "session-7dcedf21",
+  "created_at": "2026-06-10T07:11:55",
+  "updated_at": "2026-06-10T07:11:55",
+  "status": "running",
+  "summary": "triage: hr-chefen känner till påhittade skills — audita skills-listan mot faktiska filer, uppdatera hr-chefen.md. pending_next: dirigenten-polish",
+  "link": {
+    "kind": "node",
+    "ref": "agentur"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": "session-58028bf3",
+  "fork_name": "hr-chefen-audit",
+  "type": null
+}
