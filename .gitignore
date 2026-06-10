@@ -31,3 +31,6 @@ tmp/
 
 # Qoder
 .qoder/
+
+# Lokala git-worktrees (ej produktkod)
+.claude/worktrees/
