@@ -1,0 +1,16 @@
+{
+  "id": "session-5629f39a",
+  "created_at": "2026-06-10T06:54:26",
+  "updated_at": "2026-06-10T06:54:26",
+  "status": "running",
+  "summary": "skills-studio: /ekonomi-uppskattning + /eskalera-uppat + /session-handoff — alla tre existerade och var kompletta, inget att bygga",
+  "link": {
+    "kind": "node",
+    "ref": "agentur"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": "session-92e7d989",
+  "fork_name": "skills-studio",
+  "type": null
+}
