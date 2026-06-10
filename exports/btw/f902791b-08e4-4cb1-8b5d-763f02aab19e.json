@@ -1,7 +1,7 @@
 {
   "session_id": "f902791b-08e4-4cb1-8b5d-763f02aab19e",
   "created_at": "2026-06-10T05:46:29",
-  "updated_at": "2026-06-10T05:46:29",
+  "updated_at": "2026-06-10T05:57:08",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -16,6 +16,12 @@
       "text": "jag gillar recap på egentligen ALLA svar jag får oavsett session. kan jag få det med en skill?",
       "fork": "jag-gillar-recap (4382)",
       "src_uuid": "93891b54-0930-40fe-9107-c034c8d1c993"
+    },
+    {
+      "ts": "2026-06-10T03:55:25.500Z",
+      "text": "jag vill att min research agent lär sig av deep-research verktyget jag har igång nu",
+      "fork": "jag-vill-att (720b)",
+      "src_uuid": "d3190d1e-e8ce-4f3a-b9f7-54632dd1f9d1"
     }
   ]
 }
