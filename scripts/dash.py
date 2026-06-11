@@ -200,14 +200,21 @@ def _worktrees_table():
 
 def _branches_table():
     from rich.table import Table
-    from scripts.tui.sources import git_branches, merged_branches
+    from scripts.tui.sources import git_branches, get_ci_status_per_branch, merged_branches
 
     branches = git_branches()
     merged = merged_branches()
 
+    # Bygg GitHub-branch-namn för CI-uppslag (remotes har "origin/"-prefix → strippa).
+    ci_names: set[str] = set()
+    for b in branches:
+        ci_names.add(b.name.split("/", 1)[-1] if b.remote and "/" in b.name else b.name)
+    ci_status = get_ci_status_per_branch(list(ci_names))
+
     t = Table(show_header=True, header_style="bold cyan", box=None, padding=(0, 1))
     t.add_column("", width=2)
     t.add_column("Branch", width=40)
+    t.add_column("CI", width=12)
     t.add_column("Typ/status")
 
     for b in branches:
@@ -219,7 +226,19 @@ def _branches_table():
         if name in merged:
             tags.append("[dim]✓merged[/dim]")
         tag_str = "  ".join(tags) if tags else ""
-        t.add_row(dot, name, tag_str)
+
+        ci_key = name.split("/", 1)[-1] if b.remote and "/" in name else name
+        ci = ci_status.get(ci_key, "")
+        if ci == "passing":
+            ci_str = "[green]✓ passing[/green]"
+        elif ci == "failing":
+            ci_str = "[red]✗ failing[/red]"
+        elif ci == "running":
+            ci_str = "[yellow]⟳ running[/yellow]"
+        else:
+            ci_str = "[dim]–[/dim]"
+
+        t.add_row(dot, name, ci_str, tag_str)
 
     return t, len(branches)
 

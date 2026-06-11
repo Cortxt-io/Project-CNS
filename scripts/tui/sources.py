@@ -296,6 +296,73 @@ def list_transcripts(known_slugs: set[str] | None = None, limit: int = 40) -> li
     return transcripts[:limit]
 
 
+# -- GitHub Actions CI-status per branch (grindad, kräver CNS_GITHUB_TOKEN) ---
+
+def _github_repo_from_git() -> str:
+    """Härleder owner/repo ur git remote URL. Returnerar '' vid fel."""
+    try:
+        out = subprocess.run(
+            ["git", "remote", "get-url", "origin"],
+            cwd=REPO_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+        if out.returncode != 0:
+            return ""
+        url = out.stdout.strip()
+        m = re.search(r"github\.com[:/]([^/]+/[^/]+?)(?:\.git)?$", url)
+        return m.group(1) if m else ""
+    except Exception:
+        return ""
+
+
+def get_ci_status_per_branch(branch_names: list[str]) -> dict[str, str]:
+    """Hämtar senaste workflow_run-conclusion per branch via GitHub Actions API.
+
+    Returnerar {branch: "passing" | "failing" | "running"}.
+    Degraderar tyst till {} om CNS_GITHUB_TOKEN saknas eller API-anropet misslyckas.
+    Gör ett enda API-anrop (per_page=100) och aggregerar lokalt.
+    """
+    if not branch_names:
+        return {}
+    import os
+    import urllib.request
+
+    token = os.getenv("CNS_GITHUB_TOKEN", "")
+    if not token:
+        return {}
+    repo = os.getenv("GITHUB_REPO", "") or _github_repo_from_git()
+    if not repo:
+        return {}
+
+    url = f"https://api.github.com/repos/{repo}/actions/runs?per_page=100"
+    req = urllib.request.Request(url)
+    req.add_header("Authorization", f"Bearer {token}")
+    req.add_header("Accept", "application/vnd.github+json")
+    req.add_header("X-GitHub-Api-Version", "2022-11-28")
+    try:
+        with urllib.request.urlopen(req, timeout=8) as resp:
+            data = json.loads(resp.read())
+    except Exception:
+        return {}
+
+    by_branch: dict[str, str] = {}
+    for run in data.get("workflow_runs", []):
+        branch = run.get("head_branch", "")
+        if not branch or branch in by_branch:
+            continue
+        status = run.get("status", "")
+        conclusion = run.get("conclusion")
+        if status in ("in_progress", "queued", "waiting", "pending"):
+            by_branch[branch] = "running"
+        elif conclusion == "success":
+            by_branch[branch] = "passing"
+        elif conclusion is not None:
+            by_branch[branch] = "failing"
+    return by_branch
+
+
 # -- kunskaps-ytor: skills + memory-cards ----------------------------------
 
 def _light_meta(path: Path) -> dict[str, str]:
