@@ -5,5 +5,8 @@
   "source": "chat",
   "slug": null,
   "session_id": null,
-  "status": "open"
+  "status": "resolved",
+  "resolution": "duplicate",
+  "resolution_reason": "Foldad som todo på issue #38 (retro-åtgärder): cns-sync obligatorisk före skills-pass.",
+  "resolved_at": "2026-06-11T11:38:13"
 }
