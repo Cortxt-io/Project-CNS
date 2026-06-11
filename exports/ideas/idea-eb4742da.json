@@ -5,5 +5,8 @@
   "source": "chat",
   "slug": "interface",
   "session_id": "session-069fa1d2",
-  "status": "open"
+  "status": "resolved",
+  "resolution": "duplicate",
+  "resolution_reason": "Dubblett av idea-7548a67a (samma orienteringsyta-insikt, fångad i huvudtråden med referenser till issues #39–43). Behåller 7548a67a.",
+  "resolved_at": "2026-06-11T11:44:32"
 }
