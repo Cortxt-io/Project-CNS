@@ -1,7 +1,7 @@
 {
   "session_id": "b14c794b-893b-4692-a31f-a33a8975d8fd",
   "created_at": "2026-06-11T15:20:06",
-  "updated_at": "2026-06-11T17:32:46",
+  "updated_at": "2026-06-11T19:02:30",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -28,6 +28,12 @@
       "text": "jag tittar på min usage och ser att sonnet är ganska outnyttjad  jag har tillgång till 15 runs om dagen hur utnyttjar vi detta bäst?",
       "fork": "jag-tittar-p (4d07)",
       "src_uuid": "df8c3cc9-b166-4a56-8b09-82ec42593736"
+    },
+    {
+      "ts": "2026-06-11T17:00:22.793Z",
+      "text": "Jag la in token direkt i chatt som inte var uppskattat. Fler tokens kan behövas i framtiden och jag vill egentligen sätta upp ett system som skapar och lägger in tokens säkert",
+      "fork": "jag-la-in (ea46)",
+      "src_uuid": "25471823-bec5-4511-b464-858d7ac0afad"
     }
   ]
 }
