@@ -199,16 +199,48 @@ SESSION_ICONS: dict[str, str] = {
 }
 
 
+def _focus_label(session_id: str | None) -> str | None:
+    """Läsbar fokus-etikett ur den aktiva sessionens ``link`` (vad man jobbar på).
+
+    Fokus härleds ur markörens ``session_id`` → sessionens ``link`` — ingen separat
+    fokusmarkör behövs för v1 (orienteringsyta, idea-7548a67a).
+    """
+    if not session_id:
+        return None
+    try:
+        from scripts.session_store import get_session
+        link = (get_session(session_id) or {}).get("link") or {}
+    except Exception:
+        return None
+    kind, ref = link.get("kind"), link.get("ref")
+    if not ref:
+        return None
+    return {
+        "node": str(ref),
+        "quest": f"quest #{ref}",
+        "issue": f"#{ref}",
+        "idea": f"idé {ref}",
+    }.get(kind, str(ref))
+
+
 def statusline(state: dict | None = None) -> str:
-    """Kompakt enrading för Claude Codes statusrad."""
+    """Kompakt orienteringsrad för Claude Codes statusrad.
+
+    Visar lägesbilden där man står — sessionstyp, fokus (vad man jobbar på),
+    pågående pass och nästa rekommendation — så man slipper sätta ihop den
+    själv ur flera datalager (orienteringsyta, idea-7548a67a).
+    """
     state = state or gather_state()
     recs = recommend(state)
 
+    # Aktiv markör: sessionstyp + vilket pass (vars link = fokus).
     try:
         from scripts.session_store import get_active
-        active = (get_active() or {}).get("type")
+        marker = get_active() or {}
     except Exception:
-        active = None
+        marker = {}
+    active = marker.get("type")
+    focus = _focus_label(marker.get("session_id"))
 
     # Aktiv routing (modell + agent) från router.py-sidfil
     try:
@@ -223,8 +255,14 @@ def statusline(state: dict | None = None) -> str:
     else:
         parts = [f"💡 {len(state['ideas'])} idéer"]
 
+    if focus:
+        parts.append(f"📍 {focus}")
+
     if routing.get("model"):
-        model_short = routing["model"].replace("claude-", "").replace("-4-5", " haiku").replace("-4-6", " sonnet").replace("-4-8", " opus")
+        # Modell-ID:t bär redan familjeordet (claude-haiku-4-5 osv) — plocka ut det
+        # i stället för att substituera versionssuffix (gav dubbletter som "haiku haiku").
+        _m = routing["model"]
+        model_short = next((f for f in ("opus", "sonnet", "haiku", "fable") if f in _m), _m.replace("claude-", ""))
         agent_part = f"@{routing['agent']}" if routing.get("agent") else ""
         parts.append(f"{model_short}{' · ' + agent_part if agent_part else ''}")
 
