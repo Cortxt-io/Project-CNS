@@ -1,0 +1,16 @@
+{
+  "id": "session-5c52f95e",
+  "created_at": "2026-06-11T13:21:46",
+  "updated_at": "2026-06-11T13:21:46",
+  "status": "running",
+  "summary": "WIP-städningspass 2026-06-11: reda ut omergat arbete (branch-sprawl) i båda repon. Merga rena brancher (avblockerar #45 JS-sida), radera döda pekare, triagera stranded feature-brancher, uppdatera lokal main.",
+  "link": {
+    "kind": "node",
+    "ref": "cns-core"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null
+}
