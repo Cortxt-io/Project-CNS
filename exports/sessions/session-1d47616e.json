@@ -1,9 +1,9 @@
 {
   "id": "session-1d47616e",
   "created_at": "2026-06-11T13:51:35",
-  "updated_at": "2026-06-11T13:51:35",
-  "status": "running",
-  "summary": "Sessions-UX-epic (#8): orientering + start. Spine = orienteringsytan (idea-7548a67a). Förstå vänsterpils-panelen, planera build-ordning, börja bygga.",
+  "updated_at": "2026-06-11T14:29:07",
+  "status": "done",
+  "summary": "Pass 2026-06-11: (1) byggde #8-spinen — issue #39 del 1 (statusrad→orienteringsrad, 📍 fokus, PR #55) + #41 del 1 (sessionsfärger, PR #56, stackad), båda testade. (2) Rikard zoomade ut: vill att agenturen exekverar backloggen autonomt så han står i helheten; insåg #8 är hans cockpit, ej det som gör agenturen autonom; 'systemet måste finnas'. (3) Riktad research (4 Sonnet-spår) om bygg-ordning för autonom agentur → rapport plans/autonom-agentur-byggordning.md. KÄRNA: ordningen är Baseline/KPI → Eval-infra → Observabilitet → Dispatch-loop(bounded) → Guardrails+isolering → gradvis autonomi (min hypotes saknade baseline+observabilitet som egna försteg). Mycket är WIRING av befintliga primitiver (claim_issue/lease/router/agent_host/cns-sync/eval-kriterier), ej nybygge. #8 omramas som oversight-yta (rätt, men börja ej där ensam). GAP: dispatch+guardrails är ingen epic → behövs ny epic 'Agentur-orkestrering'. Rek prio: Fas 0-1 (#5 eval-grind) + Fas 2 (instrumentera session_store token/tool-call + #8 cockpit) först. Öppna PR: #55, #56 (statusrad).",
   "link": {
     "kind": "quest",
     "ref": "8"
