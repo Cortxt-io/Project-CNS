@@ -1,0 +1,23 @@
+{
+  "id": "session-65741e4a",
+  "created_at": "2026-06-11T18:10:58",
+  "updated_at": "2026-06-11T18:10:58",
+  "status": "done",
+  "summary": "Arkitektur-tråd: CNS som kontrollplan + multi-modell-routning. Flushad från sidosession för att kopplas till workflow-architecture-passet.\n\n## Helhetsbild (sparad i CNS/arkitektur-sketch.md)\nStack underifrån: Jag (intention) → det lokala (krymper till membran) → NAVET [Railway compute ⟷ state: GitHub durabelt ∥ Redis flyktigt; Linear = eker] → Vercel (drift) → Shopify headless (produktyta). Två rörelser möts i navet: intention uppåt-in, värde uppåt-ut.\n\n## Nyckeldistinktioner\n- GitHub = ryggrad, INTE en eker (sanning, djupt inbyggt: git_ops/issues/PR/webhook). Ska ej pressas in i generiskt adapter-interface.\n- Redis ∥ GitHub = samma sak (state) på durabilitetsskala: Redis korttidsminne, GitHub långtidsminne. Railway sitter emellan.\n- Linear = enda genuint underordnade ekern (envägs, inget beror på den).\n- Vercel underligger Shopify: Vercel = driftslager (storefronts kör där), Shopify = datakälla i runtime. CNS bygger Vercel-DRIFTSADAPTER, inte Shopify-integrationslager.\n- Per-nod integrations-fält är luckan idag: skilj drift (deploy: vercel, CNS agerar) från källor (sources: [shopify:store-x], CNS bär bara konfig vidare).\n\n## Multi-modell-routning (huvudbeslut att fatta)\nKRITISKT fynd: CNS anropar INTE Claude idag — den är MCP-tool-provider (Claude ringer IN). Modellanrop finns bara i offline-scripts (analyst.py, claude_client.py, devlog.py), inte i Railway-backenden.\n\nTre vägar (research-belagt, 2026):\n- A) CNS blir modell-caller/router — bara om CNS ska generera AUTONOMT utan agent i loopen.\n- B) CNS förblir tool-provider, routning hos klienterna — räcker om drivkraft = kostnad och du sitter i Claude Code.\n- C) MCP sampling (sampling/createMessage) — CNS lånar anslutna klientens modell, inga egna nycklar/router-lager. FastMCP stödjer redan. Tredje vägen vi missade först.\n\n## Skarpt råd (oavsett väg)\nMinsta steg: lägg en tunn chokepoint call_model(task, model=\"claude\") bakom offline-scripten NU (en enda punkt, pekar bara på Claude idag). Vid andra leverantör → peka på LiteLLM-proxy (egen process, OpenAI-kompatibelt API över 100+ leverantörer inkl Anthropic). Bygg ALDRIG egen provider-abstraktion. Mixa tool-provider + model-caller är etablerat mönster, ej antimönster.\n\n## Öppen fråga som styr allt\nDrivkraft = kostnad eller kapabilitet? Avgör B/C/A. Men chokepoint-steget är rätt oavsett — köper tid att låta drivkraften klarna.",
+  "link": {
+    "kind": "node",
+    "ref": "agentur"
+  },
+  "transcript_id": "b14c794b-893b-4692-a31f-a33a8975d8fd",
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null,
+  "metrics": {
+    "tool_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "tools_seen": [],
+    "artifacts": []
+  }
+}
