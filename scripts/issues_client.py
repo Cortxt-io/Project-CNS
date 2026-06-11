@@ -344,6 +344,28 @@ def close_issue(
     return _normalize(resp.json())
 
 
+def set_milestone(
+    number: int, milestone: Optional[int], token: Optional[str] = None
+) -> dict:
+    """Move issue *number* into *milestone* (its quest), or clear it with ``None``.
+
+    Mirrors GitHub's PATCH: an int assigns the issue to that milestone, ``None``
+    removes it from any. This is the only reassignment GitHub exposes — there is no
+    move-between-milestones beyond setting the new (or null) target. Used to
+    reorganize the backlog, e.g. split a grab-bag quest into coherent epics.
+    Raises ``requests.HTTPError`` (422) if *milestone* doesn't exist in the repo.
+    """
+    repo, _ = _require_config(token)
+    resp = requests.patch(
+        f"{GITHUB_API}/repos/{repo}/issues/{number}",
+        headers=_headers(token),
+        json={"milestone": milestone},
+        timeout=_TIMEOUT,
+    )
+    resp.raise_for_status()
+    return _normalize(resp.json())
+
+
 # ---------------------------------------------------------------------------
 # Todos == task-list checkboxes in the issue body (the sub-task level)
 # ---------------------------------------------------------------------------
