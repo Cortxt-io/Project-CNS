@@ -167,14 +167,29 @@ def build_cns_server() -> Any:
 
 # -- kontext-seed -----------------------------------------------------------
 
-def build_seed(slug: str | None) -> str:
-    """Systemprompt: ramar in agenten kring en markerad nod (read-first)."""
-    base = (
-        "Du är CNS-agenten, inbäddad i ett terminal-UI för en produktportfölj. "
-        "CNS äger strukturen (noder/relationer); GitHub äger uppgifter. "
-        "Använd mcp__cns__*-verktygen för portföljdata och Read/Glob/Grep för kod. "
-        "Du är i LÄS-LÄGE: föreslå ändringar i text, skriv/kör inte själv."
-    )
+def build_seed(slug: str | None, role: dict | None = None) -> str:
+    """Systemprompt: ramar in agenten kring en markerad nod (read-first).
+
+    ``role`` (roll-medveten exekvering, #90): om satt körs passet SOM den routade
+    agenten — dess egen systemprompt (identitet/uppgift/gräns) blir basen i stället
+    för den generiska CNS-agenten. None → generiskt beteende (bakåtkompatibelt).
+    """
+    read_mode = "Du är i LÄS-LÄGE: föreslå ändringar i text, skriv/kör inte själv."
+    if role and role.get("system_prompt"):
+        base = (
+            role["system_prompt"].strip()
+            + "\n\n---\nDu arbetar inbäddad i CNS (terminal-UI för en produktportfölj); "
+            "CNS äger strukturen (noder/relationer), GitHub äger uppgifter. "
+            "Använd mcp__cns__*-verktygen för portföljdata och Read/Glob/Grep för kod. "
+            + read_mode
+        )
+    else:
+        base = (
+            "Du är CNS-agenten, inbäddad i ett terminal-UI för en produktportfölj. "
+            "CNS äger strukturen (noder/relationer); GitHub äger uppgifter. "
+            "Använd mcp__cns__*-verktygen för portföljdata och Read/Glob/Grep för kod. "
+            + read_mode
+        )
     if not slug:
         return base
     try:
@@ -211,11 +226,14 @@ def build_options(
     resume: str | None = None,
     allow_writes: bool = False,
     permission_check: Any = None,
+    role: dict | None = None,
 ) -> Any:
     """Bygg ClaudeAgentOptions för ett agent-pass (read-first som default).
 
     ``permission_check`` (om satt) ersätter ``_deny_unlisted`` som ``can_use_tool``
     — så run_turn kan wrappa read-first-kollen med guardrails (#60).
+    ``role`` (roll-medveten exekvering, #90): sätter rollens systemprompt + modell
+    (den routade agentens modellnivå) — så passet körs SOM agenten, inte generiskt.
     """
     from claude_agent_sdk import ClaudeAgentOptions
 
@@ -228,12 +246,14 @@ def build_options(
         if web_srv is not None:
             mcp_servers[WEB_SERVER_NAME] = web_srv
     kwargs: dict[str, Any] = {
-        "system_prompt": build_seed(slug),
+        "system_prompt": build_seed(slug, role=role),
         "mcp_servers": mcp_servers,
         "allowed_tools": allowed,
         "permission_mode": "default",
         "cwd": str(REPO_ROOT),
     }
+    if role and role.get("model"):
+        kwargs["model"] = role["model"]
     if not allow_writes:
         kwargs["can_use_tool"] = permission_check or _deny_unlisted
     if resume:
@@ -246,16 +266,40 @@ async def run_turn(
     slug: str | None = None,
     resume: str | None = None,
     allow_writes: bool = False,
+    agent_slug: str | None = None,
 ) -> AsyncIterator[tuple[str, Any]]:
     """Kör ett agent-pass och yielda render-händelser för AgentScreen.
 
-    Händelser: ('session', id) · ('text', str) · ('tool', name) · ('result', text) ·
-    ('warning', msg) · ('metrics', dict) · ('error', msg).
+    Händelser: ('session', id) · ('role', dict) · ('text', str) · ('tool', name) ·
+    ('result', text) · ('warning', msg) · ('metrics', dict) · ('error', msg).
+
+    Roll-medveten exekvering (#90): ``agent_slug`` kör som en namngiven agent; annars
+    härleds rollen ur den markerade noden via ``route()`` (role_for_node). Misslyckas
+    rollresolutionen körs passet generiskt (bakåtkompatibelt).
     """
     ok, msg = availability()
     if not ok:
         yield ("error", msg)
         return
+
+    # Roll-medveten exekvering: kör SOM den routade/namngivna agenten om möjligt.
+    role = None
+    try:
+        from scripts.agent_roles import load_role, role_for_node
+
+        role = load_role(agent_slug) if agent_slug else role_for_node(slug)
+    except Exception:
+        role = None
+    if role:
+        yield (
+            "role",
+            {
+                "slug": role.get("slug"),
+                "title": role.get("title"),
+                "model": role.get("model"),
+                "routed": role.get("routed"),
+            },
+        )
 
     # cns-sync-guardrail (#60): varna om ett annat pass redan jobbar på samma nod.
     guard = None
@@ -289,7 +333,8 @@ async def run_turn(
             return await _deny_unlisted(tool_name, tool_input, ctx)
 
     options = build_options(
-        slug=slug, resume=resume, allow_writes=allow_writes, permission_check=permission_check
+        slug=slug, resume=resume, allow_writes=allow_writes,
+        permission_check=permission_check, role=role,
     )
     # ClaudeSDKClient kör i streaming-läge → can_use_tool fungerar med strängprompt.
     client = ClaudeSDKClient(options=options)
