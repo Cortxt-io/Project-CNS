@@ -1,0 +1,9 @@
+{
+  "id": "idea-eb4742da",
+  "text": "ROT-DIAGNOS (brainstorm 2026-06-11, session-069fa1d2): CNS lagrar allt men SAMMANSTÄLLER ingenting. \"Vad gör jag härnäst / var var jag / vad spelar roll\" besvaras av tre olika stores (recommend / sessions / quests) i fem datalager — så VARJE gång Rikard sätter sig är HAN integratorn som laddar fem lager in i huvudet. Den hopsättningskostnaden ÄR desorienteringen, och friktionen skaver både vid bygge och orientering eftersom båda är samma sak: återhopsättning av kontext. Ironin: CNS:s pitch är \"utspridd kontext kostar\" — den löste det för maskinens kontext (node.md) men återskapade det för Rikards EGEN arbetskontext.\n\nREFRAME AV BACKLOGGEN: kluster C (idé-medvetet nav 24b3a5b9, actionable statusrad c73f5ad4, sessionsfärger 2cc3ae24, modellval 1e8f38f0) + överblicksgapet + cockpit-idéerna (14f4f799) är INTE separata features — de är upprepade trevande försök att bygga EN saknad orienteringsyta utan att ha namngett den.\n\nFÖRESLAGEN RIKTNING (ej beslutad, spec-först): en \"cockpit\"/hemvy som vid öppning sätter ihop bilden åt Rikard — var du slutade (senaste session) + vad som är igång (running sessions) + vad som rekommenderas (recommend.py) + vad som är i fokus (fokusmarkör, ev. utbyggnad av active_session.json). EN läsning, ingen hopsättning. Ingen arkitekturmigrering, ingen ombyggnad — KOMPOSITION av sessions+recommend+quests+markör, sannolikt i det redan lokala TUI:t. Detta är troligen ett eget INITIATIV som flera kluster-C/överblicks-epics hänger under. Nästa steg: spec-pass som definierar cockpit-ytan.",
+  "created_at": "2026-06-11T11:42:54",
+  "source": "chat",
+  "slug": "interface",
+  "session_id": "session-069fa1d2",
+  "status": "open"
+}
