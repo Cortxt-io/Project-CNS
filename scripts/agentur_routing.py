@@ -1,69 +1,81 @@
-"""Agenturens routing-modell (issue #90, FÖRSTA SKIVAN).
+"""Agenturens routing-modell (issue #90).
 
-``route(node_type, issue_type, station)`` → vilket **flöde** (stationer) arbetet
+``route(node_type, issue_type, *, domain, station)`` → vilket **flöde** (stationer) arbetet
 passerar, vilken **disciplin/department/squad** som bemannar, och vilken **modellnivå**.
 Spec: ``plans/agentur-routing-spec.md``.
 
-Ren, testbar funktion (samma mönster som ``agent_eval``/``agent_guardrails``). Plan A-tooling.
-**Plan A/B-väggen:** läser den projicerade artefakten ``exports/agents.json`` (genererad av
-``gen_agentur.py``), ALDRIG ``.claude/`` direkt.
+**Mekanism vs innehåll (skiva 2):** denna modul är den GENERISKA mekanismen. INNEHÅLLET (flöden,
+node.type→disciplin, modellnivåer) bor i per-agentur-konfig under ``config/agenturer/<slug>.json``.
+``node.domain`` väljer agentur (venture→agentur). Ett research-venture = en ny konfigfil, inte kod
+— mekanismen rörs aldrig. Squad **parametriserar** passet, skapar ingen ny sessionstyp (#90-notering).
 
-Detta är **produktutvecklings-agenturens konfig** hårdkodad i modulen. Mekanismen är generisk;
-innehållet (flöden, node.type→disciplin, modellnivåer) externaliseras till per-agentur-konfig i
-en senare skiva (#90 öppen fråga 1) så research-venture m.fl. slätar in. Squad **parametriserar**
-passet — den skapar ingen ny sessionstyp (#90-notering).
+**Plan A/B-väggen:** läser den projicerade artefakten ``exports/agents.json`` (roster) och
+``config/agenturer/`` (produktrymd-konfig) — ALDRIG ``.claude/`` direkt.
+
+Ren, testbar funktion (samma mönster som ``agent_eval``/``agent_guardrails``). Plan A-tooling.
 """
 from __future__ import annotations
 
 import json
 from pathlib import Path
 
-AGENTS_FILE = Path(__file__).resolve().parent.parent / "exports" / "agents.json"
+ROOT = Path(__file__).resolve().parent.parent
+AGENTS_FILE = ROOT / "exports" / "agents.json"
+AGENTURER_DIR = ROOT / "config" / "agenturer"
 
-# Stationer en run kan passera (gemensamma för produktutvecklings-agenturen).
-STATIONS = ("discovery", "definition", "delivery", "review", "retro")
-
-# Flöde per issue.type — VILKA stationer arbetet passerar. Bestämmer vägen, inte typen.
-FLOW_BY_TYPE: dict[str, list[str]] = {
-    "spike": ["discovery"],                                  # producerar kunskap, ingen kod
-    "bug": ["delivery", "review"],                           # problemet känt → hoppa discovery/definition
-    "chore": ["delivery", "review"],
-    "story": ["definition", "delivery", "review"],
-    "epic": ["discovery", "definition", "review", "retro"],
-    "initiative": ["discovery", "definition", "review", "retro"],
-}
-DEFAULT_FLOW = ["definition", "delivery", "review"]          # okänd typ → story-likt
-
-# node.type → disciplin (= sub_department i agents.json) → bestämmer vilken squad bemannar.
-NODE_TYPE_TO_DISCIPLINE: dict[str, str] = {
-    "frontend": "Frontend",
-    "service": "Backend",
-    "mcp-server": "Integrations",
-    "pipeline": "Data",
-    "cli": "Backend",
-    "tool": "DevEx",
-    "agent": "Research",
-    "infra": "Infra",
-    "library": "Backend",
-    "dataset": "Data",
-    "ai-model": "Research",
+# Yttersta fallback om ingen konfig hittas (mekanismen får aldrig krascha på saknad konfig).
+DEFAULT_FLOW = ["definition", "delivery", "review"]
+_BUILTIN_AGENTUR = {
+    "slug": "(builtin-default)",
+    "flows": {},
+    "default_flow": DEFAULT_FLOW,
+    "disciplines": {},
+    "model_tiers": {"_default": "sonnet"},
 }
 
-# Modellnivå per (issue.type, station): mekaniskt→haiku, omdöme→sonnet, syntes/strategi→opus
-# (Ekonomen-grinden kodifierad — jfr modell-router #79.) None-station = gäller alla stationer.
-MODEL_TIER: dict[tuple[str, str | None], str] = {
-    ("chore", None): "haiku",
-    ("bug", None): "sonnet",
-    ("story", None): "sonnet",
-    ("spike", None): "sonnet",
-    ("epic", "discovery"): "opus",
-    ("epic", "definition"): "opus",
-    ("epic", "retro"): "opus",
-    ("epic", "delivery"): "sonnet",
-    ("epic", "review"): "sonnet",
-    ("initiative", "discovery"): "opus",
-    ("initiative", "definition"): "opus",
-}
+
+# ---------------------------------------------------------------------------
+# Konfig-laddning (per-agentur)
+# ---------------------------------------------------------------------------
+
+
+def load_agenturer() -> list[dict]:
+    """Läs alla per-agentur-konfigar ur ``config/agenturer/*.json``. [] om katalogen saknas."""
+    if not AGENTURER_DIR.exists():
+        return []
+    out: list[dict] = []
+    for path in sorted(AGENTURER_DIR.glob("*.json")):
+        try:
+            out.append(json.loads(path.read_text(encoding="utf-8")))
+        except Exception:
+            continue
+    return out
+
+
+def resolve_agentur(
+    *, domain: str | None = None, slug: str | None = None, agenturer: list[dict] | None = None
+) -> dict:
+    """Välj agentur-konfig: explicit ``slug`` → ``domain`` (matchar ``domains``) → första → builtin.
+
+    Det här är venture→agentur-väljaren: ``node.domain`` bestämmer vilken agentur som äger arbetet.
+    """
+    agenturer = load_agenturer() if agenturer is None else agenturer
+    if not agenturer:
+        return _BUILTIN_AGENTUR
+    if slug:
+        for a in agenturer:
+            if a.get("slug") == slug:
+                return a
+    if domain:
+        for a in agenturer:
+            if domain in (a.get("domains") or []):
+                return a
+    return agenturer[0]  # default = första konfigurerade agenturen
+
+
+# ---------------------------------------------------------------------------
+# Roster + bemanning
+# ---------------------------------------------------------------------------
 
 
 def _load_agents() -> list[dict]:
@@ -77,15 +89,6 @@ def _load_agents() -> list[dict]:
     return data.get("agents", []) if isinstance(data, dict) else (data or [])
 
 
-def _model_tier(issue_type: str, station: str | None) -> str:
-    """Modellnivå för (typ, station), med station-oberoende fallback, default sonnet."""
-    return (
-        MODEL_TIER.get((issue_type, station))
-        or MODEL_TIER.get((issue_type, None))
-        or "sonnet"
-    )
-
-
 def _squad_for(discipline: str, agents: list[dict]) -> list[dict]:
     """Agenter i disciplinen (sub_department). Aktiva först; faller tillbaka på alla i disciplinen."""
     if not discipline:
@@ -95,25 +98,48 @@ def _squad_for(discipline: str, agents: list[dict]) -> list[dict]:
     return active or in_disc
 
 
+def _model_tier(agentur: dict, issue_type: str, station: str | None) -> str:
+    """Modellnivå ur agenturens ``model_tiers``: per-typ kan vara sträng eller {station: nivå, _default}."""
+    tiers = agentur.get("model_tiers", {}) or {}
+    spec = tiers.get(issue_type)
+    if isinstance(spec, dict):
+        return spec.get(station) or spec.get("_default") or tiers.get("_default", "sonnet")
+    if isinstance(spec, str):
+        return spec
+    return tiers.get("_default", "sonnet")
+
+
+# ---------------------------------------------------------------------------
+# Routing
+# ---------------------------------------------------------------------------
+
+
 def route(
     node_type: str,
     issue_type: str,
     *,
+    domain: str | None = None,
     station: str | None = None,
     agents: list[dict] | None = None,
+    agentur: dict | None = None,
 ) -> dict:
-    """Routa ett arbete: (node.type, issue.type[, station]) → flöde, bemanning, modell.
+    """Routa ett arbete: (node.domain, node.type, issue.type[, station]) → flöde, bemanning, modell.
 
-    ``agents`` injiceras för test (default laddas ``exports/agents.json``). ``station``
-    default = första stationen i flödet. Degraderar tyst: okänd typ → DEFAULT_FLOW,
-    okänd disciplin/tom roster → tom squad (kraschar inte).
+    ``domain`` väljer agentur-konfig (venture→agentur). ``agentur``/``agents`` injiceras för test
+    (default laddas ur config/agenturer + exports/agents.json). ``station`` default = första i flödet.
+    Degraderar tyst: okänd typ → konfigens default_flow; okänd disciplin/tom roster → tom squad.
     """
+    cfg = agentur if agentur is not None else resolve_agentur(domain=domain)
     agents = _load_agents() if agents is None else agents
-    flow = FLOW_BY_TYPE.get(issue_type, DEFAULT_FLOW)
+
+    flow = cfg.get("flows", {}).get(issue_type) or cfg.get("default_flow", DEFAULT_FLOW)
     station = station or (flow[0] if flow else None)
-    discipline = NODE_TYPE_TO_DISCIPLINE.get(node_type, "")
+    discipline = cfg.get("disciplines", {}).get(node_type, "")
     squad = _squad_for(discipline, agents)
+
     return {
+        "agentur": cfg.get("slug"),
+        "domain": domain,
         "node_type": node_type,
         "issue_type": issue_type,
         "flow": flow,
@@ -121,5 +147,5 @@ def route(
         "discipline": discipline,
         "department": squad[0]["department"] if squad else "",
         "squad": [a.get("slug") for a in squad],
-        "model": _model_tier(issue_type, station),
+        "model": _model_tier(cfg, issue_type, station),
     }
