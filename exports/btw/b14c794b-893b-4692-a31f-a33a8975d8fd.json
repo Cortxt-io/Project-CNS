@@ -1,0 +1,15 @@
+{
+  "session_id": "b14c794b-893b-4692-a31f-a33a8975d8fd",
+  "created_at": "2026-06-11T15:20:06",
+  "updated_at": "2026-06-11T15:20:06",
+  "linked_quest": null,
+  "linked_idea": null,
+  "asides": [
+    {
+      "ts": "2026-06-11T13:19:25.035Z",
+      "text": "Issues to quest cortxt har inte denna ett gammalt namn som inte speglar vad det gör?",
+      "fork": "issues-to-quest (1f17)",
+      "src_uuid": "6b85e756-fea1-41ed-a8f4-dbb64da0cce7"
+    }
+  ]
+}
