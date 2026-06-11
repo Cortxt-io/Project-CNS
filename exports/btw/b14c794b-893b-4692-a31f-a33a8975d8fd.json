@@ -1,7 +1,7 @@
 {
   "session_id": "b14c794b-893b-4692-a31f-a33a8975d8fd",
   "created_at": "2026-06-11T15:20:06",
-  "updated_at": "2026-06-11T17:02:05",
+  "updated_at": "2026-06-11T17:32:46",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -22,6 +22,12 @@
       "text": "jag är uppe i 625k tokens vet inte om det är ett problem , jag vet inte när sessioner bör börjas indexeras och flushas, nån del av agenturen borde väl kunna fånga upp när ny session osv ska börja användas?",
       "fork": "jag-r-uppe (0d4a)",
       "src_uuid": "b4e4b235-bd19-4149-a744-524a88030ea0"
+    },
+    {
+      "ts": "2026-06-11T15:24:37.779Z",
+      "text": "jag tittar på min usage och ser att sonnet är ganska outnyttjad  jag har tillgång till 15 runs om dagen hur utnyttjar vi detta bäst?",
+      "fork": "jag-tittar-p (4d07)",
+      "src_uuid": "df8c3cc9-b166-4a56-8b09-82ec42593736"
     }
   ]
 }
