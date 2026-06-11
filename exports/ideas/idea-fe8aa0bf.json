@@ -5,5 +5,8 @@
   "source": "chat",
   "slug": "cns-core",
   "session_id": "session-58obs",
-  "status": "open"
+  "status": "resolved",
+  "resolution": "done",
+  "resolution_reason": "Byggd direkt och landad via PR #64: statusraden visar '⚠ kontext NN% → /compact' över 75% (läser context_window.used_percentage ur Claude Codes statusLine-stdin). Föreslår /compact i samma fönster.",
+  "resolved_at": "2026-06-11T15:01:18"
 }
