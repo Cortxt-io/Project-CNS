@@ -77,6 +77,22 @@ def register(mcp: FastMCP) -> None:
         return close_issue(number, comment=result_summary)
 
     @mcp.tool()
+    def cortxt_move_issue_to_quest(number: int, quest_number: int | None = None) -> dict:
+        """Move an existing issue into a quest (milestone), or out of any with None.
+
+        `quest_number` is a GitHub milestone number (see cortxt_list_quests); pass
+        None to remove the issue from its current quest. Use this to reorganize the
+        backlog — e.g. split a grab-bag quest into coherent epics. Errors if the
+        milestone number doesn't exist.
+        """
+        from scripts.issues_client import set_milestone
+        from fastmcp.exceptions import ToolError
+        try:
+            return set_milestone(number, quest_number)
+        except Exception as e:
+            raise ToolError(str(e)) from e
+
+    @mcp.tool()
     def cortxt_add_todo(number: int, text: str) -> dict:
         """Add a sub-task (todo) to an issue as a task-list checkbox in its body.
 
