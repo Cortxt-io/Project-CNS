@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "exported_at": "2026-06-10T10:49:18Z",
-  "run_id": "20260610_104918",
-  "baseline": "2026-06-09T07:00:00",
+  "exported_at": "2026-06-11T11:18:16Z",
+  "run_id": "20260611_111816",
+  "baseline": "2026-06-10T07:00:00",
   "events": [
     {
-      "id": "devwatch:agent-studio:958587b697fdc92c:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:agent-studio:958587b697fdc92c:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "agent-studio",
         "name": "Agent Studio",
@@ -21,8 +21,8 @@
         "agent-studio"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "agent-studio",
         "node_title": "Agent Studio",
         "changed_fields": [
@@ -59,85 +59,8 @@
       }
     },
     {
-      "id": "devwatch:ai-ticket-triage:6cd39fec2277e3be:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
-      "source": {
-        "id": "ai-ticket-triage",
-        "name": "AI Ticket Triage",
-        "type": "devwatch",
-        "url": null
-      },
-      "title": "ai-ticket-triage: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
-      "rawContent": "### assets/README.md\ndiff --git a/nodes/ai-ticket-triage/assets/README.md b/nodes/ai-ticket-triage/assets/README.md\nnew file mode 100644\nindex 0000000..d4b416f\n--- /dev/null\n+++ b/nodes/ai-ticket-triage/assets/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / assets\n+\n+Add assets files here.\n\n\n### node.md\n## Syfte\n+\n+AI-driven triagering och automatisk kategorisering av supportärenden baserat på historik och ärendetyp, för att minska manuell handläggningstid och förbättra svarstider.\n+\n\n## Beroenden\n+\n\n## Status\n+\n\n## Nästa steg\n+\n\n## Risker\n+\n+- **technical**: AI-modellens precision vid triagering kan vara otillräcklig för kritiska ärenden, vilket riskerar felbedömningar och missnöjda kunder\n+- **adoption**: Supportteam kan vara skeptiska till AI-driven triagering och sakna förtroende för systemets bedömningar\n+- **ops**: Integration med befintliga ticketsystem (Zendesk, Freshdesk etc.) kan kräva omfattande anpassningar och underhåll\n+- **market**: Konkurrens från etablerade supportplattformar som redan bygger in AI-triagering som \n...[truncated]\n\n## Arbetslogg\n+\n\n### notes/README.md\ndiff --git a/nodes/ai-ticket-triage/notes/README.md b/nodes/ai-ticket-triage/notes/README.md\nnew file mode 100644\nindex 0000000..843e132\n--- /dev/null\n+++ b/nodes/ai-ticket-triage/notes/README.md\n@@ -0,0 +1,3 @@\n+# ai-ticket-triage / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/nodes/ai-ticket-triage/planning/decisions.md b/nodes/ai-ticket-triage/planning/decisions.md\nnew file mode 100644\nindex 0000000..2b41feb\n--- /dev/null\n+++ b/nodes/ai-ticket-triage/planning/decisions.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / decisions\n\n\n### planning/roadmap.md\ndiff --git a/nodes/ai-ticket-triage/planning/roadmap.md b/nodes/ai-ticket-triage/planning/roadmap.md\nnew file mode 100644\nindex 0000000..8dd9814\n--- /dev/null\n+++ b/nodes/ai-ticket-triage/planning/roadmap.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / roadmap\n\n\n### research/market-notes.md\ndiff --git a/nodes/ai-ticket-triage/research/market-notes.md b/nodes/ai-ticket-triage/research/market-notes.md\nnew file mode 100644\nindex 0000000..5663191\n--- /dev/null\n+++ b/nodes/ai-ticket-triage/research/market-notes.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / market notes\n\n\n### research/sources.md\ndiff --git a/nodes/ai-ticket-triage/research/sources.md b/nodes/ai-ticket-triage/research/sources.md\nnew file mode 100644\nindex 0000000..00e7ac7\n--- /dev/null\n+++ b/nodes/ai-ticket-triage/research/sources.md\n@@ -0,0 +1 @@\n+# ai-ticket-triage / sources\n",
-      "url": null,
-      "kind": "changed",
-      "tags": [
-        "ai-ticket-triage"
-      ],
-      "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
-        "slug": "ai-ticket-triage",
-        "node_title": "AI Ticket Triage",
-        "changed_fields": [
-          "created",
-          "depends_on",
-          "feeds",
-          "kind",
-          "part_of",
-          "slug",
-          "stage",
-          "status",
-          "summary",
-          "tags",
-          "title",
-          "updated",
-          "url_live",
-          "url_repo"
-        ],
-        "changed_files": [
-          {
-            "file": "assets/README.md",
-            "sections": []
-          },
-          {
-            "file": "node.md",
-            "sections": [
-              "Arbetslogg",
-              "Beroenden",
-              "Nästa steg",
-              "Risker",
-              "Status",
-              "Syfte"
-            ]
-          },
-          {
-            "file": "notes/README.md",
-            "sections": []
-          },
-          {
-            "file": "planning/decisions.md",
-            "sections": []
-          },
-          {
-            "file": "planning/roadmap.md",
-            "sections": []
-          },
-          {
-            "file": "research/market-notes.md",
-            "sections": []
-          },
-          {
-            "file": "research/sources.md",
-            "sections": []
-          }
-        ],
-        "noise_filtered": false
-      }
-    },
-    {
-      "id": "devwatch:cns-analyst:43a35cc81622a32f:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cns-analyst:43a35cc81622a32f:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cns-analyst",
         "name": "CNS Analyst",
@@ -152,8 +75,8 @@
         "cns-analyst"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cns-analyst",
         "node_title": "CNS Analyst",
         "changed_fields": [
@@ -198,8 +121,8 @@
       }
     },
     {
-      "id": "devwatch:cns-brief:c906f77cde289d2c:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cns-brief:c906f77cde289d2c:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cns-brief",
         "name": "CNS Brief",
@@ -214,8 +137,8 @@
         "cns-brief"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cns-brief",
         "node_title": "CNS Brief",
         "changed_fields": [
@@ -274,8 +197,8 @@
       }
     },
     {
-      "id": "devwatch:cns-core:35058a24b20c740a:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cns-core:35058a24b20c740a:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cns-core",
         "name": "CNS Core",
@@ -290,8 +213,8 @@
         "cns-core"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cns-core",
         "node_title": "CNS Core",
         "changed_fields": [
@@ -328,8 +251,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devlog:5ee44eff28b567c0:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cns-devlog:5ee44eff28b567c0:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cns-devlog",
         "name": "CNS Devlog",
@@ -344,8 +267,8 @@
         "cns-devlog"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cns-devlog",
         "node_title": "CNS Devlog",
         "changed_fields": [
@@ -405,8 +328,8 @@
       }
     },
     {
-      "id": "devwatch:cns-devwatch:a0fea4a7366e6d89:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cns-devwatch:a0fea4a7366e6d89:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cns-devwatch",
         "name": "CNS Devwatch",
@@ -421,8 +344,8 @@
         "cns-devwatch"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cns-devwatch",
         "node_title": "CNS Devwatch",
         "changed_fields": [
@@ -482,8 +405,8 @@
       }
     },
     {
-      "id": "devwatch:cns-hosting-infra:8e6de78fa2c218d0:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cns-hosting-infra:8e6de78fa2c218d0:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cns-hosting-infra",
         "name": "CNS Hosting Infra",
@@ -498,8 +421,8 @@
         "cns-hosting-infra"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cns-hosting-infra",
         "node_title": "CNS Hosting Infra",
         "changed_fields": [
@@ -559,8 +482,8 @@
       }
     },
     {
-      "id": "devwatch:cns-mcp:abd77085a3300ca3:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cns-mcp:abd77085a3300ca3:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cns-mcp",
         "name": "CNS MCP Server",
@@ -575,8 +498,8 @@
         "cns-mcp"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cns-mcp",
         "node_title": "CNS MCP Server",
         "changed_fields": [
@@ -633,8 +556,86 @@
       }
     },
     {
-      "id": "devwatch:cns-vault-app:4706816211de649d:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cns-triage:4a1a0d1fb8ed6036:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
+      "source": {
+        "id": "cns-triage",
+        "name": "CNS Triage",
+        "type": "devwatch",
+        "url": null
+      },
+      "title": "cns-triage: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
+      "rawContent": "### assets/README.md\ndiff --git a/nodes/cns-triage/assets/README.md b/nodes/cns-triage/assets/README.md\nnew file mode 100644\nindex 0000000..34f78d0\n--- /dev/null\n+++ b/nodes/cns-triage/assets/README.md\n@@ -0,0 +1,3 @@\n+# cns-triage / assets\n+\n+Add assets files here.\n\n\n### node.md\n## Syfte\n+\n+Intern triage-förmåga för att hålla CNS rent och handlingsbart: gå igenom idé-inkorgen (`idea_inbox.py`), gruppera överspelade/mogna/klustrade idéer, resolva (`cortxt_resolve_idea`) eller promota (`cortxt_promote_idea_to_issue`) dem, och städa nodmodellen (föräldralösa idé-noder, dubbletter, felplacerade noder). Driver dessutom sessionsrekommendationer via `recommend.py` och triage-sessionsprofilen.\n+\n\n## Beroenden\n+\n+Läser idé-inkorgen och nodgrafen via datalagret; skrivningar (resolve/promote) går via MCP-verktygen mot GitHub.\n+\n\n## Status\n+\n+Fungerande: idé-resolve/promote-verktygen och triage-flödet används aktivt. Vidareutveckling pågår (samlat `cortxt_triage`-batchverktyg + TUI-triagevy är fortsatt idéer i inkorgen).\n+\n\n## Nästa steg\n+\n\n## Risker\n+\n\n## Arbetslogg\n+\n\n## Anteckningar\n+\n+Repurposad 2026-06-10: noden beskrev tidigare en extern supportärende-triage-produkt (auto-genererad framing). Den representerar nu CNS:s interna triage som faktiskt byggts. Slug bytt från legacy `ai-ticket-triage` → `cns-triage` 2026-06-10 (inga GitHub-issues eller barn-noder pekade på gamla sluggen). Historiska loggar (`nodes/cortxt/ARCHITECTURE.md`-exempel, `cns-analyst/planning/quests.md`, quest-f90c4ef6) behåller medvetet gamla namnet.\n\n### notes/README.md\ndiff --git a/nodes/cns-triage/notes/README.md b/nodes/cns-triage/notes/README.md\nnew file mode 100644\nindex 0000000..1a2efd1\n--- /dev/null\n+++ b/nodes/cns-triage/notes/README.md\n@@ -0,0 +1,3 @@\n+# cns-triage / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/nodes/cns-triage/planning/decisions.md b/nodes/cns-triage/planning/decisions.md\nnew file mode 100644\nindex 0000000..741ecce\n--- /dev/null\n+++ b/nodes/cns-triage/planning/decisions.md\n@@ -0,0 +1 @@\n+# cns-triage / decisions\n\n\n### planning/roadmap.md\ndiff --git a/nodes/cns-triage/planning/roadmap.md b/nodes/cns-triage/planning/roadmap.md\nnew file mode 100644\nindex 0000000..eb848b6\n--- /dev/null\n+++ b/nodes/cns-triage/planning/roadmap.md\n@@ -0,0 +1 @@\n+# cns-triage / roadmap\n\n\n### research/market-notes.md\ndiff --git a/nodes/cns-triage/research/market-notes.md b/nodes/cns-triage/research/market-notes.md\nnew file mode 100644\nindex 0000000..8e5065a\n--- /dev/null\n+++ b/nodes/cns-triage/research/market-notes.md\n@@ -0,0 +1 @@\n+# cns-triage / market notes\n\n\n### research/sources.md\ndiff --git a/nodes/cns-triage/research/sources.md b/nodes/cns-triage/research/sources.md\nnew file mode 100644\nindex 0000000..3345d9b\n--- /dev/null\n+++ b/nodes/cns-triage/research/sources.md\n@@ -0,0 +1 @@\n+# cns-triage / sources\n",
+      "url": null,
+      "kind": "changed",
+      "tags": [
+        "cns-triage"
+      ],
+      "meta": {
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
+        "slug": "cns-triage",
+        "node_title": "CNS Triage",
+        "changed_fields": [
+          "created",
+          "depends_on",
+          "feeds",
+          "kind",
+          "part_of",
+          "slug",
+          "stage",
+          "status",
+          "summary",
+          "tags",
+          "title",
+          "updated",
+          "url_live",
+          "url_repo"
+        ],
+        "changed_files": [
+          {
+            "file": "assets/README.md",
+            "sections": []
+          },
+          {
+            "file": "node.md",
+            "sections": [
+              "Anteckningar",
+              "Arbetslogg",
+              "Beroenden",
+              "Nästa steg",
+              "Risker",
+              "Status",
+              "Syfte"
+            ]
+          },
+          {
+            "file": "notes/README.md",
+            "sections": []
+          },
+          {
+            "file": "planning/decisions.md",
+            "sections": []
+          },
+          {
+            "file": "planning/roadmap.md",
+            "sections": []
+          },
+          {
+            "file": "research/market-notes.md",
+            "sections": []
+          },
+          {
+            "file": "research/sources.md",
+            "sections": []
+          }
+        ],
+        "noise_filtered": false
+      }
+    },
+    {
+      "id": "devwatch:cns-vault-app:4706816211de649d:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cns-vault-app",
         "name": "CNS Vault App",
@@ -649,8 +650,8 @@
         "cns-vault-app"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cns-vault-app",
         "node_title": "CNS Vault App",
         "changed_fields": [
@@ -710,8 +711,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-dashboard-app:53b9a16468cf8a1a:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cortxt-dashboard-app:53b9a16468cf8a1a:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cortxt-dashboard-app",
         "name": "Cortxt Dashboard App",
@@ -726,8 +727,8 @@
         "cortxt-dashboard-app"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cortxt-dashboard-app",
         "node_title": "Cortxt Dashboard App",
         "changed_fields": [
@@ -793,8 +794,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-eventstream:c9250469a1156053:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cortxt-eventstream:c9250469a1156053:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cortxt-eventstream",
         "name": "Cortxt Eventstream",
@@ -809,8 +810,8 @@
         "cortxt-eventstream"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cortxt-eventstream",
         "node_title": "Cortxt Eventstream",
         "changed_fields": [
@@ -868,8 +869,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-graph-view:868f6f3b9cb51c1f:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cortxt-graph-view:868f6f3b9cb51c1f:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cortxt-graph-view",
         "name": "Cortxt Graph View",
@@ -884,8 +885,8 @@
         "cortxt-graph-view"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cortxt-graph-view",
         "node_title": "Cortxt Graph View",
         "changed_fields": [
@@ -951,8 +952,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt-landing:74b310f08628800b:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cortxt-landing:74b310f08628800b:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cortxt-landing",
         "name": "Cortxt Landing",
@@ -967,8 +968,8 @@
         "cortxt-landing"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cortxt-landing",
         "node_title": "Cortxt Landing",
         "changed_fields": [
@@ -1031,8 +1032,8 @@
       }
     },
     {
-      "id": "devwatch:cortxt:0a05a6e4db29b544:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:cortxt:0a05a6e4db29b544:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "cortxt",
         "name": "Cortxt",
@@ -1047,8 +1048,8 @@
         "cortxt"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "cortxt",
         "node_title": "Cortxt",
         "changed_fields": [
@@ -1103,8 +1104,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine-mini:420179e2ab5fe5f1:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:dev-changelog-engine-mini:420179e2ab5fe5f1:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "dev-changelog-engine-mini",
         "name": "Dev Changelog Engine Mini",
@@ -1119,8 +1120,8 @@
         "dev-changelog-engine-mini"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "dev-changelog-engine-mini",
         "node_title": "Dev Changelog Engine Mini",
         "changed_fields": [
@@ -1156,8 +1157,8 @@
       }
     },
     {
-      "id": "devwatch:dev-changelog-engine:8b3bd9e0a668dd4c:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:dev-changelog-engine:0912fc8d788d386b:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "dev-changelog-engine",
         "name": "Dev Changelog Engine",
@@ -1165,15 +1166,15 @@
         "url": null
       },
       "title": "dev-changelog-engine: assets/README.md, node.md, notes/README.md, planning/decisions.md, planning/roadmap.md, research/market-notes.md, research/sources.md",
-      "rawContent": "### assets/README.md\ndiff --git a/nodes/dev-changelog-engine/assets/README.md b/nodes/dev-changelog-engine/assets/README.md\nnew file mode 100644\nindex 0000000..3943625\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/assets/README.md\n@@ -0,0 +1,3 @@\n+# dev-changelog-engine / assets\n+\n+Add assets files here.\n\n\n### node.md\n## Syfte\n+\n+Fullskalig pipeline för att generera changelog-digests med source-adaptrar, LLM-baserad analys och multi-format output, avsedd att automatisera och standardisera kommunikation kring kodändringar.\n+\n\n## Beroenden\n+\n\n## Status\n+\n\n## Nästa steg\n+\n\n## Risker\n+\n\n## Arbetslogg\n+\n\n### notes/README.md\ndiff --git a/nodes/dev-changelog-engine/notes/README.md b/nodes/dev-changelog-engine/notes/README.md\nnew file mode 100644\nindex 0000000..50694e6\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/notes/README.md\n@@ -0,0 +1,3 @@\n+# dev-changelog-engine / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/nodes/dev-changelog-engine/planning/decisions.md b/nodes/dev-changelog-engine/planning/decisions.md\nnew file mode 100644\nindex 0000000..5f57562\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/planning/decisions.md\n@@ -0,0 +1 @@\n+# dev-changelog-engine / decisions\n\n\n### planning/roadmap.md\ndiff --git a/nodes/dev-changelog-engine/planning/roadmap.md b/nodes/dev-changelog-engine/planning/roadmap.md\nnew file mode 100644\nindex 0000000..8ee61e1\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/planning/roadmap.md\n@@ -0,0 +1 @@\n+# dev-changelog-engine / roadmap\n\n\n### research/market-notes.md\ndiff --git a/nodes/dev-changelog-engine/research/market-notes.md b/nodes/dev-changelog-engine/research/market-notes.md\nnew file mode 100644\nindex 0000000..dfa096a\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/research/market-notes.md\n@@ -0,0 +1 @@\n+# dev-changelog-engine / market notes\n\n\n### research/sources.md\ndiff --git a/nodes/dev-changelog-engine/research/sources.md b/nodes/dev-changelog-engine/research/sources.md\nnew file mode 100644\nindex 0000000..7097896\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/research/sources.md\n@@ -0,0 +1 @@\n+# dev-changelog-engine / sources\n",
+      "rawContent": "### assets/README.md\ndiff --git a/nodes/dev-changelog-engine/assets/README.md b/nodes/dev-changelog-engine/assets/README.md\nnew file mode 100644\nindex 0000000..3943625\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/assets/README.md\n@@ -0,0 +1,3 @@\n+# dev-changelog-engine / assets\n+\n+Add assets files here.\n\n\n### node.md\n## Syfte\n+\n+Fullskalig pipeline för att generera changelog-digests med source-adaptrar, LLM-baserad analys och multi-format output, avsedd att automatisera och standardisera kommunikation kring kodändringar.\n+\n\n## Beroenden\n+\n\n## Status\n+\n\n## Nästa steg\n+\n\n## Risker\n+\n\n## Arbetslogg\n+\n\n## Anteckningar\n+\n+Shelved 2026-06-10 — superseded av `dev-changelog-engine-mini` (part_of pipeline-extern, working/early_mvp, eget repo), som levererade en nedskalad version av samma idé. Behållen för historik.\n\n### notes/README.md\ndiff --git a/nodes/dev-changelog-engine/notes/README.md b/nodes/dev-changelog-engine/notes/README.md\nnew file mode 100644\nindex 0000000..50694e6\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/notes/README.md\n@@ -0,0 +1,3 @@\n+# dev-changelog-engine / notes\n+\n+Add notes files here.\n\n\n### planning/decisions.md\ndiff --git a/nodes/dev-changelog-engine/planning/decisions.md b/nodes/dev-changelog-engine/planning/decisions.md\nnew file mode 100644\nindex 0000000..5f57562\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/planning/decisions.md\n@@ -0,0 +1 @@\n+# dev-changelog-engine / decisions\n\n\n### planning/roadmap.md\ndiff --git a/nodes/dev-changelog-engine/planning/roadmap.md b/nodes/dev-changelog-engine/planning/roadmap.md\nnew file mode 100644\nindex 0000000..8ee61e1\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/planning/roadmap.md\n@@ -0,0 +1 @@\n+# dev-changelog-engine / roadmap\n\n\n### research/market-notes.md\ndiff --git a/nodes/dev-changelog-engine/research/market-notes.md b/nodes/dev-changelog-engine/research/market-notes.md\nnew file mode 100644\nindex 0000000..dfa096a\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/research/market-notes.md\n@@ -0,0 +1 @@\n+# dev-changelog-engine / market notes\n\n\n### research/sources.md\ndiff --git a/nodes/dev-changelog-engine/research/sources.md b/nodes/dev-changelog-engine/research/sources.md\nnew file mode 100644\nindex 0000000..7097896\n--- /dev/null\n+++ b/nodes/dev-changelog-engine/research/sources.md\n@@ -0,0 +1 @@\n+# dev-changelog-engine / sources\n",
       "url": null,
       "kind": "changed",
       "tags": [
         "dev-changelog-engine"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "dev-changelog-engine",
         "node_title": "Dev Changelog Engine",
         "changed_fields": [
@@ -1200,6 +1201,7 @@
           {
             "file": "node.md",
             "sections": [
+              "Anteckningar",
               "Arbetslogg",
               "Beroenden",
               "Nästa steg",
@@ -1233,8 +1235,8 @@
       }
     },
     {
-      "id": "devwatch:docs-watch:5b401814019a06b5:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:docs-watch:5b401814019a06b5:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "docs-watch",
         "name": "DocsWatch",
@@ -1249,8 +1251,8 @@
         "docs-watch"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "docs-watch",
         "node_title": "DocsWatch",
         "changed_fields": [
@@ -1286,8 +1288,8 @@
       }
     },
     {
-      "id": "devwatch:github-webhook:e401a985683dc093:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:github-webhook:e401a985683dc093:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "github-webhook",
         "name": "GitHub Webhook Receiver",
@@ -1302,8 +1304,8 @@
         "github-webhook"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "github-webhook",
         "node_title": "GitHub Webhook Receiver",
         "changed_fields": [
@@ -1340,8 +1342,8 @@
       }
     },
     {
-      "id": "devwatch:infrastructure:3cd8838395215013:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:infrastructure:3cd8838395215013:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "infrastructure",
         "name": "Infrastructure",
@@ -1356,8 +1358,8 @@
         "infrastructure"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "infrastructure",
         "node_title": "Infrastructure",
         "changed_fields": [
@@ -1415,8 +1417,8 @@
       }
     },
     {
-      "id": "devwatch:interface:daec4dde97ed0306:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:interface:daec4dde97ed0306:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "interface",
         "name": "Interface",
@@ -1431,8 +1433,8 @@
         "interface"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "interface",
         "node_title": "Interface",
         "changed_fields": [
@@ -1490,8 +1492,8 @@
       }
     },
     {
-      "id": "devwatch:local-ai:d2531159af57edee:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:local-ai:d2531159af57edee:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "local-ai",
         "name": "Local AI",
@@ -1506,8 +1508,8 @@
         "local-ai"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "local-ai",
         "node_title": "Local AI",
         "changed_fields": [
@@ -1552,8 +1554,8 @@
       }
     },
     {
-      "id": "devwatch:mcp-gateway:120a6076453fe1c4:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:mcp-gateway:120a6076453fe1c4:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "mcp-gateway",
         "name": "MCP Gateway (router)",
@@ -1568,8 +1570,8 @@
         "mcp-gateway"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "mcp-gateway",
         "node_title": "MCP Gateway (router)",
         "changed_fields": [
@@ -1605,8 +1607,8 @@
       }
     },
     {
-      "id": "devwatch:pipeline-extern:a5adb677b6ca534c:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:pipeline-extern:a5adb677b6ca534c:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "pipeline-extern",
         "name": "Pipeline Extern",
@@ -1621,8 +1623,8 @@
         "pipeline-extern"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "pipeline-extern",
         "node_title": "Pipeline Extern",
         "changed_fields": [
@@ -1680,8 +1682,8 @@
       }
     },
     {
-      "id": "devwatch:pipeline-intern:436539c28b36c663:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:pipeline-intern:436539c28b36c663:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "pipeline-intern",
         "name": "Pipeline Intern",
@@ -1696,8 +1698,8 @@
         "pipeline-intern"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "pipeline-intern",
         "node_title": "Pipeline Intern",
         "changed_fields": [
@@ -1755,8 +1757,8 @@
       }
     },
     {
-      "id": "devwatch:pipeline-review:253285dba9ac728a:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:pipeline-review:253285dba9ac728a:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "pipeline-review",
         "name": "Pipeline Review",
@@ -1771,8 +1773,8 @@
         "pipeline-review"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "pipeline-review",
         "node_title": "Pipeline Review",
         "changed_fields": [
@@ -1830,8 +1832,8 @@
       }
     },
     {
-      "id": "devwatch:project-vault-dashboard:f0df4ad92b4cf2b7:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:project-vault-dashboard:f0df4ad92b4cf2b7:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "project-vault-dashboard",
         "name": "Project Vault Dashboard",
@@ -1846,8 +1848,8 @@
         "project-vault-dashboard"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "project-vault-dashboard",
         "node_title": "Project Vault Dashboard",
         "changed_fields": [
@@ -1954,8 +1956,8 @@
       }
     },
     {
-      "id": "devwatch:quest-engine:64482e4b5dee7f55:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:quest-engine:64482e4b5dee7f55:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "quest-engine",
         "name": "Quest Engine",
@@ -1970,8 +1972,8 @@
         "quest-engine"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "quest-engine",
         "node_title": "Quest Engine",
         "changed_fields": [
@@ -2024,8 +2026,8 @@
       }
     },
     {
-      "id": "devwatch:research-agent:ab0647d17ce130fd:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:research-agent:ab0647d17ce130fd:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "research-agent",
         "name": "Research Agent",
@@ -2040,8 +2042,8 @@
         "research-agent"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "research-agent",
         "node_title": "Research Agent",
         "changed_fields": [
@@ -2077,8 +2079,8 @@
       }
     },
     {
-      "id": "devwatch:scoring-studio:5db909c1b18b7944:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:scoring-studio:70b3ba31bcae1a0d:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "scoring-studio",
         "name": "Scoring Studio",
@@ -2086,15 +2088,15 @@
         "url": null
       },
       "title": "scoring-studio: node.md",
-      "rawContent": "### node.md\n## Syfte\n+\n+Visuellt verktyg för att justera scoring-vikterna i Changelog Engine Mini utan att redigera kod — läser `scoring.config.json`, låter dig ändra vikter och exporterar ny config.\n+\n\n## Beroenden\n+\n\n## Status\n+\n\n## Nästa steg\n+\n\n## Risker\n+\n+- **Technical**: Externalisering av `DEFAULT_WEIGHTS` kräver att CLI:t läser config och faller tillbaka utan krasch.\n+- **Ops**: Config måste versionshanteras i repot, annars försvinner justeringar vid pull.\n+\n\n## Arbetslogg\n+\n\n## Anteckningar\n+# Runtime data\n+data/\n+\n+# Python\n+__pycache__/\n+*.py[cod]\n+*.egg-info/\n+dist/\n+build/\n+.eggs/\n+*.egg\n+\n+# Virtual environments\n+venv/\n+.venv/\n+env/\n+\n+# IDE\n+.vscode/\n+.idea/\n+*.swp\n+*.swo\n+\n+# OS\n+.DS_Store\n+Thumbs.db\n+\n+# CNS project metadata (not part of the tool itself)\n+project.md\n+assets/\n+exports/\n+notes/\n+research/",
+      "rawContent": "### node.md\n## Syfte\n+\n+Visuellt verktyg för att justera scoring-vikterna i Changelog Engine Mini utan att redigera kod — läser `scoring.config.json`, låter dig ändra vikter och exporterar ny config.\n+\n\n## Beroenden\n+\n\n## Status\n+\n\n## Nästa steg\n+\n\n## Risker\n+\n+- **Technical**: Externalisering av `DEFAULT_WEIGHTS` kräver att CLI:t läser config och faller tillbaka utan krasch.\n+- **Ops**: Config måste versionshanteras i repot, annars försvinner justeringar vid pull.\n+\n\n## Arbetslogg\n+",
       "url": null,
       "kind": "changed",
       "tags": [
         "scoring-studio"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "scoring-studio",
         "node_title": "Scoring Studio",
         "changed_fields": [
@@ -2117,7 +2119,6 @@
           {
             "file": "node.md",
             "sections": [
-              "Anteckningar",
               "Arbetslogg",
               "Beroenden",
               "Nästa steg",
@@ -2131,72 +2132,8 @@
       }
     },
     {
-      "id": "devwatch:site-change-monitor:ff7446ff3b09a5f5:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
-      "source": {
-        "id": "site-change-monitor",
-        "name": "site-change-monitor",
-        "type": "devwatch",
-        "url": null
-      },
-      "title": "site-change-monitor: README.md, planning/decisions.md, planning/mvp-scope.md, planning/report-review-checklist.md, planning/roadmap.md",
-      "rawContent": "### README.md\n## What it does\n+\n+1. Reads a list of URLs from `config.yaml`\n+2. Fetches each page's HTML\n+3. Extracts meaningful text (strips scripts, nav, styles, etc.)\n+4. Saves a timestamped snapshot to `data/snapshots/`\n+5. Compares against the previous snapshot\n+6. Classifies each change as **meaningful** or **noise**\n+7. Prints a clear terminal summary\n+8. Generates a JSON report and static HTML report per run\n+\n\n## Setup\n+\n+```bash\n+cd projects/site-change-monitor\n+pip install -r requirements.txt\n+```\n+\n\n## Usage\n+\n+```bash\n+# Run with default config.yaml\n+python -m src.cli\n+\n+# Custom config file\n+python -m src.cli --config my_urls.yaml\n+\n+# Show diff details even for noise changes\n+python -m src.cli --verbose\n+\n+# Custom data directory\n+python -m src.cli --data-dir ./my_snapshots\n+```\n+\n+First run will save snapshots with no diff (nothing to compare yet).\n+Second run will show diffs against the first run.\n+\n\n## Config format\n+\n+```yaml\n+urls:\n+  - url: \"https://example.com\"\n+    label: \"Example homepage\"\n+  - url: \"https://competitor.com/pricing\"\n+    label: \"Competitor pricing\"\n+\n+filters:\n+  min_change_chars: 10\n+  ignore_whitespace_only: true\n+  ignore_timestamp_patterns: true\n+```\n+\n\n## Snapshot format\n+\n+JSON files stored in `data/snapshots/<url_slug>/<timestamp>.json`:\n+\n+```json\n+{\n+  \"url\": \"https://example.com\",\n+  \"label\": \"Example homepage\",\n+  \"fetched_at\": \"2026-05-02T12:00:00+00:00\",\n+  \"text\": \"extracted page text...\"\n+}\n+```\n+\n\n## Noise reduction heuristics\n+\n+- **Whitespace-only changes** are filtered out\n+- **Timestamp/date patterns** are normalized before comparison\n+- **Small changes** below a character threshold are flagged as noise\n+- **Cookie/GDPR boilerplate** phrases are detected and filtered\n+\n\n## Reports\n+\n+Each run generates a structured JSON report and a static HTML report in `data/reports/<run_id>/`.\n+\n+### Data directory layout\n+\n+```\n+data/\n+  snapshots/\n+    <url_slug>/\n+      <timestamp>.json          # one per fetch\n+  reports/\n+    <run_id>/\n+      report.json               # structured run summary\n+      report.html               # self-contained HTML report\n+      diffs/\n+        <url_slug>.diff.txt     # unified diff (only for changed URLs)\n+```\n+\n+### JSON report structure\n+\n+```jso\n...[truncated]\n\n## What this MVP does NOT do\n+\n+- No JavaScript rendering (static HTML only)\n+- No scheduling/cron (run manually or wire up yourself)\n+- No notifications (Slack, email, etc.)\n+- No web dashboard\n+- No database\n+- No authentication or multi-user\n+- No deployment -- local only\n+\n+These are intentional scope cuts for fast validation.\n+# Site Change Monitor - URL configuration\n+# Add URLs to monitor. Each entry has a URL and an optional label.\n+\n+urls:\n+  - label: \"Notion pricing\"\n+    url: \"https://www.notion.so/product/pricin\n...[truncated]\n\n### planning/decisions.md\ndiff --git a/nodes/site-change-monitor/planning/decisions.md b/nodes/site-change-monitor/planning/decisions.md\nnew file mode 100644\nindex 0000000..1d5345c\n--- /dev/null\n+++ b/nodes/site-change-monitor/planning/decisions.md\n@@ -0,0 +1 @@\n+# site-change-monitor / decisions\n\n\n### planning/mvp-scope.md\n## Current Slice\n+\n+Basic monitor + diff + alert loop via CLI.\n+\n+- Fetch URLs from config.yaml\n+- Extract meaningful text (strip scripts, nav, boilerplate)\n+- Save timestamped snapshots to data/snapshots/\n+- Diff against previous snapshot\n+- Classify changes as meaningful vs noise\n+- Print clear summary to terminal\n+\n\n## Next Steps\n+\n+1. **Simple scheduler**: add a `--watch` mode with configurable interval, or cron-friendly exit codes, so monitoring runs unattended without external wiring.\n+2. **JSON/HTML report per run**: write a structured report file alongside terminal output so downstream tools (dashboards, notifications) can consume results programmatically.\n+\n\n## Not Now\n+\n+- Authentication, billing, or user accounts\n+- Web dashboard or hosted service\n+- Slack/email/webhook notifications (manual integration only for now)\n+- JavaScript rendering (Playwright/Puppeteer)\n+- Multi-user or team features\n+- Deployment automation or Docker packaging\n+- Database backend\n+- Complex selector-based extraction rules\n\n### planning/report-review-checklist.md\n## Syfte\n+Bedöma om per-run JSON + HTML-rapporten är tillräckligt bra för riktiga tester och demo.\n+\n\n## Kontrollpunkter\n+- Är det direkt tydligt vilka URL:er som ändrats?\n+- Är severity begriplig utan förklaring?\n+- Räcker summary-texten för att förstå ändringen?\n+- Behöver man öppna diff-filen ofta, eller bara ibland?\n+- Är artifact paths användbara i praktiken?\n+- Känns HTML-rapporten tillräckligt tydlig för att visa en testanvändare?\n+- Finns det onödigt brus i unchanged/minor-resultat?\n+\n\n## Beslut efter 5–10 körningar\n+- Behåll rapportformat som det är\n+- Justera summary/severity\n+- Lägg till scheduler som nästa slice\n+- Vänta med fler features\n\n### planning/roadmap.md\ndiff --git a/nodes/site-change-monitor/planning/roadmap.md b/nodes/site-change-monitor/planning/roadmap.md\nnew file mode 100644\nindex 0000000..f2034f7\n--- /dev/null\n+++ b/nodes/site-change-monitor/planning/roadmap.md\n@@ -0,0 +1 @@\n+# site-change-monitor / roadmap\ndiff --git a/nodes/site-change-monitor/requirements.txt b/nodes/site-change-monitor/requirements.txt\nnew file mode 100644\nindex 0000000..89470b0\n--- /dev/null\n+++ b/nodes/site-change-monitor/requirements.txt\n@@ -0,0 +1,4 @@\n+requests>=2.31,<3\n+beautifulsoup4>=4.12,<5\n+pyyaml>=6.0,<7\n+redis>=5.0,<6\ndiff --git a/nodes/site-change-monitor/src/__init__.py b/nodes/site-change-monitor/src/__init__.py\nnew file mode 100644\nindex 0000000..e69de29\ndiff --git a/nodes/site-change-monitor/src/cli.py b/nodes/site-change-monitor/src/cli.py\nnew f",
-      "url": null,
-      "kind": "changed",
-      "tags": [
-        "site-change-monitor"
-      ],
-      "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
-        "slug": "site-change-monitor",
-        "node_title": "site-change-monitor",
-        "changed_fields": [],
-        "changed_files": [
-          {
-            "file": "README.md",
-            "sections": [
-              "Config format",
-              "Noise reduction heuristics",
-              "Reports",
-              "Setup",
-              "Snapshot format",
-              "Usage",
-              "What it does",
-              "What this MVP does NOT do"
-            ]
-          },
-          {
-            "file": "planning/decisions.md",
-            "sections": []
-          },
-          {
-            "file": "planning/mvp-scope.md",
-            "sections": [
-              "Current Slice",
-              "Next Steps",
-              "Not Now"
-            ]
-          },
-          {
-            "file": "planning/report-review-checklist.md",
-            "sections": [
-              "Beslut efter 5–10 körningar",
-              "Kontrollpunkter",
-              "Syfte"
-            ]
-          },
-          {
-            "file": "planning/roadmap.md",
-            "sections": []
-          }
-        ],
-        "noise_filtered": false
-      }
-    },
-    {
-      "id": "devwatch:webhook-router:de15e9fc8c04929c:20260610T104918Z",
-      "detectedAt": "2026-06-10T10:49:18Z",
+      "id": "devwatch:webhook-router:de15e9fc8c04929c:20260611T111816Z",
+      "detectedAt": "2026-06-11T11:18:16Z",
       "source": {
         "id": "webhook-router",
         "name": "Webhook Router",
@@ -2211,8 +2148,8 @@
         "webhook-router"
       ],
       "meta": {
-        "run_id": "20260610_104918",
-        "run_timestamp": "20260610T104918Z",
+        "run_id": "20260611_111816",
+        "run_timestamp": "20260611T111816Z",
         "slug": "webhook-router",
         "node_title": "Webhook Router",
         "changed_fields": [
@@ -2329,8 +2266,8 @@
   ],
   "meta": {
     "nodes_scanned": 31,
-    "nodes_changed": 32,
-    "events_exported": 32,
+    "nodes_changed": 31,
+    "events_exported": 31,
     "noise_filtered": 0,
     "no_changes": false
   }
