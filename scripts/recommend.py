@@ -285,9 +285,18 @@ def statusline(state: dict | None = None) -> str:
         agent_part = f"@{routing['agent']}" if routing.get("agent") else ""
         parts.append(f"{model_short}{' · ' + agent_part if agent_part else ''}")
 
-    running = len(state["running_sessions"])
+    running_sessions = state["running_sessions"]
+    running = len(running_sessions)
     if running:
         parts.append(f"{running} pass igång")
+    # Fantom-signal (issue #58): running-pass utan framsteg men med tokenförbrukning.
+    try:
+        from scripts.session_store import is_phantom
+        phantoms = sum(1 for s in running_sessions if is_phantom(s))
+    except Exception:
+        phantoms = 0
+    if phantoms:
+        parts.append(f"\033[31m⚠ {phantoms} fantom\033[0m")
     if recs:
         top = recs[0]
         more = f" (+{len(recs) - 1} — /sessions)" if len(recs) > 1 else ""

@@ -82,6 +82,17 @@ def _validate_type(session_type: str | None) -> None:
         )
 
 
+# Observabilitet (issue #58): mät förbrukning per pass så "fantom-arbete"
+# (running utan framsteg men med tokenförbrukning) blir synligt. Tröskeln
+# undviker att flagga nystartade pass som ännu inte hunnit producera artefakter.
+PHANTOM_TOKEN_THRESHOLD = 5000
+
+
+def _new_metrics() -> dict:
+    """Tomma observabilitetsmetriker för en ny session-post."""
+    return {"tool_calls": 0, "tokens_in": 0, "tokens_out": 0, "tools_seen": [], "artifacts": []}
+
+
 def start_session(
     link_kind: str | None = None,
     link_ref: str | None = None,
@@ -118,6 +129,7 @@ def start_session(
         "parent_id": parent_id,
         "fork_name": fork_name,
         "type": session_type,
+        "metrics": _new_metrics(),
     }
     _write(session)
     return session
@@ -162,6 +174,7 @@ def save_session(
         "parent_id": parent_id,
         "fork_name": fork_name,
         "type": session_type,
+        "metrics": _new_metrics(),
     }
     _write(session)
     return session
@@ -185,6 +198,62 @@ def mark_done(session_id: str, summary: str | None = None) -> dict:
         session["summary"] = summary
     _write(session)
     return session
+
+
+def record_metrics(
+    session_id: str,
+    *,
+    tools: list[str] | None = None,
+    tokens_in: int = 0,
+    tokens_out: int = 0,
+    artifact: str | None = None,
+) -> dict | None:
+    """Inkrementera observabilitetsmetriker på ett pass (issue #58).
+
+    ``tools`` = verktygsnamn anropade i steget (räknas + dedupas i ``tools_seen``).
+    ``tokens_in/out`` = deltan. ``artifact`` = en producerad artefakt (issue-id/PR/
+    diff) = bevis på framsteg. Returnerar uppdaterad post, eller None om den saknas.
+    Degraderar för gamla poster utan ``metrics``.
+    """
+    session = get_session(session_id)
+    if session is None:
+        return None
+    m = {**_new_metrics(), **(session.get("metrics") or {})}
+    if tools:
+        m["tool_calls"] += len(tools)
+        seen = list(m.get("tools_seen") or [])
+        for t in tools:
+            if t not in seen:
+                seen.append(t)
+        m["tools_seen"] = seen
+    m["tokens_in"] += int(tokens_in)
+    m["tokens_out"] += int(tokens_out)
+    if artifact:
+        m["artifacts"] = list(m.get("artifacts") or []) + [artifact]
+    session["metrics"] = m
+    session["updated_at"] = datetime.now().isoformat(timespec="seconds")
+    _write(session)
+    return session
+
+
+def is_phantom(session: dict) -> bool:
+    """True om passet ser ut som fantom-arbete: ``running``, tokenförbrukning över
+    tröskeln, men inga producerade artefakter (inget framsteg)."""
+    if session.get("status") != "running":
+        return False
+    m = session.get("metrics") or {}
+    tokens = int(m.get("tokens_in", 0)) + int(m.get("tokens_out", 0))
+    return tokens >= PHANTOM_TOKEN_THRESHOLD and not (m.get("artifacts") or [])
+
+
+def elapsed_seconds(session: dict) -> float | None:
+    """Sekunder mellan created_at och updated_at (None om de inte kan tolkas)."""
+    try:
+        start = datetime.fromisoformat(session["created_at"])
+        end = datetime.fromisoformat(session["updated_at"])
+        return (end - start).total_seconds()
+    except Exception:
+        return None
 
 
 def load_all_sessions() -> list[dict]:
