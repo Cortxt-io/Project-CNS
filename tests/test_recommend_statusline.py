@@ -53,7 +53,24 @@ def test_colored() -> None:
     assert recommend._colored("x", "okänd-typ") == "x"
 
 
+def test_context_pct() -> None:
+    assert recommend._context_pct({"context_window": {"used_percentage": 82.5}}) == 82.5
+    assert recommend._context_pct({"context_window": {"used_percentage": None}}) is None  # tidigt/efter compact
+    assert recommend._context_pct({}) is None
+    assert recommend._context_pct(None) is None
+
+
+def test_compact_segment() -> None:
+    # Över tröskel → /compact-signal; under/None → inget (statusraden bryts ej).
+    assert recommend._compact_segment(80) == "\033[33m⚠ kontext 80% → /compact\033[0m"
+    assert recommend._compact_segment(recommend.CONTEXT_COMPACT_THRESHOLD) is not None  # gräns inkluderad
+    assert recommend._compact_segment(50) is None
+    assert recommend._compact_segment(None) is None
+
+
 if __name__ == "__main__":
     test_focus_label()
     test_colored()
-    print("OK — _focus_label + _colored: alla fall gröna")
+    test_context_pct()
+    test_compact_segment()
+    print("OK — _focus_label + _colored + _context_pct + _compact_segment: alla fall gröna")
