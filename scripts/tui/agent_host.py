@@ -206,8 +206,17 @@ async def _deny_unlisted(tool_name: str, _input: dict, _ctx: Any) -> Any:
     return PermissionResultDeny(message=f"'{tool_name}' nekat i CNS read-läge.")
 
 
-def build_options(slug: str | None = None, resume: str | None = None, allow_writes: bool = False) -> Any:
-    """Bygg ClaudeAgentOptions för ett agent-pass (read-first som default)."""
+def build_options(
+    slug: str | None = None,
+    resume: str | None = None,
+    allow_writes: bool = False,
+    permission_check: Any = None,
+) -> Any:
+    """Bygg ClaudeAgentOptions för ett agent-pass (read-first som default).
+
+    ``permission_check`` (om satt) ersätter ``_deny_unlisted`` som ``can_use_tool``
+    — så run_turn kan wrappa read-first-kollen med guardrails (#60).
+    """
     from claude_agent_sdk import ClaudeAgentOptions
 
     allowed = list(READ_TOOLS) + list(CNS_TOOL_NAMES) + list(WEB_TOOL_NAMES)
@@ -226,7 +235,7 @@ def build_options(slug: str | None = None, resume: str | None = None, allow_writ
         "cwd": str(REPO_ROOT),
     }
     if not allow_writes:
-        kwargs["can_use_tool"] = _deny_unlisted
+        kwargs["can_use_tool"] = permission_check or _deny_unlisted
     if resume:
         kwargs["resume"] = resume
     return ClaudeAgentOptions(**kwargs)
@@ -240,22 +249,48 @@ async def run_turn(
 ) -> AsyncIterator[tuple[str, Any]]:
     """Kör ett agent-pass och yielda render-händelser för AgentScreen.
 
-    Händelser: ('session', id) · ('text', str) · ('tool', name) · ('result', text) · ('error', msg).
+    Händelser: ('session', id) · ('text', str) · ('tool', name) · ('result', text) ·
+    ('warning', msg) · ('metrics', dict) · ('error', msg).
     """
     ok, msg = availability()
     if not ok:
         yield ("error", msg)
         return
+
+    # cns-sync-guardrail (#60): varna om ett annat pass redan jobbar på samma nod.
+    guard = None
+    try:
+        from scripts.agent_guardrails import Guardrails, check_session_overlap
+
+        clear, conflicting = check_session_overlap(slug)
+        if not clear:
+            yield ("warning", f"{len(conflicting)} pass jobbar redan på '{slug}' — risk för dubbelarbete (cns-sync)")
+        guard = Guardrails()
+    except Exception:
+        guard = None  # guardrails är valfria — degradera tyst
+
     from claude_agent_sdk import (
         AssistantMessage,
         ClaudeSDKClient,
+        PermissionResultDeny,
         ResultMessage,
         SystemMessage,
         TextBlock,
         ToolUseBlock,
     )
 
-    options = build_options(slug=slug, resume=resume, allow_writes=allow_writes)
+    # Wrappa read-first-kollen med guardrails (turn/token-tak + upprepat-anrop, #60).
+    permission_check = None
+    if guard is not None and not allow_writes:
+        async def permission_check(tool_name: str, tool_input: dict, ctx: Any) -> Any:
+            allow, reason = guard.check(tool_name, tool_input)
+            if not allow:
+                return PermissionResultDeny(message=f"guardrail: {reason}")
+            return await _deny_unlisted(tool_name, tool_input, ctx)
+
+    options = build_options(
+        slug=slug, resume=resume, allow_writes=allow_writes, permission_check=permission_check
+    )
     # ClaudeSDKClient kör i streaming-läge → can_use_tool fungerar med strängprompt.
     client = ClaudeSDKClient(options=options)
     try:
@@ -273,6 +308,16 @@ async def run_turn(
                     elif isinstance(block, ToolUseBlock):
                         yield ("tool", block.name)
             elif isinstance(message, ResultMessage):
+                # Observabilitet (#58): mata guardrails token-räkningen ur usage,
+                # yielda en metrics-snapshot (AgentScreen/_record_session kan skriva
+                # den till session_store.record_metrics).
+                if guard is not None:
+                    try:
+                        usage = getattr(message, "usage", None) or {}
+                        guard.tokens += int(usage.get("input_tokens", 0)) + int(usage.get("output_tokens", 0))
+                    except Exception:
+                        pass
+                    yield ("metrics", guard.snapshot())
                 yield ("result", getattr(message, "result", "") or "")
     except Exception as exc:
         yield ("error", f"{type(exc).__name__}: {exc}")
