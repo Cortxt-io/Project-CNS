@@ -230,6 +230,52 @@ TYPE_SIGNALS: dict[str, str] = {
 }
 
 
+def _agentur_enrich() -> dict | None:
+    """Hämta agentur-routing-kontext baserat på aktivt pass + lokalt nodfokus.
+
+    Kräver: ``focus_kind=node`` i aktiv-tillståndet + lokal nod-fil med ``type``.
+    ``issue_type`` läses ur ``focus_issue_type`` i samma tillståndsfil — satt av
+    /session-skillen, ingen GitHub-API-kall, inga nätverksanrop.
+    Crash-safe: returnerar None vid saknad signal, saknad fil eller undantag.
+    """
+    try:
+        from scripts.session_store import get_active
+        from scripts.md_parser import read_node
+        from scripts.agentur_routing import route as _route
+
+        state = get_active()
+        if not state or state.get("focus_kind") != "node":
+            return None
+        node_slug = str(state.get("focus_ref") or "").strip()
+        if not node_slug:
+            return None
+
+        try:
+            meta, _, _ = read_node(node_slug)
+        except Exception:
+            return None
+
+        node_type = str(meta.get("type") or "").strip()
+        if not node_type:
+            return None
+        node_domain = str(meta.get("domain") or "").strip() or None
+        issue_type = str(state.get("focus_issue_type") or "").strip()
+
+        return _route(node_type, issue_type, domain=node_domain)
+    except Exception:
+        return None
+
+
+def _agentur_line(enrich: dict) -> str:
+    """[AGENTUR-ROUTING]-rad för prompt-injektionen."""
+    squad = enrich.get("squad") or []
+    squad_str = ", ".join(f"@{s}" for s in squad) if squad else enrich.get("discipline") or "–"
+    return (
+        f"[AGENTUR-ROUTING] station={enrich.get('station') or '–'} "
+        f"squad={squad_str} modell={enrich.get('model') or '–'}"
+    )
+
+
 def _active_type() -> str | None:
     try:
         from scripts.session_store import get_active
@@ -321,11 +367,31 @@ def main() -> None:
             print(line)
 
         agent, reason = classify(str(prompt))
+        # Advisory agentur-routing: lokalt, inga nätanrop, crash-safe.
+        enrich = _agentur_enrich()
+
         if not agent:
             # Ingen delegering denna prompt → rensa routing-sidofilen så statusraden
             # inte visar en kvarglömd @agent/modell från ett tidigare pass (stale-bugg).
+            # Undantag: om agentur-enrichment lyckades behåller vi routing-filen med
+            # station/squad/modell (advisory, inget keyword-match nödvändigt).
             try:
-                (ROOT / "exports" / "active_routing.json").unlink(missing_ok=True)
+                routing_file = ROOT / "exports" / "active_routing.json"
+                if enrich:
+                    routing_file.parent.mkdir(exist_ok=True)
+                    routing_file.write_text(
+                        json.dumps({
+                            "station": enrich.get("station"),
+                            "squad": enrich.get("squad"),
+                            "discipline": enrich.get("discipline"),
+                            "agentur": enrich.get("agentur"),
+                            "model": enrich.get("model"),
+                        }),
+                        encoding="utf-8",
+                    )
+                    print(_agentur_line(enrich))
+                else:
+                    routing_file.unlink(missing_ok=True)
             except Exception:
                 pass
             return
@@ -334,16 +400,25 @@ def main() -> None:
         print(f"[ROUTING] @{agent} → {reason}")
         print(f"[MODEL: {model}] — spawna subagent med denna modell, kör inte inline i Sonnet")
 
-        # Skriv aktiv routing till sidfil så statusraden kan visa modell + agent
+        # Skriv aktiv routing till sidfil så statusraden kan visa modell + agent.
+        # Berika med agentur-routing (station/squad/disciplin) om tillgängligt.
         try:
             routing_file = ROOT / "exports" / "active_routing.json"
             routing_file.parent.mkdir(exist_ok=True)
-            routing_file.write_text(
-                json.dumps({"model": model, "agent": agent, "reason": reason}),
-                encoding="utf-8",
-            )
+            data: dict = {"model": model, "agent": agent, "reason": reason}
+            if enrich:
+                data.update({
+                    "station": enrich.get("station"),
+                    "squad": enrich.get("squad"),
+                    "discipline": enrich.get("discipline"),
+                    "agentur": enrich.get("agentur"),
+                })
+            routing_file.write_text(json.dumps(data), encoding="utf-8")
         except Exception:
             pass
+
+        if enrich:
+            print(_agentur_line(enrich))
 
     except Exception:
         # Crash-proof: hooken ska aldrig blockera en prompt
