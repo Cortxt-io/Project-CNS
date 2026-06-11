@@ -4,6 +4,7 @@ Läser frontmatter i .claude/agents/*.md (aktiva) + .claude/org/roster/*.md (ska
 och genererar:
   - scripts/agent_registry.py  (MODEL_TIER för aktiva, DEPARTMENT + ROSTER för alla)
   - .claude/agents/AGENTUR.md   (org-schema avd→underavd→roll)
+  - exports/agents.json         (Plan A/B artefakt — produktkod läser denna)
 
 router.py importerar MODEL_TIER/DEPARTMENT härifrån istället för handkodning.
 Kör: python scripts/gen_agentur.py
@@ -19,6 +20,7 @@ ROSTER_DIR = ROOT / ".claude" / "org" / "roster"
 MANIFEST = ROOT / ".claude" / "org" / "manifest.json"
 REGISTRY = ROOT / "scripts" / "agent_registry.py"
 AGENTUR = AGENTS_DIR / "AGENTUR.md"
+AGENTS_JSON = ROOT / "exports" / "agents.json"
 
 # Avdelningsordning för org-schemat
 DEPT_ORDER = ["Ledning", "Produkt", "R&D", "Engineering", "Platform",
@@ -186,6 +188,41 @@ def write_agentur(agents: list[dict], squads: dict[str, list[str]]) -> None:
     AGENTUR.write_text("\n".join(out), encoding="utf-8")
 
 
+def _norm(val: str | None) -> str:
+    """Normalisera "null"/None → tom sträng för ren JSON-output."""
+    if not val or val == "null":
+        return ""
+    return val
+
+
+def write_agents_json(agents: list[dict]) -> None:
+    """Emittera exports/agents.json — Plan A/B artefakt för produktkod.
+
+    Enda källan till agent-metadata utanför .claude/; produktkod (app/, json_exporter)
+    läser denna fil, aldrig .claude/ direkt.
+    """
+    records = []
+    for a in agents:
+        records.append({
+            "slug": a["name"],
+            "title": a.get("title", a["name"]),
+            "department": _norm(a.get("department")),
+            "sub_department": _norm(a.get("sub_department")),
+            "squad": _norm(a.get("squad")),
+            "status": "active" if a["_active"] else "shell",
+            "model": a.get("model", "claude-haiku-4-5"),
+            "owns": [],
+            "contributes_to": [],
+        })
+    records.sort(key=lambda x: (x["department"], x["sub_department"], x["slug"]))
+    payload = {
+        "generated_by": "scripts/gen_agentur.py",
+        "agents": records,
+    }
+    AGENTS_JSON.parent.mkdir(parents=True, exist_ok=True)
+    AGENTS_JSON.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
 def main() -> None:
     squads = load_squads()
     slug2squad = {slug: name for name, members in squads.items() for slug in members}
@@ -193,9 +230,10 @@ def main() -> None:
     agents = load_agents()  # läs efter stämpling så squad-fältet är aktuellt
     write_registry(agents, squads)
     write_agentur(agents, squads)
+    write_agents_json(agents)
     n_active = sum(1 for a in agents if a["_active"])
     print(f"Genererat: {len(agents)} roller ({n_active} aktiva), {len(squads)} squads, "
-          f"{stamped} squad-stämplingar -> agent_registry.py + AGENTUR.md")
+          f"{stamped} squad-stämplingar -> agent_registry.py + AGENTUR.md + exports/agents.json")
 
 
 if __name__ == "__main__":

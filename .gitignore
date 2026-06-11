@@ -1,6 +1,7 @@
 # Exports (auto-generated)
 exports/
 !exports/devwatch_last_run.json
+!exports/agents.json
 
 # Python
 __pycache__/
