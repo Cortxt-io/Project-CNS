@@ -34,17 +34,16 @@ from scripts.tui.data import (
     STATUS_COLORS,
     NodeView,
     build_forest,
+    cockpit_state,
     filter_nodes,
     load_nodes,
 )
 from scripts.tui.sources import (
     Transcript,
-    git_branches,
     list_transcripts,
     load_ideas,
     load_memory_cards,
     load_skills,
-    merged_branches,
     open_issues_for_slug,
 )
 
@@ -123,57 +122,139 @@ def _detail_markup(
     return "\n".join(lines).rstrip()
 
 
+# Sessionstyp → rich-färg (speglar recommend.SESSION_ICONS/SESSION_COLORS, men
+# rich-färgnamn i stället för ANSI-koder så TUI och statusrad ser likadana ut).
+_TYPE_RICH: dict[str, str] = {
+    "brainstorm": "magenta",
+    "spec": "orange3",
+    "bygg": "green",
+    "triage": "yellow",
+    "review": "blue",
+    "verktygsladan": "cyan",
+    "retro": "grey50",
+}
+_TYPE_ICON: dict[str, str] = {
+    "brainstorm": "🟣",
+    "spec": "🟠",
+    "bygg": "🟢",
+    "triage": "🟡",
+    "review": "🔵",
+}
+
+
+def _link_label(link: dict | None) -> str:
+    """Läsbar etikett för en sessions link ({kind, ref})."""
+    if not link or not link.get("ref"):
+        return ""
+    kind, ref = link.get("kind"), str(link.get("ref"))
+    return {"node": ref, "quest": f"quest #{ref}", "issue": f"#{ref}", "idea": f"idé {ref}"}.get(kind, ref)
+
+
+def _type_tag(session_type: str | None) -> str:
+    """Färgad typ-badge med ikon (tom om typ saknas)."""
+    if not session_type:
+        return ""
+    icon = _TYPE_ICON.get(session_type, "⚪")
+    color = _TYPE_RICH.get(session_type, "dim")
+    return f"{icon} [{color}]{session_type}[/{color}]"
+
+
+def _short_when(iso: str | None) -> str:
+    return (iso or "")[:16].replace("T", " ")
+
+
+def _human_elapsed(seconds: float | None) -> str:
+    if not seconds or seconds < 0:
+        return ""
+    mins = int(seconds // 60)
+    if mins < 60:
+        return f"{mins} min"
+    return f"{mins // 60}h {mins % 60}m"
+
+
+def _freshness_label(freshness: dict | None) -> str:
+    """Synlig färskhetsmarkör — lokal data kan driva från GitHub-sanningen."""
+    f = freshness or {}
+    if not f.get("reachable"):
+        return "[dim]lokal · GitHub onåbar[/dim]"
+    age = f.get("age_s")
+    if age is None:
+        return "[dim]lokal[/dim]"
+    mins = int(age // 60)
+    when = "nyss" if mins < 1 else f"{mins} min sen"
+    return f"[dim]färsk · {when}[/dim]"
+
+
 def _overview_markup() -> str:
-    """Lägesbild: aktiva git-spår + öppna idéer.
+    """Orienteringsytan (idea-7548a67a / epic #8): EN läsning, ingen hopsättning.
 
-    Syftet är kollisionssynlighet — flera lokala feature-brancher = parallella
-    spår som kan krocka.
+    Fyra block ur ``cockpit_state()`` — var du slutade · igång · härnäst · i fokus
+    — så lägesbilden där man står inte behöver pusslas ihop ur flera datalager.
     """
-    lines: list[str] = ["[bold]Aktiva git-spår[/bold]", ""]
-    branches = git_branches()
-    local = [b for b in branches if not b.remote]
-    remote_names = {b.name.split("/", 1)[-1] for b in branches if b.remote}
-    merged = merged_branches()
+    state = cockpit_state()
+    lines: list[str] = [f"[bold]📍 Lägesbild[/bold]   {_freshness_label(state.get('freshness'))}", ""]
 
-    if not local:
-        lines.append("[dim](kunde inte läsa git)[/dim]")
-    for b in local:
-        marker = "[green]▶[/green]" if b.current else " "
-        pushed = "[dim](pushad)[/dim]" if b.name in remote_names else "[yellow](endast lokal)[/yellow]"
-        is_feature = b.name not in ("main", "master")
-        if is_feature and b.name in merged:
-            state = "  [green]✓ klar (merge:ad i main)[/green]"
-        elif is_feature:
-            state = "  [cyan]← spår (ej merge:at)[/cyan]"
-        else:
-            state = ""
-        lines.append(f"{marker} {b.name} {pushed}{state}")
+    # — Var du slutade —
+    lines.append("[bold]Var du slutade[/bold]")
+    last = state.get("last_done")
+    if not last:
+        lines.append("  [dim]inget avslutat pass än[/dim]")
+    else:
+        tag = _type_tag(last.get("type"))
+        link = _link_label(last.get("link"))
+        meta = "  [dim]→ " + " · ".join(x for x in (link, _short_when(last.get("when"))) if x) + "[/dim]"
+        summ = " ".join((last.get("summary", "") or "").split())[:68] or "[dim](utan sammanfattning)[/dim]"
+        lines.append(f"  {tag + '  ' if tag else ''}{summ}{meta}")
+    lines.append("")
+
+    # — Igång —
+    active = state.get("active") or {}
+    active_tag = f"  [dim](aktiv: {active.get('type')})[/dim]" if active.get("type") else ""
+    lines.append(f"[bold]Igång[/bold]{active_tag}")
+    running = state.get("running") or []
+    if not running:
+        lines.append("  [dim]inget pass igång[/dim]")
+    for r in running:
+        tag = _type_tag(r.get("type"))
+        elapsed = _human_elapsed(r.get("elapsed"))
+        phantom = "  [red]⚠ fantom[/red]" if r.get("phantom") else ""
+        summ = " ".join((r.get("summary", "") or "").split())[:56] or _link_label(r.get("link")) or "(pass)"
+        age = f"  [dim]({elapsed})[/dim]" if elapsed else ""
+        lines.append(f"  {tag + '  ' if tag else ''}{summ}{age}{phantom}")
+    lines.append("")
+
+    # — Härnäst —
+    lines.append("[bold]Härnäst[/bold]")
+    recs = state.get("recommendations") or []
+    if not recs:
+        lines.append("  [dim]inga rekommendationer just nu[/dim]")
+    for rec in recs:
+        tag = _type_tag(rec.get("type"))
+        title = rec.get("title", "")
+        lines.append(f"  {tag + '  ' if tag else ''}{title}")
+        if rec.get("motivation"):
+            lines.append(f"     [dim]{rec['motivation'][:80]}[/dim]")
+    lines.append("")
+
+    # — I fokus —
+    focus = state.get("focus")
+    if not focus:
+        lines.append("[bold]I fokus[/bold]")
+        lines.append("  [dim]ingen fokus satt — `cns session set-focus <kind> <ref>`[/dim]")
+    else:
+        ref = focus.get("ref")
+        kind = focus.get("kind") or ""
+        lines.append(f"[bold]I fokus[/bold]   📍 [cyan]{ref}[/cyan] [dim]{kind}[/dim]")
+        issues = focus.get("issues") or []
+        if not issues:
+            lines.append("  [dim]inga öppna issues[/dim]")
+        for it in issues[:6]:
+            num = it.get("number") or it.get("id") or "?"
+            title = it.get("title", "")
+            lines.append(f"  🔧 #{num} {title[:56]}")
 
     lines.append("")
-    lines.append("[bold]Senaste sessioner[/bold]")
-    lines.append("")
-    sessions = list_transcripts()
-    if not sessions:
-        lines.append("[dim]inga sessioner hittade[/dim]")
-    for t in sessions[:8]:
-        when = t.timestamp[:16].replace("T", " ")
-        branch = f"[dim][{t.git_branch}][/dim] " if t.git_branch else ""
-        lines.append(f"  • [dim]{when}[/dim] {branch}{t.title[:46]}")
-
-    lines.append("")
-    lines.append("[bold]Öppna idéer[/bold]")
-    lines.append("")
-    ideas = load_ideas()
-    if not ideas:
-        lines.append("[dim]inga öppna idéer lokalt[/dim]")
-    for i in ideas:
-        text = " ".join((i.get("text", "") or "").split())
-        slug = i.get("slug")
-        tag = f" [dim]→ {slug}[/dim]" if slug else ""
-        lines.append(f"  • {text[:64]}{tag}")
-
-    lines.append("")
-    lines.append("[dim]esc / o stänger · s = bläddra/öppna sessioner[/dim]")
+    lines.append("[dim]esc / o stänger · s sessioner · k kunskap[/dim]")
     return "\n".join(lines)
 
 
@@ -400,6 +481,10 @@ class CnsTuiApp(App):
         self._ideas = load_ideas()
         self._transcripts = list_transcripts()
         self._populate_tree(self._all_nodes)
+        # Orienteringsytan först (epic #8): lägesbilden öppnas vid start så man
+        # ser var man står direkt; esc/o tar fram nodträdet. Deferred så skärmen
+        # hinner monteras innan modalen pushas.
+        self.call_after_refresh(self.action_overview)
 
     # -- trädbygge ---------------------------------------------------------
 
