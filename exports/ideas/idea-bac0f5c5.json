@@ -1,0 +1,9 @@
+{
+  "id": "idea-bac0f5c5",
+  "text": "Auto session-livscykel — RESTEN (trigger 1, kontext-tröskel→/compact, byggd via PR #64). Kvar: (2) sessionstyp-skifte: router.py flaggar redan [SESSION-SKIFTE?] men tvingar inget — bekräftat byte → mark_done + forka barn-pass + auto-sätt aktiv markör. (3) Leverans klar: PR mergad/fråga besvarad → föreslå flush via cortxt_save_session. PLUS: auto-sätt aktiv markör per pass (active_session.json är idag stale — stod på 'verktygsladan' sen igår fast arbetet var triage/research/bygge). Hör ihop med #41 (auto-namn+markör), #58 (metrics), #10 (orkestrering), router-hooken. Mål: agenturen äger sessions-gränsdragningen, inte människan.",
+  "created_at": "2026-06-11T15:01:41",
+  "source": "chat",
+  "slug": "cns-core",
+  "session_id": "session-1d47616e",
+  "status": "open"
+}
