@@ -205,6 +205,7 @@ def _normalize(issue: dict) -> dict:
         "closed_at": issue.get("closed_at"),
         "quest": (issue.get("milestone") or {}).get("number"),
         "labels": [l.get("name") for l in labels if isinstance(l, dict)],
+        "assignees": [a.get("login") for a in issue.get("assignees", []) if isinstance(a, dict)],
         "todos": parse_todos(body),
         "type": type_from_labels(labels),
         "depends_on": parse_depends_on(body),
