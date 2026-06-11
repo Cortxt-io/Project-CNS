@@ -1,7 +1,7 @@
 {
   "session_id": "74cdcc78-891f-4d57-bfaa-eba6ebcc35ce",
   "created_at": "2026-06-11T18:01:37",
-  "updated_at": "2026-06-11T18:01:37",
+  "updated_at": "2026-06-11T18:10:22",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -16,6 +16,12 @@
       "text": "är github app installerat nu?",
       "fork": "r-github-app (a45d)",
       "src_uuid": "40d439c4-42ec-4637-a83b-fa3b9faaf75d"
+    },
+    {
+      "ts": "2026-06-11T16:09:32.365Z",
+      "text": "och om jag vill bygga en app mot github som hanterar flera modeller?",
+      "fork": "och-om-jag (3745)",
+      "src_uuid": "2936f726-d857-4a58-b0a9-3bd5c645f745"
     }
   ]
 }
