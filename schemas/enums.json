@@ -4,5 +4,7 @@
   "kinds": ["component", "system", "framework"],
   "stages": ["idea", "building", "working", "maturing"],
   "mvp_stages": ["hypothesis", "problem_interviews", "solution_test", "demand_test", "launch"],
-  "risk_categories": ["technical", "market", "legal", "ops", "competition", "positioning", "adoption"]
+  "risk_categories": ["technical", "market", "legal", "ops", "competition", "positioning", "adoption"],
+  "types": ["frontend", "service", "mcp-server", "pipeline", "cli", "tool", "agent", "infra", "library", "dataset", "ai-model"],
+  "domains": ["cortxt", "shopify-venture"]
 }

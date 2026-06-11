@@ -69,6 +69,8 @@ Tre kanaler, lätta att förväxla: inkommande webhooks (GitHub → Flask, quest
 - status: idea | early_mvp | mvp | live | shelved
 - stage: idea | building | working | maturing
 - kind: component | system | framework
+- type: frontend | service | mcp-server | pipeline | cli | tool | agent | infra | library | dataset | ai-model (additivt, valfritt — node-evolution steg 1, epic #9)
+- domain: cortxt | shopify-venture (additivt, valfritt)
 - mvp_stage, risk_category: se `enums.json`
 
 ## Begreppsmodell (branschstandard-mappning)
