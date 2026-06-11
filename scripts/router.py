@@ -240,19 +240,48 @@ def _active_type() -> str | None:
         return None
 
 
+def _detect_type(prompt_lower: str) -> str | None:
+    """Härled sessionstyp ur promptens arbetsspråk (regelbaserat, ingen LLM).
+
+    Returnerar None för korta/konversationella prompts och prompts utan tydlig
+    typ-signal — så vanlig chatt aldrig växlar typen (ingen tjafs-växling)."""
+    if len(prompt_lower.strip()) < MIN_PROMPT_LEN:
+        return None
+    for typ, pattern in TYPE_SIGNALS.items():
+        if re.search(pattern, prompt_lower):
+            return typ
+    return None
+
+
 def session_lines(prompt_lower: str) -> list[str]:
-    """[SESSION]-direktiv + ev. typbytes-flagga för aktiv sessionstyp."""
+    """[SESSION]-direktiv + AUTO-växling av aktiv sessionstyp ur promptens arbetsspråk.
+
+    Markören ska följa arbetet, inte vara en manuell lapp (Rikard 2026-06-11: "jag vill
+    inte behöva ändra session manuellt"). När promptens språk pekar på en annan typ än
+    den aktiva sätts markören automatiskt (``set_active``), så statusraden/agenturen
+    alltid speglar vad som faktiskt görs. Bara tydliga arbets-signaler växlar; vanlig
+    chatt lämnar typen orörd. Manuellt ``/session`` funkar fortfarande men behövs ej.
+    """
     active = _active_type()
+    detected = _detect_type(prompt_lower)
+
+    switched = False
+    if detected and detected != active:
+        try:
+            from scripts.session_store import set_active
+
+            set_active(detected)
+            active = detected
+            switched = True
+        except Exception:
+            pass  # hooken får aldrig krascha på en markör-skrivning
+
     if not active or active not in TYPE_DIRECTIVES:
         return []
-    lines = [f"[SESSION: {active} — {TYPE_DIRECTIVES[active]}]"]
-    for other, pattern in TYPE_SIGNALS.items():
-        if other != active and re.search(pattern, prompt_lower):
-            lines.append(
-                f"[SESSION-SKIFTE?] {active} → {other} — bekräfta med väljaren; "
-                f"vid ja: markera passet done och forka ett {other}-pass (/session {other})"
-            )
-            break
+    lines: list[str] = []
+    if switched:
+        lines.append(f"[SESSION → {active}] auto-växlat ur promptens arbetsspråk (markören följer arbetet)")
+    lines.append(f"[SESSION: {active} — {TYPE_DIRECTIVES[active]}]")
     return lines
 
 
@@ -293,6 +322,12 @@ def main() -> None:
 
         agent, reason = classify(str(prompt))
         if not agent:
+            # Ingen delegering denna prompt → rensa routing-sidofilen så statusraden
+            # inte visar en kvarglömd @agent/modell från ett tidigare pass (stale-bugg).
+            try:
+                (ROOT / "exports" / "active_routing.json").unlink(missing_ok=True)
+            except Exception:
+                pass
             return
 
         model = MODEL_TIER.get(agent, "claude-sonnet-4-6")
