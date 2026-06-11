@@ -242,7 +242,31 @@ def _focus_label(session_id: str | None) -> str | None:
     }.get(kind, str(ref))
 
 
-def statusline(state: dict | None = None) -> str:
+# Session-boundary-signal (idea-fe8aa0bf): när kontextfönstret fylls blir passet
+# dyrt/laggigt och tappar tråden → föreslå /compact (SAMMA fönster, ej ny chatt;
+# kunskapen flushas ändå löpande till CNS). Tröskel i % kontextanvändning så den
+# funkar oavsett 200k/1M-modell.
+CONTEXT_COMPACT_THRESHOLD = 75
+
+
+def _context_pct(stdin_json: dict | None) -> float | None:
+    """Kontextanvändning i % ur Claude Codes statusLine-stdin (None om okänt/tidigt)."""
+    try:
+        cw = (stdin_json or {}).get("context_window") or {}
+        pct = cw.get("used_percentage")
+        return float(pct) if pct is not None else None
+    except Exception:
+        return None
+
+
+def _compact_segment(ctx_pct: float | None) -> str | None:
+    """Statusrads-segment som föreslår /compact när kontexten passerat tröskeln."""
+    if ctx_pct is None or ctx_pct < CONTEXT_COMPACT_THRESHOLD:
+        return None
+    return f"\033[33m⚠ kontext {ctx_pct:.0f}% → /compact\033[0m"
+
+
+def statusline(state: dict | None = None, ctx_pct: float | None = None) -> str:
     """Kompakt orienteringsrad för Claude Codes statusrad.
 
     Visar lägesbilden där man står — sessionstyp, fokus (vad man jobbar på),
@@ -301,6 +325,10 @@ def statusline(state: dict | None = None) -> str:
         top = recs[0]
         more = f" (+{len(recs) - 1} — /sessions)" if len(recs) > 1 else ""
         parts.append(f"Rek: {_colored(top['type'], top['type'])}-session{more}")
+
+    seg = _compact_segment(ctx_pct)
+    if seg:
+        parts.append(seg)
     return " · ".join(parts)
 
 
@@ -309,8 +337,16 @@ def main(argv: list[str]) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     if "--statusline" in argv:
-        # Claude Code matar statusline-kommandot med JSON på stdin — ignoreras.
-        print(statusline())
+        # Claude Code matar statusLine-kommandot med sessions-JSON på stdin.
+        # Vi läser context_window.used_percentage för /compact-signalen (idea-fe8aa0bf).
+        ctx_pct = None
+        try:
+            if not sys.stdin.isatty():
+                raw = sys.stdin.read()
+                ctx_pct = _context_pct(json.loads(raw)) if raw.strip() else None
+        except Exception:
+            ctx_pct = None
+        print(statusline(ctx_pct=ctx_pct))
         return 0
     state = gather_state()
     print(
