@@ -10,6 +10,9 @@ status: idea
 feeds: []
 depends_on: []
 summary: "Cortxt-dashboardens primära yta: en scope-baserad nodkarta som visualiserar hela frameworket med semantisk zoom, fokus och relationer (part_of/feeds/depends_on)."
+type: frontend
+domain: cortxt
+owner_agent: frontend-utvecklare
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/cortxt

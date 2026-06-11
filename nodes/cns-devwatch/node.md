@@ -11,6 +11,8 @@ feeds:
 - cns-devlog
 depends_on: []
 summary: Bevakar dagliga git-ändringar i project.md-filer och exporterar som ChangeEvents.
+type: pipeline
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS

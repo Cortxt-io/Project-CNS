@@ -10,6 +10,8 @@ status: early_mvp
 feeds: [quest-engine, cortxt-eventstream]
 depends_on: [cns-core]
 summary: HMAC-verifierad mottagare på /api/webhook/github som auto-completar quests och loggar commits/PR/CI till eventstream.
+type: service
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS

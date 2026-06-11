@@ -10,6 +10,8 @@ status: idea
 feeds: []
 depends_on: []
 summary: Self-hosted webhook proxy that logs, searches, and replays incoming webhooks locally — an audit log for developers debugging webhook deliveries without SaaS cost.
+type: service
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/webhook-router

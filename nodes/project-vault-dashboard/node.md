@@ -10,6 +10,8 @@ status: shelved
 feeds: []
 depends_on: []
 summary: Superseded by cortxt-dashboard-app. Kept for historical reference.
+type: frontend
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/cortxt

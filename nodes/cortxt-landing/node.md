@@ -10,6 +10,9 @@ status: early_mvp
 feeds: []
 depends_on: []
 summary: Publik landningssida på cortxt.io — förklarar Cortxt, visar pipelinen, samlar waitlist.
+type: frontend
+domain: cortxt
+owner_agent: frontend-utvecklare
 tags: []
 url_live: https://cortxt.io
 url_repo: https://github.com/rian010194/cortxt

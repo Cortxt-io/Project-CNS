@@ -10,6 +10,8 @@ status: mvp
 feeds: []
 depends_on: []
 summary: AI-driven analysmotor som föreslår uppdateringar av stage, risker och summary.
+type: pipeline
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS

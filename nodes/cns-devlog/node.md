@@ -11,6 +11,8 @@ feeds:
 - cns-brief
 depends_on: []
 summary: Genererar daglig AI-sammanfattning av portföljförändringar och publicerar som statisk sida.
+type: pipeline
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS

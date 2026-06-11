@@ -10,6 +10,9 @@ status: early_mvp
 feeds: []
 depends_on: []
 summary: GitHub Actions-infrastruktur som kör CNS-pipelinen schemalagt och publicerar outputs statiskt.
+type: infra
+domain: cortxt
+owner_agent: devops-ingenjor
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS

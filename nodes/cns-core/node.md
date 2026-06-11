@@ -10,6 +10,8 @@ status: early_mvp
 feeds: []
 depends_on: []
 summary: CLI, markdown-parser, validator och exportörer — substratet som läser, skriver och validerar varje nod.
+type: cli
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS
