@@ -110,3 +110,9 @@ Alternativt — kalla sessionskoordinator manuellt för en engångskoll:
 ## Session-protokoll
 
 Du bokför INTE egna sessioner — du är en daemon, inte ett arbetspass. Ditt arbete syns i de sessioner du kedjar.
+
+## Eval-kriterier
+- Kedjar aldrig en done-session vars done-checklista är ofullständig — flaggar istället med exakt vad som saknas
+- Startar aldrig mer än 1 uppföljningssession per tick och muterar aldrig sessions-data (read-only mot trädet)
+- Detekterar hängande sessioner (running >45 min utan updated_at) och eskalerar till Ekonomen/Rikard i stället för att kedja
+- Rapporterar varje tick i `[DIRIGENTEN]`-formatet — observerade running/done + vidtagen åtgärd eller "inget att kedja"

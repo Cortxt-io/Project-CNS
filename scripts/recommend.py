@@ -37,7 +37,7 @@ PROFILES_DIR = ROOT / "sessions" / "profiles"
 TRIAGE_IDEA_COUNT = 10
 TRIAGE_UNTRIAGED_COUNT = 5
 
-SESSION_TYPES = ("brainstorm", "bygg", "triage", "review")
+SESSION_TYPES = ("brainstorm", "spec", "bygg", "triage", "review")
 
 
 def _load_env() -> None:
@@ -131,6 +131,21 @@ def recommend(state: dict | None = None) -> list[dict]:
         closed_issues = quest.get("closed_issues", 0)
         ref = f"quest #{quest.get('number')}"
         if open_issues > 0:
+            # Färsk quest (öppna issues, inget stängt än) → spec:a innan bygg.
+            # Proxy, inte acceptance-medveten: vi har bara quest-aggregat här,
+            # inte acceptanskriterier per issue (skulle kräva N+1-fetch i den
+            # ofta körda statusraden). När bygget startar (issues stängs) tar
+            # bygg-regeln nedan över.
+            if closed_issues == 0:
+                recs.append(
+                    {
+                        "type": "spec",
+                        "title": f"Spec: \"{quest.get('title')}\" ({open_issues} issues, inget stängt än)",
+                        "motivation": "Questen har issues men inget byggt — definiera vad/varför + acceptanskriterier innan bygg.",
+                        "refs": [ref],
+                        "score": 45 + open_issues,
+                    }
+                )
             recs.append(
                 {
                     "type": "bygg",
@@ -177,6 +192,7 @@ def recommend(state: dict | None = None) -> list[dict]:
 # Emoji per sessionstyp för snabb visuell identifiering i statusraden
 SESSION_ICONS: dict[str, str] = {
     "brainstorm": "🟣",
+    "spec": "🟠",
     "bygg": "🟢",
     "triage": "🟡",
     "review": "🔵",

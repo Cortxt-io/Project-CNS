@@ -3,7 +3,7 @@
 > Genererad av `scripts/gen_agentur.py` ur agent-frontmatter. **Redigera inte för hand** —
 > ändra rollerna i `.claude/agents/*.md` (aktiva) / `.claude/org/roster/*.md` (skal) och kör om.
 
-**88 roller** i registret, varav **22 aktiva** (körbara i `.claude/agents/`).
+**88 roller** i registret, varav **26 aktiva** (körbara i `.claude/agents/`).
 Resten är skal i org-registret (`.claude/org/roster/`) — bemannas vid behov.
 
 Princip: agenter = anställda, skills = kompetenser. Matris (Spotify): department +
@@ -21,7 +21,7 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 | `produktdirektor` | Produktdirektör (CPO) | opus-4-8 | lead | — | skal |
 | `stabschef` | Stabschef (Chief of Staff) | sonnet-4-6 | lead | — | aktiv |
 | `strategichef` | Strategichef | opus-4-8 | lead | — | skal |
-| `teknisk-direktor` | Teknisk direktör (CTO) | opus-4-8 | lead | — | skal |
+| `teknisk-direktor` | Teknisk direktör (CTO) | opus-4-8 | lead | — | aktiv |
 
 ## Produkt
 
@@ -142,7 +142,7 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 
 | slug | titel | modell | roll | squad | status |
 |------|-------|--------|------|-------|--------|
-| `plattformschef` | Plattformschef | sonnet-4-6 | lead | — | skal |
+| `plattformschef` | Plattformschef | sonnet-4-6 | lead | — | aktiv |
 | `plattformsingenjor` | Plattformsingenjör | sonnet-4-6 | — | — | aktiv |
 | `plattformsingenjor-2` | Plattformsingenjör | haiku-4-5 | — | — | skal |
 
@@ -220,6 +220,14 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 
 ## Drift
 
+### SRE
+
+| slug | titel | modell | roll | squad | status |
+|------|-------|--------|------|-------|--------|
+| `driftchef` | Driftchef | sonnet-4-6 | lead | — | aktiv |
+| `sre-ingenjor` | SRE-ingenjör | sonnet-4-6 | — | — | skal |
+| `sre-ingenjor-2` | SRE-ingenjör | haiku-4-5 | — | — | skal |
+
 ### Monitoring
 
 | slug | titel | modell | roll | squad | status |
@@ -233,14 +241,6 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 |------|-------|--------|------|-------|--------|
 | `underhallsingenjor` | Underhållsingenjör | sonnet-4-6 | — | — | aktiv |
 | `underhallsingenjor-2` | Underhållsingenjör | haiku-4-5 | — | — | skal |
-
-### SRE
-
-| slug | titel | modell | roll | squad | status |
-|------|-------|--------|------|-------|--------|
-| `driftchef` | Driftchef | sonnet-4-6 | lead | — | skal |
-| `sre-ingenjor` | SRE-ingenjör | sonnet-4-6 | — | — | skal |
-| `sre-ingenjor-2` | SRE-ingenjör | haiku-4-5 | — | — | skal |
 
 ### Incident
 
@@ -271,7 +271,7 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 
 | slug | titel | modell | roll | squad | status |
 |------|-------|--------|------|-------|--------|
-| `kommunikationschef` | Kommunikationschef | sonnet-4-6 | lead | — | skal |
+| `kommunikationschef` | Kommunikationschef | sonnet-4-6 | lead | — | aktiv |
 | `teknisk-skribent` | Teknisk skribent | sonnet-4-6 | — | — | aktiv |
 | `teknisk-skribent-2` | Teknisk skribent | haiku-4-5 | — | — | skal |
 
