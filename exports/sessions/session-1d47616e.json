@@ -1,0 +1,16 @@
+{
+  "id": "session-1d47616e",
+  "created_at": "2026-06-11T13:51:35",
+  "updated_at": "2026-06-11T13:51:35",
+  "status": "running",
+  "summary": "Sessions-UX-epic (#8): orientering + start. Spine = orienteringsytan (idea-7548a67a). Förstå vänsterpils-panelen, planera build-ordning, börja bygga.",
+  "link": {
+    "kind": "quest",
+    "ref": "8"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null
+}
