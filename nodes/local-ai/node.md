@@ -11,6 +11,8 @@ feeds:
   - cns-mcp
 depends_on: []
 summary: Lokal AI-inferens (Qwen/GLM via Ollama/LM Studio) som fallback och kodfokuserat komplement till Anthropic-modellerna.
+type: ai-model
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: ''

@@ -8,6 +8,8 @@ slug: pipeline-extern
 stage: idea
 status: idea
 summary: Extern pipeline — hanterar utgående data och publicering.
+type: pipeline
+domain: cortxt
 tags: []
 title: Pipeline Extern
 updated: '2026-06-07'

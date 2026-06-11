@@ -11,6 +11,8 @@ feeds:
 - dev-changelog-engine-mini
 depends_on: []
 summary: CLI tool that monitors external changelogs, docs and release notes for dev teams.
+type: cli
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/docs-watch

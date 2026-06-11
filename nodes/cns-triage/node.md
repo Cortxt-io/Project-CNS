@@ -10,6 +10,8 @@ status: early_mvp
 feeds: []
 depends_on: []
 summary: Intern triage av CNS idé-inkorg och noder — gruppera, resolva/promota idéer och föreslå nästa session.
+type: tool
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: ''

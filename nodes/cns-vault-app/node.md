@@ -10,6 +10,9 @@ status: early_mvp
 feeds: []
 depends_on: []
 summary: Flask-app på Railway som exponerar CNS via webb med git som synkmekanism.
+type: service
+domain: cortxt
+owner_agent: backend-utvecklare
 tags: []
 url_live: https://project-cns-production.up.railway.app
 url_repo: https://github.com/rian010194/Project-CNS

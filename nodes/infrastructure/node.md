@@ -8,6 +8,8 @@ slug: infrastructure
 stage: working
 status: idea
 summary: Infrastruktursystem — drift, hosting, webhooks och lagring.
+type: infra
+domain: cortxt
 tags: []
 title: Infrastructure
 updated: '2026-06-07'

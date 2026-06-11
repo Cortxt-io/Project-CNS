@@ -10,6 +10,9 @@ status: early_mvp
 feeds: []
 depends_on: []
 summary: React SPA på app.cortxt.io — portföljvy, projektsidor och grafvy mot Railway-API.
+type: frontend
+domain: cortxt
+owner_agent: frontend-utvecklare
 tags: []
 url_live: https://app.cortxt.io
 url_repo: https://github.com/rian010194/cortxt

@@ -10,6 +10,8 @@ status: early_mvp
 feeds: []
 depends_on: [cns-core]
 summary: Quest-livscykel (suggested → active → in_progress → completed/archived) med JSON-lagring, API och auto-övergångar — kopplar aktivitet till handling.
+type: service
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS

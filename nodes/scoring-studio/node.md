@@ -10,6 +10,8 @@ status: idea
 feeds: []
 depends_on: []
 summary: Visuellt verktyg för att justera scoring-vikter utan att redigera kod.
+type: tool
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: ''

@@ -13,6 +13,8 @@ depends_on:
   - cns-mcp
   - local-ai
 summary: Interaktivt studio för att skapa, konfigurera och dokumentera agenter utan manuell JSON-redigering — via /agent-studio skill.
+type: tool
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: ''

@@ -11,6 +11,8 @@ slug: cortxt-eventstream
 stage: building
 status: early_mvp
 summary: Enhetlig händelselogning av alla systemaktiviteter med sex dimensioner.
+type: service
+domain: cortxt
 tags: []
 title: Cortxt Eventstream
 updated: '2026-06-07'

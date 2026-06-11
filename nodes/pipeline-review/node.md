@@ -8,6 +8,8 @@ slug: pipeline-review
 stage: working
 status: idea
 summary: Granskningspipeline — analyserar och utvärderar projekt och data.
+type: pipeline
+domain: cortxt
 tags: []
 title: Pipeline Review
 updated: '2026-06-07'

@@ -10,6 +10,8 @@ status: shelved
 feeds: []
 depends_on: []
 summary: Fullskalig pipeline för changelog-digest med source-adaptrar, LLM-analys och multi-format output.
+type: pipeline
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: ''

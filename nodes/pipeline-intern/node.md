@@ -8,6 +8,8 @@ slug: pipeline-intern
 stage: working
 status: idea
 summary: Intern datapipeline — bearbetar och förädlar information internt.
+type: pipeline
+domain: cortxt
 tags: []
 title: Pipeline Intern
 updated: '2026-06-07'

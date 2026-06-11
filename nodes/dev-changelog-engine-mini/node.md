@@ -10,6 +10,8 @@ status: early_mvp
 feeds: []
 depends_on: []
 summary: Pipeline that transforms DocsWatch data into prioritized weekly digests in Markdown and HTML.
+type: pipeline
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/dev-changelog-engine-mini

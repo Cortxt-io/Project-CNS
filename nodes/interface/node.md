@@ -8,6 +8,8 @@ slug: interface
 stage: maturing
 status: idea
 summary: Gränssnittssystem — dashboarder, landing page och grafvy.
+type: frontend
+domain: cortxt
 tags: []
 title: Interface
 updated: '2026-06-08'

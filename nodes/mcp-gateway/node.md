@@ -10,6 +10,8 @@ status: idea
 feeds: []
 depends_on: [cns-mcp]
 summary: Planerad separat router/gateway-process som aggregerar flera MCP-servrar bakom en endpoint med central auth, rate-limit och per-agent verktygsfiltrering. Idag ersatt av config-routern (.mcp.json) — byggs först när Plan B-agenter når många servrar i produktion.
+type: mcp-server
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: ''

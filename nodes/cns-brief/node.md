@@ -10,6 +10,8 @@ status: early_mvp
 feeds: []
 depends_on: []
 summary: AI-driven portföljbrief som varje morgon returnerar situation, prioriteringar och questförslag.
+type: pipeline
+domain: cortxt
 tags: []
 url_live: ''
 url_repo: https://github.com/rian010194/Project-CNS

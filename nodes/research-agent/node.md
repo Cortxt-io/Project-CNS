@@ -10,6 +10,9 @@ status: early_mvp
 feeds: []
 depends_on: []
 summary: Research-agent som söker på webben, verifierar källor och skriver findings till CNS wiki. Kör via Anthropic API (claude-sonnet-4-6).
+type: agent
+domain: cortxt
+owner_agent: forskningsledare
 url_live: ''
 url_repo: ''
 ---

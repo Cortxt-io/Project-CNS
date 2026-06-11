@@ -8,6 +8,8 @@ slug: cortxt
 stage: working
 status: idea
 summary: Verktygskedja för AI-assisterad produktutveckling — från idé till leverans.
+type: tool
+domain: cortxt
 tags: []
 title: Cortxt
 updated: '2026-06-07'

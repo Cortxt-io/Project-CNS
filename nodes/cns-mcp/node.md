@@ -10,6 +10,9 @@ status: early_mvp
 feeds: []
 depends_on: [cns-core]
 summary: Remote MCP-server på Railway (GitHub OAuth, Redis-token-store) som exponerar CNS som verktyg för Claude — nåbar från telefon och webb.
+type: mcp-server
+domain: cortxt
+owner_agent: backend-utvecklare
 tags: []
 url_live: https://project-cns-production.up.railway.app/mcp
 url_repo: https://github.com/rian010194/Project-CNS
