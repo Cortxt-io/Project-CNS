@@ -1,7 +1,7 @@
 {
   "session_id": "b14c794b-893b-4692-a31f-a33a8975d8fd",
   "created_at": "2026-06-11T15:20:06",
-  "updated_at": "2026-06-11T23:24:59",
+  "updated_at": "2026-06-11T23:40:02",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -58,6 +58,12 @@
       "text": "jobbar mina agenter under denna session? jag är osäker på om jag ens får matat agenturen",
       "fork": "jobbar-mina-agenter (7f29)",
       "src_uuid": "caf28af9-7747-4958-bd08-ed28fbf08c88"
+    },
+    {
+      "ts": "2026-06-11T21:37:54.252Z",
+      "text": "det är många beslut jag måste ta i prompten som känns natuliga. Jag vet inte om vi ska ha en bakgrundssession som agenturen sköter som skapar verktyg/minne/föreslår ny bemanning det händer idag inte autonomt som det borde",
+      "fork": "det-r-mnga (b4c1)",
+      "src_uuid": "658ab274-2a7b-4926-bde9-5811a39efb3d"
     }
   ]
 }
