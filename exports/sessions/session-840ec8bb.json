@@ -1,0 +1,16 @@
+{
+  "id": "session-840ec8bb",
+  "created_at": "2026-06-11T12:25:29",
+  "updated_at": "2026-06-11T12:25:29",
+  "status": "running",
+  "summary": "Spec-pass 2026-06-11: lås schema-tillägget för nodmodellens evolution (type/domain/owner/c4_level + agent-entiteter + arbets-kanter). Ur plans/node-model-evolution-spec.md. Spec-först, ingen kod.",
+  "link": {
+    "kind": "node",
+    "ref": "cns-core"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null
+}
