@@ -75,8 +75,27 @@ Tre kanaler, lätta att förväxla: inkommande webhooks (GitHub → Flask, quest
 
 ## Begreppsmodell (branschstandard-mappning)
 CNS-termerna mappar mot branschstandard (granskad spec: `plans/work-model-taxonomy-spec.md`). Standardtermen är vokabulär i dok/prompter; **MCP-verktygsnamn (`cortxt_*`) är connector-kontrakt och behålls oförändrade** — ny standardterm exponeras vid behov som alias, inte som hård rename.
-- `projects`/noder → **component** · `ideas` → **opportunity** · `quests` (GitHub Milestone) → **epic** · `issues` → **story/bug/spike/chore** (`type`-fält) · `todos` → **sub-task** · `sessions` → **run** (pollbart `running→done`-arbetspass).
-- Valfri toppnivå **initiative** över epic. `issue_type`-enkälla: `VALID_ISSUE_TYPES` i `issues_client.py` (inte `enums.json` — issues schemavalideras inte).
+
+### Ordlista — EN kanonisk term per koncept
+
+| CNS-term | Kanonisk term | Alias / synonymer |
+|----------|---------------|-------------------|
+| nod (`node.md`) | **component** | node, project |
+| idé | **opportunity** | idea |
+| quest | **epic** | GitHub Milestone, milestone |
+| issue | **story** | bug, spike, chore (via `type`-fält) |
+| todo | **sub-task** | task-list-checkbox |
+| session | **run** | arbetspass |
+
+Valfri toppnivå **initiative** över epic. `issue_type`-enkälla: `VALID_ISSUE_TYPES` i `issues_client.py` (inte `enums.json` — issues schemavalideras inte).
+
+### CNS · cortxt · Cortxt — tre distinkta begrepp
+- **CNS** = hjärnan/datalagret — repo `Project-CNS`, Python-backend, nodmodellen.
+- **cortxt** = ansiktet/dashboarden — repo `cortxt`, React-frontend på Vercel.
+- **Cortxt** = produkten som helhet (båda repona tillsammans).
+
+### Nummer-konvention
+GitHub delar EN räknare för issues och PR:er — samma siffra kan vara en issue eller en PR. Skriv **alltid** typen före numret: `issue #39`, `PR #50`, `epic #8`. Aldrig bara `#39`.
 
 ## Automatisk agent-routing
 Routing sker via hooken `scripts/router.py` (UserPromptSubmit): den injicerar `[ROUTING] @agent → reason` + `[MODEL: X]` per prompt ur `ROUTING_RULES` (nyckelordsmatchning) och den genererade `agent_registry` (modellnivå/avdelning ur agent-frontmatter). **Regel: när `[ROUTING]` syns, delegera direkt — anropa Agent-verktyget med `subagent_type="<agent-slug>"`, `model="X"` (från `[MODEL: X]`) och hela originaluppgiften; fråga inte Rikard.** Konversationella frågor och prompts utan träff hanteras direkt.
