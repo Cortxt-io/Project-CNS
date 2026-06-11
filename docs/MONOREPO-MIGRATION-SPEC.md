@@ -1,7 +1,7 @@
 # Spec: Konsolidera Cortxt till ett monorepo (Project-CNS som rot)
 
-**Status:** utkast — granska och besvara kvarstående frågor innan kod.
-**Skapad:** 2026-06-09. **Arbetsspråk:** svenska.
+**Status:** granskad, redo för utförande — kvarstående småfrågor 2–3 löses under körning.
+**Skapad:** 2026-06-09. **Validerad:** 2026-06-11 (två repo-kartläggningar bekräftade specen mot dagens läge). **Arbetsspråk:** svenska.
 
 ## Kontext
 
@@ -29,7 +29,7 @@ Project-CNS/                 ← monorepo-roten, GITHUB_REPO oförändrat → Ra
 │   └── landing/             → Vercel (Root Directory = apps/landing)
 ├── packages/
 │   ├── ui/
-│   └── cns-schema/          ← NY: enums + nodfält (TS) genererade ur schemas/node_schema.json
+│   └── cns-schema/          ← enums genererade ur schemas/enums.json (finns redan, mergad cortxt #3)
 ├── tools/                   ← (senare, lat) docs-watch, dev-changelog-engine-mini, webhook-router
 ├── pnpm-workspace.yaml      ← NY
 ├── turbo.json               ← NY (in från cortxt)
@@ -38,23 +38,23 @@ Project-CNS/                 ← monorepo-roten, GITHUB_REPO oförändrat → Ra
 
 ## Vassaste kanten: Railway-buildpack-detektering
 
-Railway bygger idag `Project-CNS` som Python (uvicorn). Lägger vi `package.json` + `turbo.json` i roten kan Nixpacks tro att det är en Node-app och bryta backend-deployen. **Mitigering:** pinna Python-builden explicit (`nixpacks.toml`/`railway.toml`/`Procfile` mot uvicorn-startkommandot) och verifiera att Flask/MCP startar. Detta ersätter den tidigare "valv-sökväg"-risken (som försvinner när backenden inte flyttar).
+Railway bygger idag `Project-CNS` som Python (uvicorn). Lägger vi `package.json` + `turbo.json` i roten kan Nixpacks tro att det är en Node-app och bryta backend-deployen. **Mitigering:** pinna Python-builden explicit och verifiera att Flask/MCP startar. Dagens läge (verifierat 06-11): `railway.json` sätter redan `builder: NIXPACKS` + `startCommand` (gunicorn/uvicorn), och `Procfile` har samma startkommando. **Det styr *start*, men Nixpacks *build*-detektering kan ändå dra in Node-provider när en rot-`package.json` finns** → lägg sannolikt en explicit `nixpacks.toml` (Python-provider) eller `NIXPACKS_PYTHON_VERSION`/provider-pinning utöver Procfile. Verifieras i steg 3. Detta ersätter den tidigare "valv-sökväg"-risken (som försvinner när backenden inte flyttar).
 
 ## Migrationsordning (systemet lever hela vägen)
 
-1. **För-arbete (säkert, värdefullt oavsett) — KLART utom drift:** `packages/cns-schema` skapat och genereras ur `schemas/enums.json` (enkälla, läses även av `validator.py`); dashboarden importerar det via `labels.js`. `/api/node/{slug}/full` verifierad (finns). **Kvar:** rename-driften ("project"→"node" i ~34 filer, kosmetisk, ingen funktionsbugg — uppskjuten till merget).
-2. **Graft:a in `cortxt`** i `Project-CNS` med `git subtree` (bevarar historik) → `apps/` + `packages/`. Lägg `pnpm-workspace.yaml`, rot-`package.json`, flytta in `turbo.json`.
+1. **För-arbete (säkert, värdefullt oavsett) — KLART:** `packages/cns-schema` skapat och genereras ur `schemas/enums.json` (enkälla, läses även av `validator.py`); dashboarden importerar det via `labels.js`. `generate.mjs` har redan pre/post-merge-kommentar med exakt path-byte (`../../../Project-CNS/schemas/enums.json` → `../../schemas/enums.json`). Sedan 06-11 även `types`+`domains` tillagda i enums.json och JS-sidan regenererad+**mergad** (cortxt #3). `/api/node/{slug}/full` verifierad (finns). **Kvar:** binda generatorn till ett pre-commit/CI-steg så den inte glöms; rename-driften ("project"→"node" i ~34 filer, kosmetisk, ingen funktionsbugg — uppskjuten till merget).
+2. **Graft:a in `cortxt`** i `Project-CNS` med `git subtree` (bevarar historik) → `apps/` + `packages/`. Lägg `pnpm-workspace.yaml`, rot-`package.json`, flytta in `turbo.json`. **Worktree-not:** Project-CNS har två aktiva git-worktrees (`cns-tui/` och `research-agent/`, var sin pekarfil → `.git/worktrees/...`). En subtree-graft rör dem inte (de delar `.git/refs` men checkar ut egna brancher), men deras öppna brancher måste landas/synkas **före** graften — annars riskerar de att rebasas mot en historik som plötsligt bär in hela cortxt. Checka ut eller merga `cns-tui`/`research-agent` till main först, alternativt dokumentera dem som sidecar-grenar som hålls separerade tills de landar.
 3. **Pinna Railway till Python** (vassaste kanten); verifiera backend-deploy.
 4. **Koppla om Vercel:** två projekt med Root Directory `apps/dashboard` resp. `apps/landing` + path-filter så backend-pushar inte triggar frontend-deploy. `vercel.json`-proxyn till Railway oförändrad.
 5. **Cutover + verifiera** (nedan).
-6. **Avveckla/arkivera `cortxt`-repot.** Uppdatera `CLAUDE.md` (workspace + Project-CNS) och `RUNBOOK.md` (stale `prompt-cns/`-sökvägar = samma repo, äldre namn — städas här).
+6. **Avveckla/arkivera `cortxt`-repot.** Uppdatera `CLAUDE.md` (workspace + Project-CNS) och `RUNBOOK.md` (stale `prompt-cns/`-sökvägar = samma repo, äldre namn — städas här). **@claude-dispatch:** `claude.yml` (Claude GitHub App) bor sedan 06-11 redan på Project-CNS main (rot-repot) → efter merget gäller @claude-transporten automatiskt även den ingraftade frontenden; cortxt-repots egen `/install-github-app` behövs inte och dess `deploy-landing.yml` flyttar in som rot-workflow (path-filtrerad mot `apps/landing/`).
 7. **(Lat, senare):** fold:a in småverktyg i `tools/`; lös `webhook-router`-dubbletten (kod i både eget repo och `nodes/webhook-router/src/`) först.
 
 ## Kritiska filer / återanvändning
 
 - `app/git_ops.py` — `push_file_immediately()` + `REPO_ROOT`. Roten oförändrad → ingen ändring; samma motor låter CNS skriva `apps/...`.
 - `app/server.py:1686-1712` — webhook-slug-utvinning. Oförändrad (sökvägar rör sig inte).
-- `schemas/node_schema.json` — auktoritativ källa för `packages/cns-schema`-generatorn.
+- `schemas/enums.json` — auktoritativ källa (enkälla) för `packages/cns-schema`-generatorn (`generate.mjs`) OCH `validator.py`.
 - `cortxt/apps/dashboard/src/data/labels.js` — slutar handkoda enums, importerar `@cortxt/cns-schema`.
 - `cortxt/apps/dashboard/vercel.json` — proxy `/api/*` → Railway, oförändrad.
 - Frontend-drift: `App.jsx`, `GraphCanvas.jsx`, `hooks/useProject*.js`.
