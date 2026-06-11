@@ -1,7 +1,7 @@
 {
   "session_id": "b14c794b-893b-4692-a31f-a33a8975d8fd",
   "created_at": "2026-06-11T15:20:06",
-  "updated_at": "2026-06-11T22:29:36",
+  "updated_at": "2026-06-11T23:24:59",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -52,6 +52,12 @@
       "text": "borde inte departments/squads osv ha egna typer av sessions också eller har jag fel?",
       "fork": "borde-inte-departmentssq (e777)",
       "src_uuid": "4e3bc375-b669-4282-91b4-cce4679b3199"
+    },
+    {
+      "ts": "2026-06-11T21:24:10.722Z",
+      "text": "jobbar mina agenter under denna session? jag är osäker på om jag ens får matat agenturen",
+      "fork": "jobbar-mina-agenter (7f29)",
+      "src_uuid": "caf28af9-7747-4958-bd08-ed28fbf08c88"
     }
   ]
 }
