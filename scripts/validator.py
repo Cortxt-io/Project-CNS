@@ -24,6 +24,10 @@ VALID_MVP_STAGES = set(_ENUMS["mvp_stages"])
 VALID_RISK_CATEGORIES = set(_ENUMS["risk_categories"])
 VALID_KINDS = set(_ENUMS["kinds"])
 VALID_STAGES = set(_ENUMS["stages"])
+VALID_TYPES = set(_ENUMS.get("types", []))
+VALID_DOMAINS = set(_ENUMS.get("domains", []))
+
+AGENTS_PATH = Path(__file__).resolve().parent.parent / "exports" / "agents.json"
 
 # Legacy enum constants kept for reference but no longer validated:
 # VALID_LAYERS, VALID_PIPELINES, VALID_FAMILIES
@@ -74,12 +78,14 @@ def validate_response(data: dict) -> tuple[bool, str | None]:
 # Node-level validation (used by `cns validate`)
 # ---------------------------------------------------------------------------
 
-def validate_node(meta: dict, sections: dict) -> list[str]:
+def validate_node(meta: dict, sections: dict) -> tuple[list[str], list[str]]:
     """Validate a node's frontmatter and sections.
 
-    Returns a list of error strings.  Empty list = valid.
+    Returns (errors, warnings).  Empty errors list = valid; warnings are
+    informational and do not fail validation.
     """
     errors: list[str] = []
+    warnings: list[str] = []
     kind = meta.get("kind")  # None for legacy product nodes
 
     # 1. Required frontmatter fields
@@ -194,4 +200,35 @@ def validate_node(meta: dict, sections: dict) -> list[str]:
         if kind == "component" and part_of in (None, ""):
             errors.append("Warning: component nodes should typically have part_of set")
 
-    return errors
+    # --- Soft validation for new additive fields (WARN, not ERROR) ---
+    # type / domain — warn if value is set but not in the enum
+    node_type = meta.get("type")
+    if node_type is not None and VALID_TYPES and node_type not in VALID_TYPES:
+        warnings.append(
+            f"Unknown type '{node_type}'. Known: {', '.join(sorted(VALID_TYPES))}"
+        )
+
+    domain = meta.get("domain")
+    if domain is not None and VALID_DOMAINS and domain not in VALID_DOMAINS:
+        warnings.append(
+            f"Unknown domain '{domain}'. Known: {', '.join(sorted(VALID_DOMAINS))}"
+        )
+
+    # owner_agent / contributing_agents — warn only when agents.json exists
+    if AGENTS_PATH.exists():
+        try:
+            raw = json.loads(AGENTS_PATH.read_text(encoding="utf-8"))
+            known_agents: set[str] = set(raw.keys()) if isinstance(raw, dict) else set(raw)
+        except (json.JSONDecodeError, TypeError):
+            known_agents = set()
+        if known_agents:
+            owner = meta.get("owner_agent")
+            if owner is not None and owner not in known_agents:
+                warnings.append(f"Unknown owner_agent slug '{owner}'")
+            contributing = meta.get("contributing_agents")
+            if isinstance(contributing, list):
+                for agent_slug in contributing:
+                    if isinstance(agent_slug, str) and agent_slug not in known_agents:
+                        warnings.append(f"Unknown contributing_agents slug '{agent_slug}'")
+
+    return errors, warnings

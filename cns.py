@@ -347,7 +347,9 @@ def cmd_validate(args: argparse.Namespace) -> None:
         console.print(f"[red]{exc}[/red]")
         sys.exit(1)
 
-    errors = validate_node(meta, sections)
+    errors, warnings = validate_node(meta, sections)
+    for warn in warnings:
+        console.print(f"  [yellow]WARN: {warn}[/yellow]")
     if not errors:
         console.print(f"[green]Node '{slug}' is valid.[/green]")
     else:
