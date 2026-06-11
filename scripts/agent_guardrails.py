@@ -64,3 +64,27 @@ class Guardrails:
     def snapshot(self) -> dict:
         """Aktuellt läge — matar gärna session_store.record_metrics (#58)."""
         return {"turns": self.turns, "tokens": self.tokens, "distinct_calls": len(self._calls)}
+
+
+def check_session_overlap(
+    link_ref: str | None,
+    *,
+    exclude_id: str | None = None,
+    lister=None,
+) -> tuple[bool, list[dict]]:
+    """cns-sync-guardrail (#60): finns redan ett ``running``-pass på samma ``link_ref``?
+
+    Atomisk claim räcker inte mot dubbelarbete — innan ett pass startar mot ett spår
+    (nod/quest/issue/idé) ska man kolla om ett ANNAT pass redan jobbar där. Returnerar
+    ``(clear, conflicting)``: ``clear=False`` när någon annan running-session pekar på
+    samma ref ⇒ blockera/koordinera i stället för att starta parallellt (vårt
+    dubbelarbete-problem). ``lister`` injiceras för test (default
+    ``session_store.list_sessions``); ``exclude_id`` undantar den egna sessionen.
+    """
+    if not link_ref:
+        return True, []
+    if lister is None:
+        from scripts.session_store import list_sessions as lister  # type: ignore
+    running = lister(status="running", link_ref=link_ref)
+    conflicting = [s for s in running if s.get("id") != exclude_id]
+    return (len(conflicting) == 0), conflicting

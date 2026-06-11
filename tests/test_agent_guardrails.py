@@ -47,9 +47,21 @@ def test_allow_and_snapshot() -> None:
     assert g.snapshot() == {"turns": 2, "tokens": 15, "distinct_calls": 2}
 
 
+def test_session_overlap() -> None:
+    from scripts.agent_guardrails import check_session_overlap
+
+    others = [{"id": "session-aaa", "link": {"kind": "node", "ref": "cns-core"}}]
+    assert check_session_overlap("cns-core", lister=lambda **_: [])[0] is True       # inget pass → clear
+    clear, conf = check_session_overlap("cns-core", lister=lambda **_: others)        # annat pass på samma ref
+    assert clear is False and len(conf) == 1
+    assert check_session_overlap("cns-core", exclude_id="session-aaa", lister=lambda **_: others)[0] is True  # sig själv undantas
+    assert check_session_overlap(None, lister=lambda **_: others)[0] is True          # inget ref → inget att kolla
+
+
 if __name__ == "__main__":
     test_repeat_block()
     test_turn_cap()
     test_token_cap()
     test_allow_and_snapshot()
-    print("OK — agent_guardrails: alla fall gröna")
+    test_session_overlap()
+    print("OK — agent_guardrails (inkl cns-sync-overlap): alla fall gröna")
