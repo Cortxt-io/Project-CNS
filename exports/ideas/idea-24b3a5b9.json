@@ -5,5 +5,6 @@
   "source": "chat",
   "slug": "interface",
   "session_id": null,
-  "status": "open"
+  "status": "promoted",
+  "promoted_to": "#43"
 }
