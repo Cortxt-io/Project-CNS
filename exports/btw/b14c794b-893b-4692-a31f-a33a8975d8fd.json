@@ -1,7 +1,7 @@
 {
   "session_id": "b14c794b-893b-4692-a31f-a33a8975d8fd",
   "created_at": "2026-06-11T15:20:06",
-  "updated_at": "2026-06-11T19:21:19",
+  "updated_at": "2026-06-11T20:51:04",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -40,6 +40,12 @@
       "text": "vad väntar vi på?",
       "fork": "vad-vntar-vi (e6a7)",
       "src_uuid": "2533d607-ac80-43dd-b569-bc90352b2a21"
+    },
+    {
+      "ts": "2026-06-11T18:46:25.965Z",
+      "text": "vill bara kolla om du såg över den specen?",
+      "fork": "vill-bara-kolla (3528)",
+      "src_uuid": "6faf5b4a-8a6c-478c-8810-0a132b9c148b"
     }
   ]
 }
