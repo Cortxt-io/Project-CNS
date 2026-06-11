@@ -158,6 +158,101 @@ def _sort_recursive(nodes: list[NodeView]) -> None:
         _sort_recursive(node.children)
 
 
+def cockpit_state() -> dict:
+    """Komponera orienteringsytan (idea-7548a67a / epic #8) i EN läsning.
+
+    Fyra block ur befintliga lager (ingen ny datakälla): **var du slutade**
+    (senaste done-pass), **igång** (running-pass + aktiv typ + fantom-flagga),
+    **härnäst** (top-3 rekommendationer) och **i fokus** (explicit fokusmarkör →
+    nodens öppna issues). Plus en **färskhetsmarkör** ur recommend-cachen.
+
+    Ren data, ingen textual. Degraderar tyst — varje block är tom-säkert, så en
+    onåbar källa kraschar inte hela vyn. Funktions-lokala importer undviker
+    cirkelberoenden (recommend → session_store → idea_inbox).
+    """
+    import time
+
+    from scripts import recommend as _rec
+    from scripts import session_store as _ss
+    from scripts.tui.sources import open_issues_for_slug
+
+    # — Var du slutade: senaste done-session —
+    last_done = None
+    try:
+        done = _ss.list_sessions(status="done")
+        if done:
+            s = done[0]
+            last_done = {
+                "summary": s.get("summary", ""),
+                "link": s.get("link"),
+                "type": s.get("type"),
+                "when": s.get("updated_at") or s.get("created_at"),
+            }
+    except Exception:
+        pass
+
+    # — Igång: running-pass + aktiv typ —
+    running: list[dict] = []
+    active = None
+    try:
+        active = _ss.get_active()
+        for s in _ss.list_sessions(status="running"):
+            running.append(
+                {
+                    "summary": s.get("summary", ""),
+                    "type": s.get("type"),
+                    "link": s.get("link"),
+                    "phantom": _ss.is_phantom(s),
+                    "elapsed": _ss.elapsed_seconds(s),
+                }
+            )
+    except Exception:
+        pass
+
+    # — Härnäst: top-3 rekommendationer —
+    recs: list[dict] = []
+    try:
+        recs = _rec.recommend()[:3]
+    except Exception:
+        pass
+
+    # — I fokus: explicit markör → fallback senaste aktiva sessions link —
+    focus = None
+    try:
+        f = _ss.get_focus()
+        if not f and active and active.get("session_id"):
+            link = (_ss.get_session(active["session_id"]) or {}).get("link") or {}
+            if link.get("ref"):
+                f = {"kind": link.get("kind"), "ref": link.get("ref")}
+        if f and f.get("ref"):
+            issues: list[dict] = []
+            if f.get("kind") == "node":
+                _status, iss = open_issues_for_slug(f["ref"])
+                issues = iss or []
+            focus = {"kind": f.get("kind"), "ref": f.get("ref"), "issues": issues}
+    except Exception:
+        pass
+
+    # — Färskhet: ålder ur recommend-cachen (GitHub-nåbarhet) —
+    freshness = {"reachable": False, "age_s": None}
+    try:
+        import json as _json
+
+        cache = _json.loads(_rec.CACHE_FILE.read_text(encoding="utf-8"))
+        freshness = {"reachable": True, "age_s": time.time() - cache.get("fetched_at", 0)}
+    except Exception:
+        pass
+
+    return {
+        "last_done": last_done,
+        "running": running,
+        "active": active,
+        "recommendations": recs,
+        "focus": focus,
+        "freshness": freshness,
+    }
+
+
 def filter_nodes(nodes: dict[str, NodeView], query: str) -> dict[str, NodeView]:
     """Returnera delmängd som matchar query, plus alla anfäder till matchande.
 

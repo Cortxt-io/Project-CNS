@@ -372,18 +372,35 @@ def tree(root_id: str | None = None) -> list[dict] | dict | None:
 # ---------------------------------------------------------------------------
 
 
-def set_active(session_type: str, session_id: str | None = None) -> dict:
-    """Markera vilken sessionstyp som är aktiv lokalt (skrivs av /session-skillen)."""
-    _validate_type(session_type)
+def _read_active() -> dict:
+    """Läs hela markörfilen (typ + fokus bor i samma sidofil), {} om saknas/trasig."""
+    try:
+        return json.loads(ACTIVE_FILE.read_text(encoding="utf-8")) or {}
+    except Exception:
+        return {}
+
+
+def _write_active(state: dict) -> None:
     _ensure_dir()
-    state = {
-        "type": session_type,
-        "session_id": session_id,
-        "set_at": datetime.now().isoformat(timespec="seconds"),
-    }
     ACTIVE_FILE.write_text(
         json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+
+
+def set_active(session_type: str, session_id: str | None = None) -> dict:
+    """Markera vilken sessionstyp som är aktiv lokalt (skrivs av /session-skillen).
+
+    Mergar in i markörfilen så en satt fokus (set_focus) inte klobbras."""
+    _validate_type(session_type)
+    state = _read_active()
+    state.update(
+        {
+            "type": session_type,
+            "session_id": session_id,
+            "set_at": datetime.now().isoformat(timespec="seconds"),
+        }
+    )
+    _write_active(state)
     return state
 
 
@@ -396,11 +413,50 @@ def get_active() -> dict | None:
 
 
 def clear_active() -> None:
-    """Ta bort markören (passet avslutat eller typen släppt)."""
+    """Ta bort markören (passet avslutat eller typen släppt) — inkl. ev. fokus."""
     try:
         ACTIVE_FILE.unlink()
     except FileNotFoundError:
         pass
+
+
+# ---------------------------------------------------------------------------
+# Explicit fokusmarkör (orienteringsyta, idea-7548a67a) — "vad jobbar jag på"
+# ---------------------------------------------------------------------------
+# Bor i samma sidofil som aktiv typ men som egna nycklar (focus_kind/focus_ref).
+# Explicit framför härledd: när flera spår löper gissar "senaste sessionens link"
+# fel — orienteringsytans "I fokus"-block ska kunna sättas medvetet.
+
+
+def set_focus(focus_kind: str | None, focus_ref: str | None) -> dict:
+    """Sätt vad som är i fokus (nod/quest/issue/idé). Mergar — rör inte aktiv typ."""
+    if focus_kind is not None and focus_kind not in VALID_LINK_KINDS:
+        raise ValueError(
+            f"Invalid focus_kind '{focus_kind}'. Allowed: {', '.join(sorted(VALID_LINK_KINDS))}"
+        )
+    state = _read_active()
+    state["focus_kind"] = focus_kind
+    state["focus_ref"] = str(focus_ref) if focus_ref else None
+    state["focus_set_at"] = datetime.now().isoformat(timespec="seconds")
+    _write_active(state)
+    return state
+
+
+def get_focus() -> dict | None:
+    """Aktuell fokusmarkör som {kind, ref}, eller None om ingen satt."""
+    state = _read_active()
+    ref = state.get("focus_ref")
+    if not ref:
+        return None
+    return {"kind": state.get("focus_kind"), "ref": str(ref)}
+
+
+def clear_focus() -> None:
+    """Släpp fokus — behåller aktiv sessionstyp i markörfilen."""
+    state = _read_active()
+    for key in ("focus_kind", "focus_ref", "focus_set_at"):
+        state.pop(key, None)
+    _write_active(state)
 
 
 def _cli(argv: list[str]) -> int:
@@ -412,7 +468,10 @@ def _cli(argv: list[str]) -> int:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     if not argv:
-        print("usage: session_store.py set-active <typ> [session-id] | get-active | clear-active")
+        print(
+            "usage: session_store.py set-active <typ> [session-id] | get-active | clear-active "
+            "| set-focus <kind> <ref> | get-focus | clear-focus"
+        )
         return 1
     cmd = argv[0]
     if cmd == "set-active" and len(argv) >= 2:
@@ -423,6 +482,16 @@ def _cli(argv: list[str]) -> int:
         return 0
     if cmd == "clear-active":
         clear_active()
+        print("null")
+        return 0
+    if cmd == "set-focus" and len(argv) >= 3:
+        print(json.dumps(set_focus(argv[1], argv[2]), ensure_ascii=False))
+        return 0
+    if cmd == "get-focus":
+        print(json.dumps(get_focus(), ensure_ascii=False))
+        return 0
+    if cmd == "clear-focus":
+        clear_focus()
         print("null")
         return 0
     print(f"unknown command: {' '.join(argv)}")
