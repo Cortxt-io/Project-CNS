@@ -199,6 +199,25 @@ SESSION_ICONS: dict[str, str] = {
 }
 
 
+# ANSI-färg per sessionstyp (idea-2cc3ae24) — statusraden renderar ANSI.
+# Ger varje typ en visuell identitet utöver emoji-ikonen.
+SESSION_COLORS: dict[str, str] = {
+    "brainstorm": "35",       # magenta  🟣
+    "spec": "38;5;208",       # orange   🟠
+    "bygg": "32",             # grön     🟢
+    "triage": "33",           # gul      🟡
+    "review": "34",           # blå      🔵
+    "verktygsladan": "36",    # cyan
+    "retro": "90",            # grå
+}
+
+
+def _colored(text: str, session_type: str | None) -> str:
+    """Färga ``text`` med sessionstypens ANSI-färg (okänd typ → oförändrad)."""
+    code = SESSION_COLORS.get(session_type or "")
+    return f"\033[{code}m{text}\033[0m" if code else text
+
+
 def _focus_label(session_id: str | None) -> str | None:
     """Läsbar fokus-etikett ur den aktiva sessionens ``link`` (vad man jobbar på).
 
@@ -251,7 +270,7 @@ def statusline(state: dict | None = None) -> str:
 
     if active:
         icon = SESSION_ICONS.get(active, "⚪")
-        parts = [f"{icon} {active}"]
+        parts = [_colored(f"{icon} {active}", active)]
     else:
         parts = [f"💡 {len(state['ideas'])} idéer"]
 
@@ -272,7 +291,7 @@ def statusline(state: dict | None = None) -> str:
     if recs:
         top = recs[0]
         more = f" (+{len(recs) - 1} — /sessions)" if len(recs) > 1 else ""
-        parts.append(f"Rek: {top['type']}-session{more}")
+        parts.append(f"Rek: {_colored(top['type'], top['type'])}-session{more}")
     return " · ".join(parts)
 
 

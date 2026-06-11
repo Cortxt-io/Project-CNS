@@ -45,6 +45,15 @@ def test_focus_label() -> None:
         session_store.get_session = orig
 
 
+def test_colored() -> None:
+    # Känd typ → ANSI-wrappad; okänd/None → oförändrad (statusraden bryts ej).
+    assert recommend._colored("triage", "triage") == "\033[33mtriage\033[0m"
+    assert recommend._colored("bygg", "bygg") == "\033[32mbygg\033[0m"
+    assert recommend._colored("x", None) == "x"
+    assert recommend._colored("x", "okänd-typ") == "x"
+
+
 if __name__ == "__main__":
     test_focus_label()
-    print("OK — _focus_label: alla fall gröna")
+    test_colored()
+    print("OK — _focus_label + _colored: alla fall gröna")
