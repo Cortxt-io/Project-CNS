@@ -1,9 +1,9 @@
 {
   "id": "session-90ce28af",
   "created_at": "2026-06-11T11:48:30",
-  "updated_at": "2026-06-11T11:48:30",
-  "status": "running",
-  "summary": "Spec-pass 2026-06-11: definiera orienteringsytan (cockpit/hemvy) — komposition av sessions+recommend+quests+fokusmarkör. Ur idea-7548a67a. Spec-först, ingen kod.",
+  "updated_at": "2026-06-11T12:21:47",
+  "status": "done",
+  "summary": "Spec/research-pass 2026-06-11: nodmodellens efterträdare. Riktad research (4 Sonnet-spår, primärkälle-belagd): Backstage software catalog, C4/arc42/Structurizr, IDP:er (Port/Cortex/OpsLevel), Team Topologies/DDD. KÄRNSLUTSATS: nodmodellen är inte fel — den är ofullständig på 3 precisa sätt, och fixen är ADDITIV evolution (ej ombyggnad): (1) tunn kind → lägg type/domain/owner/lifecycle; (2) grafen modellerar bara arkitektur → utöka till sociotekniskt 3-lagersgraf (agentur+arbete som korsande kanter; ägarskap = relation ej fält; node:-labels→traverserbara kanter); (3) stilla ögonblicksbild → levande katalog via CI-skrivna beräknade fält + scorecards (IDP-mönster). Visualisering: C4-zoom (en modell, flera vyer; part_of ÄR redan containment) löser den röriga platta grafen. Målschema + migreringsväg + öppna beslut i plans/node-model-evolution-spec.md. Nästa: spec-pass som låser schema-tillägget, rimligen under epic #7 eller nytt initiativ 'Modell-evolution'. Ingen kod.",
   "link": {
     "kind": "node",
     "ref": "interface"
