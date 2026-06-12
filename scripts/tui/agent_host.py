@@ -228,6 +228,7 @@ def build_options(
     permission_check: Any = None,
     role: dict | None = None,
     cwd: str | None = None,
+    warnings: list[str] | None = None,
 ) -> Any:
     """Bygg ClaudeAgentOptions för ett agent-pass (read-first som default).
 
@@ -237,17 +238,31 @@ def build_options(
     (den routade agentens modellnivå) — så passet körs SOM agenten, inte generiskt.
     ``cwd`` (worktree-isolering, #59): kör passet i en annan arbetskatalog än repo-roten
     — så ett SKRIVANDE dispatch-pass jobbar i en isolerad git-worktree i stället för main.
+    ``warnings`` (out-param): router-varningar (saknad/ej konfigurerad MCP-server) läggs
+    här så run_turn kan yielda dem.
+
+    **MCP-router (config-router):** vilka MCP-servrar + verktyg passet får avgörs av
+    ``mcp_router.resolve`` utifrån rollens ``## Tillåtna verktyg`` — inte längre hårdkodat
+    till bara CNS. In-process-servrarna (cns/web) byggs här och injiceras som builders;
+    externa servrar (GitHub-MCP m.fl.) monteras per roll ur ``config/mcp_servers.json``.
+    Se ``decisions/mcp-router.md``.
     """
     from claude_agent_sdk import ClaudeAgentOptions
 
-    allowed = list(READ_TOOLS) + list(CNS_TOOL_NAMES) + list(WEB_TOOL_NAMES)
-    if allow_writes:
-        allowed += WRITE_TOOLS
-    mcp_servers: dict[str, Any] = {CNS_SERVER_NAME: build_cns_server()}
-    if _WEB_AVAILABLE:
-        web_srv = build_web_server()
-        if web_srv is not None:
-            mcp_servers[WEB_SERVER_NAME] = web_srv
+    from scripts import mcp_router
+
+    role_tools = (role or {}).get("tools", []) if role else []
+    mcp_servers, allowed, router_warnings = mcp_router.resolve(
+        role_tools,
+        allow_writes=allow_writes,
+        builders={CNS_SERVER_NAME: build_cns_server, WEB_SERVER_NAME: build_web_server},
+        sdk_tool_names={CNS_SERVER_NAME: list(CNS_TOOL_NAMES),
+                        WEB_SERVER_NAME: list(WEB_TOOL_NAMES)},
+        read_tools=list(READ_TOOLS),
+        write_tools=list(WRITE_TOOLS),
+    )
+    if warnings is not None:
+        warnings.extend(router_warnings)
     kwargs: dict[str, Any] = {
         "system_prompt": build_seed(slug, role=role),
         "mcp_servers": mcp_servers,
@@ -336,10 +351,14 @@ async def run_turn(
                 return PermissionResultDeny(message=f"guardrail: {reason}")
             return await _deny_unlisted(tool_name, tool_input, ctx)
 
+    router_warnings: list[str] = []
     options = build_options(
         slug=slug, resume=resume, allow_writes=allow_writes,
         permission_check=permission_check, role=role, cwd=cwd,
+        warnings=router_warnings,
     )
+    for _w in router_warnings:
+        yield ("warning", _w)
     # ClaudeSDKClient kör i streaming-läge → can_use_tool fungerar med strängprompt.
     client = ClaudeSDKClient(options=options)
     try:
