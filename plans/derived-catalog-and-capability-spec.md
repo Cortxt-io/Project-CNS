@@ -160,6 +160,15 @@ idag ([[koppla-ej-mot-foranderligt]]).
   **intent är CNS:s (brainstorm/spec/triage/retro/review), och CNS-intenten *väljer* harness-läget**
   (spec/brainstorm/triage → read-only, bygg → write/acceptEdits) i stället för att beskriva det i
   text. Då komponerar de: CNS säger *vad*, harnesset håller *hur mycket* — med en riktig grind.
+  **Not (stations↔intents — föreningen kommer först):** run-sekvensen är redan modellerad TVÅ gånger
+  under olika namn — routnings-`flows[issue_type]` talar *station*-språk (discovery/definition/
+  delivery/review/retro) medan sessionsmarkören talar *intent*-språk (brainstorm/spec/bygg/review/
+  retro). De matchar bara på review/retro (discovery≈brainstorm, definition≈spec, delivery≈bygg;
+  triage/verktygsladan saknar station). Run-axel-arbetet ska **förena de två vokabulärerna till en**
+  innan något läggs till. Då kan en spec *härleda* sitt arbetsflöde ur `flows[issue_type]` (inte
+  handskriva det — annotera bara avvikelser), parallellt med ägarskaps-härledningen i §9. Och: **lägen
+  (mode) ska INTE utökas i CNS** — de ägs av harnesset och är medvetet få; det enda expanderbara är
+  intent, och först efter föreningen.
 - **Work-axeln:** `initiative` som bet-relation istället för trädtopp ("OKR-misstaget"). GitHub-
   milestones funkar idag.
 - **Memory som explicit axel:** researchen är tydlig — minne är *infrastruktur* axlarna kopplar till,
