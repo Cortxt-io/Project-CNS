@@ -1,9 +1,9 @@
 {
   "id": "session-c4f4f7fb",
   "created_at": "2026-06-10T20:14:39",
-  "updated_at": "2026-06-10T20:14:39",
-  "status": "running",
-  "summary": "Samlad agentur-session (konsoliderar session-98d00552 + session-f5e4ee3f). Ett enda spår för operativa lagret på agentur-noden: (1) Roll/Session-tvålagermodellens fundament, (2) work-modell/taxonomi-spec + Linear-beslut. Inkluderar tidigare triage-slutsats: besluta ägare, vik in taxonomi-spec som underlag, undvik git-krock genom att hantera gen_agentur/agentfiler sekventiellt i denna session istället för parallellt.",
+  "updated_at": "2026-06-12T08:08:45",
+  "status": "done",
+  "summary": "Stängd vid backlog-städning 2026-06-12: fantom-running sedan 06-10 (agentur), aldrig flippad. Arbetet är landat/överspelat (taxonomi-spec + roll/session-modell).",
   "link": {
     "kind": "node",
     "ref": "agentur"
