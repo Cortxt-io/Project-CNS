@@ -135,3 +135,34 @@ def test_load_registry_reads_real_config_file():
     assert "cns" in reg and "github" in reg
     assert reg["cns"]["always"] is True
     assert "_doc" not in reg  # kommentarsnycklar filtreras
+
+
+def test_registry_has_more_servers():
+    reg = mcp_router.load_registry()
+    # MCP-router-utbyggnaden: fler externa servrar bortom github.
+    assert {"vercel", "railway"} <= set(reg)
+    assert reg["vercel"]["capability"] == "vercel"
+
+
+def test_list_servers_reports_configured_status(monkeypatch):
+    for v in ("GITHUB_MCP_COMMAND", "GITHUB_MCP_URL", "VERCEL_MCP_URL", "RAILWAY_MCP_URL"):
+        monkeypatch.delenv(v, raising=False)
+    monkeypatch.setenv("VERCEL_MCP_URL", "https://mcp.vercel/x")
+    rows = {r["name"]: r for r in mcp_router.list_servers(_registry())}
+    assert rows["cns"]["configured"] is True            # sdk alltid
+    assert rows["github"]["configured"] is False         # ingen env
+    # vercel finns inte i _registry()-fixturen; testa mot riktiga registret:
+    rows_real = {r["name"]: r for r in mcp_router.list_servers()}
+    assert rows_real["vercel"]["configured"] is True     # VERCEL_MCP_URL satt
+    assert rows_real["railway"]["configured"] is False
+
+
+def test_resolve_mounts_vercel_when_role_has_vercel_tool(monkeypatch):
+    monkeypatch.setenv("VERCEL_MCP_URL", "https://mcp.vercel/x")
+    servers, allowed, warnings = mcp_router.resolve(
+        ["mcp__vercel__list_deployments"],
+        builders=_builders(), sdk_tool_names=_SDK_TOOLS,
+    )
+    assert "vercel" in servers
+    assert servers["vercel"]["type"] == "http"
+    assert "mcp__vercel__list_deployments" in allowed

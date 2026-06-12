@@ -722,6 +722,27 @@ def cmd_derive(args: argparse.Namespace) -> None:
     print("Kör 'cns derive --diff' för diff, 'cns derive --apply' för sammanslagen karta.")
 
 
+def cmd_mcp_servers(_args: argparse.Namespace) -> None:
+    """Lista MCP-servrarna i registret + om de är konfigurerade (MCP-routern)."""
+    from scripts import mcp_router
+
+    rows = mcp_router.list_servers()
+    table = Table(title="MCP-servrar (config-routern)", show_lines=False)
+    table.add_column("Server", style="cyan")
+    table.add_column("Kind")
+    table.add_column("Kapabilitet", style="magenta")
+    table.add_column("Status")
+    for r in rows:
+        ok = r["configured"]
+        status = f"[green]✓ {r['hint']}[/green]" if ok else f"[yellow]– {r['hint']}[/yellow]"
+        table.add_row(r["name"], r["kind"], r["capability"] or "—", status)
+    console.print(table)
+    console.print(
+        "\n[dim]En agent når en server när dess kapabilitet (härledd ur '## Tillåtna verktyg')\n"
+        "matchar serverns 'provides'-prefix. Externa servrar gatas på env, fail-open.[/dim]"
+    )
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
@@ -806,6 +827,12 @@ def main() -> None:
         help="Klassa katalognoder mot repo-verkligheten (true/stale/aspirational/grouping)",
     )
     sp_derive.set_defaults(func=cmd_derive)
+
+    # cns mcp-servers — lista MCP-routerns servrar + konfig-status
+    sp_mcp = subparsers.add_parser(
+        "mcp-servers", help="Lista MCP-servrarna agenturen kan nå + om de är konfigurerade"
+    )
+    sp_mcp.set_defaults(func=cmd_mcp_servers)
 
     # cns quest {init|show|sync} <slug>
     sp_quest = subparsers.add_parser("quest", help="Manage active build quest workflow")

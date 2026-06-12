@@ -59,12 +59,30 @@ Agent-pass pekas **gradvis** mot GitHub-MCP där det är bättre än det handrul
 - Rollösa pass faller tillbaka på CNS-verktygen (bakåtkompatibelt).
 - `tests/test_mcp_router.py` täcker monteringen, fail-open och fallbacken (ren, ingen SDK).
 
-## Env för extern server (GitHub-MCP)
+## Registret (fler servrar) + diagnostik
 
-`config/mcp_servers.json` → `github`: sätt **antingen** `GITHUB_MCP_COMMAND` (lokal stdio-binär,
-t.ex. `github-mcp-server`) **eller** `GITHUB_MCP_URL` (fjärr-http). Token via `GITHUB_MCP_TOKEN`
-(skickas som `Authorization: Bearer …` för http, eller som `GITHUB_PERSONAL_ACCESS_TOKEN` i
-stdio-env). Secrets läggs i `.env`/`gh secret`, aldrig i klartext.
+`config/mcp_servers.json` listar servrarna agenturen KAN nå. Utöver baseline `cns`/`web` finns
+externa, env-gatade servrar — i dag `github` (stdio/http), `vercel` (http), `railway` (http).
+Varje server bär en **`capability`**-token (Del B): en agent vars kapabilitet matchar serverns
+`provides`-prefix får den monterad. Lägg till en ny server = en post här, ingen kod.
+
+**Diagnostik:** `cns mcp-servers` listar alla servrar + om de är konfigurerade (env satt) och vad
+som saknas. `sdk`-servrar är alltid tillgängliga (in-process); externa gatas på env, fail-open.
+
+## Env per extern server (secrets i `.env`/`gh secret`, aldrig i klartext)
+
+| Server | URL (http) | eller binär (stdio) | Token |
+|--------|------------|---------------------|-------|
+| `github` | `GITHUB_MCP_URL` | `GITHUB_MCP_COMMAND` | `GITHUB_MCP_TOKEN` (→ `GITHUB_PERSONAL_ACCESS_TOKEN` i stdio) |
+| `vercel` | `VERCEL_MCP_URL` | — | `VERCEL_MCP_TOKEN` |
+| `railway` | `RAILWAY_MCP_URL` | — | `RAILWAY_MCP_TOKEN` |
+
+Token skickas som `Authorization: Bearer …` för http-servrar. När en servers env är satt monterar
+routern den automatiskt för agenter med matchande kapabilitet — annars hoppas den tyst över.
+
+> **`.mcp.json` (vad Claude Code/”vi” når) vs `config/mcp_servers.json` (vad agenturen når):** två
+> skilda routrar. För att ge den interaktiva sessionen åtkomst till en extern server läggs den i
+> `.mcp.json`; för att ge *agenturens pass* åtkomst räcker registret + env ovan.
 
 ## Vidare arbete (epic "MCP-router & agent-verktygsåtkomst")
 
