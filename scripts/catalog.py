@@ -26,6 +26,16 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CATALOG_PATH = REPO_ROOT / "catalog.yaml"
 DECISIONS_DIR = REPO_ROOT / "decisions"
 
+# Kanonisk fältordning per system i catalog.yaml (utskriftsordning).
+CATALOG_FIELD_ORDER = [
+    "title", "summary", "part_of", "type", "domain",
+    "owner_agent", "contributing_agents", "feeds", "depends_on", "url_repo",
+    "integrations",
+]
+
+# Fält som alltid skrivs som listor (även tomma = explicit "inga kanter").
+_LIST_FIELDS_ALWAYS = ("feeds", "depends_on")
+
 
 def load_catalog() -> dict[str, dict[str, Any]]:
     """Returnera systems-mappningen (slug → fält) ur catalog.yaml.
@@ -36,6 +46,72 @@ def load_catalog() -> dict[str, dict[str, Any]]:
         return {}
     data = yaml.safe_load(CATALOG_PATH.read_text(encoding="utf-8")) or {}
     return data.get("systems", {}) or {}
+
+
+def _ordered_entry(entry: dict[str, Any]) -> dict[str, Any]:
+    """Sortera ett systems fält i kanonisk ordning (kända först, okända sist)."""
+    out: dict[str, Any] = {}
+    for field in CATALOG_FIELD_ORDER:
+        if field in entry:
+            out[field] = entry[field]
+    for field in entry:  # bevara ev. okända fält sist
+        if field not in out:
+            out[field] = entry[field]
+    return out
+
+
+def dump_catalog(systems: dict[str, dict]) -> str:
+    """Serialisera systems-mappningen till catalog.yaml-text (med header)."""
+    header = (
+        "# Systemkatalog + arkitekturgraf + routing-tabell.\n"
+        "# Enda strukturerade källan för nodmodellen (ersätter nodes/*/node.md).\n"
+        "# Spec: plans/nodmodell-teardown-spec.md (epic #11).\n\n"
+    )
+    ordered = {slug: _ordered_entry(systems[slug]) for slug in sorted(systems)}
+    body = yaml.safe_dump(
+        {"systems": ordered},
+        allow_unicode=True,
+        sort_keys=False,
+        default_flow_style=False,
+    )
+    return header + body
+
+
+def write_catalog(systems: dict[str, dict]) -> Path:
+    """Skriv hela systems-mappningen till catalog.yaml. Returnerar sökvägen."""
+    CATALOG_PATH.write_text(dump_catalog(systems), encoding="utf-8")
+    return CATALOG_PATH
+
+
+def upsert_system(slug: str, fields: dict[str, Any]) -> dict[str, Any]:
+    """Skapa eller uppdatera ett system i katalogen. Returnerar den nya posten.
+
+    Endast nycklar i *fields* som inte är None skrivs; feeds/depends_on normaliseras
+    till listor. Övriga fält på ett befintligt system lämnas orörda.
+    """
+    systems = load_catalog()
+    entry = dict(systems.get(slug, {}))
+    for key, value in fields.items():
+        if value is None:
+            continue
+        if key in ("feeds", "depends_on", "contributing_agents"):
+            entry[key] = [v for v in (value or []) if v]
+        else:
+            entry[key] = value
+    # feeds/depends_on ska alltid finnas som listor på ett system.
+    for key in _LIST_FIELDS_ALWAYS:
+        entry.setdefault(key, [])
+    systems[slug] = entry
+    write_catalog(systems)
+    return entry
+
+
+def set_decision(slug: str, text: str) -> Path:
+    """Skriv (eller ersätt) decisions/<slug>.md med fri markdown."""
+    DECISIONS_DIR.mkdir(exist_ok=True)
+    path = DECISIONS_DIR / f"{slug}.md"
+    path.write_text(text if text.endswith("\n") else text + "\n", encoding="utf-8")
+    return path
 
 
 def derive_kind(slug: str, systems: dict[str, dict] | None = None) -> str:

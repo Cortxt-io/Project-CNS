@@ -1,6 +1,5 @@
 # Systemkatalog + arkitekturgraf + routing-tabell.
 # Enda strukturerade källan för nodmodellen (ersätter nodes/*/node.md).
-# Genererad av scripts/migrate_to_catalog.py — får sedan redigeras för hand.
 # Spec: plans/nodmodell-teardown-spec.md (epic #11).
 
 systems:
