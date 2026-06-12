@@ -142,6 +142,16 @@ def export_json(
     nodes = read_all_nodes()
     agents = _load_agents()
 
+    # Härledd verklighets-status per nod (true/stale/aspirational/grouping) — INTE
+    # handtaggat; klassas ur repo-backing + nodens summary (derive_catalog, Del A).
+    try:
+        from scripts.derive_catalog import (
+            classify_catalog, load_current_catalog, repo_file_stems,
+        )
+        reality = classify_catalog(load_current_catalog(), file_stems=repo_file_stems())
+    except Exception:
+        reality = {}
+
     node_list = []
     for meta, sections in nodes:
         node_list.append({
@@ -158,6 +168,8 @@ def export_json(
             # v3.0 node-model fields (optional; empty fallback — dashboarden fallbackar)
             "type": meta.get("type", ""),
             "domain": meta.get("domain", ""),
+            # Härledd verklighets-status (true|stale|aspirational|grouping), tom om okänd.
+            "reality_status": reality.get(meta.get("slug", ""), ("", ""))[0],
             "owner_agent": meta.get("owner_agent", ""),
             "contributing_agents": meta.get("contributing_agents") or [],
             # Legacy product fields (kept for backward compatibility)

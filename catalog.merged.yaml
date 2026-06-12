@@ -1,6 +1,6 @@
-# Systemkatalog + arkitekturgraf + routing-tabell.
-# Enda strukturerade källan för nodmodellen (ersätter nodes/*/node.md).
-# Spec: plans/nodmodell-teardown-spec.md (epic #11).
+# GENERERAD (cns derive --apply) — INSPEKTIONS-artefakt, redigera INTE.
+# Sammanslagning av härlett (verklighet) + annoterat (de 29). Konsumenterna
+# läser ÄNNU catalog.yaml; detta är förhandsvisningen inför flippen (skiva 2b).
 
 systems:
   agent-studio:
@@ -102,12 +102,15 @@ systems:
     depends_on: []
     url_repo: https://github.com/rian010194/Project-CNS
   cns-mcp:
+    type: mcp-server
     title: CNS MCP Server
+    domain: cortxt
+    transport: http
+    url: https://project-cns-production.up.railway.app/mcp
+    _source: .mcp.json
     summary: Remote MCP-server på Railway (GitHub OAuth, Redis-token-store) som exponerar
       CNS som verktyg för Claude — nåbar från telefon och webb.
     part_of: infrastructure
-    type: mcp-server
-    domain: cortxt
     owner_agent: backend-utvecklare
     feeds: []
     depends_on:
@@ -269,6 +272,15 @@ systems:
     feeds: []
     depends_on:
     - cns-mcp
+  project-vault-dashboard:
+    title: Project Vault Dashboard
+    summary: Superseded by cortxt-dashboard-app. Kept for historical reference.
+    part_of: infrastructure
+    type: frontend
+    domain: cortxt
+    feeds: []
+    depends_on: []
+    url_repo: https://github.com/rian010194/cortxt
   quest-engine:
     title: Quest Engine
     summary: Quest-livscykel (suggested → active → in_progress → completed/archived)

@@ -1,6 +1,6 @@
-# Systemkatalog + arkitekturgraf + routing-tabell.
-# Enda strukturerade källan för nodmodellen (ersätter nodes/*/node.md).
-# Spec: plans/nodmodell-teardown-spec.md (epic #11).
+# HANDKÄLLA — semantik som inte kan härledas (summary/domain/owner/tags m.m.).
+# Genererad engångs ur catalog.yaml; redigeras sedan för hand. Strukturen
+# (existens/type för agenter+MCP) härleds separat och mergas ovanpå. Se spec.
 
 systems:
   agent-studio:
@@ -269,6 +269,15 @@ systems:
     feeds: []
     depends_on:
     - cns-mcp
+  project-vault-dashboard:
+    title: Project Vault Dashboard
+    summary: Superseded by cortxt-dashboard-app. Kept for historical reference.
+    part_of: infrastructure
+    type: frontend
+    domain: cortxt
+    feeds: []
+    depends_on: []
+    url_repo: https://github.com/rian010194/cortxt
   quest-engine:
     title: Quest Engine
     summary: Quest-livscykel (suggested → active → in_progress → completed/archived)

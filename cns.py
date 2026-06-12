@@ -692,6 +692,36 @@ def cmd_tui(args: argparse.Namespace) -> None:
     tui_main()
 
 
+def cmd_derive(args: argparse.Namespace) -> None:
+    """Härled nodkatalogen ur verkligheten; diffa eller bygg den sammanslagna kartan."""
+    from scripts import derive_catalog as dc
+
+    derived = dc.derive_from_disk()
+    if args.diff:
+        report = dc.diff_against_catalog(derived, dc.load_current_catalog())
+        print(report.as_text())
+        return
+    if args.verify:
+        print(dc.render_verify(dc.verify_from_disk()))
+        return
+    if args.apply:
+        # Säkra annoteringslagret (engångs ur catalog.yaml om det saknas).
+        annotations = dc.load_annotations()
+        if not annotations:
+            annotations = dc.build_annotations_from_catalog(dc.load_current_catalog())
+            ann_path = dc.write_annotations(annotations)
+            print(f"Skapade annoteringslager ({len(annotations)} noder) → {ann_path}")
+        merged = dc.merge(derived, annotations)
+        path = dc.write_merged(merged)
+        print(f"Sammanslagen SYSTEM-karta: {len(merged)} noder "
+              f"({len(derived)} härledda ur verkligheten, {len(annotations)} annoterade) → {path}")
+        print("Agenter är en egen axel (ej noder här). Konsumenterna läser fortfarande catalog.yaml.")
+        return
+    path = dc.write_derived(derived)
+    print(f"Härledde {len(derived)} noder → {path}")
+    print("Kör 'cns derive --diff' för diff, 'cns derive --apply' för sammanslagen karta.")
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
@@ -758,6 +788,24 @@ def main() -> None:
     sp_validate = subparsers.add_parser("validate", help="Validate the catalog (or one system)")
     sp_validate.add_argument("slug", nargs="?", default=None, help="System-slug (utelämna för hela katalogen)")
     sp_validate.set_defaults(func=cmd_validate)
+
+    # cns derive — härled katalogen ur verkligheten + diffa (Del A)
+    sp_derive = subparsers.add_parser(
+        "derive", help="Härled nodkatalogen ur verkligheten (agents.json, .mcp.json) + diffa"
+    )
+    sp_derive.add_argument(
+        "--diff", action="store_true",
+        help="Visa diff mot catalog.yaml i stället för att skriva catalog.derived.yaml",
+    )
+    sp_derive.add_argument(
+        "--apply", action="store_true",
+        help="Bygg sammanslagen karta (härlett + annoterat) → catalog.merged.yaml (flippar inte)",
+    )
+    sp_derive.add_argument(
+        "--verify", action="store_true",
+        help="Klassa katalognoder mot repo-verkligheten (true/stale/aspirational/grouping)",
+    )
+    sp_derive.set_defaults(func=cmd_derive)
 
     # cns quest {init|show|sync} <slug>
     sp_quest = subparsers.add_parser("quest", help="Manage active build quest workflow")
