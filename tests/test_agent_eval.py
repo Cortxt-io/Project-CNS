@@ -50,6 +50,16 @@ def test_parse_verdict() -> None:
     assert ae.parse_verdict("inte json")["status"] == "error"
 
 
+def test_parse_verdict_invalid_escape() -> None:
+    """#122: domar-JSON med ogiltig escape (regex/sökväg) ska saneras, ej bli error."""
+    bad = r'{"results":[{"criterion":1,"verdict":"pass","why":"regex \s i app\dir"}],"total":1}'
+    r = ae.parse_verdict(bad)
+    assert r["status"] == "ok" and r["all_pass"] is True and r["total"] == 1
+    # giltig JSON med riktiga escapes rörs inte
+    good = ae.parse_verdict('{"results":[{"verdict":"pass","why":"rad1\\nrad2"}],"total":1}')
+    assert good["status"] == "ok" and good["all_pass"] is True
+
+
 def test_evaluate_injected_judge() -> None:
     fake = lambda _p: '{"results":[{"criterion":1,"verdict":"pass"},{"criterion":2,"verdict":"pass"}],"passed":2,"total":2}'
     orig = ae.load_eval_criteria
@@ -88,6 +98,7 @@ if __name__ == "__main__":
     test_parse_criteria()
     test_build_eval_prompt()
     test_parse_verdict()
+    test_parse_verdict_invalid_escape()
     test_evaluate_injected_judge()
     test_evaluate_fallback_to_sdk()
     print("OK — agent_eval: alla fall gröna")

@@ -68,11 +68,31 @@ def build_eval_prompt(criteria: list[str], session_output: str) -> str:
     )
 
 
+# Bakåtstreck som INTE inleder en giltig JSON-escape (\" \\ \/ \b \f \n \r \t \uXXXX).
+# Domaren skriver ibland sökvägar (app\tools) eller regex (\s) i fri JSON-text → ogiltig
+# escape → json.loads kastar. Vi dubblar dem bara vid parse-fel (giltig JSON rörs ej). (#122)
+_INVALID_JSON_ESCAPE = re.compile(r'\\(?![\\"/bfnrtu])')
+
+
+def _sanitize_json_escapes(s: str) -> str:
+    """Dubbla ogiltiga JSON-escape-bakåtstreck så ``json.loads`` inte kastar."""
+    return _INVALID_JSON_ESCAPE.sub(r"\\\\", s)
+
+
 def parse_verdict(judge_text: str) -> dict:
-    """Tolka domarens JSON-svar robust (status=error vid otolkbart)."""
+    """Tolka domarens JSON-svar robust (status=error vid otolkbart).
+
+    Domarens fria JSON-text kan innehålla ogiltiga escapes (sökvägar/regex). Vi
+    försöker först råparsa; först VID FEL saneras escapes och vi gör ett nytt försök,
+    så giltig JSON aldrig rörs. (#122)
+    """
     try:
         match = re.search(r"\{.*\}", judge_text, re.S)
-        data = json.loads(match.group(0) if match else judge_text)
+        raw = match.group(0) if match else judge_text
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            data = json.loads(_sanitize_json_escapes(raw))
         results = data.get("results", [])
         passed = sum(1 for r in results if r.get("verdict") == "pass")
         total = len(results) or int(data.get("total", 0))
