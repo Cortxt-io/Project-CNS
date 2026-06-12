@@ -162,3 +162,28 @@ idag ([[koppla-ej-mot-foranderligt]]).
   Mitigering: hård gräns härlett/annoterat (§2).
 - **Taxonomi-spiral** — Del B kan bli ännu en handlista. Mitigering: härled kapabilitet (B1), gör den
   till ett index, inte en sanning.
+
+## 9. Ägarskap — vilka agenter som är inkopplade
+
+Specen drivs som en **`spec`-session** (definitionsläget mellan triage och bygg) av spec-paret
+**produktchef** (vad/varför + acceptanskriterier) + **losningsarkitekt** (hur/risker + teknisk form).
+**org-arkitekt** äger axel-beslutet (3 vs 4 axlar, agent som explicit axel) eftersom det rör org-/
+agentur-strukturen.
+
+| Del / fråga | Inkopplad ägare | Varför |
+|-------------|-----------------|--------|
+| Spec-drivning, scope, acceptanskriterier | **produktchef** + **losningsarkitekt** | formellt spec-par (CNS-typ `spec`) |
+| Axel-modellen (3→4, agent explicit, run-axel) | **org-arkitekt** | äger agentur-/org-strukturen |
+| Del A — `derive_catalog`, `load_catalog`-merge, datamodell | **backend-utvecklare** | äger `catalog.py`/`scripts/` |
+| Del A — sanningskällor (`.mcp.json`, drift-adaptrar, GitHub-ytor) | **integrationsutvecklare** | äger integrationsytan/ekrarna |
+| Del B — kapabilitet/skills som routningssignal | **backend-utvecklare** + **integrationsutvecklare** | routning (`route`/`mcp_router`) + verktygs-/skill-källor |
+| Deferred run-axel (intent/mode/autonomi, harness-delegering) | **sessionskoordinator** | äger sessionsflödet + typdetektering |
+| Bemanning om run-/kapabilitetsmodell ändrar roster | **hr-chef** + **kompetensutvecklare** | verktygslåde-läget (ny agent / promptkvalitet) |
+
+**Öppna frågor → ägare:** A1/A2 (källor, när) → backend- + integrationsutvecklare · A3 (migration) →
+backend-utvecklare + losningsarkitekt · A4 (pensionera `kind`) → org-arkitekt + backend-utvecklare ·
+B1–B3 (kapabilitetsmodell) → losningsarkitekt + integrationsutvecklare.
+
+**Inkopplingspunkt:** detta är den brainstorm→spec-övergång som aldrig triggades — att köra specen
+SOM en `spec`-session med ovan roller *är* att gå in i spec-läget. Föregående beslut (Rikards
+leanings på A1–A4) noteras separat och löses av respektive ägare.
