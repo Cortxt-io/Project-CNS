@@ -3,7 +3,7 @@
 > **Status:** utkast för granskning (spec först — ingen kod förrän godkänd).
 > **Datum:** 2026-06-12 · **Ägare:** Rikard + losningsarkitekt/backend-utvecklare.
 > **Föregås av:** tre research-rundor om agentur-taxonomi (axlar, run-typer, nod-ontologi).
-> **Öppna frågor markeras med `❓` — besvara dem direkt i denna fil innan implementation.**
+> **Öppna frågor besvarade (Rikard 2026-06-12) — markeras `✅ BESLUT` inline.**
 
 ## 1. Problem (varför)
 
@@ -54,9 +54,20 @@ det bara en människa vet.
   (workflow-inventering via `actions`-verktyget), Redis. Dessa är **drift-ytor** — adapter-mönstret
   hör till "ekrarna" ([[integration-ryggrad-vs-ekrar]]), så de läggs efter v1.
 
-> ❓ **A1:** Räcker v1-källorna (repo + `.mcp.json` + `agents.json` + manifests) för en första
-> ärlig karta, eller måste minst en drift-yta (Railway) med från start för att den ska kännas
-> "sann"?
+> ✅ **BESLUT A1:** **Repo-interna källor i v1** (repo-struktur + `.mcp.json` + `agents.json` +
+> manifests). Drift-ytorna görs **efterhand** som ekrar (se 3.1b) — och föregås av en liten
+> **research-spike** som kartlägger exakt vad varje drift-källa kräver (API/credential), så de
+> ligger som redo backlog i stället för bortglömda.
+
+### 3.1b Drift-källor (planerad uppföljning efter v1, kräver var sin research-spike)
+| Drift-källa | Vad den tillför katalogen | Vad som krävs (kartläggs i spike) |
+|-------------|---------------------------|-----------------------------------|
+| **Railway** | körande backend-tjänster + deras status | Railway API-token / GraphQL; vilka tjänster ↔ vilka noder |
+| **Vercel** | dashboard/landing-deploys + domäner | Vercel API-token; projekt↔nod-mappning |
+| **GitHub Actions** | workflows som körande "pipelines" | redan åtkomligt via `actions`-verktyget (OAuth) — billigast först |
+| **Redis** | lease/eventstream som infra-nod | `REDIS_URL`; mest en statisk infra-nod, låg prioritet |
+
+Ordning: GitHub Actions först (redan auth:at), sedan Railway, sedan Vercel, sist Redis.
 
 ### 3.2 Mekanik (förslag)
 - `scripts/derive_catalog.py` läser sanningskällorna → skriver `catalog.derived.yaml` (struktur:
@@ -70,20 +81,28 @@ det bara en människa vet.
   (nod borttagen i verkligheten men kvar i annoteringen), eller (b) en härledd nod saknar annotering
   (ny verklighet, väntar på mening).
 
-> ❓ **A2:** Härleds on-demand (`cns derive`, manuellt/pre-commit) eller i CI (GitHub Action på push)?
-> CI håller den färsk men kräver att härledningen funkar utan lokala credentials.
+> ✅ **BESLUT A2:** **CI direkt** (GitHub Action på push regenererar `catalog.derived.yaml`). Detta
+> funkar redan i v1 *just för att* A1 = repo-interna källor — de är åtkomliga inne i en Action när
+> den checkar ut repot, inga hemligheter behövs. `cns derive` finns ändå som lokalt kommando för
+> snabb iteration. När drift-källor (3.1b) tillkommer får Action:en motsvarande secrets.
+> (CI = "Continuous Integration": ett automatiskt workflow som kör vid varje push, inget manuellt.)
 
-> ❓ **A3:** Migrationsväg — genererar vi `catalog.derived.yaml` en gång ur nuvarande `catalog.yaml`
-> + repo, och migrerar `catalog.yaml`s semantik till `catalog.annotations.yaml` additivt (en nod i
-> taget, fallback på gamla filen tills klar)? Eller hård övergång?
+> ✅ **BESLUT A3:** **Hård övergång — men med en synlig diff-grind.** Härledningen genererar
+> `catalog.derived.yaml`, **visar en diff mot nuvarande `catalog.yaml`** (vad försvann/ändrades/
+> tillkom), och först därefter ersätts den gamla. Brott i dashboarden/konsumenter är *acceptabelt
+> och förväntat* — det är en signal på gammalt som ändå ska byggas om (Rikard) — men brottet ska
+> vara **synligt i diffen, inte tyst**. Ingen lång parallell-period; en ren skärning som du ser.
 
 ### 3.3 Pipeline-attrapperna
 Ersätt `pipeline-intern/extern/review` med **`tags`** på berörda noder (t.ex.
 `tags: [pipeline, intern]`). Det ger flera grupperingar utan att uppfinna "system" och löser
 `part_of`-enförälder-begränsningen som skapade dem. `part_of` reserveras för äkta nesting.
 
-> ❓ **A4:** Behåller vi `kind`-härledningen (`derive_kind` ur `part_of`) eller låter `type` bära all
-> semantik och pensionerar `kind`? (`kind` är "ontologiskt tunn" — kodar trädposition, inte roll.)
+> ✅ **BESLUT A4:** **Pensionera `kind`.** `type` bär den semantiska lasten; `kind` kodar bara
+> trädposition (ontologiskt tunn). Konsekvens: `derive_kind` tas bort och dess konsumenter rörs
+> (`json_exporter`, `schemas/`, `tui`, ev. dashboard-fält som visar kind). Hanteras som en del av
+> A3:s hårda skärning, med diffen som säkerhet — en konsument som bryts på saknat `kind` är just
+> en sådan "signal på gammalt".
 
 ## 4. Del B — Kapabilitet/skills som routningsdrivande axel
 
@@ -102,17 +121,19 @@ Kapabilitet = unionen av en agents **skills** (`.claude/skills/`) och **MCP-verk
   idé (`capability:skill`/`capability:mcp`). Del B ger den fångsten en hemvist: kapabilitets-gapet
   blir synligt i agent-modellen.
 
-### 4.3 Designval (öppna)
-> ❓ **B1:** Deklareras kapabilitet **explicit** (frontmatter `capabilities: [...]` per agent) eller
-> **härleds** den ur `## Tillåtna verktyg` + agentens listade skills? (Härlett = mindre att
-> underhålla, konsekvent med Del A:s filosofi; explicit = tydligare men ännu en handlista.)
+### 4.3 Designval (besvarade)
+> ✅ **BESLUT B1:** **Härled kapabilitet** ur agentens `## Tillåtna verktyg` (redan parsat av
+> `mcp_router`) + dess listade skills. Ingen ny handlista — kapabilitet blir ett *projektivt index*
+> över verktyg+skills, konsekvent med Del A:s härled-filosofi.
 
-> ❓ **B2:** Hur uttrycks en **issues/nods kapabilitetskrav**? Label (`needs:github-mcp`)? Härlett ur
-> `node.type` + integrationsfält (#77)? Eller frivilligt, med disciplin som default?
+> ✅ **BESLUT B2:** **Härlett + valfri override (skalbart).** Default: härled en issues/nods
+> kapabilitetskrav ur `node.type` + integrationsfält (#77). En valfri label (`needs:<kapabilitet>`)
+> kan överstyra när det behövs. Disciplin är fallback. (Rikard lutar hit, vill bygga skalbart —
+> härlett-först minimerar manuell taggning men låter en label finkalibrera.)
 
-> ❓ **B3:** Hur undviks att kapabilitet blir en **parallell taxonomi som driver isär** (samma fälla
-> som handkatalogen)? Princip: om kapabilitet *härleds* (B1=härlett) driver den inte isär — den är
-> ett projektivt index över verktyg+skills, inte en egen sanning.
+> ✅ **BESLUT B3:** **Härledd = ingen egen sanning.** Eftersom B1 = härledd är kapabilitet ett
+> index, inte en parallell taxonomi — samma anti-drift-garanti som den härledda katalogen. Inga
+> manuella tillägg ovanpå (det skulle återinföra driften).
 
 ## 5. Hur dispatch läser det (seamet orört)
 
