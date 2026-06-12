@@ -3,7 +3,7 @@
 > Genererad av `scripts/gen_agentur.py` ur agent-frontmatter. **Redigera inte för hand** —
 > ändra rollerna i `.claude/agents/*.md` (aktiva) / `.claude/org/roster/*.md` (skal) och kör om.
 
-**88 roller** i registret, varav **26 aktiva** (körbara i `.claude/agents/`).
+**88 roller** i registret, varav **27 aktiva** (körbara i `.claude/agents/`).
 Resten är skal i org-registret (`.claude/org/roster/`) — bemannas vid behov.
 
 Princip: agenter = anställda, skills = kompetenser. Matris (Spotify): department +
@@ -113,6 +113,13 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 | `fullstack-utvecklare` | Fullstack-utvecklare | sonnet-4-6 | — | — | aktiv |
 | `fullstack-utvecklare-2` | Fullstack-utvecklare | haiku-4-5 | — | — | skal |
 
+### Integrations
+
+| slug | titel | modell | roll | squad | status |
+|------|-------|--------|------|-------|--------|
+| `integrationsutvecklare` | Integrationsutvecklare | sonnet-4-6 | — | — | aktiv |
+| `integrationsutvecklare-2` | Integrationsutvecklare | haiku-4-5 | — | — | skal |
+
 ### QA
 
 | slug | titel | modell | roll | squad | status |
@@ -128,13 +135,6 @@ Aktiva rostern hålls liten (playbook: 7–10 aktiva åt gången). VD = Rikard (
 |------|-------|--------|------|-------|--------|
 | `data-ingenjor` | Data-ingenjör | sonnet-4-6 | — | — | skal |
 | `data-ingenjor-2` | Data-ingenjör | haiku-4-5 | — | — | skal |
-
-### Integrations
-
-| slug | titel | modell | roll | squad | status |
-|------|-------|--------|------|-------|--------|
-| `integrationsutvecklare` | Integrationsutvecklare | sonnet-4-6 | — | — | skal |
-| `integrationsutvecklare-2` | Integrationsutvecklare | haiku-4-5 | — | — | skal |
 
 ## Platform
 
