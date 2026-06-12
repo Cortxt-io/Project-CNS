@@ -47,6 +47,19 @@ ACTION_RUN = "run_pass"
 ACTION_OPEN_PR = "open_pr"
 ACTION_MERGE = "merge"  # Fas 5: self-merge av lågrisk-PR (annars eskalering)
 
+# Eval-kontext för dispatch-körda pass (#124): domaren ska bedöma agentens KOD/ARBETE,
+# inte straffa processkriterier som LOOPEN äger. I dispatch-flödet skriver agenten bara
+# kod i en isolerad worktree; dispatchern committar, öppnar draft-PR + kopplar den till
+# issuen EFTER passet. Annars failar varje pass kriterier som "skapar alltid PR".
+DISPATCH_EVAL_CONTEXT = (
+    "Detta pass kördes av dispatch-loopen. AGENTEN skrev BARA kod i en isolerad "
+    "git-worktree. Dispatch-loopen (INTE agenten) committar ändringarna, öppnar en "
+    "draft-PR och kopplar den till issuen EFTER detta pass. Bedöm därför agentens "
+    "KOD och ARBETE mot kriterierna. Kriterier som handlar om att SKAPA en PR, koppla "
+    "PR till issue, eller merga hanteras av loopen och ska räknas som UPPFYLLDA så länge "
+    "agentens kodarbete är korrekt — straffa inte agenten för det loopen äger."
+)
+
 # --- Autonomi-policy (Fas 5, #61 + #60 merge-beslutspolicy) ------------------
 # "Self-merge bara lågrisk" (beslut Rikard): loopen får merga TESTAD/ADDITIV/lågrisk
 # (docs/deps/tooling) men ALDRIG feature-kod, schema-brott eller produktions-vägar —
@@ -277,7 +290,7 @@ def crawl_once(
     if eval_fn is None:
         from scripts.agent_eval import evaluate
 
-        eval_fn = lambda slug, output: evaluate(slug, output)  # noqa: E731
+        eval_fn = lambda slug, output: evaluate(slug, output, context=DISPATCH_EVAL_CONTEXT)  # noqa: E731
     if run_pass is None:
         run_pass = _default_run_pass
     write_mode = worktree_fn is not None
