@@ -12,9 +12,14 @@ Kör: python scripts/gen_agentur.py
 from __future__ import annotations
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# Körs som direkt skript (`python scripts/gen_agentur.py`) — säkra att repo-roten är på
+# path så `from scripts.*`-importerna (agent_roles/capabilities) funkar i båda lägena.
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 AGENTS_DIR = ROOT / ".claude" / "agents"
 ROSTER_DIR = ROOT / ".claude" / "org" / "roster"
 MANIFEST = ROOT / ".claude" / "org" / "manifest.json"
@@ -73,20 +78,26 @@ def stamp_squads(slug2squad: dict[str, str]) -> int:
 
 
 def load_agents() -> list[dict]:
+    from scripts.agent_roles import _parse_tools  # Plan A → Plan A
+
     agents = []
     for path in sorted(AGENTS_DIR.glob("*.md")):
         if path.name == "AGENTUR.md":
             continue
-        fm = parse_frontmatter(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        fm = parse_frontmatter(text)
         if not fm.get("name"):
             continue
         fm["_active"] = True
+        fm["_tools"] = _parse_tools(text)   # ur '## Tillåtna verktyg' (Del B-kapabilitet)
         agents.append(fm)
     for path in sorted(ROSTER_DIR.glob("*.md")) if ROSTER_DIR.exists() else []:
-        fm = parse_frontmatter(path.read_text(encoding="utf-8"))
+        text = path.read_text(encoding="utf-8")
+        fm = parse_frontmatter(text)
         if not fm.get("name"):
             continue
         fm["_active"] = (fm.get("status") == "active")
+        fm["_tools"] = _parse_tools(text)
         agents.append(fm)
     return agents
 
@@ -201,6 +212,8 @@ def write_agents_json(agents: list[dict]) -> None:
     Enda källan till agent-metadata utanför .claude/; produktkod (app/, json_exporter)
     läser denna fil, aldrig .claude/ direkt.
     """
+    from scripts.capabilities import derive_capabilities
+
     records = []
     for a in agents:
         records.append({
@@ -211,6 +224,8 @@ def write_agents_json(agents: list[dict]) -> None:
             "squad": _norm(a.get("squad")),
             "status": "active" if a["_active"] else "shell",
             "model": a.get("model", "claude-haiku-4-5"),
+            # Härledd kapabilitet (Del B) — projektivt index över verktyg, ej handlista.
+            "capabilities": derive_capabilities(a.get("_tools", [])),
             "owns": [],
             "contributes_to": [],
         })
