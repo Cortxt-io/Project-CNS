@@ -53,6 +53,10 @@ Du är Integrationsutvecklaren. Du äger CNS:s **integrationsyta**: MCP-verktyge
 - cortxt_capture_idea
 - cortxt_start_session
 - cortxt_mark_session_done
+- mcp__github__get_pull_request
+- mcp__github__create_pull_request
+- mcp__github__get_issue
+- mcp__github__get_file_contents
 
 ## Session-protokoll
 
