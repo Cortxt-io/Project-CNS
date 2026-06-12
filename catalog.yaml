@@ -22,31 +22,37 @@ systems:
     part_of: infrastructure
     type: service
     domain: cortxt
+    owner_agent: backend-utvecklare
     feeds: []
     depends_on:
     - cns-core
-    owner_agent: backend-utvecklare
     url_repo: https://github.com/rian010194/Project-CNS
   cns-analyst:
     title: CNS Analyst
     summary: AI-driven analysmotor som föreslår uppdateringar av stage, risker och
       summary.
-    part_of: pipeline-review
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/Project-CNS
+    tags:
+    - pipeline
+    - review
   cns-brief:
     title: CNS Brief
     summary: AI-driven portföljbrief som varje morgon returnerar situation, prioriteringar
       och questförslag.
-    part_of: pipeline-intern
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/Project-CNS
+    tags:
+    - pipeline
+    - intern
   cns-core:
     title: CNS Core
     summary: CLI, markdown-parser, validator och exportörer — substratet som läser,
@@ -61,23 +67,29 @@ systems:
     title: CNS Devlog
     summary: Genererar daglig AI-sammanfattning av portföljförändringar och publicerar
       som statisk sida.
-    part_of: pipeline-intern
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds:
     - cns-brief
     depends_on: []
     url_repo: https://github.com/rian010194/Project-CNS
+    tags:
+    - pipeline
+    - intern
   cns-devwatch:
     title: CNS Devwatch
     summary: Bevakar dagliga git-ändringar i project.md-filer och exporterar som ChangeEvents.
-    part_of: pipeline-intern
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds:
     - cns-devlog
     depends_on: []
     url_repo: https://github.com/rian010194/Project-CNS
+    tags:
+    - pipeline
+    - intern
   cns-hosting-infra:
     title: CNS Hosting Infra
     summary: GitHub Actions-infrastruktur som kör CNS-pipelinen schemalagt och publicerar
@@ -183,23 +195,29 @@ systems:
     title: Dev Changelog Engine Mini
     summary: Pipeline that transforms DocsWatch data into prioritized weekly digests
       in Markdown and HTML.
-    part_of: pipeline-extern
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/dev-changelog-engine-mini
+    tags:
+    - pipeline
+    - extern
   docs-watch:
     title: DocsWatch
     summary: CLI tool that monitors external changelogs, docs and release notes for
       dev teams.
-    part_of: pipeline-extern
+    part_of: cortxt
     type: cli
     domain: cortxt
     feeds:
     - dev-changelog-engine-mini
     depends_on: []
     url_repo: https://github.com/rian010194/docs-watch
+    tags:
+    - pipeline
+    - extern
   github-webhook:
     title: GitHub Webhook Receiver
     summary: HMAC-verifierad mottagare på /api/webhook/github som auto-completar quests
@@ -251,30 +269,6 @@ systems:
     feeds: []
     depends_on:
     - cns-mcp
-  pipeline-extern:
-    title: Pipeline Extern
-    summary: Extern pipeline — hanterar utgående data och publicering.
-    part_of: cortxt
-    type: pipeline
-    domain: cortxt
-    feeds: []
-    depends_on: []
-  pipeline-intern:
-    title: Pipeline Intern
-    summary: Intern datapipeline — bearbetar och förädlar information internt.
-    part_of: cortxt
-    type: pipeline
-    domain: cortxt
-    feeds: []
-    depends_on: []
-  pipeline-review:
-    title: Pipeline Review
-    summary: Granskningspipeline — analyserar och utvärderar projekt och data.
-    part_of: cortxt
-    type: pipeline
-    domain: cortxt
-    feeds: []
-    depends_on: []
   quest-engine:
     title: Quest Engine
     summary: Quest-livscykel (suggested → active → in_progress → completed/archived)
@@ -299,11 +293,14 @@ systems:
   scoring-studio:
     title: Scoring Studio
     summary: Visuellt verktyg för att justera scoring-vikter utan att redigera kod.
-    part_of: pipeline-extern
+    part_of: cortxt
     type: tool
     domain: cortxt
     feeds: []
     depends_on: []
+    tags:
+    - pipeline
+    - extern
   webhook-router:
     title: Webhook Router
     summary: Self-hosted webhook proxy that logs, searches, and replays incoming webhooks

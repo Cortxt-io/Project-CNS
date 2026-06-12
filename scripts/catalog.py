@@ -153,10 +153,11 @@ def catalog_to_meta(slug: str, entry: dict[str, Any], systems: dict[str, dict]) 
         "owner_agent": entry.get("owner_agent", "") or "",
         "contributing_agents": entry.get("contributing_agents") or [],
         "url_repo": entry.get("url_repo", "") or "",
+        # tags: nu en aktiv grupperingsdimension (ersätter pipeline-attrapperna, spec 3.3).
+        "tags": entry.get("tags") or [],
         # Delegerade/borttagna fält — tomt fallback (dashboarden fallbackar):
         "stage": "",
         "status": "",
-        "tags": [],
     }
 
 
