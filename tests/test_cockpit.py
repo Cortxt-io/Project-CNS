@@ -37,7 +37,7 @@ def _patch(**overrides):
 
 
 def test_cockpit_composes() -> None:
-    done = [{"summary": "byggde X", "link": {"kind": "issue", "ref": "44"}, "type": "bygg", "updated_at": "2026-06-11T16:00:00"}]
+    done = [{"summary": "byggde X", "link": {"kind": "issue", "ref": "44"}, "type": "delivery", "updated_at": "2026-06-11T16:00:00"}]
     running = [{"summary": "kör triage", "type": "triage", "link": None, "metrics": {}}]
     restore = _patch(
         **{
@@ -46,17 +46,17 @@ def test_cockpit_composes() -> None:
             "ss.get_focus": lambda: {"kind": "node", "ref": "cns-core"},
             "ss.is_phantom": lambda s: False,
             "ss.elapsed_seconds": lambda s: 125.0,
-            "rec.recommend": lambda state=None: [{"type": "bygg", "title": "Bygg quest #8", "motivation": "väntar", "score": 50}],
+            "rec.recommend": lambda state=None: [{"type": "delivery", "title": "Bygg quest #8", "motivation": "väntar", "score": 50}],
             "src.open_issues_for_slug": lambda slug: (None, [{"number": 39, "title": "Triage-verktyg"}]),
         }
     )
     try:
         c = data.cockpit_state()
         assert c["last_done"]["summary"] == "byggde X"
-        assert c["last_done"]["type"] == "bygg"
+        assert c["last_done"]["type"] == "delivery"
         assert len(c["running"]) == 1 and c["running"][0]["type"] == "triage"
         assert c["active"]["type"] == "triage"
-        assert len(c["recommendations"]) == 1 and c["recommendations"][0]["type"] == "bygg"
+        assert len(c["recommendations"]) == 1 and c["recommendations"][0]["type"] == "delivery"
         assert c["focus"]["ref"] == "cns-core" and c["focus"]["kind"] == "node"
         assert c["focus"]["issues"][0]["number"] == 39
     finally:
@@ -68,7 +68,7 @@ def test_focus_fallback_to_active_link() -> None:
     restore = _patch(
         **{
             "ss.list_sessions": lambda status=None, link_ref=None: [],
-            "ss.get_active": lambda: {"type": "bygg", "session_id": "session-y"},
+            "ss.get_active": lambda: {"type": "delivery", "session_id": "session-y"},
             "ss.get_focus": lambda: None,
             "ss.get_session": lambda sid: {"link": {"kind": "quest", "ref": "8"}},
             "ss.is_phantom": lambda s: False,

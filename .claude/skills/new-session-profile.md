@@ -65,4 +65,4 @@ Rapportera: filsökväg, namn, kontext-items, kapacitet-antal, artefakttyp.
 ## Relaterat
 - `/agent-studio` — skapa en agent att binda till profilen
 - `/new-skill` — skapa en skill som aktiverar profilen
-- Befintliga profiler: `schemas/profiles/` (brainstorm, cns-build, research)
+- Befintliga profiler: `schemas/profiles/` (discovery, cns-build, research)

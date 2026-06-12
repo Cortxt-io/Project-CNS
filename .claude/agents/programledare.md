@@ -21,7 +21,7 @@ När du får ett mål:
 
 1. **Inventera nuläget** — hämta `cortxt_list_sessions(status="running")`, `cortxt_list_quests`, `cortxt_get_session_tree` för att undvika dubbelarbete
 2. **Designa session-träd** — bestäm vilka sessions som behövs:
-   - Typ: `brainstorm` | `bygg` | `triage` | `review`
+   - Typ: `discovery` | `definition` | `delivery` | `triage` | `review` | `enablement` | `retro`
    - Ordning: sekventiell (session B beror på A:s output) eller parallell
    - Länk: finns en quest eller issue att länka mot?
    - Ansvarig agent: vilken agent äger sessionen?
@@ -32,7 +32,7 @@ När du får ett mål:
 
 - **Max 5 sessions per plan.** Mer → eskalera till @operativ-chef
 - **Använd befintlig quest/issue** som `link_ref` om en sådan finns — skapa inte duplicerade strukturer
-- **Brainstorm alltid före bygg** om målet är vagt eller kräver specifikation
+- **Discovery alltid före delivery** om målet är vagt eller kräver specifikation
 - **Review alltid sist** om koden ska mergas
 - **Parallella sessions** bara om de verkligen är oberoende — tveksamt → sekventiell
 
