@@ -125,18 +125,18 @@ def _detail_markup(
 # Sessionstyp → rich-färg (speglar recommend.SESSION_ICONS/SESSION_COLORS, men
 # rich-färgnamn i stället för ANSI-koder så TUI och statusrad ser likadana ut).
 _TYPE_RICH: dict[str, str] = {
-    "brainstorm": "magenta",
-    "spec": "orange3",
-    "bygg": "green",
+    "discovery": "magenta",
+    "definition": "orange3",
+    "delivery": "green",
     "triage": "yellow",
     "review": "blue",
-    "verktygsladan": "cyan",
+    "enablement": "cyan",
     "retro": "grey50",
 }
 _TYPE_ICON: dict[str, str] = {
-    "brainstorm": "🟣",
-    "spec": "🟠",
-    "bygg": "🟢",
+    "discovery": "🟣",
+    "definition": "🟠",
+    "delivery": "🟢",
     "triage": "🟡",
     "review": "🔵",
 }

@@ -406,7 +406,7 @@ def crawl_once(
         sess = session_store.start_session(
             link_kind="issue", link_ref=str(number),
             summary=f"dispatch crawl #{number}: {issue.get('title', '')}".strip(),
-            source="code", session_type="bygg",
+            source="code", session_type="delivery",
         )
         res.session_id = sess["id"]
 

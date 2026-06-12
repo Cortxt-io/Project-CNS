@@ -1,11 +1,11 @@
 ---
-type: verktygsladan
-title: Verktygslådan
+type: enablement
+title: Enablement / verktygslådan
 mode: underhåll
 agents: [hr-chef, kompetensutvecklare, plattformsingenjor, programledare]
 ---
 
-# Verktygslådan-session
+# Enablement-session
 
 Syfte: bygga ut och underhålla `.claude/`-verktygslådan — agenter, skills, hooks, session-profiler.
 

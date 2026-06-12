@@ -35,9 +35,27 @@ VALID_STATUSES = {"running", "done"}
 VALID_LINK_KINDS = {"quest", "issue", "idea", "node"}
 VALID_SOURCES = {"chat", "code"}
 
-# Standardiserade sessionstyper — profiler i sessions/profiles/<typ>.md.
+# Standardiserade sessionstyper (intents) — profiler i sessions/profiles/<typ>.md.
+# Branch-standard engelska ord; fem matchar routnings-stationerna i agentur_routing
+# (discovery/definition/delivery/review/retro), triage + enablement saknar station.
 # Valfritt fält: None på gamla poster och pass utan uttalad typ.
-VALID_SESSION_TYPES = {"brainstorm", "spec", "bygg", "triage", "review", "verktygsladan", "retro"}
+VALID_SESSION_TYPES = {"discovery", "definition", "delivery", "triage", "review", "enablement", "retro"}
+
+# Bakåtkompat: gamla intent-namn → nya. Kanoniseras på skriv OCH läs så gammal
+# sessionsdata (exports/sessions/*.json) och gammal markör fortsätter funka.
+SESSION_TYPE_ALIASES = {
+    "brainstorm": "discovery",
+    "spec": "definition",
+    "bygg": "delivery",
+    "verktygsladan": "enablement",
+}
+
+
+def canonical_session_type(session_type: str | None) -> str | None:
+    """Mappa ev. gammalt intent-namn till det kanoniska (None → None)."""
+    if session_type is None:
+        return None
+    return SESSION_TYPE_ALIASES.get(session_type, session_type)
 
 # Lokal markör för aktiv sessionstyp — läses av router-hooken varje prompt,
 # skrivs av /session-skillen. Sidofil, inte en session-post: hooken behöver
@@ -75,7 +93,8 @@ def _link(link_kind: str | None, link_ref: str | None) -> dict | None:
 
 
 def _validate_type(session_type: str | None) -> None:
-    if session_type is not None and session_type not in VALID_SESSION_TYPES:
+    canon = canonical_session_type(session_type)
+    if canon is not None and canon not in VALID_SESSION_TYPES:
         raise ValueError(
             f"Invalid session_type '{session_type}'. "
             f"Allowed: {', '.join(sorted(VALID_SESSION_TYPES))}"
@@ -128,7 +147,7 @@ def start_session(
         "source": source,
         "parent_id": parent_id,
         "fork_name": fork_name,
-        "type": session_type,
+        "type": canonical_session_type(session_type),
         "metrics": _new_metrics(),
     }
     _write(session)
@@ -173,7 +192,7 @@ def save_session(
         "source": source,
         "parent_id": parent_id,
         "fork_name": fork_name,
-        "type": session_type,
+        "type": canonical_session_type(session_type),
         "metrics": _new_metrics(),
     }
     _write(session)
@@ -395,7 +414,7 @@ def set_active(session_type: str, session_id: str | None = None) -> dict:
     state = _read_active()
     state.update(
         {
-            "type": session_type,
+            "type": canonical_session_type(session_type),
             "session_id": session_id,
             "set_at": datetime.now().isoformat(timespec="seconds"),
         }
@@ -407,9 +426,12 @@ def set_active(session_type: str, session_id: str | None = None) -> dict:
 def get_active() -> dict | None:
     """Aktiv sessionstyp-markör, eller None om ingen är satt."""
     try:
-        return json.loads(ACTIVE_FILE.read_text(encoding="utf-8"))
+        state = json.loads(ACTIVE_FILE.read_text(encoding="utf-8"))
     except Exception:
         return None
+    if isinstance(state, dict) and state.get("type"):
+        state["type"] = canonical_session_type(state["type"])
+    return state
 
 
 def clear_active() -> None:

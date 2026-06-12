@@ -36,7 +36,7 @@ def test_record_metrics() -> None:
     with tempfile.TemporaryDirectory() as d:
         ss.SESSIONS_DIR = Path(d)
         try:
-            sess = ss.start_session(link_kind="issue", link_ref="58", session_type="bygg")
+            sess = ss.start_session(link_kind="issue", link_ref="58", session_type="delivery")
             sid = sess["id"]
             assert sess["metrics"] == ss._new_metrics()                     # nystart = tomma metriker
             ss.record_metrics(sid, tools=["Read", "Edit"], tokens_in=3000, tokens_out=1000)

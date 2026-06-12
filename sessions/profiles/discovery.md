@@ -1,11 +1,11 @@
 ---
-type: brainstorm
-title: Brainstorm / idé / planering
+type: discovery
+title: Discovery / idé / planering
 mode: dialog
 agents: [produktchef, forskningsledare]
 ---
 
-# Brainstorm-session
+# Discovery-session
 
 Syfte: generera, definiera och spec:a idéer **tillsammans med Rikard** — inte exekvera.
 

@@ -1,6 +1,6 @@
 {
   "$schema": "../session-profile.schema.json",
-  "name": "brainstorm",
+  "name": "discovery",
   "description": "Fri idédumpning och klustrering. Lyssna-läge — inga avbrott, inga strukturkrav.",
   "context": [
     "open-ideas",

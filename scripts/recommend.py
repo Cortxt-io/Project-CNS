@@ -37,7 +37,7 @@ PROFILES_DIR = ROOT / "sessions" / "profiles"
 TRIAGE_IDEA_COUNT = 10
 TRIAGE_UNTRIAGED_COUNT = 5
 
-SESSION_TYPES = ("brainstorm", "spec", "bygg", "triage", "review")
+SESSION_TYPES = ("discovery", "definition", "delivery", "triage", "review", "enablement", "retro")
 
 
 def _load_env() -> None:
@@ -139,17 +139,17 @@ def recommend(state: dict | None = None) -> list[dict]:
             if closed_issues == 0:
                 recs.append(
                     {
-                        "type": "spec",
-                        "title": f"Spec: \"{quest.get('title')}\" ({open_issues} issues, inget stängt än)",
-                        "motivation": "Questen har issues men inget byggt — definiera vad/varför + acceptanskriterier innan bygg.",
+                        "type": "definition",
+                        "title": f"Definition: \"{quest.get('title')}\" ({open_issues} issues, inget stängt än)",
+                        "motivation": "Questen har issues men inget byggt — definiera vad/varför + acceptanskriterier innan delivery.",
                         "refs": [ref],
                         "score": 45 + open_issues,
                     }
                 )
             recs.append(
                 {
-                    "type": "bygg",
-                    "title": f"Bygg: \"{quest.get('title')}\" ({open_issues} öppna issues)",
+                    "type": "delivery",
+                    "title": f"Delivery: \"{quest.get('title')}\" ({open_issues} öppna issues)",
                     "motivation": "Questen har definierat arbete som väntar på exekvering.",
                     "refs": [ref],
                     "score": 50 + open_issues,
@@ -178,8 +178,8 @@ def recommend(state: dict | None = None) -> list[dict]:
         )
         recs.append(
             {
-                "type": "brainstorm",
-                "title": f"Brainstorm/planering ({len(direction_ideas)} riktningsfrågor)",
+                "type": "discovery",
+                "title": f"Discovery/planering ({len(direction_ideas)} riktningsfrågor)",
                 "motivation": why,
                 "refs": [i["id"] for i in direction_ideas],
                 "score": 30 + 10 * len(direction_ideas),
@@ -191,9 +191,9 @@ def recommend(state: dict | None = None) -> list[dict]:
 
 # Emoji per sessionstyp för snabb visuell identifiering i statusraden
 SESSION_ICONS: dict[str, str] = {
-    "brainstorm": "🟣",
-    "spec": "🟠",
-    "bygg": "🟢",
+    "discovery": "🟣",
+    "definition": "🟠",
+    "delivery": "🟢",
     "triage": "🟡",
     "review": "🔵",
 }
@@ -202,12 +202,12 @@ SESSION_ICONS: dict[str, str] = {
 # ANSI-färg per sessionstyp (idea-2cc3ae24) — statusraden renderar ANSI.
 # Ger varje typ en visuell identitet utöver emoji-ikonen.
 SESSION_COLORS: dict[str, str] = {
-    "brainstorm": "35",       # magenta  🟣
-    "spec": "38;5;208",       # orange   🟠
-    "bygg": "32",             # grön     🟢
+    "discovery": "35",        # magenta  🟣
+    "definition": "38;5;208", # orange   🟠
+    "delivery": "32",         # grön     🟢
     "triage": "33",           # gul      🟡
     "review": "34",           # blå      🔵
-    "verktygsladan": "36",    # cyan
+    "enablement": "36",       # cyan
     "retro": "90",            # grå
 }
 
