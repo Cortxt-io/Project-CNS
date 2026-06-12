@@ -166,6 +166,53 @@ def merge(derived: dict[str, dict], annotations: dict[str, dict]) -> dict[str, d
 
 # -- diff mot handkatalogen (A3-grinden) -------------------------------------
 
+# Självflaggande markörer i en nods summary (handskriven av ägaren).
+# Bara entydiga död-markörer. "ersatt av X" är medvetet UTE — den kan betyda
+# "tillfälligt täckt av X men planerad" (t.ex. mcp-gateway), inte död.
+_STALE_MARKERS = (
+    "superseded", "deprecated", "död rest", "historical reference", "kept for historical",
+)
+_ASPIRATIONAL_MARKERS = (
+    "planerad", "byggs först", "byggs när", "ej byggd", "inte byggd", "ännu inte",
+    "framtida", "aspirational", "idé-nod", "research-plan",
+)
+
+
+def classify_backing(
+    slug: str, entry: dict, *, file_stems: set[str], child_slugs: set[str]
+) -> tuple[str, str]:
+    """Klassa en katalognod mot repo-verkligheten → (status, bevis).
+
+    status ∈ {true, stale, aspirational, grouping}. Heuristik (konservativ — FLAGGAR
+    kandidater, raderar inget): nodens egen summary (självflaggning) väger tyngst, sedan
+    grupperings-roll, sedan repo-backing (url_repo eller en fil vars namn matchar slugen).
+    """
+    summary = (entry.get("summary") or "").lower()
+    if any(m in summary for m in _STALE_MARKERS):
+        return "stale", "summary självflaggar superseded/deprecated"
+    if slug in child_slugs:
+        return "grouping", "grupperingsnod — andra noder är part_of denna"
+    if entry.get("url_repo"):
+        return "true", f"url_repo: {entry['url_repo']}"
+    token = slug.replace("cns-", "").replace("cortxt-", "").replace("-", "_")
+    if token and any(token in stem for stem in file_stems):
+        return "true", f"fil matchar '{token}'"
+    if any(m in summary for m in _ASPIRATIONAL_MARKERS):
+        return "aspirational", "summary självflaggar planerad/ej byggd"
+    return "aspirational", "ingen repo-backing hittad"
+
+
+def classify_catalog(catalog: dict[str, dict], *, file_stems: set[str]) -> dict[str, tuple[str, str]]:
+    """Klassa alla katalognoder mot verkligheten → slug → (status, bevis)."""
+    child_slugs = {(v.get("part_of") or "").strip() for v in catalog.values()}
+    child_slugs.discard("")
+    return {
+        slug: classify_backing(slug, entry, file_stems=file_stems, child_slugs=child_slugs)
+        for slug, entry in catalog.items()
+        if slug not in KNOWN_PHANTOMS
+    }
+
+
 @dataclass
 class DiffReport:
     """Diff mellan härledd verklighet och handkatalogen."""
@@ -221,6 +268,46 @@ def derive_from_disk() -> dict[str, dict]:
     Agenter härleds INTE hit (egen axel) — se ``derive`` / ``derive_agent_axis``.
     """
     return derive(mcp_data=_load_json(MCP_JSON))
+
+
+def repo_file_stems() -> set[str]:
+    """Filstammar (utan ändelse, lowercase) ur scripts/ + app/ + repo-roten — backing-bevis."""
+    stems: set[str] = set()
+    for sub in ("scripts", "app", "."):
+        d = REPO_ROOT / sub if sub != "." else REPO_ROOT
+        if not d.exists():
+            continue
+        for p in d.rglob("*.py"):
+            stems.add(p.stem.lower())
+        for p in d.iterdir():  # mappnamn på toppnivå (t.ex. app, scripts)
+            if p.is_dir():
+                stems.add(p.name.lower())
+    return stems
+
+
+def verify_from_disk() -> dict[str, tuple[str, str]]:
+    """Klassa nuvarande catalog.yaml mot repo-verkligheten."""
+    return classify_catalog(load_current_catalog(), file_stems=repo_file_stems())
+
+
+def render_verify(classified: dict[str, tuple[str, str]]) -> str:
+    """Rendera klassningen grupperad per status."""
+    buckets: dict[str, list[str]] = {"stale": [], "aspirational": [], "grouping": [], "true": []}
+    for slug, (status, why) in sorted(classified.items()):
+        buckets.setdefault(status, []).append(f"  {slug} — {why}")
+    order = [
+        ("stale", "💀 STALE (död rest — kandidat för borttagning)"),
+        ("aspirational", "🔶 ASPIRATIONAL (planerad, ej byggd)"),
+        ("grouping", "📦 GROUPING (grupperingsnod — tag eller riktig?)"),
+        ("true", "✅ TRUE (repo-backing finns)"),
+    ]
+    lines = ["# Backing-verifiering: katalognoder vs repo-verkligheten", ""]
+    for key, label in order:
+        rows = buckets.get(key, [])
+        lines.append(f"{label}: {len(rows)}")
+        lines.extend(rows)
+        lines.append("")
+    return "\n".join(lines)
 
 
 def load_current_catalog() -> dict[str, dict]:

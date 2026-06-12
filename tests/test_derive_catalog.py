@@ -121,3 +121,44 @@ def test_merge_annotation_wins_semantics_derived_keeps_structure():
 def test_merge_union_of_slugs():
     merged = dc.merge({"a": {"type": "agent"}}, {"b": {"type": "cli"}})
     assert set(merged) == {"a", "b"}
+
+
+# -- backing-verifiering -----------------------------------------------------
+
+def _catalog():
+    return {
+        "cns-devlog": {"type": "pipeline", "summary": "AI-digest"},          # fil matchar
+        "old-thing": {"type": "tool", "summary": "Superseded by new-thing."},  # stale
+        "future-x": {"type": "tool", "summary": "Planerad, byggs först senare."},  # aspirational
+        "ghost": {"type": "tool", "summary": "nåt"},                         # ingen backing
+        "ext": {"type": "service", "summary": "x", "url_repo": "https://gh/ext"},  # url_repo
+        "infrastructure": {"type": "infra", "summary": "grupp"},             # grouping
+        "cns-core": {"type": "cli", "summary": "kärna", "part_of": "infrastructure"},
+    }
+
+
+def test_classify_stale_from_summary():
+    cls = dc.classify_catalog(_catalog(), file_stems={"devlog", "core"})
+    assert cls["old-thing"][0] == "stale"
+
+
+def test_classify_aspirational_marker_and_no_backing():
+    cls = dc.classify_catalog(_catalog(), file_stems=set())
+    assert cls["future-x"][0] == "aspirational"
+    assert cls["ghost"][0] == "aspirational"  # ingen backing
+
+
+def test_classify_true_from_file_and_url():
+    cls = dc.classify_catalog(_catalog(), file_stems={"devlog"})
+    assert cls["cns-devlog"][0] == "true"   # fil 'devlog' matchar 'devlog'-token
+    assert cls["ext"][0] == "true"          # url_repo
+
+
+def test_classify_grouping_node():
+    cls = dc.classify_catalog(_catalog(), file_stems=set())
+    assert cls["infrastructure"][0] == "grouping"  # cns-core är part_of infrastructure
+
+
+def test_classify_skips_phantoms():
+    cls = dc.classify_catalog({"pipeline-intern": {"summary": "x"}}, file_stems=set())
+    assert "pipeline-intern" not in cls

@@ -701,6 +701,9 @@ def cmd_derive(args: argparse.Namespace) -> None:
         report = dc.diff_against_catalog(derived, dc.load_current_catalog())
         print(report.as_text())
         return
+    if args.verify:
+        print(dc.render_verify(dc.verify_from_disk()))
+        return
     if args.apply:
         # Säkra annoteringslagret (engångs ur catalog.yaml om det saknas).
         annotations = dc.load_annotations()
@@ -797,6 +800,10 @@ def main() -> None:
     sp_derive.add_argument(
         "--apply", action="store_true",
         help="Bygg sammanslagen karta (härlett + annoterat) → catalog.merged.yaml (flippar inte)",
+    )
+    sp_derive.add_argument(
+        "--verify", action="store_true",
+        help="Klassa katalognoder mot repo-verkligheten (true/stale/aspirational/grouping)",
     )
     sp_derive.set_defaults(func=cmd_derive)
 
