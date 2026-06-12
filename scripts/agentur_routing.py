@@ -114,6 +114,18 @@ def _model_tier(agentur: dict, issue_type: str, station: str | None) -> str:
 # ---------------------------------------------------------------------------
 
 
+def _rank_by_capability(squad: list[dict], required: list[str] | None) -> list[dict]:
+    """Ranka disciplinens squad på kapabilitet (Del B): agenter som täcker fler av de krävda
+    kapabiliteterna först. Stabil sortering → disciplin-ordningen bevaras vid lika poäng, så
+    en tom/ouppfylld kravlista ALDRIG bryter befintlig routning (fallback till disciplin).
+    """
+    if not required:
+        return squad
+    from scripts.capabilities import capability_score
+
+    return sorted(squad, key=lambda a: -capability_score(a.get("capabilities"), required))
+
+
 def route(
     node_type: str,
     issue_type: str,
@@ -122,11 +134,14 @@ def route(
     station: str | None = None,
     agents: list[dict] | None = None,
     agentur: dict | None = None,
+    required_capabilities: list[str] | None = None,
 ) -> dict:
     """Routa ett arbete: (node.domain, node.type, issue.type[, station]) → flöde, bemanning, modell.
 
     ``domain`` väljer agentur-konfig (venture→agentur). ``agentur``/``agents`` injiceras för test
     (default laddas ur config/agenturer + exports/agents.json). ``station`` default = första i flödet.
+    ``required_capabilities`` (Del B): ranka disciplinens squad så en agent som *kan* det arbetet
+    kräver väljs först — disciplin är fortfarande grindvakten + fallbacken (bakåtkompatibelt).
     Degraderar tyst: okänd typ → konfigens default_flow; okänd disciplin/tom roster → tom squad.
     """
     cfg = agentur if agentur is not None else resolve_agentur(domain=domain)
@@ -135,7 +150,7 @@ def route(
     flow = cfg.get("flows", {}).get(issue_type) or cfg.get("default_flow", DEFAULT_FLOW)
     station = station or (flow[0] if flow else None)
     discipline = cfg.get("disciplines", {}).get(node_type, "")
-    squad = _squad_for(discipline, agents)
+    squad = _rank_by_capability(_squad_for(discipline, agents), required_capabilities)
 
     return {
         "agentur": cfg.get("slug"),
@@ -148,4 +163,5 @@ def route(
         "department": squad[0]["department"] if squad else "",
         "squad": [a.get("slug") for a in squad],
         "model": _model_tier(cfg, issue_type, station),
+        "required_capabilities": required_capabilities or [],
     }

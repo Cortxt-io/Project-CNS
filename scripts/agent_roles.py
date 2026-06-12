@@ -109,8 +109,11 @@ def role_for_node(
     domain = str(meta.get("domain", "") or "") or None
     try:
         from scripts.agentur_routing import route
+        from scripts.capabilities import required_capabilities
 
-        result = route(node_type, issue_type, domain=domain, agents=agents)
+        req = required_capabilities(node_type, integrations=meta.get("integrations"))
+        result = route(node_type, issue_type, domain=domain, agents=agents,
+                       required_capabilities=req)
     except Exception:
         return None
     squad = result.get("squad") or []

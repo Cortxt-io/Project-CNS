@@ -9,6 +9,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -20,6 +21,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -31,6 +35,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -42,6 +47,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -53,6 +61,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -64,6 +73,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -75,6 +87,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -86,6 +99,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -97,6 +111,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -108,6 +123,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -119,6 +137,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -130,6 +149,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -141,6 +161,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -152,6 +173,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -163,6 +185,9 @@
       "squad": "Integrationer",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -174,6 +199,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -185,6 +211,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -196,6 +223,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -207,6 +235,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -218,6 +247,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -229,6 +259,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -240,6 +273,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -251,6 +285,9 @@
       "squad": "Insikter",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -262,6 +299,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -273,6 +311,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -284,6 +323,9 @@
       "squad": "Överblick",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -295,6 +337,7 @@
       "squad": "Överblick",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -306,6 +349,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -317,6 +363,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -328,6 +375,10 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns",
+        "github"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -339,6 +390,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -350,6 +402,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -361,6 +416,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -372,6 +428,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -383,6 +440,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -394,6 +452,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -405,6 +464,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -416,6 +476,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -427,6 +490,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -438,6 +504,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -449,6 +516,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -460,6 +528,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -471,6 +540,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-opus-4-8",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -482,6 +554,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-opus-4-8",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -493,6 +566,11 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns",
+        "code",
+        "read"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -504,6 +582,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-opus-4-8",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -515,6 +594,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-opus-4-8",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -526,6 +608,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -537,6 +620,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -548,6 +634,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -559,6 +646,11 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns",
+        "code",
+        "read"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -570,6 +662,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -581,6 +676,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -592,6 +688,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -603,6 +700,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -614,6 +712,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -625,6 +724,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -636,6 +736,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -647,6 +750,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -658,6 +764,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -669,6 +776,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -680,6 +790,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -691,6 +802,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -702,6 +814,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -713,6 +826,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -724,6 +838,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -735,6 +852,7 @@
       "squad": "Modellering",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -746,6 +864,7 @@
       "squad": "Insikter",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -757,6 +876,7 @@
       "squad": "Integrationer",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -768,6 +888,7 @@
       "squad": "Överblick",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -779,6 +900,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -790,6 +912,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -801,6 +924,11 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns",
+        "code",
+        "read"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -812,6 +940,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -823,6 +954,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -834,6 +966,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -845,6 +980,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -856,6 +992,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -867,6 +1004,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -878,6 +1016,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -889,6 +1028,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -900,6 +1040,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -911,6 +1052,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -922,6 +1064,7 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -933,6 +1076,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -944,6 +1088,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -955,6 +1100,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -966,6 +1112,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     }
