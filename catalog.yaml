@@ -275,15 +275,6 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-  project-vault-dashboard:
-    title: Project Vault Dashboard
-    summary: Superseded by cortxt-dashboard-app. Kept for historical reference.
-    part_of: infrastructure
-    type: frontend
-    domain: cortxt
-    feeds: []
-    depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
   quest-engine:
     title: Quest Engine
     summary: Quest-livscykel (suggested → active → in_progress → completed/archived)
