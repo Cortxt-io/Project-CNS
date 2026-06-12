@@ -102,9 +102,14 @@ def evaluate(
     if not criteria:
         return {"status": "skipped", "reason": f"inga eval-kriterier för {slug}", "agent": slug}
     if judge_fn is None:
-        if not os.getenv("ANTHROPIC_API_KEY"):
-            return {"status": "skipped", "reason": "ANTHROPIC_API_KEY saknas", "agent": slug}
-        judge_fn = _default_judge
+        # Fallback-kedja (#112): API-nyckel → Claude-login/SDK → hoppa. Så eval kan KÖRA
+        # utan separat ANTHROPIC_API_KEY (autonom dispatch kör på din Claude Code-login).
+        if os.getenv("ANTHROPIC_API_KEY"):
+            judge_fn = _default_judge
+        elif _sdk_available():
+            judge_fn = _sdk_judge
+        else:
+            return {"status": "skipped", "reason": "ingen domare (API-nyckel/SDK saknas)", "agent": slug}
     try:
         verdict = parse_verdict(judge_fn(build_eval_prompt(criteria, session_output)))
     except Exception as exc:
@@ -122,6 +127,60 @@ def _default_judge(prompt: str) -> str:
         messages=[{"role": "user", "content": prompt}],
     )
     return resp.content[0].text
+
+
+def _sdk_available() -> bool:
+    """True om Claude Agent SDK + ``claude``-CLI finns (domaren kan köra på login utan nyckel)."""
+    import shutil
+
+    try:
+        import claude_agent_sdk  # noqa: F401
+    except Exception:
+        return False
+    return shutil.which("claude") is not None
+
+
+def _sdk_judge(prompt: str) -> str:
+    """LLM-domare via Claude Agent SDK (din Claude Code-login) — INGEN ANTHROPIC_API_KEY.
+
+    Speglar mönstret i ``scripts/tui/agent_host.run_turn``: connect → query → samla
+    ``AssistantMessage``/``TextBlock``-text. Read-only domare (inga verktyg). Kör Haiku
+    (``JUDGE_MODEL``, Ekonomen-principen). Kastar vid SDK-/CLI-fel → ``evaluate`` fångar
+    som ``status=error`` (vilket eval-gaten behandlar som ej-grön → eskalering).
+    """
+    import asyncio
+
+    async def _run() -> str:
+        from claude_agent_sdk import (
+            AssistantMessage,
+            ClaudeAgentOptions,
+            ClaudeSDKClient,
+            TextBlock,
+        )
+
+        options = ClaudeAgentOptions(
+            system_prompt="Du är en STRÄNG evaluator. Svara ENBART med begärd JSON.",
+            permission_mode="default",
+            model=JUDGE_MODEL,
+        )
+        client = ClaudeSDKClient(options=options)
+        chunks: list[str] = []
+        try:
+            await client.connect()
+            await client.query(prompt)
+            async for message in client.receive_response():
+                if isinstance(message, AssistantMessage):
+                    for block in message.content:
+                        if isinstance(block, TextBlock):
+                            chunks.append(block.text)
+        finally:
+            try:
+                await client.disconnect()
+            except Exception:
+                pass
+        return "".join(chunks)
+
+    return asyncio.run(_run())
 
 
 def main(argv: list[str]) -> int:

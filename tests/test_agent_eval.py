@@ -5,6 +5,7 @@ Körs fristående (``python tests/test_agent_eval.py``) ELLER under pytest.
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -62,9 +63,31 @@ def test_evaluate_injected_judge() -> None:
         ae.load_eval_criteria = orig
 
 
+def test_evaluate_fallback_to_sdk() -> None:
+    """#112B: utan ANTHROPIC_API_KEY ska eval falla tillbaka på SDK-domaren (login),
+    och bara hoppa om VARKEN nyckel ELLER SDK finns."""
+    orig = (ae.load_eval_criteria, ae._sdk_available, ae._sdk_judge)
+    saved_key = os.environ.pop("ANTHROPIC_API_KEY", None)
+    ae.load_eval_criteria = lambda slug: ["A"]
+    try:
+        # SDK finns → använd _sdk_judge (ingen nyckel)
+        ae._sdk_available = lambda: True
+        ae._sdk_judge = lambda p: '{"results":[{"verdict":"pass"}],"total":1}'
+        assert ae.evaluate("x", "o")["all_pass"] is True
+        # varken nyckel eller SDK → skipped "ingen domare"
+        ae._sdk_available = lambda: False
+        r = ae.evaluate("x", "o")
+        assert r["status"] == "skipped" and "domare" in r["reason"]
+    finally:
+        ae.load_eval_criteria, ae._sdk_available, ae._sdk_judge = orig
+        if saved_key is not None:
+            os.environ["ANTHROPIC_API_KEY"] = saved_key
+
+
 if __name__ == "__main__":
     test_parse_criteria()
     test_build_eval_prompt()
     test_parse_verdict()
     test_evaluate_injected_judge()
+    test_evaluate_fallback_to_sdk()
     print("OK — agent_eval: alla fall gröna")
