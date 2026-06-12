@@ -41,7 +41,7 @@ def test_derive_from_mcp_one_node_per_server():
 
 def test_derive_merges_sources():
     nodes = dc.derive(agents_data=_agents(), mcp_data=_mcp())
-    assert "backend-utvecklare" in nodes and "project-cns" in nodes
+    assert "backend-utvecklare" in nodes and "cns-mcp" in nodes  # mcp aliasas till cns-mcp
 
 
 def test_derive_handles_missing_sources():
@@ -78,3 +78,41 @@ def test_diff_report_text_renders():
     report = dc.diff_against_catalog(dc.derive(agents_data=_agents()), {"pipeline-intern": {}})
     text = report.as_text()
     assert "SAKNAS i katalogen" in text and "PHANTOM" in text
+
+
+# -- alias + merge + annoteringsbygge (skiva 2) ------------------------------
+
+def test_derive_aliases_mcp_to_canonical_slug():
+    nodes = dc.derive(mcp_data=_mcp())
+    assert "cns-mcp" in nodes and "project-cns" not in nodes  # project-cns → cns-mcp
+    assert nodes["cns-mcp"]["type"] == "mcp-server"
+
+
+def test_build_annotations_drops_phantoms_and_retags_children():
+    catalog = {
+        "pipeline-intern": {"type": "pipeline", "part_of": "cortxt"},
+        "cns-devlog": {"type": "pipeline", "part_of": "pipeline-intern", "summary": "loggar"},
+        "cns-core": {"type": "cli", "part_of": "infrastructure"},
+    }
+    ann = dc.build_annotations_from_catalog(catalog)
+    assert "pipeline-intern" not in ann                       # attrappen borta
+    assert ann["cns-devlog"]["part_of"] == "cortxt"            # om-föräldrad
+    assert "pipeline" in ann["cns-devlog"]["tags"]
+    assert "intern" in ann["cns-devlog"]["tags"]
+    assert ann["cns-core"]["part_of"] == "infrastructure"     # orörd
+
+
+def test_merge_annotation_wins_semantics_derived_keeps_structure():
+    derived = {"cns-mcp": {"type": "mcp-server", "_source": ".mcp.json", "title": "x"}}
+    annotations = {"cns-mcp": {"summary": "MCP-servern", "domain": "cortxt", "title": "CNS MCP"}}
+    merged = dc.merge(derived, annotations)
+    node = merged["cns-mcp"]
+    assert node["title"] == "CNS MCP"          # annotering vinner
+    assert node["type"] == "mcp-server"        # härlett bidrar struktur
+    assert node["_source"] == ".mcp.json"      # härledningsspår överlever
+    assert node["summary"] == "MCP-servern"
+
+
+def test_merge_union_of_slugs():
+    merged = dc.merge({"a": {"type": "agent"}}, {"b": {"type": "cli"}})
+    assert set(merged) == {"a", "b"}

@@ -28,10 +28,16 @@ AGENTS_JSON = REPO_ROOT / "exports" / "agents.json"
 MCP_JSON = REPO_ROOT / ".mcp.json"
 CATALOG_PATH = REPO_ROOT / "catalog.yaml"
 DERIVED_PATH = REPO_ROOT / "catalog.derived.yaml"
+ANNOTATIONS_PATH = REPO_ROOT / "catalog.annotations.yaml"
+MERGED_PATH = REPO_ROOT / "catalog.merged.yaml"
 
 # Noder i katalogen som är kända grupperings-attrapper (inte system) — spec 3.3.
 # De backas inte av någon verklighet; flaggas som phantom i diffen.
 KNOWN_PHANTOMS = {"pipeline-intern", "pipeline-extern", "pipeline-review"}
+
+# Identitetsmappning härledd-slug → kanonisk katalog-slug (namn-glapp, spec öppen fråga).
+# .mcp.json kallar servern "project-cns"; katalogen kallar samma sak "cns-mcp".
+DERIVED_ALIAS = {"project-cns": "cns-mcp"}
 
 
 # -- härledare (rena: tar in data, returnerar slug → nod) --------------------
@@ -77,13 +83,75 @@ def derive_from_mcp(mcp_data: dict) -> dict[str, dict]:
 
 
 def derive(*, agents_data: dict | list | None = None, mcp_data: dict | None = None) -> dict[str, dict]:
-    """Slå ihop alla v1-härledare → en härledd nodmappning (slug → nod)."""
-    derived: dict[str, dict] = {}
+    """Slå ihop alla v1-härledare → en härledd nodmappning (slug → nod).
+
+    Härledda slugs kanoniseras via DERIVED_ALIAS (t.ex. project-cns → cns-mcp) så de
+    möter rätt annoterad nod i mergen.
+    """
+    raw: dict[str, dict] = {}
     if agents_data is not None:
-        derived.update(derive_from_agents(agents_data))
+        raw.update(derive_from_agents(agents_data))
     if mcp_data is not None:
-        derived.update(derive_from_mcp(mcp_data))
-    return derived
+        raw.update(derive_from_mcp(mcp_data))
+    return {DERIVED_ALIAS.get(slug, slug): node for slug, node in raw.items()}
+
+
+# -- annoterings-bygge + merge (skiva 2: den sammanslagna kartan) -------------
+
+# Semantiska fält en människa annoterar (resten härleds).
+_ANNOTATION_FIELDS = (
+    "title", "summary", "part_of", "type", "domain", "owner_agent",
+    "contributing_agents", "feeds", "depends_on", "url_repo", "integrations", "tags",
+)
+
+
+def build_annotations_from_catalog(catalog: dict[str, dict]) -> dict[str, dict]:
+    """Migrera nuvarande catalog.yaml → annoteringslager (engångs, spec A3).
+
+    Tar bort phantom-attrapperna; deras barn om-föräldras till attrappens förälder och
+    får attrappens grupperingsnamn som `tags` i stället (spec 3.3: part_of → tags).
+    """
+    # phantom-slug → (förälder, grupperingstagg)
+    phantom_parent: dict[str, str] = {}
+    phantom_tag: dict[str, str] = {}
+    for slug in KNOWN_PHANTOMS:
+        entry = catalog.get(slug, {})
+        phantom_parent[slug] = (entry.get("part_of") or "").strip()
+        phantom_tag[slug] = slug.replace("pipeline-", "")  # intern/extern/review
+
+    out: dict[str, dict] = {}
+    for slug, entry in catalog.items():
+        if slug in KNOWN_PHANTOMS:
+            continue  # attrappen själv försvinner
+        ann = {k: entry[k] for k in _ANNOTATION_FIELDS if k in entry}
+        parent = (entry.get("part_of") or "").strip()
+        if parent in KNOWN_PHANTOMS:
+            ann["part_of"] = phantom_parent[parent]                 # om-föräldra
+            tags = list(ann.get("tags") or [])
+            for t in ("pipeline", phantom_tag[parent]):
+                if t not in tags:
+                    tags.append(t)
+            ann["tags"] = tags
+        out[slug] = ann
+    return out
+
+
+def merge(derived: dict[str, dict], annotations: dict[str, dict]) -> dict[str, dict]:
+    """Slå ihop härlett (struktur) + annoterat (semantik) → full nodmapping.
+
+    Annotering bär semantik och vinner på semantiska fält; härlett bidrar existens +
+    `type`/`part_of` när annotering saknar dem, samt `_source`-spår. Unionen av slugs.
+    """
+    out: dict[str, dict] = {}
+    for slug in set(derived) | set(annotations):
+        d = derived.get(slug, {})
+        a = annotations.get(slug, {})
+        node = dict(d)        # härlett som bas (existens, type, _source, status_derived)
+        node.update(a)        # annotering vinner på semantiska fält
+        if d.get("_source"):  # härledningsspåret överlever annoteringen
+            node["_source"] = d["_source"]
+        out[slug] = node
+    return out
 
 
 # -- diff mot handkatalogen (A3-grinden) -------------------------------------
@@ -165,3 +233,46 @@ def dump_derived(derived: dict[str, dict]) -> str:
 def write_derived(derived: dict[str, dict]) -> Path:
     DERIVED_PATH.write_text(dump_derived(derived), encoding="utf-8")
     return DERIVED_PATH
+
+
+def load_annotations() -> dict[str, dict]:
+    """Läs catalog.annotations.yaml (handannoterad semantik). Tom om filen saknas."""
+    if not ANNOTATIONS_PATH.exists():
+        return {}
+    data = yaml.safe_load(ANNOTATIONS_PATH.read_text(encoding="utf-8")) or {}
+    return data.get("systems", {}) or {}
+
+
+def write_annotations(annotations: dict[str, dict]) -> Path:
+    """Skriv annoteringslagret (handkälla — får redigeras för hand)."""
+    header = (
+        "# HANDKÄLLA — semantik som inte kan härledas (summary/domain/owner/tags m.m.).\n"
+        "# Genererad engångs ur catalog.yaml; redigeras sedan för hand. Strukturen\n"
+        "# (existens/type för agenter+MCP) härleds separat och mergas ovanpå. Se spec.\n\n"
+    )
+    ordered = {slug: annotations[slug] for slug in sorted(annotations)}
+    ANNOTATIONS_PATH.write_text(
+        header + yaml.safe_dump({"systems": ordered}, allow_unicode=True, sort_keys=False),
+        encoding="utf-8",
+    )
+    return ANNOTATIONS_PATH
+
+
+def build_merged_from_disk() -> dict[str, dict]:
+    """Full sammanslagen karta: härlett (agents.json/.mcp.json) + annoterat (de 29)."""
+    return merge(derive_from_disk(), load_annotations())
+
+
+def write_merged(merged: dict[str, dict]) -> Path:
+    """Skriv den sammanslagna kartan till en INSPEKTERBAR fil (flippar inte load_catalog)."""
+    header = (
+        "# GENERERAD (cns derive --apply) — INSPEKTIONS-artefakt, redigera INTE.\n"
+        "# Sammanslagning av härlett (verklighet) + annoterat (de 29). Konsumenterna\n"
+        "# läser ÄNNU catalog.yaml; detta är förhandsvisningen inför flippen (skiva 2b).\n\n"
+    )
+    ordered = {slug: merged[slug] for slug in sorted(merged)}
+    MERGED_PATH.write_text(
+        header + yaml.safe_dump({"systems": ordered}, allow_unicode=True, sort_keys=False),
+        encoding="utf-8",
+    )
+    return MERGED_PATH

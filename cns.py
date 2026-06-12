@@ -693,7 +693,7 @@ def cmd_tui(args: argparse.Namespace) -> None:
 
 
 def cmd_derive(args: argparse.Namespace) -> None:
-    """Härled nodkatalogen ur verkligheten + diffa mot catalog.yaml (Del A, skiva 1)."""
+    """Härled nodkatalogen ur verkligheten; diffa eller bygg den sammanslagna kartan."""
     from scripts import derive_catalog as dc
 
     derived = dc.derive_from_disk()
@@ -701,9 +701,23 @@ def cmd_derive(args: argparse.Namespace) -> None:
         report = dc.diff_against_catalog(derived, dc.load_current_catalog())
         print(report.as_text())
         return
+    if args.apply:
+        # Säkra annoteringslagret (engångs ur catalog.yaml om det saknas).
+        annotations = dc.load_annotations()
+        if not annotations:
+            annotations = dc.build_annotations_from_catalog(dc.load_current_catalog())
+            ann_path = dc.write_annotations(annotations)
+            print(f"Skapade annoteringslager ({len(annotations)} noder) → {ann_path}")
+        merged = dc.merge(derived, annotations)
+        path = dc.write_merged(merged)
+        n_agents = sum(1 for v in merged.values() if v.get("type") == "agent")
+        print(f"Sammanslagen karta: {len(merged)} noder "
+              f"({len(derived)} härledda, varav {n_agents} agenter; {len(annotations)} annoterade) → {path}")
+        print("Konsumenterna läser fortfarande catalog.yaml — detta är förhandsvisningen inför flippen.")
+        return
     path = dc.write_derived(derived)
     print(f"Härledde {len(derived)} noder → {path}")
-    print("Kör 'cns derive --diff' för att se skillnaden mot catalog.yaml.")
+    print("Kör 'cns derive --diff' för diff, 'cns derive --apply' för sammanslagen karta.")
 
 
 # ---------------------------------------------------------------------------
@@ -780,6 +794,10 @@ def main() -> None:
     sp_derive.add_argument(
         "--diff", action="store_true",
         help="Visa diff mot catalog.yaml i stället för att skriva catalog.derived.yaml",
+    )
+    sp_derive.add_argument(
+        "--apply", action="store_true",
+        help="Bygg sammanslagen karta (härlett + annoterat) → catalog.merged.yaml (flippar inte)",
     )
     sp_derive.set_defaults(func=cmd_derive)
 
