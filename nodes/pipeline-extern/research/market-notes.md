@@ -1,1 +1,0 @@
-# pipeline-extern / market notes

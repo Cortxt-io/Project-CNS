@@ -1,1 +1,0 @@
-# cortxt-eventstream / sources

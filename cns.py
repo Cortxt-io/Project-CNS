@@ -20,6 +20,7 @@ from scripts.md_parser import (
     node_dir,
     node_path,
     read_node,
+    read_all_nodes,
     scaffold_node_dirs,
     sections_for_kind,
     write_node,
@@ -110,8 +111,8 @@ def _show_diff_and_confirm(
 
 def cmd_list(_args: argparse.Namespace) -> None:
     """Print a summary table of all nodes (node-aware)."""
-    files = list_node_files()
-    if not files:
+    all_nodes = read_all_nodes()  # ur catalog.yaml (#101)
+    if not all_nodes:
         console.print("[yellow]No nodes found.[/yellow]")
         return
 
@@ -119,13 +120,8 @@ def cmd_list(_args: argparse.Namespace) -> None:
     nodes_data = []
     has_any_slice = False
     has_any_cost = False
-    for path in files:
-        slug = path.parent.name
-        try:
-            meta, _, _ = read_node(slug)
-        except Exception as exc:
-            console.print(f"[red]Error reading {slug}: {exc}[/red]")
-            continue
+    for meta, _sections in all_nodes:
+        slug = meta.get("slug", "")
         if meta.get("current_slice"):
             has_any_slice = True
         if meta.get("cost_sek", 0) or meta.get("value_sek", 0) or meta.get("roi_percent", 0):

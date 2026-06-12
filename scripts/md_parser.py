@@ -184,19 +184,20 @@ def write_node(
     meta: dict[str, Any],
     sections: dict[str, str],
 ) -> Path:
-    """Write a node file with the given frontmatter and sections.
+    """PENSIONERAD (nodmodell-teardown #101).
 
-    Returns the path that was written to.
+    node.md-skrivvägen är retirerad: sanningskällan är numera catalog.yaml och
+    decisions/<slug>.md. Att skriva node.md igen skulle skapa filer som läsningen
+    (via catalog.py) ignorerar — split-brain. Reser därför ett tydligt fel istället
+    för att tyst återskapa en nod.
+
+    Skriv-/redigeringsytorna (app/server.py, analyst, quest, local_editor) ska
+    riktas om mot katalogen — uppföljnings-issue, ej del av rivningen.
     """
-    NODES_DIR.mkdir(parents=True, exist_ok=True)
-    path = node_path(slug)
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    kind = meta.get("kind")  # None for legacy product nodes
-    body = _render_body(sections, kind=kind)
-    post = frontmatter.Post(body, **meta)
-    path.write_text(frontmatter.dumps(post) + "\n", encoding="utf-8")
-    return path
+    raise NotImplementedError(
+        "write_node är pensionerad (teardown #101): redigera catalog.yaml / "
+        f"decisions/{slug}.md i stället. Skriv-ytorna rewiras i ett uppföljnings-issue."
+    )
 
 
 def new_node_template(slug: str, kind: str | None = None) -> tuple[dict[str, Any], dict[str, str]]:
