@@ -227,6 +227,7 @@ def build_options(
     allow_writes: bool = False,
     permission_check: Any = None,
     role: dict | None = None,
+    cwd: str | None = None,
 ) -> Any:
     """Bygg ClaudeAgentOptions för ett agent-pass (read-first som default).
 
@@ -234,6 +235,8 @@ def build_options(
     — så run_turn kan wrappa read-first-kollen med guardrails (#60).
     ``role`` (roll-medveten exekvering, #90): sätter rollens systemprompt + modell
     (den routade agentens modellnivå) — så passet körs SOM agenten, inte generiskt.
+    ``cwd`` (worktree-isolering, #59): kör passet i en annan arbetskatalog än repo-roten
+    — så ett SKRIVANDE dispatch-pass jobbar i en isolerad git-worktree i stället för main.
     """
     from claude_agent_sdk import ClaudeAgentOptions
 
@@ -250,7 +253,7 @@ def build_options(
         "mcp_servers": mcp_servers,
         "allowed_tools": allowed,
         "permission_mode": "default",
-        "cwd": str(REPO_ROOT),
+        "cwd": cwd or str(REPO_ROOT),
     }
     if role and role.get("model"):
         kwargs["model"] = role["model"]
@@ -267,6 +270,7 @@ async def run_turn(
     resume: str | None = None,
     allow_writes: bool = False,
     agent_slug: str | None = None,
+    cwd: str | None = None,
 ) -> AsyncIterator[tuple[str, Any]]:
     """Kör ett agent-pass och yielda render-händelser för AgentScreen.
 
@@ -334,7 +338,7 @@ async def run_turn(
 
     options = build_options(
         slug=slug, resume=resume, allow_writes=allow_writes,
-        permission_check=permission_check, role=role,
+        permission_check=permission_check, role=role, cwd=cwd,
     )
     # ClaudeSDKClient kör i streaming-läge → can_use_tool fungerar med strängprompt.
     client = ClaudeSDKClient(options=options)
