@@ -22,14 +22,13 @@ connector contract (claude.ai) and must stay stable when moved between modules.
   - quests:      cortxt_list_quests / get_quest / create_quest / close_quest  (milestones,
                  epics; create_quest takes an optional initiative top level)
   - ideas:       cortxt_capture_idea / list_ideas / promote_idea_to_issue
-  - projects:    cortxt_list_projects / get_project  (CNS nodes)
+  - projects:    cortxt_list_projects / get_project  (catalog entries — components/systems/frameworks)
   - sessions:    cortxt_start_session / mark_session_done / save_session / list_sessions
                  / fork_session / get_session_tree
   - prs:         cortxt_list_prs / get_pr / create_pr / set_pr_reviewers
   - gh_projects: cortxt_list_gh_projects / list_gh_project_items / move_gh_project_item
   - actions:     cortxt_list_workflow_runs / trigger_workflow / get_workflow_run
   - wiki:        cortxt_list_wiki_pages / read_wiki_page / write_wiki_page
-  - linear:      cortxt_list_linear_issues / create_linear_issue / link_linear_to_cns
   - leases:      cortxt_claim_issue / release_issue / heartbeat_issue / list_leases
                  (ephemeral Redis claims for multi-agent issue coordination, fail-open)
 """
@@ -161,7 +160,12 @@ elif mcp.auth is not None:
 
 # Attach the cortxt_* tools. Each domain module owns its tools via register(mcp).
 from app.tools import issues, quests, ideas, projects, sessions
-from app.tools import prs, gh_projects, actions, wiki, linear, leases
+from app.tools import prs, gh_projects, actions, wiki, leases
+# linear intentionally NOT imported — Linear integration was formally released
+# (work-model-taxonomy-spec, issue #33).  The three cortxt_linear_* tools
+# (list_linear_issues, create_linear_issue, link_linear_to_cns) are removed.
+# The source file app/tools/linear.py is kept as dead code for reference
+# but is no longer registered with the MCP server.
 
 issues.register(mcp)
 quests.register(mcp)
@@ -172,7 +176,6 @@ prs.register(mcp)
 gh_projects.register(mcp)
 actions.register(mcp)
 wiki.register(mcp)
-linear.register(mcp)
 leases.register(mcp)
 
 
