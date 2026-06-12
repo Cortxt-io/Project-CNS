@@ -1,17 +1,13 @@
-"""Validation for Perplexity API responses and node files."""
+"""Validering av catalog.yaml (nodmodell-teardown #100/#105).
+
+node.md-validering (validate_node) och Perplexity-svarsvalidering (validate_response)
+borttagna i #105 — node.md-modellen finns inte längre.
+"""
 
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
-
-from jsonschema import ValidationError, validate
-
-SCHEMA_PATH = Path(__file__).resolve().parent.parent / "schemas" / "node_schema.json"
-
-# REMOVED during node-model migration (all nodes now have kind set):
-# REQUIRED_FM_FIELDS for legacy product nodes is no longer needed.
 
 # Allowed enum values — single source of truth: schemas/enums.json
 # (also consumed by the JS package cortxt/packages/cns-schema via its generator).
@@ -49,17 +45,6 @@ VALID_FAMILIES = {
     "developer-tools", "digest-pipeline", "internal-monitoring",
     "cns-core", "ideas", "cns-platform", "monitoring-pipeline",
 }
-
-# Required sections (must exist as ## headings) — imported lazily to avoid
-# circular dependency with kind-aware section sets
-from scripts.md_parser import SECTIONS as REQUIRED_SECTIONS
-from scripts.md_parser import sections_for_kind as _sections_for_kind
-
-
-def load_schema() -> dict:
-    """Load the JSON schema from disk."""
-    return json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
-
 
 # ---------------------------------------------------------------------------
 # Catalog-level validation (nodmodell-teardown #100) — catalog.yaml är källan
@@ -141,175 +126,3 @@ def validate_catalog(systems: dict[str, dict] | None = None) -> tuple[list[str],
 
     return errors, warnings
 
-
-def validate_response(data: dict) -> tuple[bool, str | None]:
-    """Validate a parsed JSON response against the node schema.
-
-    Returns (True, None) on success or (False, error_message) on failure.
-    """
-    schema = load_schema()
-    try:
-        validate(instance=data, schema=schema)
-        return True, None
-    except ValidationError as exc:
-        return False, str(exc.message)
-
-
-# ---------------------------------------------------------------------------
-# Node-level validation (used by `cns validate`)
-# ---------------------------------------------------------------------------
-
-def validate_node(meta: dict, sections: dict) -> tuple[list[str], list[str]]:
-    """Validate a node's frontmatter and sections.
-
-    Returns (errors, warnings).  Empty errors list = valid; warnings are
-    informational and do not fail validation.
-    """
-    errors: list[str] = []
-    warnings: list[str] = []
-    kind = meta.get("kind")  # None for legacy product nodes
-
-    # 1. Required frontmatter fields
-    #    All nodes now have kind set — require title and slug.
-    #    (Legacy REQUIRED_FM_FIELDS check removed during node-model migration.)
-    for field in ("title", "slug"):
-        if field not in meta:
-            errors.append(f"Missing frontmatter field: {field}")
-
-    # 2. Enum checks
-    status = meta.get("status")
-    if status is not None and status not in VALID_STATUSES:
-        errors.append(
-            f"Invalid status '{status}'. Allowed: {', '.join(sorted(VALID_STATUSES))}"
-        )
-
-    mvp_stage = meta.get("mvp_stage")
-    if mvp_stage is not None and mvp_stage not in VALID_MVP_STAGES:
-        errors.append(
-            f"Invalid mvp_stage '{mvp_stage}'. Allowed: {', '.join(sorted(VALID_MVP_STAGES))}"
-        )
-
-    # (Legacy family/layer/pipeline enum checks removed during node-model migration.)
-
-    # 2e. Kind enum check (optional field)
-    if kind is not None and kind not in VALID_KINDS:
-        errors.append(
-            f"Invalid kind '{kind}'. Allowed: {', '.join(sorted(VALID_KINDS))}"
-        )
-
-    # 2f. Stage enum check (optional field)
-    stage = meta.get("stage")
-    if stage is not None and stage not in VALID_STAGES:
-        errors.append(
-            f"Invalid stage '{stage}'. Allowed: {', '.join(sorted(VALID_STAGES))}"
-        )
-
-    # 3. Required sections — kind-aware
-    required_headings = _sections_for_kind(kind)
-    for heading in required_headings:
-        if heading not in sections:
-            errors.append(f"Missing section: ## {heading}")
-
-    # (ROI consistency check removed — no legacy product nodes remain.)
-
-    # 5. Risk category validation + new risk schema
-    risk_text = sections.get("Risk Assessment", sections.get("Risker", sections.get("Systemrisker", "")))
-    for line in risk_text.splitlines():
-        line = line.strip()
-        if not line.startswith("- **"):
-            continue
-        # Extract category from "- **Category** (score ...)" or "- **Category** (P2 × I4 = 8/25)"
-        m = re.match(r"- \*\*(\w+)\*\*", line)
-        if m:
-            cat = m.group(1).lower()
-            if cat not in VALID_RISK_CATEGORIES:
-                errors.append(
-                    f"Invalid risk category '{cat}'. "
-                    f"Allowed: {', '.join(sorted(VALID_RISK_CATEGORIES))}"
-                )
-
-    # 5b. Validate risk objects in frontmatter (if present as structured data)
-    risks = meta.get("risks")
-    if isinstance(risks, list):
-        for i, risk in enumerate(risks):
-            if not isinstance(risk, dict):
-                continue
-            score = risk.get("score")
-            prob = risk.get("probability")
-            imp = risk.get("impact")
-            # If probability and impact exist, score should equal p × i
-            if prob is not None and imp is not None:
-                if isinstance(prob, (int, float)) and isinstance(imp, (int, float)):
-                    if prob < 1 or prob > 5:
-                        errors.append(f"Risk at index {i}: probability must be 1-5, got {prob}")
-                    if imp < 1 or imp > 5:
-                        errors.append(f"Risk at index {i}: impact must be 1-5, got {imp}")
-                    expected_score = prob * imp
-                    if score is not None and isinstance(score, (int, float)):
-                        if score != expected_score:
-                            errors.append(
-                                f"Risk at index {i}: score={score} but probability({prob}) × impact({imp}) = {expected_score}"
-                            )
-            # Score range: 1-25 (new) or 1-5 (legacy)
-            if score is not None and isinstance(score, (int, float)):
-                if score < 1 or score > 25:
-                    errors.append(f"Risk at index {i}: score must be 1-25, got {score}")
-
-    # 6. Node-model reference validation (warnings, not errors)
-    if kind is not None:
-        # part_of: if set, slug directory should exist
-        part_of = meta.get("part_of")
-        if part_of is not None and part_of != "":
-            from scripts.md_parser import node_dir as _node_dir
-            if not _node_dir(part_of).exists():
-                errors.append(
-                    f"Warning: part_of='{part_of}' but no node directory found for that slug"
-                )
-
-        # feeds and depends_on must be lists of strings if present
-        for rel_field in ("feeds", "depends_on"):
-            val = meta.get(rel_field)
-            if val is not None:
-                if not isinstance(val, list):
-                    errors.append(f"{rel_field} must be a list, got {type(val).__name__}")
-                elif not all(isinstance(item, str) for item in val):
-                    errors.append(f"{rel_field} must be a list of strings")
-
-        # Kind-structure hints (informational warnings)
-        if kind == "framework" and part_of not in (None, ""):
-            errors.append(f"Warning: framework nodes should not have part_of (got '{part_of}')")
-        if kind == "component" and part_of in (None, ""):
-            errors.append("Warning: component nodes should typically have part_of set")
-
-    # --- Soft validation for new additive fields (WARN, not ERROR) ---
-    # type / domain — warn if value is set but not in the enum
-    node_type = meta.get("type")
-    if node_type is not None and VALID_TYPES and node_type not in VALID_TYPES:
-        warnings.append(
-            f"Unknown type '{node_type}'. Known: {', '.join(sorted(VALID_TYPES))}"
-        )
-
-    domain = meta.get("domain")
-    if domain is not None and VALID_DOMAINS and domain not in VALID_DOMAINS:
-        warnings.append(
-            f"Unknown domain '{domain}'. Known: {', '.join(sorted(VALID_DOMAINS))}"
-        )
-
-    # owner_agent / contributing_agents — warn only when agents.json exists
-    if AGENTS_PATH.exists():
-        try:
-            raw = json.loads(AGENTS_PATH.read_text(encoding="utf-8"))
-            known_agents: set[str] = set(raw.keys()) if isinstance(raw, dict) else set(raw)
-        except (json.JSONDecodeError, TypeError):
-            known_agents = set()
-        if known_agents:
-            owner = meta.get("owner_agent")
-            if owner is not None and owner not in known_agents:
-                warnings.append(f"Unknown owner_agent slug '{owner}'")
-            contributing = meta.get("contributing_agents")
-            if isinstance(contributing, list):
-                for agent_slug in contributing:
-                    if isinstance(agent_slug, str) and agent_slug not in known_agents:
-                        warnings.append(f"Unknown contributing_agents slug '{agent_slug}'")
-
-    return errors, warnings
