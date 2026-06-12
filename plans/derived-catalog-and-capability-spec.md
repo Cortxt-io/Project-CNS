@@ -195,6 +195,13 @@ idag ([[koppla-ej-mot-foranderligt]]).
 
 ## 9. Ägarskap — vilka agenter som är inkopplade
 
+> **Self-konsistens-not:** tabellen nedan är en **engångs-annotering**, inte en mall för alla specar.
+> Ägarskap ska **härledas** via samma `route(node.type → disciplin → squad)` som dispatch redan kör,
+> så snart Del B (kapabilitet som routningssignal) finns — en spec namnger då sina *mål-noder +
+> kapabilitetskrav* och ägarna räknas fram, alltid sant. Hand-annotera bara roller routningen inte
+> kan härleda (t.ex. org-arkitekt för ett *axel*-beslut som inte är en nod-ändring). Annars blir den
+> här sektionen själv det handunderhållna antimönster specen dömer ut.
+
 Specen drivs som en **`spec`-session** (definitionsläget mellan triage och bygg) av spec-paret
 **produktchef** (vad/varför + acceptanskriterier) + **losningsarkitekt** (hur/risker + teknisk form).
 **org-arkitekt** äger axel-beslutet (3 vs 4 axlar, agent som explicit axel) eftersom det rör org-/
