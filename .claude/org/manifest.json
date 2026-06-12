@@ -77,7 +77,7 @@
         ["testautomatiserare-3", "Testautomatiserare", "haiku", false, false]
       ],
       "Integrations": [
-        ["integrationsutvecklare", "Integrationsutvecklare", "sonnet", false, false],
+        ["integrationsutvecklare", "Integrationsutvecklare", "sonnet", false, true],
         ["integrationsutvecklare-2", "Integrationsutvecklare", "haiku", false, false]
       ]
     },

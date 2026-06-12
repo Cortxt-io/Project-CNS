@@ -222,6 +222,17 @@
       "contributes_to": []
     },
     {
+      "slug": "devops-ingenjor",
+      "title": "DevOps-ingenjör",
+      "department": "Engineering",
+      "sub_department": "DevOps",
+      "squad": "",
+      "status": "active",
+      "model": "claude-haiku-4-5",
+      "owns": [],
+      "contributes_to": []
+    },
+    {
       "slug": "frontend-lead",
       "title": "Frontend-lead",
       "department": "Engineering",
@@ -315,7 +326,7 @@
       "department": "Engineering",
       "sub_department": "Integrations",
       "squad": "",
-      "status": "shell",
+      "status": "active",
       "model": "claude-sonnet-4-6",
       "owns": [],
       "contributes_to": []
@@ -607,17 +618,6 @@
       "contributes_to": []
     },
     {
-      "slug": "devops-ingenjor",
-      "title": "DevOps-ingenjör",
-      "department": "Platform",
-      "sub_department": "DevOps",
-      "squad": "",
-      "status": "active",
-      "model": "claude-haiku-4-5",
-      "owns": [],
-      "contributes_to": []
-    },
-    {
       "slug": "devops-ingenjor-2",
       "title": "DevOps-ingenjör",
       "department": "Platform",
@@ -723,7 +723,7 @@
       "sub_department": "PM",
       "squad": "",
       "status": "active",
-      "model": "claude-sonnet-4-6",
+      "model": "claude-haiku-4-5",
       "owns": [],
       "contributes_to": []
     },
