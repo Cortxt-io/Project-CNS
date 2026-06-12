@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CNS catalog.yaml — systemkatalog + arkitekturgraf + routing",
+  "type": "object",
+  "required": ["systems"],
+  "properties": {
+    "systems": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title":               { "type": "string" },
+          "summary":             { "type": "string" },
+          "part_of":             { "type": "string" },
+          "type":                { "type": "string" },
+          "domain":              { "type": "string" },
+          "owner_agent":         { "type": "string" },
+          "contributing_agents": { "type": "array", "items": { "type": "string" } },
+          "feeds":               { "type": "array", "items": { "type": "string" } },
+          "depends_on":          { "type": "array", "items": { "type": "string" } },
+          "url_repo":            { "type": "string" },
+          "integrations": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "deploy":  { "type": "array", "items": { "type": "string" } },
+              "sources": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  }
+}
