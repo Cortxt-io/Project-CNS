@@ -17,11 +17,13 @@ if str(ROOT) not in sys.path:
 from scripts import dispatch  # noqa: E402
 from scripts.dispatch import (  # noqa: E402
     ACTION_CLAIM,
+    ACTION_MERGE,
     ACTION_OPEN_PR,
     ACTION_RUN,
     CrawlResult,
     _reduce_events,
     assess_suitability,
+    classify_risk,
     crawl_once,
     select_next_issue,
 )
@@ -359,6 +361,85 @@ def test_crawl_pass_crash_releases_lease():
         )
     )
     assert res.status == "error" and released == [10]
+
+
+# --- autonomi-policy (Fas 5): classify_risk + self-merge/eskalering ---------
+
+
+def test_classify_risk_low_for_docs_and_tests():
+    v = classify_risk(_issue(10), ["docs/x.md", "tests/test_y.py", "plans/z.md"])
+    assert v.level == "low" and not v.reasons
+
+
+def test_classify_risk_escalates_feature_code():
+    v = classify_risk(_issue(10), ["scripts/dispatch.py"])
+    assert v.level == "escalate" and any("feature-kod" in r for r in v.reasons)
+
+
+def test_classify_risk_escalates_protected_paths():
+    v = classify_risk(_issue(10), ["app/server.py"])
+    assert v.level == "escalate" and any("skyddade" in r for r in v.reasons)
+
+
+def test_classify_risk_escalates_on_eval_fail():
+    v = classify_risk(_issue(10), ["docs/x.md"], eval_verdict={"status": "ok", "all_pass": False})
+    assert v.level == "escalate" and any("eval" in r for r in v.reasons)
+
+
+def test_classify_risk_escalates_empty():
+    v = classify_risk(_issue(10), [])
+    assert v.level == "escalate" and any("inga ändringar" in r for r in v.reasons)
+
+
+def _autonomy_kwargs(sessions, changed, **over):
+    kw = _base_kwargs(
+        sessions,
+        worktree_fn=lambda n: {"path": f"/wt/{n}", "branch": f"b-{n}"},
+        commit_fn=lambda p, m: True,
+        cleanup_fn=lambda p: None,
+        changed_paths_fn=lambda p: changed,
+        open_pr_fn=lambda issue, outcome: {"number": 200, "draft": True},
+        autonomy=True,
+    )
+    kw.update(over)
+    return kw
+
+
+def test_autonomy_self_merges_low_risk():
+    merged = []
+    res = crawl_once(
+        **_autonomy_kwargs(
+            FakeSessions(), ["docs/readme.md"],
+            merge_fn=lambda issue, pr: merged.append(pr["number"]) or {"merged": True},
+        )
+    )
+    assert res.status == "merged" and merged == [200]
+
+
+def test_autonomy_escalates_feature_code_without_merging():
+    merged = []
+    res = crawl_once(
+        **_autonomy_kwargs(
+            FakeSessions(), ["scripts/dispatch.py"],
+            merge_fn=lambda issue, pr: merged.append(1) or {"merged": True},
+        )
+    )
+    assert res.status == "escalated" and not merged  # feature-kod self-mergas ALDRIG
+
+
+def test_autonomy_off_by_default_leaves_draft():
+    merged = []
+    res = crawl_once(
+        **_base_kwargs(
+            FakeSessions(),
+            worktree_fn=lambda n: {"path": f"/wt/{n}", "branch": f"b-{n}"},
+            commit_fn=lambda p, m: True,
+            cleanup_fn=lambda p: None,
+            open_pr_fn=lambda issue, outcome: {"number": 201, "draft": True},
+            merge_fn=lambda issue, pr: merged.append(1),  # finns men autonomy=False
+        )
+    )
+    assert res.status == "ran" and "aldrig auto-merge" in res.detail and not merged
 
 
 if __name__ == "__main__":
