@@ -11,9 +11,9 @@ from rich.table import Table
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-NODES_DIR = PROJECT_ROOT / "nodes"
+CATALOG_PATH = PROJECT_ROOT / "catalog.yaml"
 EXPORTS_DIR = PROJECT_ROOT / "exports"
-SCHEMA_PATH = PROJECT_ROOT / "schemas" / "node_schema.json"
+SCHEMA_PATH = PROJECT_ROOT / "schemas" / "catalog_schema.json"
 ENV_PATH = PROJECT_ROOT / ".env"
 
 
@@ -43,13 +43,19 @@ def run_doctor(console: Console) -> None:
         "Configured" if key_valid else "Optional — needed only for api mode",
     )
 
-    # 3. nodes/ directory
-    nodes_exist = NODES_DIR.exists()
-    node_count = len(list(NODES_DIR.glob("*/node.md"))) if nodes_exist else 0
+    # 3. catalog.yaml
+    catalog_exists = CATALOG_PATH.exists()
+    sys_count = 0
+    if catalog_exists:
+        try:
+            from scripts.catalog import load_catalog
+            sys_count = len(load_catalog())
+        except Exception:
+            sys_count = 0
     table.add_row(
-        "nodes/ directory",
-        "[green]OK[/green]" if nodes_exist else "[red]MISSING[/red]",
-        f"{node_count} node(s) found" if nodes_exist else "Run cns new <slug> to create one",
+        "catalog.yaml",
+        "[green]OK[/green]" if catalog_exists else "[red]MISSING[/red]",
+        f"{sys_count} system" if catalog_exists else "Run cns new <slug> to create one",
     )
 
     # 4. exports/ directory
@@ -63,7 +69,7 @@ def run_doctor(console: Console) -> None:
     # 5. JSON schema
     schema_exists = SCHEMA_PATH.exists()
     table.add_row(
-        "node_schema.json",
+        "catalog_schema.json",
         "[green]OK[/green]" if schema_exists else "[red]MISSING[/red]",
         str(SCHEMA_PATH) if schema_exists else "Schema file is missing — validation will fail",
     )

@@ -14,17 +14,8 @@ from rich.panel import Panel
 from rich.table import Table
 
 from scripts.md_parser import (
-    apply_changes,
-    list_node_files,
-    new_node_template,
-    node_dir,
-    node_path,
     read_node,
     read_all_nodes,
-    scaffold_node_dirs,
-    sections_for_kind,
-    write_node,
-    SECTIONS,
 )
 from scripts.xlsx_exporter import export_xlsx
 from scripts.json_exporter import export_json
@@ -37,72 +28,6 @@ console = Console(
     file=_io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace"),
     highlight=False,
 )
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _show_diff_and_confirm(
-    meta: dict,
-    new_meta: dict,
-    sections: dict,
-    new_sections: dict,
-    slug: str,
-) -> bool:
-    """Show a colored diff preview and ask for confirmation.
-
-    Returns True if the user confirmed and the file was written.
-    """
-    console.print()
-    console.print("[bold]Proposed changes:[/bold]")
-
-    has_changes = False
-
-    # Show changed frontmatter fields
-    for key in sorted(set(list(meta.keys()) + list(new_meta.keys()))):
-        old_val = meta.get(key)
-        new_val = new_meta.get(key)
-        if old_val != new_val:
-            has_changes = True
-            console.print(f"  [red]- {key}: {old_val}[/red]")
-            console.print(f"  [green]+ {key}: {new_val}[/green]")
-
-    # Show changed sections — kind-aware
-    kind = new_meta.get("kind")
-    section_headings = sections_for_kind(kind)
-    # Also check headings that exist in sections but not in canonical list
-    all_headings = list(section_headings) + [
-        h for h in set(list(sections.keys()) + list(new_sections.keys()))
-        if h not in section_headings
-    ]
-    for heading in all_headings:
-        old_text = sections.get(heading, "").strip()
-        new_text = new_sections.get(heading, "").strip()
-        if old_text != new_text:
-            has_changes = True
-            console.print(f"\n  [bold]## {heading}[/bold]")
-            if old_text:
-                for line in old_text.splitlines():
-                    console.print(f"  [red]- {line}[/red]")
-            if new_text:
-                for line in new_text.splitlines():
-                    console.print(f"  [green]+ {line}[/green]")
-
-    if not has_changes:
-        console.print("  [dim](no changes)[/dim]")
-        return False
-
-    console.print()
-
-    confirm = input("Apply these changes? [y/N] ").strip().lower()
-    if confirm != "y":
-        console.print("[yellow]Changes discarded.[/yellow]")
-        return False
-
-    path = write_node(slug, new_meta, new_sections)
-    console.print(f"[green]Updated {path}[/green]")
-    return True
 
 
 # ---------------------------------------------------------------------------
@@ -214,110 +139,47 @@ def cmd_show(args: argparse.Namespace) -> None:
 
 
 def cmd_update(args: argparse.Namespace) -> None:
-    """Update a node (local mode or api mode)."""
+    """Interaktiv redigering av ett systems katalogfält (nodmodell-teardown #105).
+
+    Redigerar catalog.yaml-fälten direkt. `kind` härleds (redigeras ej). Varaktig
+    beslutsprosa hör till decisions/<slug>.md, inte hit.
+    """
+    from rich.prompt import Prompt
+    from scripts.catalog import load_catalog, upsert_system
+
     slug = args.slug
-    instruction = getattr(args, "instruction", None)
-    mode = getattr(args, "mode", "local")
-
-    # Smart default: if --instruction is provided without --mode, use api mode
-    if instruction and mode == "local":
-        mode = "api"
-        console.print("[dim]Detected --instruction flag, using api mode.[/dim]")
-
-    # Read current node
-    try:
-        meta, sections, raw = read_node(slug)
-    except FileNotFoundError as exc:
-        console.print(f"[red]{exc}[/red]")
+    systems = load_catalog()
+    if slug not in systems:
+        console.print(f"[red]System '{slug}' saknas i catalog.yaml[/red]")
         sys.exit(1)
 
-    if mode == "local":
-        _update_local(slug, meta, sections)
-    elif mode == "api":
-        _update_api(slug, meta, sections, raw, instruction)
+    entry = systems[slug]
+    console.print(f"\n[bold]Redigerar[/bold] [cyan]{slug}[/cyan]  [dim](Enter behåller nuvarande)[/dim]\n")
 
+    fields: dict = {}
+    # Skalärfält — bara icke-tomma ändringar (rensa ett fält = redigera catalog.yaml för hand)
+    for label, key in (("Title", "title"), ("Summary", "summary"),
+                       ("Part of (tomt = toppnivå)", "part_of"),
+                       ("Type", "type"), ("Domain", "domain"), ("Owner agent", "owner_agent")):
+        current = str(entry.get(key, "") or "")
+        val = Prompt.ask(f"  {label}", default=current).strip()
+        if val and val != current:
+            fields[key] = val
 
-def _update_local(slug: str, meta: dict, sections: dict) -> None:
-    """Interactive local edit mode."""
-    from scripts.local_editor import run_local_edit
+    # Listfält (kommaseparerat)
+    for label, key in (("Feeds (komma)", "feeds"), ("Depends on (komma)", "depends_on")):
+        current_list = entry.get(key) or []
+        val = Prompt.ask(f"  {label}", default=", ".join(current_list)).strip()
+        new_list = [s.strip() for s in val.split(",") if s.strip()]
+        if new_list != current_list:
+            fields[key] = new_list
 
-    changes = run_local_edit(meta, sections, console)
-    if changes is None:
+    if not fields:
+        console.print("  [dim](inga ändringar)[/dim]")
         return
 
-    new_meta, new_sections = apply_changes(
-        meta.copy(), {k: v for k, v in sections.items()}, changes
-    )
-    new_meta["updated"] = date.today().isoformat()
-
-    _show_diff_and_confirm(meta, new_meta, sections, new_sections, slug)
-
-
-def _update_api(slug: str, meta: dict, sections: dict, raw: str, instruction: str | None) -> None:
-    """API mode: call Perplexity, validate, apply."""
-    if not instruction:
-        console.print("[red]API mode requires --instruction flag.[/red]")
-        console.print("Usage: cns update <slug> --mode api --instruction \"...\"")
-        sys.exit(1)
-
-    # Check API key before importing the client
-    from dotenv import load_dotenv
-    load_dotenv()
-    api_key = os.getenv("PERPLEXITY_API_KEY", "")
-    if not api_key or api_key == "your_key_here":
-        console.print(
-            "[red]Perplexity API key not configured.[/red]\n"
-            "Use local mode or connector mode, or add PERPLEXITY_API_KEY to .env."
-        )
-        sys.exit(1)
-
-    from scripts.perplexity_client import send_update_request
-    from scripts.validator import validate_response
-
-    console.print(f"[bold]Sending update request for [cyan]{slug}[/cyan]...[/bold]")
-
-    # Call Perplexity
-    try:
-        raw_json = send_update_request(raw, instruction)
-    except RuntimeError as exc:
-        console.print(f"[red]API Error: {exc}[/red]")
-        sys.exit(1)
-
-    # Parse JSON
-    try:
-        response_data = json.loads(raw_json)
-    except json.JSONDecodeError as exc:
-        console.print(f"[red]Failed to parse API response as JSON: {exc}[/red]")
-        console.print(Panel(raw_json, title="Raw Response", border_style="red"))
-        sys.exit(1)
-
-    # Validate against schema
-    valid, error_msg = validate_response(response_data)
-    if not valid:
-        console.print(f"[red]Validation failed: {error_msg}[/red]")
-        console.print(Panel(json.dumps(response_data, indent=2), title="Invalid Response", border_style="red"))
-        sys.exit(1)
-
-    # Check for clarification
-    if response_data.get("clarification_needed"):
-        question = response_data.get("clarification_question", "No question provided.")
-        console.print(Panel(
-            f"[yellow]{question}[/yellow]",
-            title="Clarification Needed",
-            border_style="yellow",
-        ))
-        sys.exit(0)
-
-    # Apply changes
-    changes = response_data.get("changes", {})
-    changes["updated_at"] = date.today().isoformat()
-
-    new_meta, new_sections = apply_changes(
-        meta.copy(), {k: v for k, v in sections.items()}, changes
-    )
-    new_meta["updated"] = date.today().isoformat()
-
-    _show_diff_and_confirm(meta, new_meta, sections, new_sections, slug)
+    upsert_system(slug, fields)
+    console.print(f"[green]Uppdaterade '{slug}' i catalog.yaml.[/green]")
 
 
 def cmd_prepare(args: argparse.Namespace) -> None:
@@ -388,33 +250,31 @@ def cmd_export_json(args: argparse.Namespace) -> None:
 
 
 def cmd_new(args: argparse.Namespace) -> None:
-    """Create a new node from template with full folder scaffold."""
-    slug = args.slug
-    kind = getattr(args, "kind", None)
+    """Create a new system entry in catalog.yaml (nodmodell-teardown #105)."""
+    from rich.prompt import Prompt
+    from scripts.catalog import load_catalog, upsert_system
 
-    # Check if already exists
-    pdir = node_dir(slug)
-    if pdir.exists():
-        console.print(f"[red]Node '{slug}' already exists at {pdir}[/red]")
+    slug = args.slug
+    systems = load_catalog()
+    if slug in systems:
+        console.print(f"[red]System '{slug}' finns redan i catalog.yaml[/red]")
         sys.exit(1)
 
-    # Scaffold directories first, then write node.md
-    scaffold_node_dirs(slug)
-    meta, sections = new_node_template(slug, kind=kind)
+    fields: dict = {"title": slug.replace("-", " ").title(), "feeds": [], "depends_on": []}
 
-    # Interactive interview (unless --skip-prompts)
     if not getattr(args, "skip_prompts", False):
-        from scripts.local_editor import run_new_node_interview
+        console.print(f"\n[bold]Nytt system:[/bold] [cyan]{slug}[/cyan]  [dim](Enter hoppar över)[/dim]\n")
+        fields["title"] = (Prompt.ask("  Title", default=fields["title"]).strip() or fields["title"])
+        for label, key in (("Summary", "summary"), ("Part of (slug, tomt = toppnivå)", "part_of"),
+                           ("Type", "type"), ("Domain", "domain")):
+            val = Prompt.ask(f"  {label}", default="").strip()
+            if val:
+                fields[key] = val
 
-        result = run_new_node_interview(meta, sections, console)
-        if result is not None:
-            meta, sections = result
-
-    written = write_node(slug, meta, sections)
-    console.print(f"[green]Created new node: {written}[/green]")
-    if kind:
-        console.print(f"[dim]Kind: {kind} | Stage: {meta.get('stage', 'idea')}[/dim]")
-    console.print(f"[dim]Node folder: {pdir}[/dim]")
+    upsert_system(slug, fields)
+    console.print(f"[green]Skapade system '{slug}' i catalog.yaml.[/green]")
+    console.print("[dim]kind härleds ur part_of. Redigera vidare med 'cns update' eller i catalog.yaml. "
+                  "Varaktig beslutsprosa → decisions/<slug>.md.[/dim]")
 
 
 # ---------------------------------------------------------------------------
@@ -855,20 +715,9 @@ def main() -> None:
     # cns update <slug> [--mode local|api] [--instruction "..."]
     sp_update = subparsers.add_parser(
         "update",
-        help="Update a node (default: interactive local mode)",
+        help="Interaktiv redigering av ett systems katalogfält",
     )
-    sp_update.add_argument("slug", help="Node slug")
-    sp_update.add_argument(
-        "--mode", "-m",
-        choices=["local", "api"],
-        default="local",
-        help="Update mode: local (interactive, default) or api (requires Perplexity key + --instruction)",
-    )
-    sp_update.add_argument(
-        "--instruction", "-i",
-        default=None,
-        help="Natural language instruction (required for api mode)",
-    )
+    sp_update.add_argument("slug", help="System-slug")
     sp_update.set_defaults(func=cmd_update)
 
     # cns prepare <slug>
@@ -897,17 +746,11 @@ def main() -> None:
     sp_json.set_defaults(func=cmd_export_json)
 
     # cns new <slug>
-    sp_new = subparsers.add_parser("new", help="Create a new node")
-    sp_new.add_argument("slug", help="Node slug (e.g. my-new-node)")
-    sp_new.add_argument(
-        "--kind", "-k",
-        choices=["component", "system", "framework"],
-        default=None,
-        help="Node kind (default: legacy product template)",
-    )
+    sp_new = subparsers.add_parser("new", help="Create a new system in catalog.yaml")
+    sp_new.add_argument("slug", help="System-slug (e.g. my-new-system)")
     sp_new.add_argument(
         "--skip-prompts", action="store_true", default=False,
-        help="Skip interactive prompts and create a blank node",
+        help="Hoppa interaktiva prompts, skapa en minimal post",
     )
     sp_new.set_defaults(func=cmd_new)
 
