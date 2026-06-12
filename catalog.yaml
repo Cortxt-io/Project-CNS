@@ -15,6 +15,18 @@ systems:
     depends_on:
     - cns-mcp
     - local-ai
+  agentur:
+    title: Agentur
+    summary: Orkestreringslagret — dispatch-loop, agent-host, routing och agent-roster
+      som låter agenturen exekvera backloggen autonomt (issue→PR) med guardrails.
+    part_of: infrastructure
+    type: service
+    domain: cortxt
+    feeds: []
+    depends_on:
+    - cns-core
+    owner_agent: backend-utvecklare
+    url_repo: https://github.com/rian010194/Project-CNS
   cns-analyst:
     title: CNS Analyst
     summary: AI-driven analysmotor som föreslår uppdateringar av stage, risker och
