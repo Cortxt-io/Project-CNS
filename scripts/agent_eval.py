@@ -55,12 +55,19 @@ def load_eval_criteria(slug: str) -> list[str]:
     return _parse_criteria(p.read_text(encoding="utf-8")) if p else []
 
 
-def build_eval_prompt(criteria: list[str], session_output: str) -> str:
-    """Domar-prompt: bedöm output mot varje kriterium, svara strukturerat (JSON)."""
+def build_eval_prompt(criteria: list[str], session_output: str, *, context: str = "") -> str:
+    """Domar-prompt: bedöm output mot varje kriterium, svara strukturerat (JSON).
+
+    ``context`` (valfritt, #124): extra ramning om HUR passet kördes — t.ex. att
+    dispatch-loopen (inte agenten) skapar PR:n efteråt, så processkriterier som
+    agenten inte äger inte ska räknas som fail. Tomt = ingen extra kontext.
+    """
     crit = "\n".join(f"{i + 1}. {c}" for i, c in enumerate(criteria))
+    ctx = f"## Kontext\n{context}\n\n" if context else ""
     return (
         "Du är en STRÄNG evaluator. Bedöm om arbetspassets OUTPUT uppfyller varje "
         "eval-kriterium. Var skeptisk; default till \"fail\" vid tvivel.\n\n"
+        f"{ctx}"
         f"## Eval-kriterier\n{crit}\n\n"
         f"## Output att bedöma\n{session_output}\n\n"
         'Svara ENBART med JSON: {"results":[{"criterion":<n>,"verdict":"pass|fail",'
@@ -112,6 +119,7 @@ def evaluate(
     session_output: str,
     *,
     judge_fn: Callable[[str], str] | None = None,
+    context: str = "",
 ) -> dict:
     """Kör eval-grinden: ladda kriterier → domar-prompt → bedöm → tolka.
 
@@ -131,7 +139,7 @@ def evaluate(
         else:
             return {"status": "skipped", "reason": "ingen domare (API-nyckel/SDK saknas)", "agent": slug}
     try:
-        verdict = parse_verdict(judge_fn(build_eval_prompt(criteria, session_output)))
+        verdict = parse_verdict(judge_fn(build_eval_prompt(criteria, session_output, context=context)))
     except Exception as exc:
         return {"status": "error", "reason": str(exc), "agent": slug}
     return {**verdict, "agent": slug, "criteria": criteria}

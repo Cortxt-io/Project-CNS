@@ -40,6 +40,26 @@ def test_parse_criteria() -> None:
 def test_build_eval_prompt() -> None:
     p = ae.build_eval_prompt(["A", "B"], "min output")
     assert "1. A" in p and "2. B" in p and "min output" in p and "JSON" in p
+    assert "## Kontext" not in p  # ingen kontext = ingen kontextsektion
+
+
+def test_build_eval_prompt_with_context() -> None:
+    """#124: dispatch-kontext ramar domaren så processkriterier inte felaktigt failar."""
+    p = ae.build_eval_prompt(["A"], "out", context="dispatchern skapar PR efteråt")
+    assert "## Kontext" in p and "dispatchern skapar PR efteråt" in p
+
+
+def test_evaluate_threads_context() -> None:
+    """evaluate(context=...) ska skicka kontexten till domaren."""
+    seen = {}
+    fake = lambda prompt: seen.update(p=prompt) or '{"results":[{"verdict":"pass"}],"total":1}'
+    orig = ae.load_eval_criteria
+    ae.load_eval_criteria = lambda slug: ["A"]
+    try:
+        ae.evaluate("x", "out", judge_fn=fake, context="LOOPEN äger PR-skapandet")
+        assert "LOOPEN äger PR-skapandet" in seen["p"]
+    finally:
+        ae.load_eval_criteria = orig
 
 
 def test_parse_verdict() -> None:
@@ -97,6 +117,8 @@ def test_evaluate_fallback_to_sdk() -> None:
 if __name__ == "__main__":
     test_parse_criteria()
     test_build_eval_prompt()
+    test_build_eval_prompt_with_context()
+    test_evaluate_threads_context()
     test_parse_verdict()
     test_parse_verdict_invalid_escape()
     test_evaluate_injected_judge()
