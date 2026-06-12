@@ -1,1 +1,0 @@
-# pipeline-intern / market notes

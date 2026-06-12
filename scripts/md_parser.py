@@ -155,30 +155,28 @@ def list_node_files() -> list[Path]:
 
 
 def read_node(slug: str) -> tuple[dict[str, Any], dict[str, str], str]:
-    """Read a node file and return (frontmatter_dict, sections_dict, raw_content).
+    """Read a single node and return (meta, sections, raw).
 
-    Raises FileNotFoundError if the node does not exist.
+    Tunn wrapper ovanpå catalog.yaml (nodmodell-teardown #98). Sanningskällan är
+    numera katalogen, inte nodes/<slug>/node.md. `meta` har samma nycklar som förr
+    (kind härleds); sections är tomt (prosa bor i decisions/<slug>.md); raw = decisions-text.
+
+    Raises FileNotFoundError om systemet inte finns i katalogen (signaturkompatibelt
+    med tidigare beteende).
     """
-    path = node_path(slug)
-    if not path.exists():
-        raise FileNotFoundError(f"Node '{slug}' not found at {path}")
+    from scripts import catalog  # lazy: undvik import-cykler vid modulladdning
 
-    post = frontmatter.load(str(path))
-    meta: dict[str, Any] = dict(post.metadata)
-    sections = _parse_sections(post.content)
-    raw = path.read_text(encoding="utf-8")
-    return meta, sections, raw
+    try:
+        return catalog.read_node_as_meta(slug)
+    except KeyError as exc:
+        raise FileNotFoundError(str(exc)) from exc
 
 
 def read_all_nodes() -> list[tuple[dict[str, Any], dict[str, str]]]:
-    """Read all node files. Returns list of (frontmatter, sections) tuples."""
-    results = []
-    for path in list_node_files():
-        post = frontmatter.load(str(path))
-        meta = dict(post.metadata)
-        sections = _parse_sections(post.content)
-        results.append((meta, sections))
-    return results
+    """Read all nodes as (meta, sections) tuples — ur catalog.yaml (#98)."""
+    from scripts import catalog  # lazy: undvik import-cykler
+
+    return catalog.load_nodes_as_meta()
 
 
 def write_node(
@@ -186,19 +184,20 @@ def write_node(
     meta: dict[str, Any],
     sections: dict[str, str],
 ) -> Path:
-    """Write a node file with the given frontmatter and sections.
+    """PENSIONERAD (nodmodell-teardown #101).
 
-    Returns the path that was written to.
+    node.md-skrivvägen är retirerad: sanningskällan är numera catalog.yaml och
+    decisions/<slug>.md. Att skriva node.md igen skulle skapa filer som läsningen
+    (via catalog.py) ignorerar — split-brain. Reser därför ett tydligt fel istället
+    för att tyst återskapa en nod.
+
+    Skriv-/redigeringsytorna (app/server.py, analyst, quest, local_editor) ska
+    riktas om mot katalogen — uppföljnings-issue, ej del av rivningen.
     """
-    NODES_DIR.mkdir(parents=True, exist_ok=True)
-    path = node_path(slug)
-    path.parent.mkdir(parents=True, exist_ok=True)
-
-    kind = meta.get("kind")  # None for legacy product nodes
-    body = _render_body(sections, kind=kind)
-    post = frontmatter.Post(body, **meta)
-    path.write_text(frontmatter.dumps(post) + "\n", encoding="utf-8")
-    return path
+    raise NotImplementedError(
+        "write_node är pensionerad (teardown #101): redigera catalog.yaml / "
+        f"decisions/{slug}.md i stället. Skriv-ytorna rewiras i ett uppföljnings-issue."
+    )
 
 
 def new_node_template(slug: str, kind: str | None = None) -> tuple[dict[str, Any], dict[str, str]]:

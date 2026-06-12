@@ -20,6 +20,7 @@ from scripts.md_parser import (
     node_dir,
     node_path,
     read_node,
+    read_all_nodes,
     scaffold_node_dirs,
     sections_for_kind,
     write_node,
@@ -110,8 +111,8 @@ def _show_diff_and_confirm(
 
 def cmd_list(_args: argparse.Namespace) -> None:
     """Print a summary table of all nodes (node-aware)."""
-    files = list_node_files()
-    if not files:
+    all_nodes = read_all_nodes()  # ur catalog.yaml (#101)
+    if not all_nodes:
         console.print("[yellow]No nodes found.[/yellow]")
         return
 
@@ -119,13 +120,8 @@ def cmd_list(_args: argparse.Namespace) -> None:
     nodes_data = []
     has_any_slice = False
     has_any_cost = False
-    for path in files:
-        slug = path.parent.name
-        try:
-            meta, _, _ = read_node(slug)
-        except Exception as exc:
-            console.print(f"[red]Error reading {slug}: {exc}[/red]")
-            continue
+    for meta, _sections in all_nodes:
+        slug = meta.get("slug", "")
         if meta.get("current_slice"):
             has_any_slice = True
         if meta.get("cost_sek", 0) or meta.get("value_sek", 0) or meta.get("roi_percent", 0):
@@ -337,23 +333,34 @@ def cmd_doctor(_args: argparse.Namespace) -> None:
 
 
 def cmd_validate(args: argparse.Namespace) -> None:
-    """Validate a node's frontmatter, sections, ROI, and risk categories."""
-    from scripts.validator import validate_node
+    """Validate the catalog (nodmodell-teardown #100).
 
-    slug = args.slug
-    try:
-        meta, sections, _ = read_node(slug)
-    except FileNotFoundError as exc:
-        console.print(f"[red]{exc}[/red]")
+    `cns validate`          → validera hela catalog.yaml (referensintegritet + cykler + enums).
+    `cns validate <slug>`   → validera bara ett system (delmängd av katalog-checkarna).
+    """
+    from scripts.catalog import load_catalog
+    from scripts.validator import validate_catalog
+
+    systems = load_catalog()
+    slug = getattr(args, "slug", None)
+
+    if slug and slug not in systems:
+        console.print(f"[red]System '{slug}' saknas i catalog.yaml[/red]")
         sys.exit(1)
 
-    errors, warnings = validate_node(meta, sections)
+    errors, warnings = validate_catalog(systems)
+    if slug:
+        # Filtrera till rader som rör detta system.
+        errors = [e for e in errors if e.startswith(f"{slug}:")]
+        warnings = [w for w in warnings if w.startswith(f"{slug}:")]
+
+    target = f"System '{slug}'" if slug else f"Katalogen ({len(systems)} system)"
     for warn in warnings:
         console.print(f"  [yellow]WARN: {warn}[/yellow]")
     if not errors:
-        console.print(f"[green]Node '{slug}' is valid.[/green]")
+        console.print(f"[green]{target} är giltig.[/green]")
     else:
-        console.print(f"[red]Node '{slug}' has {len(errors)} issue(s):[/red]")
+        console.print(f"[red]{target} har {len(errors)} fel:[/red]")
         for err in errors:
             console.print(f"  [red]- {err}[/red]")
         sys.exit(1)
@@ -904,9 +911,9 @@ def main() -> None:
     )
     sp_new.set_defaults(func=cmd_new)
 
-    # cns validate <slug>
-    sp_validate = subparsers.add_parser("validate", help="Validate a node file")
-    sp_validate.add_argument("slug", help="Node slug")
+    # cns validate [slug]  — utan slug: hela catalog.yaml
+    sp_validate = subparsers.add_parser("validate", help="Validate the catalog (or one system)")
+    sp_validate.add_argument("slug", nargs="?", default=None, help="System-slug (utelämna för hela katalogen)")
     sp_validate.set_defaults(func=cmd_validate)
 
     # cns quest {init|show|sync} <slug>

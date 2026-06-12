@@ -3,6 +3,13 @@
 > Spec-pass 2026-06-11 (session b14c794b). **Granskningsutkast — ingen kod.** Bygger på
 > `docs/cortxt-kontrollplan-arkitektur.md` (öppet byggsteg 1) och följer EXAKT samma additiva
 > mönster som type/domain/owner_agent (#45/#47/#48). **Foundational: blockerar Vercel-adaptern (#78).**
+>
+> **REVIDERAD 2026-06-12 — fältet bor i `catalog.yaml`, INTE i node.md-frontmatter.** Nodmodell-
+> teardownen (epic #11, `plans/nodmodell-teardown-spec.md`) river node.md-blanketten och flyttar alla
+> systemfält till `catalog.yaml`. `integrations` ska därför bli ett **katalog-fält** per system.
+> **#77 depends-on #98** (katalog-läsaren). Mönstret nedan (enums + mjuk validering + export) är
+> oförändrat — bara *ytan* fältet bor på byter från node.md-frontmatter till `catalog.yaml`-posten.
+> Läs `validator.py`/`json_exporter.py`-referenserna som "mot katalogen" efter steg 1–3 i teardownen.
 
 ## Kontext / varför
 Nodmodellen saknar helt ett strukturerat sätt att uttrycka en nods externa integrationer.
@@ -24,16 +31,20 @@ Inget av dessa är en "source" i integrations-mening — de är ryggraden/substr
 integration noden konsumerar. Att lista dem vore att degradera ryggraden till en eker. (Host-agnosticism =
 abstrahera GitHubs arbetsyta bakom adapter → fångat som idea-369ef21a, ej i scope här.)
 
-## Fältform (additivt, valfritt, fallback på gamla noder)
+## Fältform (additivt, valfritt, fallback på system utan det)
+Bor under systemets post i `catalog.yaml` (bredvid type/domain/feeds/depends_on):
 ```yaml
-integrations:
-  deploy: [railway]                 # lista av deploy-target-slugs (enum deploy_targets)
-  sources: [shopify:store-x]        # lista av "<type>:<instans>"-strängar (type ur enum source_types)
+systems:
+  cns-vault-app:
+    # ... title/summary/part_of/type/domain ...
+    integrations:
+      deploy: [railway]               # lista av deploy-target-slugs (enum deploy_targets)
+      sources: [shopify:store-x]      # lista av "<type>:<instans>"-strängar (type ur enum source_types)
 ```
-- Hela `integrations` valfritt; en nod utan det validerar och exporteras oförändrat.
+- Hela `integrations` valfritt; ett system utan det validerar och exporteras oförändrat.
 - `deploy`: platt lista av target-slugs. `sources`: platt lista av `type:instans`-strängar (instansdelen
   fri text, type-delen valideras mot enum). **Öppen fråga A (se nedan):** platt sträng vs strukturerat objekt.
-- `frontmatter`-biblioteket läser/skriver nästlade YAML-objekt oförändrat — ingen md_parser-ändring krävs.
+- `catalog.yaml` är vanlig nästlad YAML — `load_catalog()` läser det oförändrat, ingen parser-ändring krävs.
 
 ## Del 1 — enums.json (enkälla; konsumeras av validator.py + JS cns-schema)
 Lägg två enums (ordning ej semantisk; växbara additivt):
@@ -57,8 +68,8 @@ I `validate_node` (returnerar `(errors, warnings)`), efter type/domain-blocket:
 - **(Senare, ej v1):** härled integrations-edges (`NODE --deploys_to--> vercel`, `NODE --consumes--> shopify`)
   i `_derive_*_edges`-stil så dashboarden kan rita driftberoenden. Parkeras tills #78 behöver dem.
 
-## Del 4 — Backfill (gradvis, en nod i taget — som #48)
-Fyll `integrations.deploy` på de noder där driften är uppenbar (ur dagens url_live/text):
+## Del 4 — Backfill (i `catalog.yaml`, ett system i taget)
+Fyll `integrations.deploy` på de system där driften är uppenbar (ur dagens url_live/text):
 `cns-vault-app`→`[railway]`, `cns-mcp`→`[railway]`, `cortxt-dashboard-app`→`[vercel]` (ev. `cloudflare-pages`),
 `cortxt-landing`→`[github-pages]`. `sources` lämnas tom tills Shopify-noder finns. Dispatchbar till flottan.
 
@@ -81,11 +92,11 @@ propagerar till dashboarden. Samma steg som types/domains (cortxt #3).
 4. JS cns-schema regenerera. 5. Backfill deploy på de ~4 uppenbara noderna. (6. senare: edges + #78 Vercel-adapter.)
 
 ## Verifiering (när byggd)
-- En nod utan `integrations` validerar och exporteras oförändrat (fallback).
-- `cns validate <slug>` WARN:ar (ej ERROR) på okänt deploy-target/source-type.
-- `nodes.json` innehåller `integrations` per nod; dashboarden bryts ej på tomt objekt.
-- Backfillade noder: `cns validate` 0 ERROR; `integrations.deploy` syns i exporten.
-- `.claude/` läses ej (oförändrat — fältet bor i node.md).
+- Ett system utan `integrations` validerar och exporteras oförändrat (fallback).
+- `cns validate` WARN:ar (ej ERROR) på okänt deploy-target/source-type i katalogen.
+- `nodes.json` innehåller `integrations` per system; dashboarden bryts ej på tomt objekt.
+- Backfillade system: `cns validate` 0 ERROR; `integrations.deploy` syns i exporten.
+- `.claude/` läses ej (oförändrat — fältet bor i `catalog.yaml`).
 
 ## Avgränsning
 - Ingen Vercel-adapter (#78), ingen deploy-logik — bara datastrukturen + validering + export.
