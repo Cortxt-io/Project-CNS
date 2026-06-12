@@ -161,16 +161,20 @@ def classify_risk(
     """Avgör om ett skrivpass får self-mergas (lågrisk) eller måste eskaleras.
 
     "Self-merge bara lågrisk" (beslut Rikard, [[delegera-rutin-merge]]): mergas bara om
-    ALLA ändrade filer ligger i ``LOW_RISK_GLOBS`` och INGEN i ``ESCALATE_GLOBS``, och
-    eval inte fallit. Allt annat — feature-kod (scripts/app), schema/connector, produktion,
-    eval-fall, tomt — eskaleras. Ren funktion (testbar utan git/GitHub).
+    ALLA ändrade filer ligger i ``LOW_RISK_GLOBS`` och INGEN i ``ESCALATE_GLOBS``, **OCH
+    eval är GRÖN** (status ok + all_pass). Allt annat — feature-kod (scripts/app),
+    schema/connector, produktion, eval som inte passerade/inte kördes, tomt — eskaleras.
+    Ren funktion (testbar utan git/GitHub).
     """
     reasons: list[str] = []
     if not changed_paths:
         reasons.append("inga ändringar att merga")
-    # Konfidensfall: eval kördes men passerade inte.
-    if eval_verdict and eval_verdict.get("status") == "ok" and not eval_verdict.get("all_pass"):
-        reasons.append("eval ej passerad (konfidensfall)")
+    # Eval-gate (#112): self-merge KRÄVER en grön eval. Skipped/error/fail/saknad eval
+    # ⇒ eskalera — autonomin får aldrig merga ett pass som inte bedömts mot DoD. Detta
+    # stänger hålet där en ogated pass (t.ex. eval hoppad pga saknad nyckel) self-mergades.
+    if not (eval_verdict and eval_verdict.get("status") == "ok" and eval_verdict.get("all_pass")):
+        status = (eval_verdict or {}).get("status")
+        reasons.append(f"eval ej grön (status={status!r}) — self-merge kräver passerad eval")
     # Skyddade vägar eskalerar alltid (produktion/schema/connector-kontrakt).
     escalate_hits = [p for p in changed_paths if _matches(p, ESCALATE_GLOBS)]
     if escalate_hits:
