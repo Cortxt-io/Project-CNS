@@ -2,6 +2,9 @@
 
 CNS-kärnan och backenden. Läs detta först varje session. Arbetsspråk: **svenska**.
 
+> **Orienteringsvy** (visuell karta — infra-topologi, arbetsflöde uppåt mot main, begreppskarta +
+> ordlista, med Mermaid-diagram): `docs/ORIENTERING.md`. Den här filen är referens; den filen är vyn.
+
 ## Vad det är
 CNS (Central Node Store): ett lokalt-först system för att modellera och driva ett produktsystem från idé till drift. Varje system är en post i **`catalog.yaml`** (graf + routing) plus en valfri **`decisions/<slug>.md`** (ADR-prosa). **GitHub är källan till sanning.**
 
