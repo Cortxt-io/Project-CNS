@@ -194,6 +194,28 @@ def cmd_doctor(_args: argparse.Namespace) -> None:
     run_doctor(console)
 
 
+def cmd_project_sync(args: argparse.Namespace) -> None:
+    """Synka öppna issues → org-projektet 'Backlog' (GitHub Projects v2)."""
+    from scripts.sync_gh_project import sync, _token
+
+    if not _token():
+        console.print("[red]Ingen token. Sätt CNS_GITHUB_TOKEN (project-scope) eller kör "
+                      "`gh auth refresh -s project`.[/red]")
+        sys.exit(1)
+    try:
+        res = sync(dry_run=getattr(args, "dry_run", False))
+    except RuntimeError as exc:
+        console.print(f"[red]{exc}[/red]")
+        sys.exit(1)
+    tag = " (dry-run)" if res["dry_run"] else ""
+    console.print(f"[green]Issues: {res['issues']} | tillagda: {res['added']} | "
+                  f"fält satta: {res['field_values_set']}{tag}[/green]")
+    if res["missing_options"]:
+        console.print("[yellow]Saknade single-select-options (lägg dem på fältet i UI):[/yellow]")
+        for o in res["missing_options"]:
+            console.print(f"  - {o}")
+
+
 def cmd_validate(args: argparse.Namespace) -> None:
     """Validate the catalog (nodmodell-teardown #100).
 
@@ -731,6 +753,13 @@ def main() -> None:
     # cns doctor
     sp_doctor = subparsers.add_parser("doctor", help="Check environment and configuration")
     sp_doctor.set_defaults(func=cmd_doctor)
+
+    # cns project sync
+    sp_project = subparsers.add_parser("project", help="GitHub Projects-synk")
+    project_sub = sp_project.add_subparsers(dest="project_cmd")
+    sp_psync = project_sub.add_parser("sync", help="Synka issues → org-projektet 'Backlog'")
+    sp_psync.add_argument("--dry-run", action="store_true", help="Visa utan att skriva")
+    sp_psync.set_defaults(func=cmd_project_sync)
 
     # cns export xlsx
     sp_export = subparsers.add_parser("export", help="Export data")

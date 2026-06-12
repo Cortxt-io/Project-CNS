@@ -24,6 +24,27 @@ def _owner() -> str:
     return repo.split("/")[0] if "/" in repo else repo
 
 
+def _project_owner() -> str:
+    """Ägare av GitHub-projektet — CNS_PROJECT_OWNER (org), fallback repo-ägaren.
+
+    Projektet kan vara org-ägt (Cortxt-io) medan repot ligger på ett user-konto.
+    """
+    return os.getenv("CNS_PROJECT_OWNER", "").strip() or _owner()
+
+
+def _graphql_safe(query: str, variables: dict | None = None) -> dict | None:
+    """Som _graphql men returnerar None i stället för att resa vid GraphQL-fel.
+
+    Används för org→user-sonderingen: en `organization(login:)`-fråga mot ett
+    user-konto reser ett GraphQL-fel — det ska falla igenom till user-frågan,
+    inte krascha verktyget.
+    """
+    try:
+        return _graphql(query, variables)
+    except ToolError:
+        return None
+
+
 def _graphql(query: str, variables: dict | None = None) -> dict:
     resp = requests.post(
         _GH_GRAPHQL,
@@ -41,8 +62,10 @@ def _graphql(query: str, variables: dict | None = None) -> dict:
 def register(mcp: FastMCP) -> None:
     @mcp.tool()
     def cortxt_list_gh_projects() -> list[dict]:
-        """List GitHub Projects v2 for the repo owner."""
-        data = _graphql(
+        """List GitHub Projects v2 for the project owner (CNS_PROJECT_OWNER or repo owner)."""
+        login = _project_owner()
+        # Org-konto först (robust: reser inte om login är ett user-konto).
+        data = _graphql_safe(
             """
             query($login: String!) {
               organization(login: $login) {
@@ -52,12 +75,12 @@ def register(mcp: FastMCP) -> None:
               }
             }
             """,
-            {"login": _owner()},
+            {"login": login},
         )
-        org = data.get("organization") or {}
+        org = (data or {}).get("organization") or {}
         projects = org.get("projectsV2", {}).get("nodes", [])
         if not projects:
-            data2 = _graphql(
+            data2 = _graphql_safe(
                 """
                 query($login: String!) {
                   user(login: $login) {
@@ -67,9 +90,9 @@ def register(mcp: FastMCP) -> None:
                   }
                 }
                 """,
-                {"login": _owner()},
+                {"login": login},
             )
-            projects = (data2.get("user") or {}).get("projectsV2", {}).get("nodes", [])
+            projects = ((data2 or {}).get("user") or {}).get("projectsV2", {}).get("nodes", [])
         return [p for p in projects if not p.get("closed")]
 
     @mcp.tool()
