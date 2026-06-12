@@ -132,6 +132,13 @@ idag ([[koppla-ej-mot-foranderligt]]).
 ## 6. Utanför scope (elegans — deferras tills den bevisat gör något)
 - **Run-axeln:** dela `typ` i intent/mode/autonomi (researchen visade att de 7 "typerna" i koden
   egentligen är *lägen* som klumpar tre ortogonala saker). Internt nyttigt men inte akut.
+  **Skärpning (när det görs):** `mode` och `autonomi` ska inte återuppfinnas som mjuk `[SESSION: …]`-
+  prompttext — de duplicerar Claudes *hårda* grindar (plan mode = read-only, permission modes =
+  skrivrätt, `can_use_tool`). En mjuk uppmaning bredvid en hård grind kolliderar, och harnesset
+  vinner (vi demonstrerade det: CNS-typen `spec` kördes i praktiken via plan mode). Ren upplösning:
+  **intent är CNS:s (brainstorm/spec/triage/retro/review), och CNS-intenten *väljer* harness-läget**
+  (spec/brainstorm/triage → read-only, bygg → write/acceptEdits) i stället för att beskriva det i
+  text. Då komponerar de: CNS säger *vad*, harnesset håller *hur mycket* — med en riktig grind.
 - **Work-axeln:** `initiative` som bet-relation istället för trädtopp ("OKR-misstaget"). GitHub-
   milestones funkar idag.
 - **Memory som explicit axel:** researchen är tydlig — minne är *infrastruktur* axlarna kopplar till,
