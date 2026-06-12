@@ -79,6 +79,19 @@ def push(path: str, branch: str) -> None:
     _git("push", "-u", "origin", branch, cwd=Path(path))
 
 
+def changed_paths(path: str, *, base: str = "main") -> list[str]:
+    """Filer som skrivpassets branch ändrat mot *base* (för risk-klassning, Fas 5).
+
+    ``git diff --name-only <base>...HEAD`` i worktree:t → lista relativa sökvägar. Tom
+    lista om inget ändrats. Degraderar till [] vid git-fel (klassas då som "inga ändringar").
+    """
+    try:
+        out = _git("diff", "--name-only", f"{base}...HEAD", cwd=Path(path))
+    except WorktreeError:
+        return []
+    return [line.strip() for line in out.splitlines() if line.strip()]
+
+
 def cleanup(path: str, *, branch: str | None = None, delete_branch: bool = False) -> None:
     """Ta bort worktree:t (force) och valfritt den lokala branchen. Degraderar tyst."""
     try:

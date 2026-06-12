@@ -45,6 +45,22 @@ MAX_STORY_TODOS = 5
 ACTION_CLAIM = "claim"
 ACTION_RUN = "run_pass"
 ACTION_OPEN_PR = "open_pr"
+ACTION_MERGE = "merge"  # Fas 5: self-merge av lågrisk-PR (annars eskalering)
+
+# --- Autonomi-policy (Fas 5, #61 + #60 merge-beslutspolicy) ------------------
+# "Self-merge bara lågrisk" (beslut Rikard): loopen får merga TESTAD/ADDITIV/lågrisk
+# (docs/deps/tooling) men ALDRIG feature-kod, schema-brott eller produktions-vägar —
+# de eskaleras till människa. Allowlist är POSITIV (whitelist) = konservativ default:
+# bara det som matchar räknas som lågrisk, allt annat eskalerar. Glesa upp vid behov.
+LOW_RISK_GLOBS = (
+    "docs/", "plans/", "decisions/", "tests/", ".claude/", "skills/",
+    "requirements", "README", ".md",  # docs/deps (suffix/prefix-match nedan)
+)
+# Vägar som ALLTID eskalerar oavsett allowlist (produktion/schema/connector-kontrakt).
+ESCALATE_GLOBS = (
+    "app/server.py", "app/asgi.py", "app/mcp_server.py", "app/tools/",
+    "schemas/", "enums.json", "catalog.yaml", "nodes/", ".github/", "Procfile",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -118,6 +134,58 @@ def select_next_issue(
 
 
 # ---------------------------------------------------------------------------
+# Autonomi-policy (Fas 5) — self-merge bara lågrisk, annars eskalera
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class RiskVerdict:
+    """Risknivå för ett skrivpass: ``low`` = får self-mergas, ``escalate`` = människa."""
+
+    level: str  # "low" | "escalate"
+    reasons: list[str]
+
+
+def _matches(path: str, globs: tuple[str, ...]) -> bool:
+    """True om sökvägen matchar något mönster (prefix ELLER suffix, normaliserade \\→/)."""
+    p = path.replace("\\", "/")
+    return any(p.startswith(g) or p.endswith(g) for g in globs)
+
+
+def classify_risk(
+    issue: dict,
+    changed_paths: list[str],
+    *,
+    eval_verdict: dict | None = None,
+) -> RiskVerdict:
+    """Avgör om ett skrivpass får self-mergas (lågrisk) eller måste eskaleras.
+
+    "Self-merge bara lågrisk" (beslut Rikard, [[delegera-rutin-merge]]): mergas bara om
+    ALLA ändrade filer ligger i ``LOW_RISK_GLOBS`` och INGEN i ``ESCALATE_GLOBS``, och
+    eval inte fallit. Allt annat — feature-kod (scripts/app), schema/connector, produktion,
+    eval-fall, tomt — eskaleras. Ren funktion (testbar utan git/GitHub).
+    """
+    reasons: list[str] = []
+    if not changed_paths:
+        reasons.append("inga ändringar att merga")
+    # Konfidensfall: eval kördes men passerade inte.
+    if eval_verdict and eval_verdict.get("status") == "ok" and not eval_verdict.get("all_pass"):
+        reasons.append("eval ej passerad (konfidensfall)")
+    # Skyddade vägar eskalerar alltid (produktion/schema/connector-kontrakt).
+    escalate_hits = [p for p in changed_paths if _matches(p, ESCALATE_GLOBS)]
+    if escalate_hits:
+        reasons.append(f"rör skyddade vägar: {escalate_hits}")
+    # Feature-kod: allt som INTE är på lågrisk-allowlistan.
+    non_low = [
+        p for p in changed_paths
+        if not _matches(p, LOW_RISK_GLOBS) and p not in escalate_hits
+    ]
+    if non_low:
+        reasons.append(f"icke-lågrisk-filer (feature-kod): {non_low}")
+    return RiskVerdict("escalate" if reasons else "low", reasons)
+
+
+# ---------------------------------------------------------------------------
 # Crawl-orkestrering (steg 2–4) — en issue, gripbart steg för steg
 # ---------------------------------------------------------------------------
 
@@ -160,6 +228,9 @@ def crawl_once(
     worktree_fn: Optional[Callable[[int], dict]] = None,
     commit_fn: Optional[Callable[[str, str], bool]] = None,
     cleanup_fn: Optional[Callable[[str], None]] = None,
+    autonomy: bool = False,
+    merge_fn: Optional[Callable[[dict, dict], dict]] = None,
+    changed_paths_fn: Optional[Callable[[str], list[str]]] = None,
     should_abort: Optional[Callable[[], bool]] = None,
     session_store: Any = None,
 ) -> CrawlResult:
@@ -206,11 +277,12 @@ def crawl_once(
     if run_pass is None:
         run_pass = _default_run_pass
     write_mode = worktree_fn is not None
-    if write_mode and (commit_fn is None or cleanup_fn is None):
+    if write_mode and (commit_fn is None or cleanup_fn is None or changed_paths_fn is None):
         from scripts import worktree as _wt
 
         commit_fn = commit_fn or _wt.commit_all
         cleanup_fn = cleanup_fn or _wt.cleanup
+        changed_paths_fn = changed_paths_fn or _wt.changed_paths
 
     res = CrawlResult(status="error")
 
@@ -401,7 +473,29 @@ def crawl_once(
         pr = open_pr_fn(issue, {**outcome, "worktree": wt})  # förväntas: DRAFT-PR + reviewer
         res.pr = pr
         res._log(ACTION_OPEN_PR, True, f"draft-PR #{pr.get('number')}")
-        res.status, res.detail = "ran", f"draft-PR #{pr.get('number')} öppnad (aldrig auto-merge)"
+
+        # --- Steg 5: autonomi-merge (Fas 5) — bara LÅGRISK self-mergas ----
+        # Av som default (crawl): draft-PR lämnas för människa. Slås autonomy på mergas
+        # bara testad/additiv/lågrisk; feature-kod/schema/produktion/eval-fall eskaleras.
+        if not (autonomy and merge_fn):
+            res.status, res.detail = "ran", f"draft-PR #{pr.get('number')} öppnad (aldrig auto-merge)"
+            return res
+        changed = changed_paths_fn(wt["path"]) if (wt and changed_paths_fn) else []
+        verdict = classify_risk(issue, changed, eval_verdict=res.eval)
+        if verdict.level != "low":
+            res.status = "escalated"
+            res.detail = f"draft-PR #{pr.get('number')} — eskalerad till människa: {'; '.join(verdict.reasons)}"
+            res._log(ACTION_MERGE, False, res.detail)
+            return res
+        if not approve(ACTION_MERGE, {"issue": number, "pr": pr.get("number"), "changed": changed}):
+            res.status, res.detail = "ran", f"draft-PR #{pr.get('number')} — merge ej godkänd"
+            res._log(ACTION_MERGE, False, "nekad")
+            return res
+        merged = merge_fn(issue, pr)  # förväntas: ready + merge av lågrisk-PR
+        res.pr = {**pr, **(merged or {})}
+        res.status = "merged"
+        res.detail = f"lågrisk self-merge: PR #{pr.get('number')} mergad"
+        res._log(ACTION_MERGE, True, res.detail)
         return res
     finally:
         # Orphan-cleanup: städa alltid worktree + släpp lease — människan tar vid via PR/issue.
@@ -554,6 +648,34 @@ def build_open_pr_fn(
     return open_pr
 
 
+def build_merge_fn(*, delete_branch: bool = True) -> Callable[[dict, dict], dict]:
+    """Bygg ett ``merge_fn`` som markerar en draft-PR ready och mergar den (Fas 5).
+
+    Anropas BARA av crawl_once efter att ``classify_risk`` sagt ``low`` — alltså aldrig
+    på feature-kod/schema/produktion. Använder ``gh`` (samma yta som dispatch redan kör mot).
+    Returnerar ``{merged: bool, ...}``.
+    """
+    import subprocess
+
+    def merge(issue: dict, pr: dict) -> dict:
+        number = pr.get("number")
+        ready = subprocess.run(
+            ["gh", "pr", "ready", str(number)], capture_output=True, text=True
+        )
+        args = ["gh", "pr", "merge", str(number), "--merge"]
+        if delete_branch:
+            args.append("--delete-branch")
+        merged = subprocess.run(args, capture_output=True, text=True)
+        ok = merged.returncode == 0
+        return {
+            "merged": ok,
+            "ready_rc": ready.returncode,
+            "detail": (merged.stderr or merged.stdout).strip()[:300],
+        }
+
+    return merge
+
+
 # ---------------------------------------------------------------------------
 # CLI — övervakad crawl (ett varv, mänsklig godkännande i terminalen)
 # ---------------------------------------------------------------------------
@@ -567,6 +689,7 @@ def _cli_approver(action: str, context: dict) -> bool:
         ACTION_CLAIM: f"Claima issue #{context.get('issue')} ({context.get('type')})?",
         ACTION_RUN: f"Kör läs-först-pass på #{context.get('issue')} som '{context.get('agent') or 'generisk'}'?",
         ACTION_OPEN_PR: f"Öppna DRAFT-PR för #{context.get('issue')}?",
+        ACTION_MERGE: f"Self-merga LÅGRISK-PR #{context.get('pr')} (#{context.get('issue')})?",
     }.get(action, f"Godkänn '{action}'?")
     sys.stderr.write(f"\n[CRAWL-GRIND] {prompt} [y/N] ")
     sys.stderr.flush()
@@ -598,6 +721,7 @@ def main(argv: list[str]) -> int:
     owner = os.getenv("CNS_AGENT_OWNER") or os.getenv("GITHUB_ACTOR") or "dispatch-crawl"
     auto_yes = "--yes" in argv
     write_mode = "--write" in argv  # skriv-läge: worktree + draft-PR (annars read-first)
+    autonomy = "--autonomy" in argv  # Fas 5: self-merge bara lågrisk (kräver --write)
 
     def candidates() -> list[dict]:
         return issues_client.list_issues(state="open")
@@ -612,6 +736,8 @@ def main(argv: list[str]) -> int:
         approve=(lambda a, c: True) if auto_yes else _cli_approver,
         worktree_fn=default_worktree_fn if write_mode else None,
         open_pr_fn=build_open_pr_fn() if write_mode else None,
+        autonomy=autonomy and write_mode,
+        merge_fn=build_merge_fn() if (autonomy and write_mode) else None,
     )
     print(json.dumps(res.__dict__, ensure_ascii=False, indent=2, default=str))
     return 0 if res.status in {"no-work", "ran"} else 1
