@@ -83,17 +83,27 @@ def derive_from_mcp(mcp_data: dict) -> dict[str, dict]:
 
 
 def derive(*, agents_data: dict | list | None = None, mcp_data: dict | None = None) -> dict[str, dict]:
-    """Slå ihop alla v1-härledare → en härledd nodmappning (slug → nod).
+    """Härled SYSTEM-noder för nod-katalogen (slug → nod).
 
-    Härledda slugs kanoniseras via DERIVED_ALIAS (t.ex. project-cns → cns-mcp) så de
-    möter rätt annoterad nod i mergen.
+    **Axel-beslut (Rikard 2026-06-12):** agenter är en EGEN axel (agentur/agents.json),
+    inte noder i arkitektur-katalogen. Nod-katalogen härleder *system*-verkligheten
+    (MCP-servrar nu; repo-struktur/drift senare). ``agents_data`` ignoreras därför här —
+    agent-axeln projiceras separat via ``derive_agent_axis`` (egen vy, ej i kartan).
+
+    Härledda slugs kanoniseras via DERIVED_ALIAS (project-cns → cns-mcp).
     """
     raw: dict[str, dict] = {}
-    if agents_data is not None:
-        raw.update(derive_from_agents(agents_data))
     if mcp_data is not None:
         raw.update(derive_from_mcp(mcp_data))
     return {DERIVED_ALIAS.get(slug, slug): node for slug, node in raw.items()}
+
+
+def derive_agent_axis(agents_data: dict | list) -> dict[str, dict]:
+    """Projektion av AGENT-axeln (agentur) — separat vy, INTE noder i nod-katalogen.
+
+    Behålls för en framtida agent-axel-vy i dashboarden; matas inte in i `merge`/katalogen.
+    """
+    return derive_from_agents(agents_data)
 
 
 # -- annoterings-bygge + merge (skiva 2: den sammanslagna kartan) -------------
@@ -206,8 +216,11 @@ def _load_json(path: Path) -> Any:
 
 
 def derive_from_disk() -> dict[str, dict]:
-    """Härled ur repo-källorna på disk (agents.json + .mcp.json)."""
-    return derive(agents_data=_load_json(AGENTS_JSON), mcp_data=_load_json(MCP_JSON))
+    """Härled SYSTEM-noder ur repo-källorna på disk (.mcp.json; repo/drift senare).
+
+    Agenter härleds INTE hit (egen axel) — se ``derive`` / ``derive_agent_axis``.
+    """
+    return derive(mcp_data=_load_json(MCP_JSON))
 
 
 def load_current_catalog() -> dict[str, dict]:

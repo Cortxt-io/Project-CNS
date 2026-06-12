@@ -710,10 +710,9 @@ def cmd_derive(args: argparse.Namespace) -> None:
             print(f"Skapade annoteringslager ({len(annotations)} noder) → {ann_path}")
         merged = dc.merge(derived, annotations)
         path = dc.write_merged(merged)
-        n_agents = sum(1 for v in merged.values() if v.get("type") == "agent")
-        print(f"Sammanslagen karta: {len(merged)} noder "
-              f"({len(derived)} härledda, varav {n_agents} agenter; {len(annotations)} annoterade) → {path}")
-        print("Konsumenterna läser fortfarande catalog.yaml — detta är förhandsvisningen inför flippen.")
+        print(f"Sammanslagen SYSTEM-karta: {len(merged)} noder "
+              f"({len(derived)} härledda ur verkligheten, {len(annotations)} annoterade) → {path}")
+        print("Agenter är en egen axel (ej noder här). Konsumenterna läser fortfarande catalog.yaml.")
         return
     path = dc.write_derived(derived)
     print(f"Härledde {len(derived)} noder → {path}")

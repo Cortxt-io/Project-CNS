@@ -39,9 +39,15 @@ def test_derive_from_mcp_one_node_per_server():
     assert nodes["project-cns"]["transport"] == "http"
 
 
-def test_derive_merges_sources():
+def test_derive_is_systems_only_agents_are_separate_axis():
     nodes = dc.derive(agents_data=_agents(), mcp_data=_mcp())
-    assert "backend-utvecklare" in nodes and "cns-mcp" in nodes  # mcp aliasas till cns-mcp
+    assert "cns-mcp" in nodes                       # system härleds
+    assert "backend-utvecklare" not in nodes        # agenter är EGEN axel, ej noder
+
+
+def test_derive_agent_axis_projects_agents_separately():
+    axis = dc.derive_agent_axis(_agents())
+    assert "backend-utvecklare" in axis and "incidentledare" in axis
 
 
 def test_derive_handles_missing_sources():
@@ -52,11 +58,10 @@ def test_derive_handles_missing_sources():
 # -- diff --------------------------------------------------------------------
 
 def test_diff_flags_reality_missing_from_catalog():
-    derived = dc.derive(agents_data=_agents())
-    catalog = {"cns-core": {"type": "cli"}}  # handkatalog utan agenterna
+    derived = {"new-mcp": {"type": "mcp-server"}}   # ett system katalogen saknar
+    catalog = {"cns-core": {"type": "cli"}}
     report = dc.diff_against_catalog(derived, catalog)
-    assert "backend-utvecklare" in report.only_in_reality
-    assert "incidentledare" in report.only_in_reality
+    assert "new-mcp" in report.only_in_reality
     assert "cns-core" in report.only_in_catalog
 
 
@@ -75,7 +80,7 @@ def test_diff_in_both():
 
 
 def test_diff_report_text_renders():
-    report = dc.diff_against_catalog(dc.derive(agents_data=_agents()), {"pipeline-intern": {}})
+    report = dc.diff_against_catalog({"new-mcp": {}}, {"pipeline-intern": {}})
     text = report.as_text()
     assert "SAKNAS i katalogen" in text and "PHANTOM" in text
 
