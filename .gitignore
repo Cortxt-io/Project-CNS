@@ -37,3 +37,4 @@ tmp/
 .claude/worktrees/
 
 .devwatch_state.json
+catalog.derived.yaml

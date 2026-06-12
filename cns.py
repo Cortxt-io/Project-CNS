@@ -692,6 +692,20 @@ def cmd_tui(args: argparse.Namespace) -> None:
     tui_main()
 
 
+def cmd_derive(args: argparse.Namespace) -> None:
+    """Härled nodkatalogen ur verkligheten + diffa mot catalog.yaml (Del A, skiva 1)."""
+    from scripts import derive_catalog as dc
+
+    derived = dc.derive_from_disk()
+    if args.diff:
+        report = dc.diff_against_catalog(derived, dc.load_current_catalog())
+        print(report.as_text())
+        return
+    path = dc.write_derived(derived)
+    print(f"Härledde {len(derived)} noder → {path}")
+    print("Kör 'cns derive --diff' för att se skillnaden mot catalog.yaml.")
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
@@ -758,6 +772,16 @@ def main() -> None:
     sp_validate = subparsers.add_parser("validate", help="Validate the catalog (or one system)")
     sp_validate.add_argument("slug", nargs="?", default=None, help="System-slug (utelämna för hela katalogen)")
     sp_validate.set_defaults(func=cmd_validate)
+
+    # cns derive — härled katalogen ur verkligheten + diffa (Del A)
+    sp_derive = subparsers.add_parser(
+        "derive", help="Härled nodkatalogen ur verkligheten (agents.json, .mcp.json) + diffa"
+    )
+    sp_derive.add_argument(
+        "--diff", action="store_true",
+        help="Visa diff mot catalog.yaml i stället för att skriva catalog.derived.yaml",
+    )
+    sp_derive.set_defaults(func=cmd_derive)
 
     # cns quest {init|show|sync} <slug>
     sp_quest = subparsers.add_parser("quest", help="Manage active build quest workflow")
