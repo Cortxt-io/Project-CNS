@@ -32,7 +32,10 @@ DECISIONS_DIR = REPO_ROOT / "decisions"
 
 # Fält som följer med till katalogen (slug blir nyckeln, inte ett fält).
 # Ordningen styr utskriftsordningen per system.
-SURVIVING_FIELDS = ["title", "summary", "part_of", "type", "domain", "feeds", "depends_on", "url_repo"]
+SURVIVING_FIELDS = [
+    "title", "summary", "part_of", "type", "domain",
+    "owner_agent", "contributing_agents", "feeds", "depends_on", "url_repo",
+]
 
 # Tröskel för att en Anteckningar-sektion ska räknas som varaktig ADR-prosa.
 DECISION_WORD_THRESHOLD = 40
@@ -43,9 +46,9 @@ def _clean_value(field: str, value: Any) -> Any:
     """Normalisera ett fältvärde för katalogen; returnera None för 'tomt'."""
     if value is None:
         return None
-    if field in ("feeds", "depends_on"):
+    if field in ("feeds", "depends_on", "contributing_agents"):
         items = [v for v in (value or []) if v]
-        return items  # behåll tomma listor — explicit "inga kanter"
+        return items
     if isinstance(value, str):
         v = value.strip()
         return v or None
@@ -62,9 +65,13 @@ def build_catalog(nodes: list[tuple[dict, dict]]) -> dict[str, dict]:
         entry: dict[str, Any] = {}
         for field in SURVIVING_FIELDS:
             cleaned = _clean_value(field, meta.get(field))
-            # feeds/depends_on tas alltid med (även tom lista); övriga bara om satt.
+            # feeds/depends_on tas alltid med (även tom lista) = explicit "inga kanter".
             if field in ("feeds", "depends_on"):
                 entry[field] = cleaned
+            # contributing_agents tas med bara om icke-tom; övriga bara om satt.
+            elif field == "contributing_agents":
+                if cleaned:
+                    entry[field] = cleaned
             elif cleaned is not None:
                 entry[field] = cleaned
         systems[slug] = entry

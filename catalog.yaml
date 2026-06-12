@@ -74,6 +74,7 @@ systems:
     part_of: infrastructure
     type: infra
     domain: cortxt
+    owner_agent: devops-ingenjor
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/Project-CNS
@@ -84,6 +85,7 @@ systems:
     part_of: infrastructure
     type: mcp-server
     domain: cortxt
+    owner_agent: backend-utvecklare
     feeds: []
     depends_on:
     - cns-core
@@ -103,6 +105,7 @@ systems:
     part_of: infrastructure
     type: service
     domain: cortxt
+    owner_agent: backend-utvecklare
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/Project-CNS
@@ -120,6 +123,7 @@ systems:
     part_of: interface
     type: frontend
     domain: cortxt
+    owner_agent: frontend-utvecklare
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/cortxt
@@ -141,6 +145,7 @@ systems:
     part_of: interface
     type: frontend
     domain: cortxt
+    owner_agent: frontend-utvecklare
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/cortxt
@@ -151,6 +156,7 @@ systems:
     part_of: interface
     type: frontend
     domain: cortxt
+    owner_agent: frontend-utvecklare
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/cortxt
@@ -285,6 +291,7 @@ systems:
     part_of: agent-studio
     type: agent
     domain: cortxt
+    owner_agent: forskningsledare
     feeds: []
     depends_on: []
   scoring-studio:
