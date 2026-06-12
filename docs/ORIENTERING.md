@@ -34,7 +34,7 @@ flowchart TB
         EXPORT["export_json()<br/>→ nodes.json (v3.0:<br/>nodes + agents + edges)"]
     end
 
-    REDIS[("REDIS<br/>flyktig state:<br/>tokens · leases · sessioner")]
+    REDIS[("REDIS (flyktig state)<br/>tokens · leases ·<br/>eventstream-buffer")]
 
     subgraph VERCEL["VERCEL (produktyta)"]
         DASH["Dashboard<br/>app.cortxt.io<br/>ReactFlow-graf"]
@@ -65,8 +65,10 @@ flowchart TB
 - **Railway pullar INTE vid runtime.** `git_pull()` är en no-op; `/api/nodes` kör `export_json()` mot
   den utcheckning som gjordes **vid deploy**. Färskhet i dashboarden = Railway **auto-redeployar vid
   push till main**. Syns inte en ändring trots att den ligger på main ⇒ Railway har inte redeployat.
-- **Redis = flyktig state** (tokens, leases, sessioner, eventstream); **GitHub = durabel state**. Samma
-  sorts sak (state) på en durabilitetsskala — inte två olika lager.
+- **Redis = flyktig state** (MCP-tokens, dispatch-leases, eventstream-live-buffer); **GitHub = durabel
+  state**. Samma sorts sak (state) på en durabilitetsskala — inte två olika lager. **Sessioner ligger
+  INTE i Redis** — de är filbaserade (`exports/sessions/`, pushas via MCP-wrappern). Leasen är
+  **fail-open**: är Redis nere degraderas koordineringen, arbetet blockeras inte.
 - **Vercel underligger Shopify** (kommande): CNS bygger en *Vercel-driftsadapter*, inte ett
   Shopify-integrationslager. Storefronts kör på Vercel, konsumerar Shopify headless.
 
@@ -83,14 +85,15 @@ flowchart LR
 
     subgraph DISPATCH["dispatch-loop (agenturens puls, övervakad crawl)"]
         PICK["assess_suitability<br/>(hoppar diffusa/<br/>feature-tunga/oklara-dep)"]
-        LEASE["lease_store.claim"]
+        LEASE["lease_store.claim<br/>(Redis, fail-open)"]
+        SYNC["cns-sync / overlap<br/>(check_session_overlap)"]
         ROLE["role_for_node<br/>(catalog type/domain<br/>→ agentur_routing<br/>→ rätt agent + modell)"]
         RUN["agent_host.run_turn<br/>(read-first ELLER<br/>skriv-läge i worktree)"]
         EVAL["eval-grind (#57)<br/>+ bokför session"]
     end
 
     PR["📝 Draft-PR<br/>+ required reviewer"]
-    HUMAN{"människa-grind<br/>(aldrig auto-merge)"}
+    HUMAN{"människa-grind<br/>(default: autonomy=False)"}
     MAIN["✅ main"]
     REDEPLOY["Railway redeploy<br/>→ ny nodes.json<br/>→ dashboard uppdateras"]
 
@@ -98,7 +101,7 @@ flowchart LR
     ISSUE -->|"under"| QUEST
     QUEST -.->|"under"| INIT
     ISSUE --> PICK
-    PICK --> LEASE --> ROLE --> RUN --> EVAL
+    PICK --> LEASE --> SYNC --> ROLE --> RUN --> EVAL
     EVAL -->|"skriv-läge"| PR
     PR --> HUMAN
     HUMAN -->|"merge"| MAIN
@@ -116,7 +119,9 @@ flowchart LR
 **Grindarna uppåt (vad som krävs för att flytta arbete mot main):**
 - Dispatch kör **ETT pass** per varv; varje muterande steg passerar en `approve`-callback (default nekar).
 - Skriv-läge kör i en **isolerad git-worktree** → committar → öppnar **draft-PR** + required reviewer.
-- **Aldrig auto-merge.** Människa-grinden + draft-PR + eval-grind står kvar (autonomitröskeln, Fas 5).
+- **Default = människa-grind** (`autonomy=False`): draft-PR + required reviewer, ingen auto-merge. En
+  **lågrisk-self-merge-väg** finns som inaktiv Fas 5-kapacitet (`--autonomy` + `classify_risk`: bara
+  docs/deps/tooling/tester self-mergas; feature-kod/schema/produktion/eval-fall eskaleras alltid).
 - Merge till main → Railway redeployar → `nodes.json` regenereras → dashboarden speglar nya läget.
 
 > Dispatch känner **medvetet inte** nodmodellens filform — den litar på `role_for_node`-seamet. Därför

@@ -34,7 +34,7 @@ Tidigare löst fil i arbetsytans rot; nu GitHub-sanning i repot.
    ║            │ läs/skriv                 läs/skriv │                              ║
    ║     ┌───── STATE (flyktigt) ─────┐   ┌───── STATE (durabelt) ─────┐            ║
    ║     │  Redis                     │   │  GitHub  =  SANNING         │            ║
-   ║     │  leases · sessioner ·      │   │  noder · issues · PR ·      │            ║
+   ║     │  leases · tokens ·         │   │  noder · issues · PR ·      │            ║
    ║     │  eventstream · arbetsminne │   │  quests · långtidsminne     │            ║
    ║     └────────────────────────────┘   └─────────────────────────────┘            ║
    ║                                                                                  ║
