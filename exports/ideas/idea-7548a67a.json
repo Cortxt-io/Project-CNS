@@ -5,5 +5,8 @@
   "source": "chat",
   "slug": "cns-core",
   "session_id": "session-069fa1d2",
-  "status": "open"
+  "status": "resolved",
+  "resolution": "duplicate",
+  "resolution_reason": "Orienteringsyta-intentet ägs numera av epic #8 Sessions-UX (idé-medvetet nav/statusrad/rekommendationer). Uppslukad — bygger på äldre läge före #8. Fortsätt i #8.",
+  "resolved_at": "2026-06-13T19:40:32"
 }
