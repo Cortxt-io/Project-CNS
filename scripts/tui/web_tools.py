@@ -30,6 +30,13 @@ _LLM_PROVIDERS = (
     ("groq", "meta-llama/llama-4-scout-17b-16e-instruct", ("GROQ_API_KEY",), ".cns-groq-key", "GROQ_API_KEY"),
 )
 
+# Felsignaturer som tyder på trasig/tom nyckel snarare än ett sidfel — triggar
+# fallback till nästa provider (F2). Heuristik på exception-text, medvetet bred.
+_AUTH_ERR_HINTS = (
+    "auth", "api_key", "api key", "credit", "balance", "quota",
+    "insufficient", "401", "403", "permission", "unauthorized", "invalid_api_key",
+)
+
 
 def _resolve_key(env_vars: tuple[str, ...], key_file: str) -> str | None:
     """Hämta API-nyckel ur env eller otrackad nyckelfil — returnerar None om saknas."""
@@ -48,26 +55,26 @@ def _resolve_key(env_vars: tuple[str, ...], key_file: str) -> str | None:
     return None
 
 
-def _select_provider() -> tuple[str, str, str] | None:
-    """(provider, modell, nyckel) för första provider med tillgänglig nyckel; annars None."""
+def _candidate_providers() -> list[tuple[str, str, str]]:
+    """Alla providers med tillgänglig nyckel, i prioritetsordning: (provider, modell, nyckel)."""
+    out: list[tuple[str, str, str]] = []
     for provider, model, env_vars, key_file, genai_env in _LLM_PROVIDERS:
         key = _resolve_key(env_vars, key_file)
         if key:
             # Spegla nyckeln till den env-var providerns SDK-klient läser.
             os.environ.setdefault(genai_env, key)
-            return (provider, model, key)
-    return None
+            out.append((provider, model, key))
+    return out
 
 
-def _build_llm() -> Any:
-    """Bygg browser-use LLM-wrappern för vald provider. Kastar RuntimeError om ingen nyckel."""
-    sel = _select_provider()
-    if sel is None:
-        raise RuntimeError(
-            "ingen LLM-nyckel hittad — sätt ANTHROPIC_API_KEY (eller GEMINI_API_KEY/GROQ_API_KEY) "
-            "i env eller i en otrackad nyckelfil (.cns-agent-key / .cns-gemini-key / .cns-groq-key)."
-        )
-    provider, model, key = sel
+def _select_provider() -> tuple[str, str, str] | None:
+    """Första provider med tillgänglig nyckel; None om ingen finns (för availability)."""
+    cands = _candidate_providers()
+    return cands[0] if cands else None
+
+
+def _make_llm(provider: str, model: str, key: str) -> Any:
+    """Bygg browser-use LLM-wrappern för en specifik provider."""
     if provider == "anthropic":
         from browser_use import ChatAnthropic
         return ChatAnthropic(model=model, max_tokens=1024, api_key=key)
@@ -78,16 +85,66 @@ def _build_llm() -> Any:
     return ChatGroq(model=model, api_key=key)
 
 
-# Tillåtna MCP-verktygsnamn (används i agent_host.py:s allowlist + _deny_unlisted).
-WEB_TOOL_NAMES = [
-    f"mcp__{WEB_SERVER_NAME}__web_extract",
-    f"mcp__{WEB_SERVER_NAME}__web_act",
-]
+def _looks_like_auth_error(exc: Exception) -> bool:
+    """Heuristik: ser felet ut som en trasig/tom nyckel (→ prova nästa provider)?"""
+    msg = f"{type(exc).__name__}: {exc}".lower()
+    return any(hint in msg for hint in _AUTH_ERR_HINTS)
+
+
+async def _run_browser_agent(task: str, max_steps: int) -> str:
+    """Kör en browser-use Agent och returnera slutresultatet.
+
+    F1: webbläsaren stängs ALLTID (try/finally) — annars läcker en Chromium-process
+    vid fel, vilket biter på minnesknappa maskiner.
+    F2: provider-fallback — om en provider failar på auth/credit (tom nyckel/saldo)
+    provas nästa provider med tillgänglig nyckel istället för att faila hårt.
+    """
+    from browser_use import Agent, Browser
+
+    candidates = _candidate_providers()
+    if not candidates:
+        raise RuntimeError(
+            "ingen LLM-nyckel hittad — sätt ANTHROPIC_API_KEY (eller GEMINI_API_KEY/GROQ_API_KEY) "
+            "i env eller i en otrackad nyckelfil (.cns-agent-key / .cns-gemini-key / .cns-groq-key)."
+        )
+
+    last_exc: Exception | None = None
+    for idx, (provider, model, key) in enumerate(candidates):
+        is_last = idx == len(candidates) - 1
+        browser = None
+        try:
+            browser = Browser(headless=True)
+            llm = _make_llm(provider, model, key)
+            agent = Agent(task=task, llm=llm, browser=browser)
+            result = await agent.run(max_steps=max_steps)
+            return (result.final_result() if result else None) or "(tomt svar från webbläsaren)"
+        except Exception as exc:  # noqa: BLE001 — fallback-beslut tas på felets form
+            last_exc = exc
+            if _looks_like_auth_error(exc) and not is_last:
+                continue  # trasig nyckel → prova nästa provider
+            raise
+        finally:
+            if browser is not None:
+                try:
+                    await browser.close()
+                except Exception:  # noqa: BLE001 — städning får inte maskera ursprungsfelet
+                    pass
+
+    # Endast nås om alla kandidater föll på auth-fel.
+    assert last_exc is not None
+    raise last_exc
 
 
 def _text(payload: Any) -> dict[str, Any]:
     """MCP-content-svar med JSON-text — identisk med agent_host.py:s hjälpare."""
     return {"content": [{"type": "text", "text": json.dumps(payload, ensure_ascii=False)}]}
+
+
+# Tillåtna MCP-verktygsnamn (används i agent_host.py:s allowlist + _deny_unlisted).
+WEB_TOOL_NAMES = [
+    f"mcp__{WEB_SERVER_NAME}__web_extract",
+    f"mcp__{WEB_SERVER_NAME}__web_act",
+]
 
 
 def availability() -> tuple[bool, str]:
@@ -133,23 +190,13 @@ def _build_web_tools() -> list[Any]:
     async def web_extract(args: dict) -> dict:
         url: str = args.get("url", "")
         query: str = args.get("query", "")
+        task = (
+            f"Navigera till {url}. "
+            f"Extrahera och returnera allt textinnehåll som är relevant för: {query}. "
+            "Gör INGET annat — inga klick, inga formulär, inga inloggningar."
+        )
         try:
-            from browser_use import Agent, Browser
-
-            browser = Browser(headless=True)
-            llm = _build_llm()
-            agent = Agent(
-                task=(
-                    f"Navigera till {url}. "
-                    f"Extrahera och returnera allt textinnehåll som är relevant för: {query}. "
-                    "Gör INGET annat — inga klick, inga formulär, inga inloggningar."
-                ),
-                llm=llm,
-                browser=browser,
-            )
-            result = await agent.run(max_steps=10)
-            text = (result.final_result() if result else None) or "(tomt svar från webbläsaren)"
-            await browser.close()
+            text = await _run_browser_agent(task, max_steps=10)
             return _text({"url": url, "query": query, "content": text})
         except ImportError as exc:
             return _text({"error": f"browser-use eller beroende saknas: {exc}. Installera requirements-agent.txt."})
@@ -176,21 +223,14 @@ def _build_web_tools() -> list[Any]:
     )
     async def web_act(args: dict) -> dict:
         instruction: str = args.get("instruction", "")
+        # Förhindra skrivoperationer — lägg en läs-first-barrier i instruktionen.
+        safe_instruction = (
+            f"{instruction}\n\n"
+            "VIKTIGT: Gör INGA inloggningar, fyll INTE i formulär och genomför "
+            "INGA betalningar. Returnera bara vad du läst."
+        )
         try:
-            from browser_use import Agent, Browser
-
-            # Förhindra skrivoperationer — lägg en läs-first-barrier i instruktionen.
-            safe_instruction = (
-                f"{instruction}\n\n"
-                "VIKTIGT: Gör INGA inloggningar, fyll INTE i formulär och genomför "
-                "INGA betalningar. Returnera bara vad du läst."
-            )
-            browser = Browser(headless=True)
-            llm = _build_llm()
-            agent = Agent(task=safe_instruction, llm=llm, browser=browser)
-            result = await agent.run(max_steps=15)
-            text = (result.final_result() if result else None) or "(tomt svar från webbläsaren)"
-            await browser.close()
+            text = await _run_browser_agent(safe_instruction, max_steps=15)
             return _text({"instruction": instruction, "result": text})
         except ImportError as exc:
             return _text({"error": f"browser-use eller beroende saknas: {exc}. Installera requirements-agent.txt."})
