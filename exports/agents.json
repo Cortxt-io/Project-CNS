@@ -2,10 +2,22 @@
   "generated_by": "scripts/gen_agentur.py",
   "agents": [
     {
-      "slug": "incidentledare",
-      "title": "Incidentledare",
-      "department": "Drift",
-      "sub_department": "Incident",
+      "slug": "community-ansvarig",
+      "title": "Community-ansvarig",
+      "department": "Communications",
+      "sub_department": "DevRel",
+      "squad": "",
+      "status": "shell",
+      "model": "claude-haiku-4-5",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "devrel-ansvarig",
+      "title": "DevRel-ansvarig",
+      "department": "Communications",
+      "sub_department": "DevRel",
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
@@ -14,24 +26,34 @@
       "contributes_to": []
     },
     {
-      "slug": "underhallsingenjor",
-      "title": "Underhållsingenjör",
-      "department": "Drift",
-      "sub_department": "Maintenance",
+      "slug": "communications-lead",
+      "title": "Kommunikationschef",
+      "department": "Communications",
+      "sub_department": "Docs",
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "underhallsingenjor-2",
-      "title": "Underhållsingenjör",
-      "department": "Drift",
-      "sub_department": "Maintenance",
+      "slug": "technical-writer",
+      "title": "Teknisk skribent",
+      "department": "Communications",
+      "sub_department": "Docs",
+      "squad": "",
+      "status": "active",
+      "model": "claude-sonnet-4-6",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "technical-writer-2",
+      "title": "Teknisk skribent",
+      "department": "Communications",
+      "sub_department": "Docs",
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
@@ -40,24 +62,10 @@
       "contributes_to": []
     },
     {
-      "slug": "lagesanalytiker",
-      "title": "Lägesanalytiker",
-      "department": "Drift",
-      "sub_department": "Monitoring",
-      "squad": "",
-      "status": "active",
-      "model": "claude-haiku-4-5",
-      "capabilities": [
-        "cns"
-      ],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "overvakningsanalytiker",
-      "title": "Övervakningsanalytiker",
-      "department": "Drift",
-      "sub_department": "Monitoring",
+      "slug": "innehallsskapare",
+      "title": "Innehållsskapare",
+      "department": "Communications",
+      "sub_department": "Marketing",
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
@@ -66,24 +74,10 @@
       "contributes_to": []
     },
     {
-      "slug": "driftchef",
-      "title": "Driftchef",
-      "department": "Drift",
-      "sub_department": "SRE",
-      "squad": "",
-      "status": "active",
-      "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "sre-ingenjor",
-      "title": "SRE-ingenjör",
-      "department": "Drift",
-      "sub_department": "SRE",
+      "slug": "marketer",
+      "title": "Marknadsförare",
+      "department": "Communications",
+      "sub_department": "Marketing",
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
@@ -92,48 +86,22 @@
       "contributes_to": []
     },
     {
-      "slug": "sre-ingenjor-2",
-      "title": "SRE-ingenjör",
-      "department": "Drift",
-      "sub_department": "SRE",
-      "squad": "",
-      "status": "shell",
-      "model": "claude-haiku-4-5",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "controller",
-      "title": "Controller",
-      "department": "Ekonomi",
-      "sub_department": "Controlling",
-      "squad": "",
-      "status": "shell",
-      "model": "claude-haiku-4-5",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "ekonomichef",
-      "title": "Ekonomichef (CFO)",
-      "department": "Ekonomi",
-      "sub_department": "Controlling",
-      "squad": "",
+      "slug": "backend-developer",
+      "title": "Backend-utvecklare",
+      "department": "Engineering",
+      "sub_department": "Backend",
+      "squad": "Integrationer",
       "status": "active",
-      "model": "claude-haiku-4-5",
-      "capabilities": [
-        "cns"
-      ],
+      "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "faktureringsansvarig",
-      "title": "Faktureringsansvarig",
-      "department": "Ekonomi",
-      "sub_department": "FinOps",
+      "slug": "backend-developer-2",
+      "title": "Backend-utvecklare",
+      "department": "Engineering",
+      "sub_department": "Backend",
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
@@ -142,10 +110,10 @@
       "contributes_to": []
     },
     {
-      "slug": "finops-analytiker",
-      "title": "FinOps-analytiker",
-      "department": "Ekonomi",
-      "sub_department": "FinOps",
+      "slug": "backend-developer-3",
+      "title": "Backend-utvecklare",
+      "department": "Engineering",
+      "sub_department": "Backend",
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
@@ -154,10 +122,10 @@
       "contributes_to": []
     },
     {
-      "slug": "inkop",
-      "title": "Inköpsansvarig",
-      "department": "Ekonomi",
-      "sub_department": "FinOps",
+      "slug": "backend-developer-4",
+      "title": "Backend-utvecklare",
+      "department": "Engineering",
+      "sub_department": "Backend",
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
@@ -178,57 +146,7 @@
       "contributes_to": []
     },
     {
-      "slug": "backend-utvecklare",
-      "title": "Backend-utvecklare",
-      "department": "Engineering",
-      "sub_department": "Backend",
-      "squad": "Integrationer",
-      "status": "active",
-      "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "backend-utvecklare-2",
-      "title": "Backend-utvecklare",
-      "department": "Engineering",
-      "sub_department": "Backend",
-      "squad": "",
-      "status": "shell",
-      "model": "claude-haiku-4-5",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "backend-utvecklare-3",
-      "title": "Backend-utvecklare",
-      "department": "Engineering",
-      "sub_department": "Backend",
-      "squad": "",
-      "status": "shell",
-      "model": "claude-haiku-4-5",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "backend-utvecklare-4",
-      "title": "Backend-utvecklare",
-      "department": "Engineering",
-      "sub_department": "Backend",
-      "squad": "",
-      "status": "shell",
-      "model": "claude-haiku-4-5",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "data-ingenjor",
+      "slug": "data-engineer",
       "title": "Data-ingenjör",
       "department": "Engineering",
       "sub_department": "Data",
@@ -240,7 +158,7 @@
       "contributes_to": []
     },
     {
-      "slug": "data-ingenjor-2",
+      "slug": "data-engineer-2",
       "title": "Data-ingenjör",
       "department": "Engineering",
       "sub_department": "Data",
@@ -252,16 +170,50 @@
       "contributes_to": []
     },
     {
-      "slug": "devops-ingenjor",
+      "slug": "devops-engineer",
       "title": "DevOps-ingenjör",
       "department": "Engineering",
       "sub_department": "DevOps",
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "frontend-developer",
+      "title": "Frontend-utvecklare",
+      "department": "Engineering",
+      "sub_department": "Frontend",
+      "squad": "Insikter",
+      "status": "active",
+      "model": "claude-sonnet-4-6",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "frontend-developer-2",
+      "title": "Frontend-utvecklare",
+      "department": "Engineering",
+      "sub_department": "Frontend",
+      "squad": "",
+      "status": "shell",
+      "model": "claude-haiku-4-5",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "frontend-developer-3",
+      "title": "Frontend-utvecklare",
+      "department": "Engineering",
+      "sub_department": "Frontend",
+      "squad": "",
+      "status": "shell",
+      "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -278,59 +230,19 @@
       "contributes_to": []
     },
     {
-      "slug": "frontend-utvecklare",
-      "title": "Frontend-utvecklare",
-      "department": "Engineering",
-      "sub_department": "Frontend",
-      "squad": "Insikter",
-      "status": "active",
-      "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "frontend-utvecklare-2",
-      "title": "Frontend-utvecklare",
-      "department": "Engineering",
-      "sub_department": "Frontend",
-      "squad": "",
-      "status": "shell",
-      "model": "claude-haiku-4-5",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "frontend-utvecklare-3",
-      "title": "Frontend-utvecklare",
-      "department": "Engineering",
-      "sub_department": "Frontend",
-      "squad": "",
-      "status": "shell",
-      "model": "claude-haiku-4-5",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "terminal-utvecklare",
+      "slug": "terminal-developer",
       "title": "Terminal-UI-utvecklare",
       "department": "Engineering",
       "sub_department": "Frontend",
       "squad": "Överblick",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "terminal-utvecklare-2",
+      "slug": "terminal-developer-2",
       "title": "Terminal-UI-utvecklare",
       "department": "Engineering",
       "sub_department": "Frontend",
@@ -342,21 +254,19 @@
       "contributes_to": []
     },
     {
-      "slug": "fullstack-utvecklare",
+      "slug": "fullstack-developer",
       "title": "Fullstack-utvecklare",
       "department": "Engineering",
       "sub_department": "Fullstack",
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "fullstack-utvecklare-2",
+      "slug": "fullstack-developer-2",
       "title": "Fullstack-utvecklare",
       "department": "Engineering",
       "sub_department": "Fullstack",
@@ -368,22 +278,19 @@
       "contributes_to": []
     },
     {
-      "slug": "integrationsutvecklare",
+      "slug": "integration-developer",
       "title": "Integrationsutvecklare",
       "department": "Engineering",
       "sub_department": "Integrations",
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns",
-        "github"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "integrationsutvecklare-2",
+      "slug": "integration-developer-2",
       "title": "Integrationsutvecklare",
       "department": "Engineering",
       "sub_department": "Integrations",
@@ -402,9 +309,7 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -445,10 +350,10 @@
       "contributes_to": []
     },
     {
-      "slug": "community-ansvarig",
-      "title": "Community-ansvarig",
-      "department": "Kommunikation",
-      "sub_department": "DevRel",
+      "slug": "controller",
+      "title": "Controller",
+      "department": "Finance",
+      "sub_department": "Controlling",
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
@@ -457,25 +362,13 @@
       "contributes_to": []
     },
     {
-      "slug": "devrel-ansvarig",
-      "title": "DevRel-ansvarig",
-      "department": "Kommunikation",
-      "sub_department": "DevRel",
-      "squad": "",
-      "status": "shell",
-      "model": "claude-sonnet-4-6",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "kommunikationschef",
-      "title": "Kommunikationschef",
-      "department": "Kommunikation",
-      "sub_department": "Docs",
+      "slug": "finance-lead",
+      "title": "Ekonomichef (CFO)",
+      "department": "Finance",
+      "sub_department": "Controlling",
       "squad": "",
       "status": "active",
-      "model": "claude-sonnet-4-6",
+      "model": "claude-haiku-4-5",
       "capabilities": [
         "cns"
       ],
@@ -483,24 +376,10 @@
       "contributes_to": []
     },
     {
-      "slug": "teknisk-skribent",
-      "title": "Teknisk skribent",
-      "department": "Kommunikation",
-      "sub_department": "Docs",
-      "squad": "",
-      "status": "active",
-      "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "teknisk-skribent-2",
-      "title": "Teknisk skribent",
-      "department": "Kommunikation",
-      "sub_department": "Docs",
+      "slug": "faktureringsansvarig",
+      "title": "Faktureringsansvarig",
+      "department": "Finance",
+      "sub_department": "FinOps",
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
@@ -509,10 +388,10 @@
       "contributes_to": []
     },
     {
-      "slug": "innehallsskapare",
-      "title": "Innehållsskapare",
-      "department": "Kommunikation",
-      "sub_department": "Marketing",
+      "slug": "finops-analyst",
+      "title": "FinOps-analytiker",
+      "department": "Finance",
+      "sub_department": "FinOps",
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
@@ -521,63 +400,45 @@
       "contributes_to": []
     },
     {
-      "slug": "marknadsforare",
-      "title": "Marknadsförare",
-      "department": "Kommunikation",
-      "sub_department": "Marketing",
+      "slug": "inkop",
+      "title": "Inköpsansvarig",
+      "department": "Finance",
+      "sub_department": "FinOps",
       "squad": "",
       "status": "shell",
-      "model": "claude-sonnet-4-6",
+      "model": "claude-haiku-4-5",
       "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "operativ-chef",
-      "title": "Operativ chef (COO)",
-      "department": "Ledning",
-      "sub_department": "Exec",
-      "squad": "",
-      "status": "active",
-      "model": "claude-opus-4-8",
-      "capabilities": [
-        "cns"
-      ],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "produktdirektor",
-      "title": "Produktdirektör (CPO)",
-      "department": "Ledning",
-      "sub_department": "Exec",
-      "squad": "",
-      "status": "shell",
-      "model": "claude-opus-4-8",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "stabschef",
+      "slug": "chief-of-staff",
       "title": "Stabschef (Chief of Staff)",
-      "department": "Ledning",
+      "department": "Leadership",
       "sub_department": "Exec",
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns",
-        "code",
-        "read"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "strategichef",
-      "title": "Strategichef",
-      "department": "Ledning",
+      "slug": "coo",
+      "title": "Operativ chef (COO)",
+      "department": "Leadership",
+      "sub_department": "Exec",
+      "squad": "",
+      "status": "active",
+      "model": "claude-opus-4-8",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "cpo",
+      "title": "Produktdirektör (CPO)",
+      "department": "Leadership",
       "sub_department": "Exec",
       "squad": "",
       "status": "shell",
@@ -587,16 +448,122 @@
       "contributes_to": []
     },
     {
-      "slug": "teknisk-direktor",
+      "slug": "cto",
       "title": "Teknisk direktör (CTO)",
-      "department": "Ledning",
+      "department": "Leadership",
       "sub_department": "Exec",
       "squad": "",
       "status": "active",
       "model": "claude-opus-4-8",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "strategy-lead",
+      "title": "Strategichef",
+      "department": "Leadership",
+      "sub_department": "Exec",
+      "squad": "",
+      "status": "shell",
+      "model": "claude-opus-4-8",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "incident-lead",
+      "title": "Incidentledare",
+      "department": "Operations",
+      "sub_department": "Incident",
+      "squad": "",
+      "status": "shell",
+      "model": "claude-sonnet-4-6",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "maintenance-engineer",
+      "title": "Underhållsingenjör",
+      "department": "Operations",
+      "sub_department": "Maintenance",
+      "squad": "",
+      "status": "active",
+      "model": "claude-sonnet-4-6",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "maintenance-engineer-2",
+      "title": "Underhållsingenjör",
+      "department": "Operations",
+      "sub_department": "Maintenance",
+      "squad": "",
+      "status": "shell",
+      "model": "claude-haiku-4-5",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "monitoring-analyst",
+      "title": "Övervakningsanalytiker",
+      "department": "Operations",
+      "sub_department": "Monitoring",
+      "squad": "",
+      "status": "shell",
+      "model": "claude-haiku-4-5",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "situation-analyst",
+      "title": "Lägesanalytiker",
+      "department": "Operations",
+      "sub_department": "Monitoring",
+      "squad": "",
+      "status": "active",
+      "model": "claude-haiku-4-5",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "operations-lead",
+      "title": "Driftchef",
+      "department": "Operations",
+      "sub_department": "SRE",
+      "squad": "",
+      "status": "active",
+      "model": "claude-sonnet-4-6",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "sre-engineer",
+      "title": "SRE-ingenjör",
+      "department": "Operations",
+      "sub_department": "SRE",
+      "squad": "",
+      "status": "shell",
+      "model": "claude-sonnet-4-6",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "sre-engineer-2",
+      "title": "SRE-ingenjör",
+      "department": "Operations",
+      "sub_department": "SRE",
+      "squad": "",
+      "status": "shell",
+      "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -613,21 +580,19 @@
       "contributes_to": []
     },
     {
-      "slug": "kompetensutvecklare",
+      "slug": "learning-developer",
       "title": "Kompetensutvecklare (L&D)",
       "department": "People",
       "sub_department": "L&D",
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "kompetensutvecklare-2",
+      "slug": "learning-developer-2",
       "title": "Kompetensutvecklare",
       "department": "People",
       "sub_department": "L&D",
@@ -639,7 +604,7 @@
       "contributes_to": []
     },
     {
-      "slug": "org-arkitekt",
+      "slug": "org-architect",
       "title": "Organisationsarkitekt",
       "department": "People",
       "sub_department": "Org Design",
@@ -655,16 +620,14 @@
       "contributes_to": []
     },
     {
-      "slug": "hr-chef",
+      "slug": "people-lead",
       "title": "HR-chef (CHRO)",
       "department": "People",
       "sub_department": "Talent",
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -693,7 +656,7 @@
       "contributes_to": []
     },
     {
-      "slug": "build-ingenjor",
+      "slug": "build-engineer",
       "title": "Build-ingenjör",
       "department": "Platform",
       "sub_department": "DevEx",
@@ -705,7 +668,7 @@
       "contributes_to": []
     },
     {
-      "slug": "devex-ingenjor",
+      "slug": "devex-engineer",
       "title": "Developer-Experience-ingenjör",
       "department": "Platform",
       "sub_department": "DevEx",
@@ -717,7 +680,7 @@
       "contributes_to": []
     },
     {
-      "slug": "devops-ingenjor-2",
+      "slug": "devops-engineer-2",
       "title": "DevOps-ingenjör",
       "department": "Platform",
       "sub_department": "DevOps",
@@ -729,35 +692,19 @@
       "contributes_to": []
     },
     {
-      "slug": "plattformschef",
-      "title": "Plattformschef",
-      "department": "Platform",
-      "sub_department": "Infra",
-      "squad": "",
-      "status": "active",
-      "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "plattformsingenjor",
+      "slug": "platform-engineer",
       "title": "Plattformsingenjör",
       "department": "Platform",
       "sub_department": "Infra",
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "plattformsingenjor-2",
+      "slug": "platform-engineer-2",
       "title": "Plattformsingenjör",
       "department": "Platform",
       "sub_department": "Infra",
@@ -769,23 +716,33 @@
       "contributes_to": []
     },
     {
-      "slug": "losningsarkitekt",
+      "slug": "platform-lead",
+      "title": "Plattformschef",
+      "department": "Platform",
+      "sub_department": "Infra",
+      "squad": "",
+      "status": "active",
+      "model": "claude-sonnet-4-6",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "solution-architect",
       "title": "Lösningsarkitekt",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "Arkitektur",
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
       "slug": "interaktionsdesigner",
       "title": "Interaktionsdesigner",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "Design",
       "squad": "",
       "status": "shell",
@@ -797,7 +754,7 @@
     {
       "slug": "ux-designer",
       "title": "UX-designer",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "Design",
       "squad": "",
       "status": "shell",
@@ -809,7 +766,7 @@
     {
       "slug": "ux-lead",
       "title": "UX-lead",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "Design",
       "squad": "",
       "status": "shell",
@@ -821,7 +778,7 @@
     {
       "slug": "ux-researcher",
       "title": "UX-researcher",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "Design",
       "squad": "",
       "status": "shell",
@@ -831,23 +788,21 @@
       "contributes_to": []
     },
     {
-      "slug": "produktchef",
+      "slug": "product-lead",
       "title": "Produktchef",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "PM",
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "produktledare-core",
+      "slug": "product-lead-core",
       "title": "Produktledare CNS-core",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "PM",
       "squad": "Modellering",
       "status": "shell",
@@ -857,9 +812,9 @@
       "contributes_to": []
     },
     {
-      "slug": "produktledare-dashboard",
+      "slug": "product-lead-dashboard",
       "title": "Produktledare Dashboard",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "PM",
       "squad": "Insikter",
       "status": "shell",
@@ -869,9 +824,9 @@
       "contributes_to": []
     },
     {
-      "slug": "produktledare-mcp",
+      "slug": "product-lead-mcp",
       "title": "Produktledare MCP-plattform",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "PM",
       "squad": "Integrationer",
       "status": "shell",
@@ -881,9 +836,9 @@
       "contributes_to": []
     },
     {
-      "slug": "produktledare-tui",
+      "slug": "product-lead-tui",
       "title": "Produktledare TUI",
-      "department": "Produkt",
+      "department": "Product",
       "sub_department": "PM",
       "squad": "Överblick",
       "status": "shell",
@@ -893,9 +848,9 @@
       "contributes_to": []
     },
     {
-      "slug": "product-ops",
-      "title": "Product Ops",
-      "department": "Produkt",
+      "slug": "product-analyst",
+      "title": "Produktanalytiker",
+      "department": "Product",
       "sub_department": "ProductOps",
       "squad": "",
       "status": "shell",
@@ -905,9 +860,9 @@
       "contributes_to": []
     },
     {
-      "slug": "produktanalytiker",
-      "title": "Produktanalytiker",
-      "department": "Produkt",
+      "slug": "product-ops",
+      "title": "Product Ops",
+      "department": "Product",
       "sub_department": "ProductOps",
       "squad": "",
       "status": "shell",
@@ -924,16 +879,12 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns",
-        "code",
-        "read"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
     {
-      "slug": "sessionskoordinator",
+      "slug": "session-coordinator",
       "title": "Sessionskoordinator",
       "department": "Program",
       "sub_department": "Coordination",
@@ -947,7 +898,7 @@
       "contributes_to": []
     },
     {
-      "slug": "sessionskoordinator-2",
+      "slug": "session-coordinator-2",
       "title": "Sessionskoordinator",
       "department": "Program",
       "sub_department": "Coordination",
@@ -959,16 +910,14 @@
       "contributes_to": []
     },
     {
-      "slug": "programledare",
+      "slug": "program-lead",
       "title": "Programledare",
       "department": "Program",
       "sub_department": "Delivery",
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
-      "capabilities": [
-        "cns"
-      ],
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -997,7 +946,7 @@
       "contributes_to": []
     },
     {
-      "slug": "leveranschef",
+      "slug": "delivery-lead",
       "title": "Leveranschef",
       "department": "Program",
       "sub_department": "Release",
@@ -1009,7 +958,7 @@
       "contributes_to": []
     },
     {
-      "slug": "release-koordinator",
+      "slug": "release-coordinator",
       "title": "Release-koordinator",
       "department": "Program",
       "sub_department": "Release",
@@ -1033,7 +982,7 @@
       "contributes_to": []
     },
     {
-      "slug": "innovationsledare",
+      "slug": "innovation-lead",
       "title": "Innovationsledare",
       "department": "R&D",
       "sub_department": "Innovation",
@@ -1057,19 +1006,7 @@
       "contributes_to": []
     },
     {
-      "slug": "forskningsledare",
-      "title": "Forskningsledare",
-      "department": "R&D",
-      "sub_department": "Research",
-      "squad": "",
-      "status": "active",
-      "model": "claude-sonnet-4-6",
-      "capabilities": [],
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "konkurrentanalytiker",
+      "slug": "competitor-analyst",
       "title": "Konkurrentanalytiker",
       "department": "R&D",
       "sub_department": "Research",
@@ -1081,12 +1018,24 @@
       "contributes_to": []
     },
     {
-      "slug": "marknadsanalytiker",
+      "slug": "market-analyst",
       "title": "Marknadsanalytiker",
       "department": "R&D",
       "sub_department": "Research",
       "squad": "",
       "status": "shell",
+      "model": "claude-sonnet-4-6",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "research-lead",
+      "title": "Forskningsledare",
+      "department": "R&D",
+      "sub_department": "Research",
+      "squad": "",
+      "status": "active",
       "model": "claude-sonnet-4-6",
       "capabilities": [],
       "owns": [],
@@ -1105,7 +1054,7 @@
       "contributes_to": []
     },
     {
-      "slug": "webbresearcher",
+      "slug": "web-researcher",
       "title": "Webbresearcher",
       "department": "R&D",
       "sub_department": "Research",

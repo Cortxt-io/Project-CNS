@@ -103,7 +103,7 @@ MCP = vertikal integration (agent → tools). A2A = horisontell integration (age
 
 ## Onboarding-pelarna (bemanning av en ny agent)
 
-När en roll bemannas (`/bemanna`-skillen) gäller fyra pelare, grindade av `scripts/validate_agent.py`:
+När en roll bemannas (`/staff-role`-skillen) gäller fyra pelare, grindade av `scripts/validate_agent.py`:
 
 1. **Systemprompt = DNA.** Numrerat task-flow (viktigast), skarpa gränser, "verifiera X innan
    nästa steg", rollkonfusionsskydd (deklarera åtgärder före exekvering). Lägg ej manualer i

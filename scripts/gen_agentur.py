@@ -28,8 +28,8 @@ AGENTUR = AGENTS_DIR / "AGENTUR.md"
 AGENTS_JSON = ROOT / "exports" / "agents.json"
 
 # Avdelningsordning för org-schemat
-DEPT_ORDER = ["Ledning", "Produkt", "R&D", "Engineering", "Platform",
-              "People", "Program", "Drift", "Ekonomi", "Kommunikation"]
+DEPT_ORDER = ["Leadership", "Product", "R&D", "Engineering", "Platform",
+              "People", "Program", "Operations", "Finance", "Communications"]
 
 
 def parse_frontmatter(text: str) -> dict:

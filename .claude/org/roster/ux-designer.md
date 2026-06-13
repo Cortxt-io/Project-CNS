@@ -1,7 +1,7 @@
 ---
 name: ux-designer
 title: UX-designer
-department: Produkt
+department: Product
 sub_department: Design
 chapter: null
 squad: null

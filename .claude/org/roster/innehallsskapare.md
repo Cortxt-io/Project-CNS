@@ -1,7 +1,7 @@
 ---
 name: innehallsskapare
 title: Innehållsskapare
-department: Kommunikation
+department: Communications
 sub_department: Marketing
 chapter: null
 squad: null

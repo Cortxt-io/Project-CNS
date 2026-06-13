@@ -1,7 +1,7 @@
 ---
 name: product-ops
 title: Product Ops
-department: Produkt
+department: Product
 sub_department: ProductOps
 chapter: null
 squad: null
