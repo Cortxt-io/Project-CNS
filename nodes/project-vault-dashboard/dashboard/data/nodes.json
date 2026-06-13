@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-06-12T10:57:15.141780",
+  "exported_at": "2026-06-13T09:51:52.727379",
   "version": "3.0",
   "nodes": [
     {
@@ -19,6 +19,7 @@
       "pipeline": "",
       "type": "tool",
       "domain": "cortxt",
+      "reality_status": "grouping",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -43,18 +44,21 @@
       "syfte": ""
     },
     {
-      "slug": "cns-analyst",
-      "title": "CNS Analyst",
+      "slug": "agentur",
+      "title": "Agentur",
       "kind": "component",
       "stage": "",
-      "part_of": "pipeline-review",
+      "part_of": "infrastructure",
       "feeds": [],
-      "depends_on": [],
+      "depends_on": [
+        "cns-core"
+      ],
       "layer": "",
       "pipeline": "",
-      "type": "pipeline",
+      "type": "service",
       "domain": "cortxt",
-      "owner_agent": "",
+      "reality_status": "true",
+      "owner_agent": "backend-utvecklare",
       "contributing_agents": [],
       "status": "",
       "mvp_stage": "",
@@ -62,6 +66,45 @@
       "value_sek": 0,
       "roi_percent": 0,
       "tags": [],
+      "created": "",
+      "updated": "",
+      "summary": "Orkestreringslagret — dispatch-loop, agent-host, routing och agent-roster som låter agenturen exekvera backloggen autonomt (issue→PR) med guardrails.",
+      "family": "",
+      "url_live": "",
+      "url_repo": "https://github.com/rian010194/Project-CNS",
+      "current_slice": "",
+      "problem": "",
+      "solution": "",
+      "primary_audience": "",
+      "assumptions": [],
+      "mvp_steps": [],
+      "top_risk": "",
+      "syfte": ""
+    },
+    {
+      "slug": "cns-analyst",
+      "title": "CNS Analyst",
+      "kind": "component",
+      "stage": "",
+      "part_of": "cortxt",
+      "feeds": [],
+      "depends_on": [],
+      "layer": "",
+      "pipeline": "",
+      "type": "pipeline",
+      "domain": "cortxt",
+      "reality_status": "true",
+      "owner_agent": "",
+      "contributing_agents": [],
+      "status": "",
+      "mvp_stage": "",
+      "cost_sek": 0,
+      "value_sek": 0,
+      "roi_percent": 0,
+      "tags": [
+        "pipeline",
+        "review"
+      ],
       "created": "",
       "updated": "",
       "summary": "AI-driven analysmotor som föreslår uppdateringar av stage, risker och summary.",
@@ -82,13 +125,14 @@
       "title": "CNS Brief",
       "kind": "component",
       "stage": "",
-      "part_of": "pipeline-intern",
+      "part_of": "cortxt",
       "feeds": [],
       "depends_on": [],
       "layer": "",
       "pipeline": "",
       "type": "pipeline",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -96,7 +140,10 @@
       "cost_sek": 0,
       "value_sek": 0,
       "roi_percent": 0,
-      "tags": [],
+      "tags": [
+        "pipeline",
+        "intern"
+      ],
       "created": "",
       "updated": "",
       "summary": "AI-driven portföljbrief som varje morgon returnerar situation, prioriteringar och questförslag.",
@@ -124,6 +171,7 @@
       "pipeline": "",
       "type": "cli",
       "domain": "cortxt",
+      "reality_status": "grouping",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -152,7 +200,7 @@
       "title": "CNS Devlog",
       "kind": "component",
       "stage": "",
-      "part_of": "pipeline-intern",
+      "part_of": "cortxt",
       "feeds": [
         "cns-brief"
       ],
@@ -161,6 +209,7 @@
       "pipeline": "",
       "type": "pipeline",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -168,7 +217,10 @@
       "cost_sek": 0,
       "value_sek": 0,
       "roi_percent": 0,
-      "tags": [],
+      "tags": [
+        "pipeline",
+        "intern"
+      ],
       "created": "",
       "updated": "",
       "summary": "Genererar daglig AI-sammanfattning av portföljförändringar och publicerar som statisk sida.",
@@ -189,7 +241,7 @@
       "title": "CNS Devwatch",
       "kind": "component",
       "stage": "",
-      "part_of": "pipeline-intern",
+      "part_of": "cortxt",
       "feeds": [
         "cns-devlog"
       ],
@@ -198,6 +250,7 @@
       "pipeline": "",
       "type": "pipeline",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -205,7 +258,10 @@
       "cost_sek": 0,
       "value_sek": 0,
       "roi_percent": 0,
-      "tags": [],
+      "tags": [
+        "pipeline",
+        "intern"
+      ],
       "created": "",
       "updated": "",
       "summary": "Bevakar dagliga git-ändringar i project.md-filer och exporterar som ChangeEvents.",
@@ -233,6 +289,7 @@
       "pipeline": "",
       "type": "infra",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "devops-ingenjor",
       "contributing_agents": [],
       "status": "",
@@ -270,6 +327,7 @@
       "pipeline": "",
       "type": "mcp-server",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "backend-utvecklare",
       "contributing_agents": [],
       "status": "",
@@ -305,6 +363,7 @@
       "pipeline": "",
       "type": "tool",
       "domain": "cortxt",
+      "reality_status": "aspirational",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -340,6 +399,7 @@
       "pipeline": "",
       "type": "service",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "backend-utvecklare",
       "contributing_agents": [],
       "status": "",
@@ -375,6 +435,7 @@
       "pipeline": "",
       "type": "tool",
       "domain": "cortxt",
+      "reality_status": "grouping",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -410,6 +471,7 @@
       "pipeline": "",
       "type": "frontend",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "frontend-utvecklare",
       "contributing_agents": [],
       "status": "",
@@ -450,6 +512,7 @@
       "pipeline": "",
       "type": "service",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -485,6 +548,7 @@
       "pipeline": "",
       "type": "frontend",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "frontend-utvecklare",
       "contributing_agents": [],
       "status": "",
@@ -520,6 +584,7 @@
       "pipeline": "",
       "type": "frontend",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "frontend-utvecklare",
       "contributing_agents": [],
       "status": "",
@@ -555,6 +620,7 @@
       "pipeline": "",
       "type": "pipeline",
       "domain": "cortxt",
+      "reality_status": "aspirational",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -583,13 +649,14 @@
       "title": "Dev Changelog Engine Mini",
       "kind": "component",
       "stage": "",
-      "part_of": "pipeline-extern",
+      "part_of": "cortxt",
       "feeds": [],
       "depends_on": [],
       "layer": "",
       "pipeline": "",
       "type": "pipeline",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -597,7 +664,10 @@
       "cost_sek": 0,
       "value_sek": 0,
       "roi_percent": 0,
-      "tags": [],
+      "tags": [
+        "pipeline",
+        "extern"
+      ],
       "created": "",
       "updated": "",
       "summary": "Pipeline that transforms DocsWatch data into prioritized weekly digests in Markdown and HTML.",
@@ -618,7 +688,7 @@
       "title": "DocsWatch",
       "kind": "component",
       "stage": "",
-      "part_of": "pipeline-extern",
+      "part_of": "cortxt",
       "feeds": [
         "dev-changelog-engine-mini"
       ],
@@ -627,6 +697,7 @@
       "pipeline": "",
       "type": "cli",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -634,7 +705,10 @@
       "cost_sek": 0,
       "value_sek": 0,
       "roi_percent": 0,
-      "tags": [],
+      "tags": [
+        "pipeline",
+        "extern"
+      ],
       "created": "",
       "updated": "",
       "summary": "CLI tool that monitors external changelogs, docs and release notes for dev teams.",
@@ -667,6 +741,7 @@
       "pipeline": "",
       "type": "service",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -702,6 +777,7 @@
       "pipeline": "",
       "type": "infra",
       "domain": "cortxt",
+      "reality_status": "grouping",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -737,6 +813,7 @@
       "pipeline": "",
       "type": "frontend",
       "domain": "cortxt",
+      "reality_status": "grouping",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -774,6 +851,7 @@
       "pipeline": "",
       "type": "ai-model",
       "domain": "cortxt",
+      "reality_status": "aspirational",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -811,6 +889,7 @@
       "pipeline": "",
       "type": "mcp-server",
       "domain": "cortxt",
+      "reality_status": "aspirational",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -835,146 +914,6 @@
       "syfte": ""
     },
     {
-      "slug": "pipeline-extern",
-      "title": "Pipeline Extern",
-      "kind": "system",
-      "stage": "",
-      "part_of": "cortxt",
-      "feeds": [],
-      "depends_on": [],
-      "layer": "",
-      "pipeline": "",
-      "type": "pipeline",
-      "domain": "cortxt",
-      "owner_agent": "",
-      "contributing_agents": [],
-      "status": "",
-      "mvp_stage": "",
-      "cost_sek": 0,
-      "value_sek": 0,
-      "roi_percent": 0,
-      "tags": [],
-      "created": "",
-      "updated": "",
-      "summary": "Extern pipeline — hanterar utgående data och publicering.",
-      "family": "",
-      "url_live": "",
-      "url_repo": "",
-      "current_slice": "",
-      "problem": "",
-      "solution": "",
-      "primary_audience": "",
-      "assumptions": [],
-      "mvp_steps": [],
-      "top_risk": "",
-      "syfte": ""
-    },
-    {
-      "slug": "pipeline-intern",
-      "title": "Pipeline Intern",
-      "kind": "system",
-      "stage": "",
-      "part_of": "cortxt",
-      "feeds": [],
-      "depends_on": [],
-      "layer": "",
-      "pipeline": "",
-      "type": "pipeline",
-      "domain": "cortxt",
-      "owner_agent": "",
-      "contributing_agents": [],
-      "status": "",
-      "mvp_stage": "",
-      "cost_sek": 0,
-      "value_sek": 0,
-      "roi_percent": 0,
-      "tags": [],
-      "created": "",
-      "updated": "",
-      "summary": "Intern datapipeline — bearbetar och förädlar information internt.",
-      "family": "",
-      "url_live": "",
-      "url_repo": "",
-      "current_slice": "",
-      "problem": "",
-      "solution": "",
-      "primary_audience": "",
-      "assumptions": [],
-      "mvp_steps": [],
-      "top_risk": "",
-      "syfte": ""
-    },
-    {
-      "slug": "pipeline-review",
-      "title": "Pipeline Review",
-      "kind": "system",
-      "stage": "",
-      "part_of": "cortxt",
-      "feeds": [],
-      "depends_on": [],
-      "layer": "",
-      "pipeline": "",
-      "type": "pipeline",
-      "domain": "cortxt",
-      "owner_agent": "",
-      "contributing_agents": [],
-      "status": "",
-      "mvp_stage": "",
-      "cost_sek": 0,
-      "value_sek": 0,
-      "roi_percent": 0,
-      "tags": [],
-      "created": "",
-      "updated": "",
-      "summary": "Granskningspipeline — analyserar och utvärderar projekt och data.",
-      "family": "",
-      "url_live": "",
-      "url_repo": "",
-      "current_slice": "",
-      "problem": "",
-      "solution": "",
-      "primary_audience": "",
-      "assumptions": [],
-      "mvp_steps": [],
-      "top_risk": "",
-      "syfte": ""
-    },
-    {
-      "slug": "project-vault-dashboard",
-      "title": "Project Vault Dashboard",
-      "kind": "component",
-      "stage": "",
-      "part_of": "infrastructure",
-      "feeds": [],
-      "depends_on": [],
-      "layer": "",
-      "pipeline": "",
-      "type": "frontend",
-      "domain": "cortxt",
-      "owner_agent": "",
-      "contributing_agents": [],
-      "status": "",
-      "mvp_stage": "",
-      "cost_sek": 0,
-      "value_sek": 0,
-      "roi_percent": 0,
-      "tags": [],
-      "created": "",
-      "updated": "",
-      "summary": "Superseded by cortxt-dashboard-app. Kept for historical reference.",
-      "family": "",
-      "url_live": "",
-      "url_repo": "https://github.com/rian010194/cortxt",
-      "current_slice": "",
-      "problem": "",
-      "solution": "",
-      "primary_audience": "",
-      "assumptions": [],
-      "mvp_steps": [],
-      "top_risk": "",
-      "syfte": ""
-    },
-    {
       "slug": "quest-engine",
       "title": "Quest Engine",
       "kind": "component",
@@ -988,6 +927,7 @@
       "pipeline": "",
       "type": "service",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -1023,6 +963,7 @@
       "pipeline": "",
       "type": "agent",
       "domain": "cortxt",
+      "reality_status": "aspirational",
       "owner_agent": "forskningsledare",
       "contributing_agents": [],
       "status": "",
@@ -1051,13 +992,14 @@
       "title": "Scoring Studio",
       "kind": "component",
       "stage": "",
-      "part_of": "pipeline-extern",
+      "part_of": "cortxt",
       "feeds": [],
       "depends_on": [],
       "layer": "",
       "pipeline": "",
       "type": "tool",
       "domain": "cortxt",
+      "reality_status": "aspirational",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -1065,7 +1007,10 @@
       "cost_sek": 0,
       "value_sek": 0,
       "roi_percent": 0,
-      "tags": [],
+      "tags": [
+        "pipeline",
+        "extern"
+      ],
       "created": "",
       "updated": "",
       "summary": "Visuellt verktyg för att justera scoring-vikter utan att redigera kod.",
@@ -1093,6 +1038,7 @@
       "pipeline": "",
       "type": "service",
       "domain": "cortxt",
+      "reality_status": "true",
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -1126,6 +1072,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1137,6 +1084,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1148,6 +1098,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1159,6 +1110,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1170,6 +1124,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1181,6 +1136,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1192,6 +1150,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1203,6 +1162,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1214,6 +1174,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1225,6 +1186,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1236,6 +1200,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1247,6 +1212,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1258,6 +1224,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1269,6 +1236,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1280,6 +1248,9 @@
       "squad": "Integrationer",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1291,6 +1262,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1302,6 +1274,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1313,6 +1286,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1324,6 +1298,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1335,6 +1310,21 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
+      "owns": [],
+      "contributes_to": []
+    },
+    {
+      "slug": "devops-ingenjor",
+      "title": "DevOps-ingenjör",
+      "department": "Engineering",
+      "sub_department": "DevOps",
+      "squad": "",
+      "status": "active",
+      "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1346,6 +1336,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1357,6 +1348,9 @@
       "squad": "Insikter",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1368,6 +1362,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1379,6 +1374,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1390,6 +1386,9 @@
       "squad": "Överblick",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1401,6 +1400,7 @@
       "squad": "Överblick",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1412,6 +1412,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1423,6 +1426,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1432,8 +1436,12 @@
       "department": "Engineering",
       "sub_department": "Integrations",
       "squad": "",
-      "status": "shell",
+      "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns",
+        "github"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1445,6 +1453,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1456,6 +1465,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1467,6 +1479,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1478,6 +1491,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1489,6 +1503,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1500,6 +1515,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1511,6 +1527,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1522,6 +1539,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1533,6 +1553,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1544,6 +1567,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1555,6 +1579,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1566,6 +1591,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1577,6 +1603,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-opus-4-8",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1588,6 +1617,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-opus-4-8",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1599,6 +1629,11 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns",
+        "code",
+        "read"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1610,6 +1645,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-opus-4-8",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1621,6 +1657,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-opus-4-8",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1632,6 +1671,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1643,6 +1683,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1654,6 +1697,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1665,6 +1709,11 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns",
+        "code",
+        "read"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1676,6 +1725,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1687,6 +1739,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1698,6 +1751,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1709,6 +1763,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1720,17 +1775,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
-      "owns": [],
-      "contributes_to": []
-    },
-    {
-      "slug": "devops-ingenjor",
-      "title": "DevOps-ingenjör",
-      "department": "Platform",
-      "sub_department": "DevOps",
-      "squad": "",
-      "status": "active",
-      "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1742,6 +1787,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1753,6 +1799,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1764,6 +1813,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1775,6 +1827,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1786,6 +1839,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1797,6 +1853,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1808,6 +1865,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1819,6 +1877,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1830,6 +1889,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1840,7 +1900,10 @@
       "sub_department": "PM",
       "squad": "",
       "status": "active",
-      "model": "claude-sonnet-4-6",
+      "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1852,6 +1915,7 @@
       "squad": "Modellering",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1863,6 +1927,7 @@
       "squad": "Insikter",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1874,6 +1939,7 @@
       "squad": "Integrationer",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1885,6 +1951,7 @@
       "squad": "Överblick",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1896,6 +1963,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1907,6 +1975,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1918,6 +1987,11 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns",
+        "code",
+        "read"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1929,6 +2003,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-haiku-4-5",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1940,6 +2017,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1951,6 +2029,9 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [
+        "cns"
+      ],
       "owns": [],
       "contributes_to": []
     },
@@ -1962,6 +2043,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1973,6 +2055,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1984,6 +2067,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -1995,6 +2079,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -2006,6 +2091,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -2017,6 +2103,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -2028,6 +2115,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -2039,6 +2127,7 @@
       "squad": "",
       "status": "active",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -2050,6 +2139,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -2061,6 +2151,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -2072,6 +2163,7 @@
       "squad": "",
       "status": "shell",
       "model": "claude-sonnet-4-6",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     },
@@ -2083,11 +2175,17 @@
       "squad": "",
       "status": "shell",
       "model": "claude-haiku-4-5",
+      "capabilities": [],
       "owns": [],
       "contributes_to": []
     }
   ],
   "edges": [
+    {
+      "from": "backend-utvecklare",
+      "to": "agentur",
+      "type": "owns"
+    },
     {
       "from": "devops-ingenjor",
       "to": "cns-hosting-infra",
