@@ -1,9 +1,9 @@
 {
   "id": "session-d0d034df",
   "created_at": "2026-06-13T21:24:55",
-  "updated_at": "2026-06-13T21:24:55",
-  "status": "running",
-  "summary": "retro-session: epic #2 (Browser Use) — friktion och lärdomar från dagens delivery",
+  "updated_at": "2026-06-13T21:26:19",
+  "status": "done",
+  "summary": "Retro epic #2: friktion = nyckel-strul + dold API-drift (kod committad utan skarp körning) + skippade pass. Åtgärder fångade: idea-83ba1747 (statusline quest→epic), idea-c9176eac (cns-tui-synk). Princip: alla objekt genom sina pass.",
   "link": {
     "kind": "quest",
     "ref": "2"
