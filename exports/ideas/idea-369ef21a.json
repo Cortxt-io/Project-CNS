@@ -5,5 +5,8 @@
   "source": "chat",
   "slug": "cns-core",
   "session_id": null,
-  "status": "open"
+  "status": "resolved",
+  "resolution": "wontfix",
+  "resolution_reason": "Beslutet ÄR fånga-bygg-inte; bevarat i minnet integration-ryggrad-vs-ekrar (GitHub=ryggrad, ej eker). Host-agnosticism premature; ordval git/GitHub noterat. Inget att bygga.",
+  "resolved_at": "2026-06-13T19:40:29"
 }
