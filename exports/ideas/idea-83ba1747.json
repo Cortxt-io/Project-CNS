@@ -1,0 +1,9 @@
+{
+  "id": "idea-83ba1747",
+  "text": "Statusline/TUI-prosa: \"quest #N\" ska läsa \"epic #N\" enligt ordlistan. Hårdkodat på recommend.py:132, :239, :302 och tui/app.py:150 (visningssträngar — MCP-verktygsnamn cortxt_*_quest lämnas). Ren prosaswap, hör till engelska namnmigreringen. OBS lämna json_exporter.py:116 (quest:{n} är edge-ID, ej display).",
+  "created_at": "2026-06-13T21:25:52",
+  "source": "chat",
+  "slug": "agentur",
+  "session_id": "session-d0d034df",
+  "status": "open"
+}
