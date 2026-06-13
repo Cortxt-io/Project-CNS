@@ -34,7 +34,6 @@
         "quests",
         "projects",
         "issues",
-        "prs",
         "wiki"
       ],
       "guardrails": "strategisk; läser brett, muterar lite; delegerar exekvering; beslut förbereds, Rikard godkänner",
@@ -88,8 +87,6 @@
         "issues",
         "prs",
         "actions",
-        "gh_projects",
-        "quests",
         "wiki"
       ],
       "guardrails": "egen branch, aldrig direkt main; skapar PR; bekräfta före destruktiv git",
@@ -112,9 +109,7 @@
       "tool_families": [
         "actions",
         "issues",
-        "projects",
-        "prs",
-        "wiki"
+        "prs"
       ],
       "guardrails": "read-first; bekräfta destruktivt; crash-proof hooks",
       "eval_focus": "fungerande, idempotent script/hook",
@@ -123,9 +118,7 @@
     "People|lead": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
-        "issues",
         "projects",
-        "quests",
         "wiki"
       ],
       "guardrails": "validerar individer/struktur; muterar ej kod utan flöde",
@@ -135,9 +128,6 @@
     "People|ic": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
-        "issues",
-        "prs",
-        "quests",
         "wiki"
       ],
       "guardrails": "read-first; stödjande, ej beslutande",
@@ -178,10 +168,7 @@
       "model": "claude-haiku-4-5",
       "tool_families": [
         "issues",
-        "projects",
-        "prs",
-        "quests",
-        "wiki"
+        "projects"
       ],
       "guardrails": "read-first; observerar och rapporterar, agerar ej",
       "eval_focus": "korrekt nuläge/städförslag",
@@ -216,10 +203,7 @@
     "Kommunikation|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [
-        "wiki",
-        "issues",
-        "projects",
-        "quests"
+        "wiki"
       ],
       "guardrails": "read + write wiki; rör ej produktkod",
       "eval_focus": "korrekt enskild sida",
