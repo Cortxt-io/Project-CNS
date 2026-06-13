@@ -1,0 +1,23 @@
+{
+  "id": "session-11ae1985",
+  "created_at": "2026-06-13T19:40:24",
+  "updated_at": "2026-06-13T19:40:24",
+  "status": "running",
+  "summary": "triage-session: idé-inkorg + quest-städning (23 idéer, 13 epics)",
+  "link": {
+    "kind": "node",
+    "ref": "cns-core"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null,
+  "metrics": {
+    "tool_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "tools_seen": [],
+    "artifacts": []
+  }
+}
