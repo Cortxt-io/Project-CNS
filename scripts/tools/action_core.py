@@ -22,7 +22,7 @@ def action(action: str, **kw: Any) -> Any:  # noqa: A002 — domännamnet är 'a
 
     if action == "list_runs":
         workflow_id = kw.get("workflow_id")
-        limit = kw.get("limit", 10)
+        limit = kw.get("limit") or 10  # None (wrapper-default) → 10
         if workflow_id:
             url = f"{_GH_API}/repos/{_repo()}/actions/workflows/{workflow_id}/runs"
         else:

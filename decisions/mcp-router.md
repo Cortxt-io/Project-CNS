@@ -118,7 +118,7 @@ universum.
 
 **Öppet (kvar):** `gh_projects`/`leases`/`linear` saknas som families i matrisen → override-only
 tills cellerna ev. utökas. Verifierat: `tests/test_tool_core.py`, `test_tool_aliases.py`,
-`test_tool_families.py`, `test_agent_host_tools.py`, utökad `test_mcp_router.py` (154 gröna).
+`test_tool_families.py`, `test_agent_host_tools.py`, utökad `test_mcp_router.py` (159 gröna).
 
 > **Arkitektavvikelse från specen:** kärnan lades i `scripts/tools/` (inte `app/tools/core/`)
 > för att hålla importriktningen nedåt — både `app/` och `scripts/tui/agent_host` delar den.

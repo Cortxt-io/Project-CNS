@@ -756,7 +756,7 @@ def cmd_agent_tools(args: argparse.Namespace) -> None:
     role = load_role(args.role)
     if role is None:
         console.print(f"[red]Roll '{args.role}' hittades inte i .claude/agents/[/red]")
-        return
+        sys.exit(1)
     level = derive_level(role)
     local = registry.local_names_for(role.get("tools", []))
     console.print(

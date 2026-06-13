@@ -64,6 +64,24 @@ def test_local_names_for_dedupes_and_maps():
     assert names == ["mcp__cns__issue", "mcp__cns__pr", "mcp__cns__wiki"]
 
 
+def test_session_list_does_not_force_status(monkeypatch):
+    """Regression: action='list' får INTE tvinga status='done' (skulle dölja andra pass)."""
+    seen = {}
+    monkeypatch.setattr("scripts.session_store.list_sessions",
+                        lambda status=None, link_ref=None: seen.update(status=status) or [])
+    registry.dispatch("session", "list", status=None, link_ref=None)
+    assert seen["status"] is None  # list filtrerar inte när status osatt
+
+
+def test_session_save_defaults_status_to_done(monkeypatch):
+    """save med status=None (wrapper-default) ska bli 'done', inte None."""
+    seen = {}
+    monkeypatch.setattr("scripts.session_store.save_session",
+                        lambda **kw: seen.update(kw) or {"id": "s1"})
+    registry.dispatch("session", "save", summary="x", status=None)
+    assert seen["status"] == "done"
+
+
 def test_legacy_map_covers_all_43_old_names():
     assert len(registry.LEGACY_TOOL_DOMAINS) == 43
     assert set(registry.LEGACY_TOOL_DOMAINS.values()) == {t.domain for t in registry.FAT_TOOLS}

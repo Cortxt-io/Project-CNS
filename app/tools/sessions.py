@@ -39,7 +39,7 @@ def register(mcp: FastMCP) -> None:
             "session", action,
             session_id=session_id, parent_id=parent_id, summary=summary,
             fork_name=fork_name, link_kind=link_kind, link_ref=link_ref,
-            status=(status if status is not None else "done"),
+            status=status,  # None = osatt; kärnan defaultar 'save' till 'done', 'list' filtrerar ej
             source=source, transcript_id=transcript_id, root_id=root_id,
         )
         if action in ("start", "done", "save", "fork") and isinstance(result, dict):

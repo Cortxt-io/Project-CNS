@@ -35,7 +35,7 @@ def session(action: str, **kw: Any) -> Any:
             summary=kw["summary"],
             link_kind=kw.get("link_kind"),
             link_ref=kw.get("link_ref"),
-            status=kw.get("status", "done"),
+            status=kw.get("status") or "done",  # None (wrapper-default) → 'done'
             source=kw.get("source", "chat"),
             transcript_id=kw.get("transcript_id"),
         )

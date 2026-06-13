@@ -206,7 +206,10 @@ ALL_FAMILIES: tuple[str, ...] = tuple(t.family for t in FAT_TOOLS)
 
 
 def by_domain(domain: str) -> FatTool:
-    return _BY_DOMAIN[domain]
+    try:
+        return _BY_DOMAIN[domain]
+    except KeyError:
+        raise ValueError(f"okänd domän '{domain}'; giltiga: {', '.join(_BY_DOMAIN)}") from None
 
 
 def by_name(name: str) -> FatTool | None:
