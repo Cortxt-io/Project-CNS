@@ -61,6 +61,37 @@ def _dedupe(items: list[str]) -> list[str]:
     return out
 
 
+def list_servers(registry: dict[str, dict] | None = None) -> list[dict]:
+    """Diagnostik: vilka MCP-servrar registret känner + om de är konfigurerade (env satt).
+
+    Returnerar [{name, kind, capability, configured, hint}] — för `cns mcp-servers`. En
+    sdk-server är alltid tillgänglig (in-process); en extern är 'configured' när dess
+    command_env eller url_env är satt i miljön.
+    """
+    registry = load_registry() if registry is None else registry
+    out: list[dict] = []
+    for name, entry in registry.items():
+        kind = entry.get("kind", "")
+        if kind == "sdk":
+            configured, hint = True, "in-process (alltid tillgänglig)"
+        else:
+            cmd_env = entry.get("command_env")
+            url_env = entry.get("url_env")
+            has = bool((cmd_env and os.environ.get(cmd_env)) or (url_env and os.environ.get(url_env)))
+            need = " eller ".join(x for x in (cmd_env, url_env) if x) or "env"
+            tok = entry.get("token_env")
+            configured = has
+            hint = "konfigurerad" if has else f"sätt {need}" + (f" (+ {tok})" if tok else "")
+        out.append({
+            "name": name,
+            "kind": kind,
+            "capability": entry.get("capability", ""),
+            "configured": configured,
+            "hint": hint,
+        })
+    return out
+
+
 def _build_external(name: str, entry: dict) -> tuple[dict | None, str | None]:
     """Bygg en McpServerConfig (stdio/http) för en extern server ur env.
 

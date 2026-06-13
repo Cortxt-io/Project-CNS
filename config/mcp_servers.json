@@ -1,21 +1,24 @@
 {
-  "_doc": "MCP-serverregister — config-routern (se decisions/mcp-router.md). En post per MCP-server agenturens agenter KAN nå. 'kind': sdk (in-process, byggs via injicerad builder) | stdio | http. 'always': monteras oavsett roll (baseline). 'provides': namnprefix; en server monteras när någon av rollens '## Tillåtna verktyg' matchar ett prefix. Externa servrar (stdio/http) gatas på env och hoppas tyst över (warning) om ej konfigurerade — fail-open.",
+  "_doc": "MCP-serverregister — config-routern (se decisions/mcp-router.md). En post per MCP-server agenturens agenter KAN nå. 'kind': sdk (in-process, byggs via injicerad builder) | stdio | http. 'always': monteras oavsett roll (baseline). 'provides': namnprefix; en server monteras när någon av rollens '## Tillåtna verktyg' matchar ett prefix (= agentens kapabilitet, Del B). Externa servrar (stdio/http) gatas på env och hoppas tyst över (warning) om ej konfigurerade — fail-open. 'capability' = Del B-kapabilitetstoken servern motsvarar (en agent som har den får servern).",
   "servers": {
     "cns": {
       "kind": "sdk",
       "builder": "cns",
       "always": true,
-      "provides": ["mcp__cns__", "cortxt_"]
+      "provides": ["mcp__cns__", "cortxt_"],
+      "capability": "cns"
     },
     "web": {
       "kind": "sdk",
       "builder": "web",
       "always": true,
-      "provides": ["mcp__web__"]
+      "provides": ["mcp__web__"],
+      "capability": "web"
     },
     "github": {
       "kind": "stdio",
       "provides": ["mcp__github__"],
+      "capability": "github",
       "command_env": "GITHUB_MCP_COMMAND",
       "args": ["stdio"],
       "url_env": "GITHUB_MCP_URL",
@@ -23,6 +26,24 @@
       "token_header": "Authorization",
       "token_header_prefix": "Bearer ",
       "token_env_passthrough": "GITHUB_PERSONAL_ACCESS_TOKEN"
+    },
+    "vercel": {
+      "kind": "http",
+      "provides": ["mcp__vercel__"],
+      "capability": "vercel",
+      "url_env": "VERCEL_MCP_URL",
+      "token_env": "VERCEL_MCP_TOKEN",
+      "token_header": "Authorization",
+      "token_header_prefix": "Bearer "
+    },
+    "railway": {
+      "kind": "http",
+      "provides": ["mcp__railway__"],
+      "capability": "railway",
+      "url_env": "RAILWAY_MCP_URL",
+      "token_env": "RAILWAY_MCP_TOKEN",
+      "token_header": "Authorization",
+      "token_header_prefix": "Bearer "
     }
   }
 }
