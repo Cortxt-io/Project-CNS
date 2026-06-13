@@ -1,6 +1,6 @@
 {
-  "exported_at": "2026-06-13T22:29:11.352401",
-  "version": "3.0",
+  "exported_at": "2026-06-14T00:39:03.547014",
+  "version": "3.1",
   "nodes": [
     {
       "slug": "agent-studio",
@@ -20,6 +20,21 @@
       "type": "tool",
       "domain": "cortxt",
       "reality_status": "grouping",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -58,6 +73,21 @@
       "type": "service",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "attention",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "attention",
+            "feedback": "Katalogvarning: agentur: okänd owner_agent 'backend-developer'"
+          }
+        ]
+      },
       "owner_agent": "backend-developer",
       "contributing_agents": [],
       "status": "",
@@ -94,6 +124,21 @@
       "type": "pipeline",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -133,6 +178,21 @@
       "type": "pipeline",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -172,6 +232,21 @@
       "type": "cli",
       "domain": "cortxt",
       "reality_status": "grouping",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -210,6 +285,21 @@
       "type": "pipeline",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -251,6 +341,21 @@
       "type": "pipeline",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -290,6 +395,21 @@
       "type": "infra",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "attention",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "attention",
+            "feedback": "Katalogvarning: cns-hosting-infra: okänd owner_agent 'devops-engineer'"
+          }
+        ]
+      },
       "owner_agent": "devops-engineer",
       "contributing_agents": [],
       "status": "",
@@ -328,6 +448,21 @@
       "type": "mcp-server",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "attention",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "attention",
+            "feedback": "Katalogvarning: cns-mcp: okänd owner_agent 'backend-developer'"
+          }
+        ]
+      },
       "owner_agent": "backend-developer",
       "contributing_agents": [],
       "status": "",
@@ -364,6 +499,21 @@
       "type": "tool",
       "domain": "cortxt",
       "reality_status": "aspirational",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -400,6 +550,21 @@
       "type": "service",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "attention",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "attention",
+            "feedback": "Katalogvarning: cns-vault-app: okänd owner_agent 'backend-developer'"
+          }
+        ]
+      },
       "owner_agent": "backend-developer",
       "contributing_agents": [],
       "status": "",
@@ -436,6 +601,21 @@
       "type": "tool",
       "domain": "cortxt",
       "reality_status": "grouping",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -472,6 +652,21 @@
       "type": "frontend",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "attention",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "attention",
+            "feedback": "Katalogvarning: cortxt-dashboard-app: okänd owner_agent 'frontend-developer'"
+          }
+        ]
+      },
       "owner_agent": "frontend-developer",
       "contributing_agents": [],
       "status": "",
@@ -513,6 +708,21 @@
       "type": "service",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -549,6 +759,21 @@
       "type": "frontend",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "attention",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "attention",
+            "feedback": "Katalogvarning: cortxt-graph-view: okänd owner_agent 'frontend-developer'"
+          }
+        ]
+      },
       "owner_agent": "frontend-developer",
       "contributing_agents": [],
       "status": "",
@@ -585,6 +810,21 @@
       "type": "frontend",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "attention",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "attention",
+            "feedback": "Katalogvarning: cortxt-landing: okänd owner_agent 'frontend-developer'"
+          }
+        ]
+      },
       "owner_agent": "frontend-developer",
       "contributing_agents": [],
       "status": "",
@@ -621,6 +861,21 @@
       "type": "pipeline",
       "domain": "cortxt",
       "reality_status": "aspirational",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -657,6 +912,21 @@
       "type": "pipeline",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -698,6 +968,21 @@
       "type": "cli",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -742,6 +1027,21 @@
       "type": "service",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -778,6 +1078,21 @@
       "type": "infra",
       "domain": "cortxt",
       "reality_status": "grouping",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -814,6 +1129,21 @@
       "type": "frontend",
       "domain": "cortxt",
       "reality_status": "grouping",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -852,6 +1182,21 @@
       "type": "ai-model",
       "domain": "cortxt",
       "reality_status": "aspirational",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -890,6 +1235,21 @@
       "type": "mcp-server",
       "domain": "cortxt",
       "reality_status": "aspirational",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -928,6 +1288,21 @@
       "type": "service",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -964,6 +1339,21 @@
       "type": "agent",
       "domain": "cortxt",
       "reality_status": "aspirational",
+      "health": {
+        "level": "attention",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "attention",
+            "feedback": "Katalogvarning: research-agent: okänd owner_agent 'research-lead'"
+          }
+        ]
+      },
       "owner_agent": "research-lead",
       "contributing_agents": [],
       "status": "",
@@ -1000,6 +1390,21 @@
       "type": "tool",
       "domain": "cortxt",
       "reality_status": "aspirational",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -1039,6 +1444,21 @@
       "type": "service",
       "domain": "cortxt",
       "reality_status": "true",
+      "health": {
+        "level": "healthy",
+        "checks": [
+          {
+            "name": "issue_rollup",
+            "level": "unknown",
+            "feedback": "Inga öppna issues på noden."
+          },
+          {
+            "name": "structural",
+            "level": "healthy",
+            "feedback": "Katalogvalidering ren."
+          }
+        ]
+      },
       "owner_agent": "",
       "contributing_agents": [],
       "status": "",
@@ -1153,7 +1573,7 @@
       "title": "Backend-utvecklare",
       "department": "Engineering",
       "sub_department": "Backend",
-      "squad": "",
+      "squad": "Integrationer",
       "status": "active",
       "model": "claude-sonnet-4-6",
       "capabilities": [],
@@ -1249,7 +1669,7 @@
       "title": "Frontend-utvecklare",
       "department": "Engineering",
       "sub_department": "Frontend",
-      "squad": "",
+      "squad": "Insikter",
       "status": "active",
       "model": "claude-sonnet-4-6",
       "capabilities": [],
@@ -1297,7 +1717,7 @@
       "title": "Terminal-UI-utvecklare",
       "department": "Engineering",
       "sub_department": "Frontend",
-      "squad": "",
+      "squad": "Överblick",
       "status": "active",
       "model": "claude-sonnet-4-6",
       "capabilities": [],
@@ -1309,7 +1729,7 @@
       "title": "Terminal-UI-utvecklare",
       "department": "Engineering",
       "sub_department": "Frontend",
-      "squad": "",
+      "squad": "Överblick",
       "status": "shell",
       "model": "claude-haiku-4-5",
       "capabilities": [],
@@ -1867,7 +2287,7 @@
       "title": "Produktledare CNS-core",
       "department": "Product",
       "sub_department": "PM",
-      "squad": "",
+      "squad": "Modellering",
       "status": "shell",
       "model": "claude-sonnet-4-6",
       "capabilities": [],
@@ -1879,7 +2299,7 @@
       "title": "Produktledare Dashboard",
       "department": "Product",
       "sub_department": "PM",
-      "squad": "",
+      "squad": "Insikter",
       "status": "shell",
       "model": "claude-sonnet-4-6",
       "capabilities": [],
@@ -1891,7 +2311,7 @@
       "title": "Produktledare MCP-plattform",
       "department": "Product",
       "sub_department": "PM",
-      "squad": "",
+      "squad": "Integrationer",
       "status": "shell",
       "model": "claude-sonnet-4-6",
       "capabilities": [],
@@ -1903,7 +2323,7 @@
       "title": "Produktledare TUI",
       "department": "Product",
       "sub_department": "PM",
-      "squad": "",
+      "squad": "Överblick",
       "status": "shell",
       "model": "claude-sonnet-4-6",
       "capabilities": [],

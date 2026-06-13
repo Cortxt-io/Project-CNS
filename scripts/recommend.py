@@ -321,6 +321,20 @@ def statusline(state: dict | None = None, ctx_pct: float | None = None) -> str:
         phantoms = 0
     if phantoms:
         parts.append(f"\033[31m⚠ {phantoms} fantom\033[0m")
+    # Härledd hälsa (degraded/attention) över pass + cachade epics — ingen nätrunda,
+    # läser bara redan insamlat tillstånd. Degraderar tyst om health saknas.
+    try:
+        from scripts.health import health_for_session, health_for_milestone
+        entities = [health_for_session(s) for s in running_sessions]
+        entities += [health_for_milestone(q) for q in (state.get("quests") or [])]
+        degraded = sum(1 for h in entities if h.get("level") == "degraded")
+        attention = sum(1 for h in entities if h.get("level") == "attention")
+    except Exception:
+        degraded = attention = 0
+    if degraded:
+        parts.append(f"\033[31m⚠ {degraded} degraded\033[0m")
+    if attention:
+        parts.append(f"\033[33m▲ {attention} attention\033[0m")
     if recs:
         top = recs[0]
         more = f" (+{len(recs) - 1} — /sessions)" if len(recs) > 1 else ""

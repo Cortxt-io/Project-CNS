@@ -1,0 +1,9 @@
+{
+  "id": "idea-c9176eac",
+  "text": "cns-tui-worktree är ur synk med main efter epic #2: research-agent.md saknar webb-verktygsdeklarationen och scripts/tui/web_tools.py finns inte alls där. Samma roll heter forskningsledare på main. Synka web_tools.py + webb-deklaration till cns-tui ELLER fäll ihop slug-dubbletten i den engelska namnmigreringen (forskningsledare→research-agent).",
+  "created_at": "2026-06-13T21:25:55",
+  "source": "chat",
+  "slug": "agentur",
+  "session_id": "session-d0d034df",
+  "status": "open"
+}
