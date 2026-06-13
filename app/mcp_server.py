@@ -178,6 +178,13 @@ actions.register(mcp)
 wiki.register(mcp)
 leases.register(mcp)
 
+# Each module above now registers ONE fat tool (cortxt_issue, cortxt_quest, …) over the
+# shared domain cores in scripts/tools. The 43 old granular cortxt_* names are kept as
+# thin backward-compat aliases (Fas α) so an un-re-authed claude.ai connector keeps working.
+# Remove the line below once alias usage has stopped (Fas γ) — see decisions/mcp-router.md.
+from app.tools._aliases import register_aliases
+register_aliases(mcp)
+
 
 if __name__ == "__main__":
     # Local development fallback: stdio transport for Claude Desktop.

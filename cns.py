@@ -743,6 +743,46 @@ def cmd_mcp_servers(_args: argparse.Namespace) -> None:
     )
 
 
+def cmd_agent_tools(args: argparse.Namespace) -> None:
+    """Visa en rolls HÄRLEDDA effektiva verktyg (C1) utan att köra ett pass.
+
+    Matris-baslinje (cellens tool_families) + rollens override → effektiva tokens, och
+    de lokala feta verktygsnamnen de monterar i universum B. Diagnostik för verktygsåtkomst.
+    """
+    from scripts.agent_roles import load_role
+    from scripts.tool_families import derive_level
+    from scripts.tools import registry
+
+    role = load_role(args.role)
+    if role is None:
+        console.print(f"[red]Roll '{args.role}' hittades inte i .claude/agents/[/red]")
+        sys.exit(1)
+    level = derive_level(role)
+    local = registry.local_names_for(role.get("tools", []))
+    console.print(
+        f"[cyan]{role.get('title') or args.role}[/cyan]  "
+        f"[dim]({role.get('department') or '—'} · nivå={level} · "
+        f"modell={role.get('model') or '—'})[/dim]"
+    )
+
+    table = Table(title="Effektiva verktyg (C1: matris-baslinje + override)", show_lines=False)
+    table.add_column("Token", style="magenta")
+    table.add_column("Källa")
+    table.add_column("→ lokalt verktyg (universum B)", style="cyan")
+    override = set(role.get("tools_override") or [])
+    for tok in role.get("tools", []):
+        dom = registry.domain_for_token(tok)
+        local_name = registry.by_domain(dom).local_name if dom else "—"
+        källa = "override" if tok in override else "matris"
+        table.add_row(tok, källa, local_name)
+    console.print(table)
+    console.print(
+        f"\n[dim]Monterar {len(local)} feta CNS-verktyg i universum B: "
+        f"{', '.join(local) or '(inga — bara baseline)'}\n"
+        "Baseline (alltid): mcp__cns__project/issue/idea. Skriv-actions grindas i läsläge.[/dim]"
+    )
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
@@ -833,6 +873,13 @@ def main() -> None:
         "mcp-servers", help="Lista MCP-servrarna agenturen kan nå + om de är konfigurerade"
     )
     sp_mcp.set_defaults(func=cmd_mcp_servers)
+
+    # cns agent-tools <roll> — visa en rolls härledda effektiva verktyg (C1)
+    sp_atools = subparsers.add_parser(
+        "agent-tools", help="Visa en rolls härledda effektiva verktyg (matris + override → lokala namn)"
+    )
+    sp_atools.add_argument("role", help="Roll-slug (t.ex. backend-utvecklare)")
+    sp_atools.set_defaults(func=cmd_agent_tools)
 
     # cns quest {init|show|sync} <slug>
     sp_quest = subparsers.add_parser("quest", help="Manage active build quest workflow")

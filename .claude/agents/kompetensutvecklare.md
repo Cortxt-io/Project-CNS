@@ -68,19 +68,8 @@ FÖRVÄNTAD EFFEKT: [vad som förbättras, mätbart]
 | `/nod-granska` | Förstår om en agents nod är zombie |
 
 ## Tillåtna verktyg
-- cortxt_list_sessions
-- cortxt_get_session_tree
-- cortxt_read_wiki_page
-- cortxt_write_wiki_page
-- cortxt_capture_idea
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_list_quests
-- cortxt_list_ideas
-- cortxt_list_prs
-- cortxt_create_issue
-- cortxt_start_session
-- cortxt_mark_session_done
+
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Session-protokoll
 

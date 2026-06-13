@@ -166,3 +166,27 @@ def test_resolve_mounts_vercel_when_role_has_vercel_tool(monkeypatch):
     assert "vercel" in servers
     assert servers["vercel"]["type"] == "http"
     assert "mcp__vercel__list_deployments" in allowed
+
+
+# -- sdk-symmetri: rollens egna verktyg → lokala feta namn (C1/universum B) --
+
+def test_sdk_role_resolver_adds_role_local_tools():
+    """En roll med pr/wiki ska få mcp__cns__pr/-wiki i allowed; en rollös bara baseline."""
+    from scripts.tools import registry as reg
+
+    def resolver(tools, server):
+        return reg.local_names_for(tools) if server == "cns" else []
+
+    servers, allowed, _w = _resolve(
+        ["cortxt_create_pr", "wiki"], sdk_role_resolver=resolver
+    )
+    assert "mcp__cns__pr" in allowed and "mcp__cns__wiki" in allowed
+
+    _s, allowed_empty, _w2 = _resolve([], sdk_role_resolver=resolver)
+    assert "mcp__cns__pr" not in allowed_empty  # rollös → ingen pr-domän
+
+
+def test_sdk_role_resolver_optional_default_none():
+    """Utan resolver tillkommer inga rollverktyg på sdk-servern (bakåtkompat)."""
+    _s, allowed, _w = _resolve(["cortxt_create_pr"])
+    assert "mcp__cns__pr" not in allowed

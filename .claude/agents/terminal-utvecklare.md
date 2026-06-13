@@ -53,19 +53,8 @@ Du är TUI-agenten. Du äger Rikards terminal-cockpit — den han driver portfö
 | `/idea-triage` | Fångar cockpit-förbättringsidéer |
 
 ## Tillåtna verktyg
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_close_issue
-- cortxt_list_sessions
-- cortxt_get_session_tree
-- cortxt_list_ideas
-- cortxt_list_prs
-- cortxt_get_pr
-- cortxt_create_pr
-- cortxt_list_workflow_runs
-- cortxt_get_workflow_run
-- cortxt_start_session
-- cortxt_mark_session_done
+
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Session-protokoll
 Bokför alltid ditt arbetspass:

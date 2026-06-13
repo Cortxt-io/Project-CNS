@@ -41,14 +41,19 @@ LOCAL_KEY_FILE = REPO_ROOT / ".cns-agent-key"
 # Claude Codes egna läsverktyg som agenten får använda direkt.
 READ_TOOLS = ["Read", "Glob", "Grep"]
 WRITE_TOOLS = ["Write", "Edit", "Bash"]
-# CNS:s in-process MCP-verktyg (namnges mcp__<server>__<tool>).
-CNS_SERVER_NAME = "cns"
-CNS_TOOL_NAMES = [
-    f"mcp__{CNS_SERVER_NAME}__list_nodes",
-    f"mcp__{CNS_SERVER_NAME}__get_node",
-    f"mcp__{CNS_SERVER_NAME}__list_ideas",
-    f"mcp__{CNS_SERVER_NAME}__list_open_issues",
-]
+# CNS:s in-process MCP-verktyg = de feta verktygen ur den delade taxonomin (universum B).
+# Namnges mcp__<server>__<domän>; servernamnet speglar registry.TOOL_NAMESPACE.
+from scripts.tools import registry as _registry  # noqa: E402
+
+CNS_SERVER_NAME = _registry.TOOL_NAMESPACE
+CNS_TOOL_NAMES = [t.local_name for t in _registry.FAT_TOOLS]
+# Baseline (läs-kärna) varje pass får oavsett roll — orienteringsytan: katalog, issues,
+# idéer (motsvarar de gamla 4 läsverktygen: list_nodes/get_node/list_ideas/list_open_issues).
+# Övriga domäner (quest/pr/session/wiki/…) monteras per roll via routerns sdk_role_resolver.
+BASELINE_CNS_TOOLS = [_registry.by_domain(d).local_name for d in ("project", "issue", "idea")]
+# {lokalt verktygsnamn -> set(läs-actions)} — read-first-grinden inspekterar action,
+# eftersom ett fett verktyg blandar läsning och skrivning per action (namnet räcker ej).
+_READ_ACTIONS_BY_TOOL = {t.local_name: set(t.read_actions()) for t in _registry.FAT_TOOLS}
 
 
 class AgentHostUnavailable(RuntimeError):
@@ -95,68 +100,79 @@ def _text(payload: Any) -> dict[str, Any]:
     return {"content": [{"type": "text", "text": json.dumps(payload, ensure_ascii=False)}]}
 
 
-def _build_cns_tools() -> list[Any]:
-    """Definiera @tool-wrappers. Importeras lazy så modulen kan laddas utan SDK."""
+def _fat_tool_schema(spec: Any) -> dict:
+    """JSON-schema för ett fett SDK-verktyg: action (enum) + fria params (per action)."""
+    return {
+        "type": "object",
+        "properties": {
+            "action": {
+                "type": "string",
+                "enum": list(spec.action_names),
+                "description": "Vilken operation; se verktygsbeskrivningen för params per action.",
+            }
+        },
+        "required": ["action"],
+        "additionalProperties": True,
+    }
+
+
+def _make_fat_tool(spec: Any) -> Any:
+    """Bygg ETT fett SDK-@tool för en domän som dispatchar mot den delade kärnan.
+
+    Universum B (lokala pass): samma domänkärna som connectorn (universum A). Idé-/
+    sessions-skrivningar pushas best-effort (samma split som connectorn); leases får
+    owner='local' (ingen OAuth lokalt). Read-first-grinden (``_deny_unlisted``) hindrar
+    skriv-actions i läsläge — här körs bara det passet redan fått släppt på.
+    """
     from claude_agent_sdk import tool
 
-    @tool(
-        "list_nodes",
-        "Lista alla CNS-noder (slug, title, kind, stage, status, part_of).",
-        {"type": "object", "properties": {}},
-    )
-    async def list_nodes(_args: dict) -> dict:
-        from scripts.md_parser import read_all_nodes
+    domain = spec.domain
 
-        rows = []
-        for meta, _sections in read_all_nodes():
-            rows.append(
-                {
-                    "slug": meta.get("slug"),
-                    "title": meta.get("title"),
-                    "kind": meta.get("kind"),
-                    "stage": meta.get("stage"),
-                    "status": meta.get("status"),
-                    "part_of": meta.get("part_of"),
-                }
-            )
-        return _text(rows)
-
-    @tool(
-        "get_node",
-        "Hämta en CNS-nods frontmatter + sektioner.",
-        {"type": "object", "properties": {"slug": {"type": "string"}}, "required": ["slug"]},
-    )
-    async def get_node(args: dict) -> dict:
-        from scripts.md_parser import read_node
-
+    @tool(domain, spec.summary, _fat_tool_schema(spec))
+    async def _fat(args: dict) -> dict:
+        action = args.get("action")
+        kwargs = {k: v for k, v in args.items() if k != "action"}
         try:
-            meta, sections, _raw = read_node(args["slug"])
-        except Exception as exc:
+            if domain == "lease":
+                kwargs.setdefault("owner", "local")
+            result = _registry.dispatch(domain, action, **kwargs)
+        except ValueError as exc:
             return _text({"error": str(exc)})
-        return _text({"meta": meta, "sections": sections})
+        except Exception as exc:  # noqa: BLE001 — degradera, stjälp aldrig passet
+            return _text({"error": f"{type(exc).__name__}: {exc}"})
+        # Push av idé-/sessionsfil (best-effort), samma split som connector-wrappern.
+        try:
+            _maybe_push(domain, action, result)
+        except Exception:
+            pass
+        return _text(result)
 
-    @tool(
-        "list_ideas",
-        "Lista öppna idéer i CNS-inkorgen, valfritt filtrerat på nod-slug.",
-        {"type": "object", "properties": {"slug": {"type": "string"}}},
-    )
-    async def list_ideas(args: dict) -> dict:
-        from scripts.idea_inbox import list_ideas as _li
+    return _fat
 
-        return _text(_li(status="open", slug=args.get("slug")))
 
-    @tool(
-        "list_open_issues",
-        "Lista öppna GitHub-issues för en nod (grindat; degraderar om ej konfigurerat).",
-        {"type": "object", "properties": {"slug": {"type": "string"}}, "required": ["slug"]},
-    )
-    async def list_open_issues(args: dict) -> dict:
-        from scripts.tui.sources import open_issues_for_slug
+def _maybe_push(domain: str, action: str, result: Any) -> None:
+    """Best-effort GitHub-push av idé-/sessionsskrivningar från ett lokalt pass."""
+    if domain == "idea" and action in ("capture", "resolve") and isinstance(result, dict):
+        from scripts.idea_inbox import IDEAS_DIR
+        from app.git_ops import push_file_immediately
 
-        status, issues = open_issues_for_slug(args["slug"])
-        return _text({"status": status, "issues": issues})
+        push_file_immediately(IDEAS_DIR / f"{result['id']}.json", f"cns-vault: {action} idea {result['id']}")
+    elif domain == "idea" and action == "promote" and isinstance(result, dict):
+        from scripts.idea_inbox import IDEAS_DIR
+        from app.git_ops import push_file_immediately
 
-    return [list_nodes, get_node, list_ideas, list_open_issues]
+        iid = result["idea"]["id"]
+        push_file_immediately(IDEAS_DIR / f"{iid}.json", f"cns-vault: promote idea {iid}")
+    elif domain == "session" and action in ("start", "done", "save", "fork") and isinstance(result, dict):
+        from scripts.session_store import SESSIONS_DIR
+        from app.git_ops import push_file_immediately
+
+        push_file_immediately(SESSIONS_DIR / f"{result['id']}.json", f"cns-vault: {action} {result['id']}")
+
+
+def _build_cns_tools() -> list[Any]:
+    """Bygg de feta SDK-verktygen ur den delade taxonomin. Lazy (SDK krävs ej för import)."""
+    return [_make_fat_tool(spec) for spec in _registry.FAT_TOOLS]
 
 
 def build_cns_server() -> Any:
@@ -207,18 +223,74 @@ def build_seed(slug: str | None, role: dict | None = None) -> str:
 
 # -- options + körning ------------------------------------------------------
 
-async def _deny_unlisted(tool_name: str, _input: dict, _ctx: Any) -> Any:
-    """can_use_tool: neka allt som inte är förhandsgodkänt (read-first-skydd)."""
-    from claude_agent_sdk import PermissionResultAllow, PermissionResultDeny
+# Externa MCP-verktyg (github m.fl.) saknar action-fält, så läs/skriv härleds ur namnet.
+# Läsverb släpps i read-läge; skrivverb nekas även när routern monterat verktyget (#137).
+_EXTERNAL_READ_VERBS = ("read", "get", "list", "search", "view", "show", "fetch", "find", "describe")
+_EXTERNAL_WRITE_VERBS = (
+    "write", "create", "update", "delete", "add", "remove", "set",
+    "close", "merge", "push", "edit", "comment", "rename", "move",
+)
 
-    allowed = set(READ_TOOLS + CNS_TOOL_NAMES + WEB_TOOL_NAMES)
-    if (
-        tool_name in allowed
-        or tool_name.startswith(f"mcp__{CNS_SERVER_NAME}__")
-        or tool_name.startswith(f"mcp__{WEB_SERVER_NAME}__")
-    ):
-        return PermissionResultAllow()
-    return PermissionResultDeny(message=f"'{tool_name}' nekat i CNS read-läge.")
+
+def _external_is_read_shaped(tool_name: str) -> bool:
+    """Är ett externt MCP-verktyg läsformat? Skrivverb i namnet vinner (säkert default).
+
+    T.ex. ``mcp__github__issue_read`` → läs; ``mcp__github__create_pull_request`` → skriv.
+    Ambiguösa namn utan läsverb behandlas som icke-läs (nekas i read-läge).
+    """
+    leaf = tool_name.split("__")[-1].lower()
+    if any(w in leaf for w in _EXTERNAL_WRITE_VERBS):
+        return False
+    return any(r in leaf for r in _EXTERNAL_READ_VERBS)
+
+
+def _make_read_gate(external_read: frozenset[str] = frozenset()) -> Any:
+    """Bygg en read-first-grind (can_use_tool) som känner routerns externa läsverktyg.
+
+    Feta CNS-verktyg grindas på *action* (namnet blandar läs/skriv). Read/Glob/Grep + web
+    tillåts. ``external_read`` = router-monterade externa MCP-läsverktyg passet fått (#137) —
+    annars hade en monterad github-server nekats fast routern gett rollen åtkomst. Allt annat
+    (Write/Edit/Bash, skrivformade externa verktyg, verkligt olistat) nekas.
+    """
+    async def _gate(tool_name: str, _input: dict, _ctx: Any) -> Any:
+        from claude_agent_sdk import PermissionResultAllow, PermissionResultDeny
+
+        if tool_name in _READ_ACTIONS_BY_TOOL:
+            action = (_input or {}).get("action")
+            if action in _READ_ACTIONS_BY_TOOL[tool_name]:
+                return PermissionResultAllow()
+            return PermissionResultDeny(
+                message=f"'{tool_name}(action={action})' är en skriv-action — nekad i CNS read-läge."
+            )
+        allowed = set(READ_TOOLS + WEB_TOOL_NAMES)
+        if tool_name in allowed or tool_name.startswith(f"mcp__{WEB_SERVER_NAME}__"):
+            return PermissionResultAllow()
+        if tool_name in external_read:
+            return PermissionResultAllow()
+        return PermissionResultDeny(message=f"'{tool_name}' nekat i CNS read-läge.")
+
+    return _gate
+
+
+# Bakåtkompatibel modulsymbol: grind utan externa läsverktyg (= strikt read-first).
+_deny_unlisted = _make_read_gate()
+
+
+def _external_read_tools(allowed: list[str]) -> frozenset[str]:
+    """Plocka ut router-monterade EXTERNA läsverktyg ur passets allowed_tools (#137).
+
+    Externt = ``mcp__*`` som varken är cns- eller web-servern. Bara läsformade släpps in
+    i read-grinden; skrivformade externa verktyg lämnas utanför (nekas i read-läge).
+    """
+    cns_prefix = f"mcp__{CNS_SERVER_NAME}__"
+    web_prefix = f"mcp__{WEB_SERVER_NAME}__"
+    return frozenset(
+        t for t in allowed
+        if t.startswith("mcp__")
+        and not t.startswith(cns_prefix)
+        and not t.startswith(web_prefix)
+        and _external_is_read_shaped(t)
+    )
 
 
 def build_options(
@@ -229,11 +301,13 @@ def build_options(
     role: dict | None = None,
     cwd: str | None = None,
     warnings: list[str] | None = None,
+    guard: Any = None,
 ) -> Any:
     """Bygg ClaudeAgentOptions för ett agent-pass (read-first som default).
 
-    ``permission_check`` (om satt) ersätter ``_deny_unlisted`` som ``can_use_tool``
-    — så run_turn kan wrappa read-first-kollen med guardrails (#60).
+    ``permission_check`` (om satt) ersätter den router-medvetna read-grinden helt som
+    ``can_use_tool``. ``guard`` (#60): om satt wrappas read-grinden med guardrails
+    (turn/token-tak + upprepat-anrop) — grinden förblir router-medveten (#137).
     ``role`` (roll-medveten exekvering, #90): sätter rollens systemprompt + modell
     (den routade agentens modellnivå) — så passet körs SOM agenten, inte generiskt.
     ``cwd`` (worktree-isolering, #59): kör passet i en annan arbetskatalog än repo-roten
@@ -252,12 +326,17 @@ def build_options(
     from scripts import mcp_router
 
     role_tools = (role or {}).get("tools", []) if role else []
+    def _sdk_role_resolver(tools: list[str], server: str) -> list[str]:
+        # Bara cns-servern översätter rollens tokens till lokala feta namn; web har egna.
+        return _registry.local_names_for(tools) if server == CNS_SERVER_NAME else []
+
     mcp_servers, allowed, router_warnings = mcp_router.resolve(
         role_tools,
         allow_writes=allow_writes,
         builders={CNS_SERVER_NAME: build_cns_server, WEB_SERVER_NAME: build_web_server},
-        sdk_tool_names={CNS_SERVER_NAME: list(CNS_TOOL_NAMES),
+        sdk_tool_names={CNS_SERVER_NAME: list(BASELINE_CNS_TOOLS),
                         WEB_SERVER_NAME: list(WEB_TOOL_NAMES)},
+        sdk_role_resolver=_sdk_role_resolver,
         read_tools=list(READ_TOOLS),
         write_tools=list(WRITE_TOOLS),
     )
@@ -273,7 +352,20 @@ def build_options(
     if role and role.get("model"):
         kwargs["model"] = role["model"]
     if not allow_writes:
-        kwargs["can_use_tool"] = permission_check or _deny_unlisted
+        # Router-medveten read-grind: släpp externa läsverktyg routern monterat (#137).
+        base_gate = permission_check or _make_read_gate(_external_read_tools(allowed))
+        if guard is not None and permission_check is None:
+            from claude_agent_sdk import PermissionResultDeny
+
+            async def _gated(tool_name: str, tool_input: dict, ctx: Any, _base=base_gate, _g=guard) -> Any:
+                ok_call, reason = _g.check(tool_name, tool_input)
+                if not ok_call:
+                    return PermissionResultDeny(message=f"guardrail: {reason}")
+                return await _base(tool_name, tool_input, ctx)
+
+            kwargs["can_use_tool"] = _gated
+        else:
+            kwargs["can_use_tool"] = base_gate
     if resume:
         kwargs["resume"] = resume
     return ClaudeAgentOptions(**kwargs)
@@ -335,27 +427,20 @@ async def run_turn(
     from claude_agent_sdk import (
         AssistantMessage,
         ClaudeSDKClient,
-        PermissionResultDeny,
         ResultMessage,
         SystemMessage,
         TextBlock,
         ToolUseBlock,
     )
 
-    # Wrappa read-first-kollen med guardrails (turn/token-tak + upprepat-anrop, #60).
-    permission_check = None
-    if guard is not None and not allow_writes:
-        async def permission_check(tool_name: str, tool_input: dict, ctx: Any) -> Any:
-            allow, reason = guard.check(tool_name, tool_input)
-            if not allow:
-                return PermissionResultDeny(message=f"guardrail: {reason}")
-            return await _deny_unlisted(tool_name, tool_input, ctx)
-
+    # Read-grinden byggs router-medvetet i build_options; guardrails (turn/token-tak +
+    # upprepat-anrop, #60) komponeras ovanpå där så den externa-läsverktygs-listan (#137)
+    # bevaras.
     router_warnings: list[str] = []
     options = build_options(
         slug=slug, resume=resume, allow_writes=allow_writes,
-        permission_check=permission_check, role=role, cwd=cwd,
-        warnings=router_warnings,
+        role=role, cwd=cwd, warnings=router_warnings,
+        guard=guard if not allow_writes else None,
     )
     for _w in router_warnings:
         yield ("warning", _w)

@@ -1,5 +1,6 @@
 {
   "_doc": "Bemanningsmatris: per (department|nivå) en mall som /bemanna använder som baslinje. Nivå härleds: exec=Ledning, lead=lead:true, ic=övriga. Org-arkitekten äger; validate_org grindar täckning mot manifest. Avvik från cellen bara med motivering.",
+  "_tool_families_doc": "cells[*].tool_families driver C1-verktygshärledningen (scripts/tool_families.py: roll → cell → families → verktyg via scripts/tools/registry.py). 'sessions' och 'ideas' ligger INTE per cell — de är universell baslinje (BASELINE_FAMILIES) som varje roll får (bokföring + idéfångst är agent-hygien). Cellerna utökades 2026-06-13 data-drivet (unionen av vad rollerna i cellen faktiskt deklarerat i '## Tillåtna verktyg'), så matrisen nu TÄCKER rollernas behov och override-listorna i .claude/agents/*.md är redundanta — banta dem via /org-underhall (bevara freeform-noter). OBS: somliga celler blev breda (ärvt från generös override) — org-arkitekten bör granska/strama least-privilege nu när det är synligt på ett ställe. Giltiga family-värden = scripts/tools/registry.ALL_FAMILIES.",
   "lead_policy": {
     "_doc": "R1-R3, beslutad av Rikard 2026-06-10, research-grundad (span-of-control: små spann ineffektiva; Spotify chapter-lead: små enheter matris-rapporterar; Anthropic multi-agent: orchestrator lönar sig bara vid äkta koordinationsbörda). Förklarar varför validate_org:s 'ingen lead utsedd'-WARN för dessa 16 pods är AVSIKTLIGA, inte defekter.",
     "R1_egen_lead": "En pod (sub_department) får lead:true endast om den har >=3 medlemmar OCH >=1 sonnet/opus-roll att utse. Annars skapas ingen egen lead.",
@@ -30,9 +31,11 @@
     "Ledning|exec": {
       "model": "claude-opus-4-8",
       "tool_families": [
-        "sessions",
         "quests",
-        "projects"
+        "projects",
+        "issues",
+        "prs",
+        "wiki"
       ],
       "guardrails": "strategisk; läser brett, muterar lite; delegerar exekvering; beslut förbereds, Rikard godkänner",
       "eval_focus": "koherens och rätt strategiskt beslut, inte enskild leverans",
@@ -41,9 +44,9 @@
     "Produkt|lead": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
-        "ideas",
         "issues",
-        "quests"
+        "quests",
+        "wiki"
       ],
       "guardrails": "äger roadmap/prioritering; delegerar byggande; muterar ej kod",
       "eval_focus": "rätt prioritering och vad/varför, inte hur",
@@ -52,8 +55,10 @@
     "Produkt|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [
-        "ideas",
-        "issues"
+        "issues",
+        "projects",
+        "quests",
+        "wiki"
       ],
       "guardrails": "smal produktyta; read-first",
       "eval_focus": "konkret leverans inom sitt område",
@@ -62,8 +67,7 @@
     "R&D|lead": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
-        "wiki",
-        "ideas"
+        "wiki"
       ],
       "guardrails": "verifiera mot ≥2 källor; skriver findings till wiki, ej produktkod",
       "eval_focus": "källbelagda findings, inte åsikter",
@@ -82,7 +86,11 @@
       "model": "claude-sonnet-4-6",
       "tool_families": [
         "issues",
-        "prs"
+        "prs",
+        "actions",
+        "gh_projects",
+        "quests",
+        "wiki"
       ],
       "guardrails": "egen branch, aldrig direkt main; skapar PR; bekräfta före destruktiv git",
       "eval_focus": "korrekt kod med test; återanvänder befintligt",
@@ -92,7 +100,8 @@
       "model": "claude-sonnet-4-6",
       "tool_families": [
         "actions",
-        "prs"
+        "prs",
+        "issues"
       ],
       "guardrails": "intern infra; read-first; PR-protokoll",
       "eval_focus": "stabil automation/hook som inte kraschar sessionen",
@@ -101,7 +110,11 @@
     "Platform|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [
-        "actions"
+        "actions",
+        "issues",
+        "projects",
+        "prs",
+        "wiki"
       ],
       "guardrails": "read-first; bekräfta destruktivt; crash-proof hooks",
       "eval_focus": "fungerande, idempotent script/hook",
@@ -110,7 +123,10 @@
     "People|lead": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
-        "sessions"
+        "issues",
+        "projects",
+        "quests",
+        "wiki"
       ],
       "guardrails": "validerar individer/struktur; muterar ej kod utan flöde",
       "eval_focus": "komplett inventering/validering, inga luckor",
@@ -119,7 +135,10 @@
     "People|ic": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
-        "sessions"
+        "issues",
+        "prs",
+        "quests",
+        "wiki"
       ],
       "guardrails": "read-first; stödjande, ej beslutande",
       "eval_focus": "korrekt onboarding-/kompetensstöd",
@@ -128,7 +147,8 @@
     "Program|lead": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
-        "sessions"
+        "issues",
+        "quests"
       ],
       "guardrails": "orkestrerar pass; muterar ej kod; max 5 sessioner/plan",
       "eval_focus": "rätt session-träd och beroenden",
@@ -137,7 +157,8 @@
     "Program|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [
-        "sessions"
+        "prs",
+        "quests"
       ],
       "guardrails": "read-first daemon; muterar aldrig session-trädet; eskalerar hängande",
       "eval_focus": "korrekt kedjning/rapport utan tyst mutation",
@@ -147,7 +168,7 @@
       "model": "claude-sonnet-4-6",
       "tool_families": [
         "actions",
-        "sessions"
+        "issues"
       ],
       "guardrails": "incident read-first; bekräfta destruktivt; släck först, dokumentera sen",
       "eval_focus": "rätt incident-respons och rotorsak",
@@ -156,7 +177,11 @@
     "Drift|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [
-        "sessions"
+        "issues",
+        "projects",
+        "prs",
+        "quests",
+        "wiki"
       ],
       "guardrails": "read-first; observerar och rapporterar, agerar ej",
       "eval_focus": "korrekt nuläge/städförslag",
@@ -165,7 +190,7 @@
     "Ekonomi|lead": {
       "model": "claude-haiku-4-5",
       "tool_families": [
-        "sessions"
+        "quests"
       ],
       "guardrails": "läser metadata; muterar aldrig; stoppar inte, rekommenderar",
       "eval_focus": "grön/gul/röd med konkret observation",
@@ -173,9 +198,7 @@
     },
     "Ekonomi|ic": {
       "model": "claude-haiku-4-5",
-      "tool_families": [
-        "sessions"
-      ],
+      "tool_families": [],
       "guardrails": "read-only",
       "eval_focus": "korrekt estimat med tier-uppdelning",
       "prompt_focus": "mekanisk uppskattning"
@@ -183,7 +206,8 @@
     "Kommunikation|lead": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
-        "wiki"
+        "wiki",
+        "issues"
       ],
       "guardrails": "GitHub = sanning; uppdaterar stale termer",
       "eval_focus": "korrekt, aktuell, läsbar dokumentation",
@@ -192,7 +216,10 @@
     "Kommunikation|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [
-        "wiki"
+        "wiki",
+        "issues",
+        "projects",
+        "quests"
       ],
       "guardrails": "read + write wiki; rör ej produktkod",
       "eval_focus": "korrekt enskild sida",

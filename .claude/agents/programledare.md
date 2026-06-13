@@ -73,14 +73,7 @@ NÄSTA STEG: <vem som tar över — t.ex. "Dirigenten kedjar när root flippar d
 
 ## Tillåtna verktyg
 
-- cortxt_list_sessions
-- cortxt_get_session_tree
-- cortxt_list_quests
-- cortxt_list_ideas
-- cortxt_get_quest
-- cortxt_get_issue
-- cortxt_start_session
-- cortxt_fork_session
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Session-protokoll
 

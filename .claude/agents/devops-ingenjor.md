@@ -49,20 +49,8 @@ Du mutar aldrig data. Du flaggar, du agerar inte.
 | `/session-handoff` | Lämnar GitHub-status vidare till rätt agent |
 
 ## Tillåtna verktyg
-- cortxt_list_prs
-- cortxt_get_pr
-- cortxt_list_workflow_runs
-- cortxt_get_workflow_run
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_list_quests
-- cortxt_get_quest
-- cortxt_list_gh_project_items
-- cortxt_list_gh_projects
-- cortxt_list_linear_issues
-- cortxt_list_sessions
-- cortxt_start_session
-- cortxt_mark_session_done
+
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Session-protokoll
 

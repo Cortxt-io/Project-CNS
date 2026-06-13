@@ -54,12 +54,20 @@ def _parse_tools(body: str) -> list[str]:
     return tools
 
 
-def parse_role(text: str) -> dict:
-    """Tolka en agent-.md (sträng) → {slug?, title, model, status, department, system_prompt, tools}.
+def _parse_bool(value: str) -> bool:
+    return value.strip().strip("\"'").lower() in ("true", "yes", "1")
 
-    ``system_prompt`` = hela body:n (rollens identitet + uppgift + gräns + ev. sektioner).
+
+def parse_role(text: str) -> dict:
+    """Tolka en agent-.md (sträng) → roll-dict.
+
+    Nycklar: slug?, title, model, status, department, sub_department, lead, system_prompt,
+    ``tools_override`` (rollens ``## Tillåtna verktyg``) och ``tools``. **Ren parse** (ingen
+    matris-IO): här är ``tools == tools_override``; den matris-härledda baslinjen läggs på i
+    :func:`load_role` (C1, se ``scripts/tool_families.py``). ``system_prompt`` = hela body:n.
     """
     fm, body = _split_frontmatter(text)
+    override = _parse_tools(body)
     return {
         "slug": fm.get("name", ""),
         "title": fm.get("title", ""),
@@ -67,13 +75,19 @@ def parse_role(text: str) -> dict:
         "status": fm.get("status", ""),
         "department": fm.get("department", ""),
         "sub_department": fm.get("sub_department", ""),
+        "lead": _parse_bool(fm.get("lead", "")),
         "system_prompt": body,
-        "tools": _parse_tools(body),
+        "tools_override": override,
+        "tools": override,  # ren default; load_role ersätter med den härledda uppsättningen
     }
 
 
-def load_role(slug: str) -> dict | None:
-    """Läs ``.claude/agents/<slug>.md`` → roll-dict, eller None om filen saknas."""
+def load_role(slug: str, *, matris: dict | None = None) -> dict | None:
+    """Läs ``.claude/agents/<slug>.md`` → roll-dict med C1-härledda verktyg, None om filen saknas.
+
+    ``tools`` blir matris-baslinjen (cellens ``tool_families``) UNION rollens override.
+    ``matris`` kan injiceras (test); annars läses ``bemanning_matris.json`` från disk.
+    """
     if not slug:
         return None
     path = AGENTS_DIR / f"{slug}.md"
@@ -84,6 +98,12 @@ def load_role(slug: str) -> dict | None:
     except Exception:
         return None
     role["slug"] = role.get("slug") or slug
+    try:
+        from scripts.tool_families import effective_tools
+
+        role["tools"] = effective_tools(role, matris=matris)
+    except Exception:
+        pass  # degradera till override (redan satt i parse_role)
     return role
 
 
