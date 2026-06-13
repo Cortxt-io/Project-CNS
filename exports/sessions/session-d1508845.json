@@ -1,9 +1,9 @@
 {
   "id": "session-d1508845",
   "created_at": "2026-06-13T21:52:22",
-  "updated_at": "2026-06-13T21:52:22",
-  "status": "running",
-  "summary": "definition-session: #127 — fixera transport (vad/varför) + acceptanskriterier innan delivery",
+  "updated_at": "2026-06-13T22:36:47",
+  "status": "done",
+  "summary": "Definition #127: transport BESLUTAD = remote http mot hostad endpoint (api.githubcopilot.com/mcp/ + PAT), återanvänder .mcp.json-vägen. 2 acceptanskriterier satta (mount + live läs/skriv). Öppna frågor till delivery: PAT-scopes (repo/issues/PR), #136 verktygsnamn, #137 read-first-grind. Delivery blockeras på en GitHub-PAT.",
   "link": {
     "kind": "issue",
     "ref": "127"
