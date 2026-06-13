@@ -82,6 +82,41 @@ def capture_idea(
     return idea
 
 
+def update_idea(
+    idea_id: str,
+    text: str | None = None,
+    append: str | None = None,
+    slug: str | None = None,
+) -> dict:
+    """Edit an existing idea in place — so a maturing thought grows instead of
+    spawning a near-duplicate.
+
+    ``text`` replaces the body outright; ``append`` adds a timestamped note,
+    preserving the original (use this to keep the trail). ``slug`` re-links the
+    idea to a node. At least one must be given. Records ``updated_at``.
+
+    Raises FileNotFoundError if the idea doesn't exist, ValueError if nothing
+    was passed to change.
+    """
+    if text is None and append is None and slug is None:
+        raise ValueError("Nothing to update: pass text, append, or slug.")
+    idea = get_idea(idea_id)
+    if idea is None:
+        raise FileNotFoundError(f"Idea not found: {idea_id}")
+    if text is not None:
+        idea["text"] = text
+    if append is not None:
+        stamp = datetime.now().isoformat(timespec="seconds")
+        existing = (idea.get("text") or "").rstrip()
+        note = f"[{stamp}] {append}"
+        idea["text"] = f"{existing}\n\n{note}" if existing else note
+    if slug is not None:
+        idea["slug"] = slug
+    idea["updated_at"] = datetime.now().isoformat(timespec="seconds")
+    _write(idea)
+    return idea
+
+
 def get_idea(idea_id: str) -> dict | None:
     """Load an idea by ID. Returns None if not found."""
     path = _idea_path(idea_id)

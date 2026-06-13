@@ -8,12 +8,25 @@ from scripts.tools import registry
 
 def test_taxonomy_shape():
     assert len(registry.FAT_TOOLS) == 10
-    assert sum(len(t.actions) for t in registry.FAT_TOOLS) == 43
+    assert sum(len(t.actions) for t in registry.FAT_TOOLS) == 44
     # namnkonvention
     issue = registry.by_domain("issue")
     assert issue.cortxt_name == "cortxt_issue"
     assert issue.local_name == "mcp__cns__issue"
     assert issue.read_actions() == ("list", "get")
+
+
+def test_idea_update_action(tmp_path, monkeypatch):
+    from scripts import idea_inbox as ib
+    monkeypatch.setattr(ib, "IDEAS_DIR", tmp_path)
+    created = registry.dispatch("idea", "capture", text="rå tanke", slug="cns-core")
+    iid = created["id"]
+    upd = registry.dispatch("idea", "update", idea_id=iid, append="tillägg")
+    assert "rå tanke" in upd["text"] and "tillägg" in upd["text"] and "updated_at" in upd
+    ovr = registry.dispatch("idea", "update", idea_id=iid, text="ny", slug="agentur")
+    assert ovr["text"] == "ny" and ovr["slug"] == "agentur"
+    with pytest.raises(ValueError):
+        registry.dispatch("idea", "update")  # saknar required idea_id
 
 
 def test_all_handlers_resolve_and_reject_unknown_action():
