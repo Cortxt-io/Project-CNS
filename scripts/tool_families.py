@@ -37,7 +37,7 @@ def derive_level(role: dict) -> str:
 
     Speglar matrisens egen regel (``bemanning_matris.json:_doc``).
     """
-    if (role.get("department") or "").strip() == "Ledning":
+    if (role.get("department") or "").strip() == "Leadership":
         return "exec"
     if role.get("lead"):
         return "lead"

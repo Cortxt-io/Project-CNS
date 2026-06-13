@@ -16,8 +16,8 @@ MANIFEST = ROOT / ".claude" / "org" / "manifest.json"
 ROSTER_DIR = ROOT / ".claude" / "org" / "roster"
 AGENTS_DIR = ROOT / ".claude" / "agents"
 
-DEPARTMENTS = {"Ledning", "Produkt", "R&D", "Engineering", "Platform",
-               "People", "Program", "Drift", "Ekonomi", "Kommunikation"}
+DEPARTMENTS = {"Leadership", "Product", "R&D", "Engineering", "Platform",
+               "People", "Program", "Operations", "Finance", "Communications"}
 MODELS = {"opus", "sonnet", "haiku"}
 # Sub_departments som EGENTLIGEN är produktområden (ska vara squad, inte chapter/disciplin)
 PRODUCT_AREAS = {"tui", "dashboard", "mcp", "core", "landing", "web", "app", "cns-core"}
@@ -63,7 +63,7 @@ def main() -> int:
                     errors.append(f"{slug}: okänd modell '{model}' (ej {MODELS})")
                 if lead:
                     leads += 1
-                level = "exec" if dept == "Ledning" else ("lead" if lead else "ic")
+                level = "exec" if dept == "Leadership" else ("lead" if lead else "ic")
                 dept_levels.add(f"{dept}|{level}")
                 if active:
                     active_count += 1

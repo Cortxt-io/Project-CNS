@@ -1,7 +1,7 @@
 ---
 name: community-ansvarig
 title: Community-ansvarig
-department: Kommunikation
+department: Communications
 sub_department: DevRel
 chapter: null
 squad: null

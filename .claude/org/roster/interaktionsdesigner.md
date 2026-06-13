@@ -1,7 +1,7 @@
 ---
 name: interaktionsdesigner
 title: Interaktionsdesigner
-department: Produkt
+department: Product
 sub_department: Design
 chapter: null
 squad: null

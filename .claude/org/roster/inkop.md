@@ -1,7 +1,7 @@
 ---
 name: inkop
 title: Inköpsansvarig
-department: Ekonomi
+department: Finance
 sub_department: FinOps
 chapter: null
 squad: null

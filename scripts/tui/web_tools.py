@@ -67,10 +67,9 @@ def _build_web_tools() -> list[Any]:
         url: str = args.get("url", "")
         query: str = args.get("query", "")
         try:
-            from browser_use import Agent, Browser, BrowserConfig
-            from langchain_anthropic import ChatAnthropic
+            from browser_use import Agent, Browser, ChatAnthropic
 
-            browser = Browser(config=BrowserConfig(headless=True))
+            browser = Browser(headless=True)
             llm = ChatAnthropic(model="claude-haiku-4-5", max_tokens=1024)
             agent = Agent(
                 task=(
@@ -82,7 +81,7 @@ def _build_web_tools() -> list[Any]:
                 browser=browser,
             )
             result = await agent.run(max_steps=10)
-            text = str(result) if result else "(tomt svar från webbläsaren)"
+            text = (result.final_result() if result else None) or "(tomt svar från webbläsaren)"
             await browser.close()
             return _text({"url": url, "query": query, "content": text})
         except ImportError as exc:
@@ -111,8 +110,7 @@ def _build_web_tools() -> list[Any]:
     async def web_act(args: dict) -> dict:
         instruction: str = args.get("instruction", "")
         try:
-            from browser_use import Agent, Browser, BrowserConfig
-            from langchain_anthropic import ChatAnthropic
+            from browser_use import Agent, Browser, ChatAnthropic
 
             # Förhindra skrivoperationer — lägg en läs-first-barrier i instruktionen.
             safe_instruction = (
@@ -120,11 +118,11 @@ def _build_web_tools() -> list[Any]:
                 "VIKTIGT: Gör INGA inloggningar, fyll INTE i formulär och genomför "
                 "INGA betalningar. Returnera bara vad du läst."
             )
-            browser = Browser(config=BrowserConfig(headless=True))
+            browser = Browser(headless=True)
             llm = ChatAnthropic(model="claude-haiku-4-5", max_tokens=1024)
             agent = Agent(task=safe_instruction, llm=llm, browser=browser)
             result = await agent.run(max_steps=15)
-            text = str(result) if result else "(tomt svar från webbläsaren)"
+            text = (result.final_result() if result else None) or "(tomt svar från webbläsaren)"
             await browser.close()
             return _text({"instruction": instruction, "result": text})
         except ImportError as exc:

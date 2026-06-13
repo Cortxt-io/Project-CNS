@@ -1,7 +1,7 @@
 ---
 name: faktureringsansvarig
 title: Faktureringsansvarig
-department: Ekonomi
+department: Finance
 sub_department: FinOps
 chapter: null
 squad: null

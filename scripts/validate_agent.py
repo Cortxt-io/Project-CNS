@@ -18,7 +18,7 @@ ROSTER_DIR = ROOT / ".claude" / "org" / "roster"
 REQUIRED_FM = ["name", "title", "department", "sub_department", "model", "status", "description"]
 MODELS = {"claude-opus-4-8", "claude-sonnet-4-6", "claude-haiku-4-5"}
 SKELETON_MARKERS = ["(TODO", "TODO vid", "Skal —", "Skal-roll", "<vad rollen", "<MCP-verktyg", "<hur vet"]
-EXEC_DEPTS = {"Ledning"}
+EXEC_DEPTS = {"Leadership"}
 
 
 def find_file(slug: str) -> Path | None:

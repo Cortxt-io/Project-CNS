@@ -1,7 +1,7 @@
 ---
 name: ux-lead
 title: UX-lead
-department: Produkt
+department: Product
 sub_department: Design
 chapter: null
 squad: null

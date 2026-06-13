@@ -8,27 +8,27 @@
     "R3_eskalering": "Saknar avdelningen en lead-roll helt -> flagga för Rikard. Finns lead-roll men obemannad -> rapportera till närmaste aktiva exec (operativ-chef) tills den bemannas.",
     "utfall_2026-06-10": "0 av 16 ledarlösa pods kvalificerar under R1 (alla 1-3 agenter; de med 3 är all-haiku) -> alla 16 matris-rapporterar. Inga nya lead:true skapade.",
     "reporting_targets": {
-      "Produkt/Arkitektur": "produktchef",
-      "Produkt/ProductOps": "produktchef",
-      "Engineering/Fullstack": "teknisk-direktor",
-      "Engineering/Data": "teknisk-direktor",
-      "Engineering/Integrations": "teknisk-direktor",
-      "Platform/DevOps": "plattformschef",
-      "Platform/DevEx": "plattformschef",
-      "People/L&D": "hr-chef",
-      "People/Culture": "hr-chef",
-      "Program/Coordination": "programledare",
-      "Program/Coaching": "programledare",
-      "Drift/Monitoring": "driftchef",
-      "Drift/Maintenance": "driftchef",
-      "Ekonomi/FinOps": "ekonomichef",
-      "Kommunikation/DevRel": "kommunikationschef",
-      "Kommunikation/Marketing": "kommunikationschef"
+      "Product/Arkitektur": "product-lead",
+      "Product/ProductOps": "product-lead",
+      "Engineering/Fullstack": "cto",
+      "Engineering/Data": "cto",
+      "Engineering/Integrations": "cto",
+      "Platform/DevOps": "platform-lead",
+      "Platform/DevEx": "platform-lead",
+      "People/L&D": "people-lead",
+      "People/Culture": "people-lead",
+      "Program/Coordination": "program-lead",
+      "Program/Coaching": "program-lead",
+      "Operations/Monitoring": "operations-lead",
+      "Operations/Maintenance": "operations-lead",
+      "Finance/FinOps": "finance-lead",
+      "Communications/DevRel": "communications-lead",
+      "Communications/Marketing": "communications-lead"
     },
-    "obemannad_target_eskalering": "Reporting-targets ej aktiva (status roster) per 2026-06-10: teknisk-direktor (Engineering), plattformschef (Platform), driftchef (Drift), kommunikationschef (Kommunikation). Tills de bemannas rapporterar deras pods till operativ-chef (aktiv COO). Att bemanna dessa fyra avdelnings-leads rekommenderas härnäst."
+    "obemannad_target_eskalering": "Reporting-targets ej aktiva (status roster) per 2026-06-10: cto (Engineering), platform-lead (Platform), operations-lead (Drift), communications-lead (Kommunikation). Tills de bemannas rapporterar deras pods till coo (aktiv COO). Att bemanna dessa fyra avdelnings-leads rekommenderas härnäst."
   },
   "cells": {
-    "Ledning|exec": {
+    "Leadership|exec": {
       "model": "claude-opus-4-8",
       "tool_families": [
         "quests",
@@ -40,7 +40,7 @@
       "eval_focus": "koherens och rätt strategiskt beslut, inte enskild leverans",
       "prompt_focus": "operating model + delegering; deklarera avsedda åtgärder före exekvering"
     },
-    "Produkt|lead": {
+    "Product|lead": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
         "issues",
@@ -51,7 +51,7 @@
       "eval_focus": "rätt prioritering och vad/varför, inte hur",
       "prompt_focus": "produktomdöme; håll bred nog att generalisera"
     },
-    "Produkt|ic": {
+    "Product|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [
         "issues",
@@ -154,7 +154,7 @@
       "eval_focus": "korrekt kedjning/rapport utan tyst mutation",
       "prompt_focus": "regelbaserad bevakning, inget omdöme om innehåll"
     },
-    "Drift|lead": {
+    "Operations|lead": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
         "actions",
@@ -164,7 +164,7 @@
       "eval_focus": "rätt incident-respons och rotorsak",
       "prompt_focus": "lägesbild → beslut; lugnt under tryck"
     },
-    "Drift|ic": {
+    "Operations|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [
         "issues",
@@ -174,7 +174,7 @@
       "eval_focus": "korrekt nuläge/städförslag",
       "prompt_focus": "observera + rapportera, snabbt"
     },
-    "Ekonomi|lead": {
+    "Finance|lead": {
       "model": "claude-haiku-4-5",
       "tool_families": [
         "quests"
@@ -183,14 +183,14 @@
       "eval_focus": "grön/gul/röd med konkret observation",
       "prompt_focus": "kostnadsanalys, max 5 rader, relativa modellkostnader"
     },
-    "Ekonomi|ic": {
+    "Finance|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [],
       "guardrails": "read-only",
       "eval_focus": "korrekt estimat med tier-uppdelning",
       "prompt_focus": "mekanisk uppskattning"
     },
-    "Kommunikation|lead": {
+    "Communications|lead": {
       "model": "claude-sonnet-4-6",
       "tool_families": [
         "wiki",
@@ -200,7 +200,7 @@
       "eval_focus": "korrekt, aktuell, läsbar dokumentation",
       "prompt_focus": "tydlighet och struktur"
     },
-    "Kommunikation|ic": {
+    "Communications|ic": {
       "model": "claude-haiku-4-5",
       "tool_families": [
         "wiki"

@@ -1,7 +1,7 @@
 ---
 name: controller
 title: Controller
-department: Ekonomi
+department: Finance
 sub_department: Controlling
 chapter: null
 squad: null

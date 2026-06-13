@@ -1,7 +1,7 @@
 ---
 name: devrel-ansvarig
 title: DevRel-ansvarig
-department: Kommunikation
+department: Communications
 sub_department: DevRel
 chapter: null
 squad: null
