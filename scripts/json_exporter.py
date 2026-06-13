@@ -70,23 +70,46 @@ def _derive_ownership_edges(node_list: list[dict]) -> list[dict]:
     return edges
 
 
-def _derive_work_edges(token: Optional[str] = None) -> list[dict]:
+def _safe_list_issues(token: Optional[str] = None) -> list[dict]:
+    """Hämta alla issues en gång; [] utan credentials/nät (lokal export funkar ändå)."""
+    try:
+        from scripts.issues_client import list_issues  # noqa: PLC0415
+    except ImportError:
+        return []
+    try:
+        return list_issues(state="all", token=token)
+    except Exception:
+        logger.debug("_safe_list_issues: GitHub call failed", exc_info=True)
+        return []
+
+
+def _node_health(slug: str, issues: list[dict], systems: Optional[dict]) -> dict:
+    """Per-nod hälso-scorecard; {} om något fallerar (export får aldrig brytas)."""
+    if not slug:
+        return {}
+    try:
+        from scripts.health import health_for_node
+        return health_for_node(slug, issues=issues, systems=systems)
+    except Exception:
+        logger.debug("_node_health failed for %s", slug, exc_info=True)
+        return {}
+
+
+def _derive_work_edges(token: Optional[str] = None, issues: Optional[list[dict]] = None) -> list[dict]:
     """Derive targets/addresses/assigned_to edges via issues_client.
 
     Requires GITHUB_REPO + token (or CNS_GITHUB_TOKEN env var).
     Returns [] when credentials are absent or when the GitHub call fails so that
-    export_json still works locally without network access.
+    export_json still works locally without network access. ``issues`` may be
+    passed in to reuse a single fetch (health + edges share it).
     """
     try:
-        from scripts.issues_client import list_issues, list_milestones  # noqa: PLC0415
+        from scripts.issues_client import list_milestones  # noqa: PLC0415
     except ImportError:
         return []
 
-    try:
-        issues = list_issues(state="all", token=token)
-    except Exception:
-        logger.debug("_derive_work_edges: GitHub call failed, skipping work edges", exc_info=True)
-        return []
+    if issues is None:
+        issues = _safe_list_issues(token=token)
 
     edges: list[dict] = []
     quest_nodes: dict[int, set[str]] = {}
@@ -152,6 +175,15 @@ def export_json(
     except Exception:
         reality = {}
 
+    # Härledd hälsa per nod (roll-up av öppna issues + strukturell katalog-check).
+    # Ett enda issue-fetch delas med work-edges nedan; tomt = degraderar till {}.
+    issues = _safe_list_issues(token=token)
+    try:
+        from scripts.catalog import load_catalog
+        _systems = load_catalog()
+    except Exception:
+        _systems = None
+
     node_list = []
     for meta, sections in nodes:
         node_list.append({
@@ -170,6 +202,8 @@ def export_json(
             "domain": meta.get("domain", ""),
             # Härledd verklighets-status (true|stale|aspirational|grouping), tom om okänd.
             "reality_status": reality.get(meta.get("slug", ""), ("", ""))[0],
+            # Härledd hälso-scorecard {level, checks:[...]} — additiv; {} utan GitHub.
+            "health": _node_health(meta.get("slug", ""), issues, _systems),
             "owner_agent": meta.get("owner_agent", ""),
             "contributing_agents": meta.get("contributing_agents") or [],
             # Legacy product fields (kept for backward compatibility)
@@ -199,11 +233,11 @@ def export_json(
         })
 
     edges = _derive_ownership_edges(node_list)
-    edges += _derive_work_edges(token=token)
+    edges += _derive_work_edges(token=token, issues=issues)
 
     payload = {
         "exported_at": datetime.now().isoformat(),
-        "version": "3.0",
+        "version": "3.1",
         "nodes": node_list,
         "agents": agents,
         "edges": edges,

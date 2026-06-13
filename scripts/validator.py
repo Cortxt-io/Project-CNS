@@ -15,11 +15,7 @@ from pathlib import Path
 ENUMS_PATH = Path(__file__).resolve().parent.parent / "schemas" / "enums.json"
 _ENUMS = json.loads(ENUMS_PATH.read_text(encoding="utf-8"))
 
-VALID_STATUSES = set(_ENUMS["statuses"])
-VALID_MVP_STAGES = set(_ENUMS["mvp_stages"])
-VALID_RISK_CATEGORIES = set(_ENUMS["risk_categories"])
 VALID_KINDS = set(_ENUMS["kinds"])
-VALID_STAGES = set(_ENUMS["stages"])
 VALID_TYPES = set(_ENUMS.get("types", []))
 VALID_DOMAINS = set(_ENUMS.get("domains", []))
 
