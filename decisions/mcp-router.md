@@ -89,5 +89,36 @@ routern den automatiskt för agenter med matchande kapabilitet — annars hoppas
 1. ~~Config-router + register + build_options-rewire + tester~~ (denna skiva).
 2. Koppla en riktig GitHub-MCP (stdio-binär eller remote) + env-secret-flöde + live-pass.
 3. Bemanna fler discipliner så routningsmålen finns (per-roll verktygsåtkomst i bredd).
-4. `mcp-gateway`-processen: design-spike (Plan B, central auth/allowlist/proxy).
+4. `mcp-gateway`-processen: design-spike (Plan B, central auth/allowlist/proxy + Anthropics progressive disclosure).
 5. Gradvis migrering av agent-pass till GitHub-MCP där det slår handrullat.
+
+## Tillägg 2026-06-13 — verktygskonsolidering + C1-härledning
+
+**Problemet bakom problemet:** routern fungerade, men (a) agenturens lokala universum
+implementerade bara 4 läs-verktyg medan rollerna deklarerade rika `cortxt_*` som bara fanns
+på Railway, och (b) de 46 connector-verktygen var granulära (research: prestanda faller
+skarpt >~20 verktyg/pass; de flesta MCP-servrar har ≤4). Rikard valde att konsolidera **båda**
+universum.
+
+**Beslut:**
+- **10 feta verktyg** (`cortxt_<domän>` med `action`-param) ersätter 46 granulära, i båda
+  universum. **Enkälla = `scripts/tools/registry.py`** (taxonomi); logik transport-fritt i
+  `scripts/tools/<domän>_core.py`. Lagret bor i `scripts/` så server + lokala pass importerar
+  nedåt (ingen `scripts→app`-koppling för kärnan).
+- **Bakåtkompat (Fas α/β/γ):** de 43 gamla namnen lever som alias (`app/tools/_aliases.py`,
+  bevarad signatur → samma kärna) så claude.ai-connectorn inte bryts. Sunset (ta bort
+  `register_aliases`) när användningen tystnat.
+- **Read-first flyttar till action-nivå:** ett fett verktyg blandar läs/skriv per action, så
+  `agent_host._deny_unlisted` grindar på `tool_input["action"]` mot `registry`-läs-actions.
+- **Routern symmetrisk:** sdk-grenen översätter rollens tokens → lokala feta namn via
+  `sdk_role_resolver`+`registry.local_names_for`; baseline = läs-kärna (`project`/`issue`/`idea`).
+- **C1 — slut på manuellt:** `scripts/tool_families.py:effective_tools` härleder rollens verktyg
+  ur `bemanning_matris.json` (cell `tool_families` via `(department, nivå)`); `## Tillåtna verktyg`
+  blir override. Ny roll i en bemannad cell ärver verktyg utan handlistning.
+
+**Öppet (kvar):** `gh_projects`/`leases`/`linear` saknas som families i matrisen → override-only
+tills cellerna ev. utökas. Verifierat: `tests/test_tool_core.py`, `test_tool_aliases.py`,
+`test_tool_families.py`, `test_agent_host_tools.py`, utökad `test_mcp_router.py` (154 gröna).
+
+> **Arkitektavvikelse från specen:** kärnan lades i `scripts/tools/` (inte `app/tools/core/`)
+> för att hålla importriktningen nedåt — både `app/` och `scripts/tui/agent_host` delar den.

@@ -130,6 +130,7 @@ def resolve(
     allow_writes: bool = False,
     builders: dict[str, Callable[[], Any]] | None = None,
     sdk_tool_names: dict[str, list[str]] | None = None,
+    sdk_role_resolver: Callable[[list[str], str], list[str]] | None = None,
     read_tools: list[str] | None = None,
     write_tools: list[str] | None = None,
     registry: dict[str, dict] | None = None,
@@ -183,7 +184,11 @@ def resolve(
             if srv is None:
                 continue  # ej tillgänglig (t.ex. web utan beroende) — tyst, baseline
             mcp_servers[name] = srv
-            allowed.extend(sdk_tool_names.get(name, []))
+            allowed.extend(sdk_tool_names.get(name, []))  # baseline (läs-kärna)
+            # Symmetri med externa servrar: lägg rollens egna verktyg, översatta till
+            # serverns LOKALA namn (rollens cortxt_*/family → mcp__<server>__<domän>).
+            if sdk_role_resolver is not None:
+                allowed.extend(sdk_role_resolver(role_tools, name))
         else:  # extern: stdio/http
             cfg, warn = _build_external(name, entry)
             if cfg is None:

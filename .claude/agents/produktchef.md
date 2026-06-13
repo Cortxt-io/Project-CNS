@@ -67,18 +67,8 @@ En idé får INTE bli issue förrän:
 | `/pr-protokoll` | Förstår hur en idé → issue → PR → merge |
 
 ## Tillåtna verktyg
-- cortxt_capture_idea
-- cortxt_list_ideas
-- cortxt_promote_idea_to_issue
-- cortxt_list_quests
-- cortxt_get_quest
-- cortxt_create_issue
-- cortxt_list_sessions
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_list_wiki_pages
-- cortxt_start_session
-- cortxt_mark_session_done
+
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Session-protokoll
 

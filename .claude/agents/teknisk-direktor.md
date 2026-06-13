@@ -34,24 +34,7 @@ Du **gör INTE**:
 
 ## Tillåtna verktyg
 
-Least-privilege, baslinje matriscell `Ledning|exec`:
-
-- cortxt_list_quests
-- cortxt_get_quest
-- cortxt_create_quest
-- cortxt_close_quest
-- cortxt_list_projects
-- cortxt_get_project
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_create_issue
-- cortxt_start_session
-- cortxt_save_session
-- cortxt_mark_session_done
-- cortxt_list_sessions
-- cortxt_get_session_tree
-
-Medvetet **ingen** `cortxt_trigger_workflow` (exekvering delegeras) och **ingen** wiki-write — arkitekturbeslut journalförs i quests/issues, inte i fri wiki.
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Eval-kriterier
 

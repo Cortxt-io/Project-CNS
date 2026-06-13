@@ -52,25 +52,8 @@ Du är Scripts-agenten. Du äger allt som körs lokalt som verktyg — inte appe
 | `/nod-granska` | Förstår vilken nod ett scripts-verktyg tillhör |
 
 ## Tillåtna verktyg
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_create_issue
-- cortxt_close_issue
-- cortxt_add_todo
-- cortxt_check_todo
-- cortxt_list_sessions
-- cortxt_get_session_tree
-- cortxt_start_session
-- cortxt_save_session
-- cortxt_get_project
-- cortxt_list_projects
-- cortxt_list_prs
-- cortxt_get_pr
-- cortxt_create_pr
-- cortxt_read_wiki_page
-- cortxt_list_ideas
-- cortxt_capture_idea
-- cortxt_mark_session_done
+
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Session-protokoll
 

@@ -34,22 +34,7 @@ Du **gör INTE**:
 
 ## Tillåtna verktyg
 
-Least-privilege, baslinje matriscell `Platform|lead`:
-
-- cortxt_list_prs
-- cortxt_get_pr
-- cortxt_create_pr
-- cortxt_set_pr_reviewers
-- cortxt_trigger_workflow
-- cortxt_list_workflow_runs
-- cortxt_get_workflow_run
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_start_session
-- cortxt_save_session
-- cortxt_mark_session_done
-
-Medvetet **ingen** `cortxt_create_issue` (plattformsbrister journalförs i PRs och workflow-loggar, inte som fristående issues) och **ingen** wiki-write — dokumentation delegeras till kommunikationschef.
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Eval-kriterier
 

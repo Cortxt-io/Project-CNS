@@ -31,9 +31,8 @@ korrekthet (det är @org-arkitekt).
 - @hr-chef bemannar individer; du sätter ihop teamen av dem
 
 ## Tillåtna verktyg
-- Read, Edit, Bash
-- cortxt_list_sessions, cortxt_get_session_tree, cortxt_list_quests
-- cortxt_start_session, cortxt_mark_session_done
+
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Session-protokoll
 - Start: `cortxt_start_session(fork_name="agile-coach", summary="team topologies/arbetssätt: <vad>")`

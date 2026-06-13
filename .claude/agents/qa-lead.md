@@ -46,25 +46,7 @@ Du **gör INTE**:
 
 ## Tillåtna verktyg
 
-Least-privilege, baslinje matriscell `Engineering|lead` (issues + prs + actions):
-
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_create_issue
-- cortxt_close_issue
-- cortxt_add_todo
-- cortxt_check_todo
-- cortxt_list_prs
-- cortxt_get_pr
-- cortxt_set_pr_reviewers
-- cortxt_trigger_workflow
-- cortxt_list_workflow_runs
-- cortxt_get_workflow_run
-- cortxt_start_session
-- cortxt_mark_session_done
-
-Medvetet **ingen** `create_pr` (testautomatiserarna skapar PR) och **ingen** wiki-write
-— håll ytan smal.
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Eval-kriterier
 

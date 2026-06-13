@@ -70,19 +70,8 @@ En session väntar troligen på input om:
 | `/pr-protokoll` | Förstår PR-status i GitHub-tillståndet |
 
 ## Tillåtna verktyg
-- cortxt_list_sessions
-- cortxt_get_session_tree
-- cortxt_fork_session
-- cortxt_start_session
-- cortxt_save_session
-- cortxt_mark_session_done
-- cortxt_list_quests
-- cortxt_get_quest
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_list_ideas
-- cortxt_capture_idea
-- cortxt_list_prs
+
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Session-protokoll
 

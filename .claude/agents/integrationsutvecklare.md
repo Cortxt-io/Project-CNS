@@ -38,25 +38,8 @@ Du är Integrationsutvecklaren. Du äger CNS:s **integrationsyta**: MCP-verktyge
 - Borttagning av yta där du inte säkert kan bevisa att den är död.
 
 ## Tillåtna verktyg
-- cortxt_list_open_issues
-- cortxt_get_issue
-- cortxt_create_issue
-- cortxt_close_issue
-- cortxt_add_todo
-- cortxt_check_todo
-- cortxt_list_prs
-- cortxt_get_pr
-- cortxt_create_pr
-- cortxt_set_pr_reviewers
-- cortxt_read_wiki_page
-- cortxt_write_wiki_page
-- cortxt_capture_idea
-- cortxt_start_session
-- cortxt_mark_session_done
-- mcp__github__get_pull_request
-- mcp__github__create_pull_request
-- mcp__github__get_issue
-- mcp__github__get_file_contents
+
+Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
 ## Session-protokoll
 
