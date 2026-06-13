@@ -6,4 +6,12 @@ claude-agent-sdk>=0.2,<0.3
 # Valfritt extra för interaktiv webbnavigering (scripts/tui/web_tools.py).
 # Krävs bara om web_extract/web_act ska fungera i agent-hosten.
 # Aktiveras automatiskt om installerat; degraderar annars tydligt.
-browser-use
+# 0.13.x har egen ChatAnthropic/ChatGoogle/ChatGroq (ingen langchain) + Browser(headless=...)-API.
+# Webbläsar-agentens LLM väljs i web_tools._build_llm efter tillgänglig nyckel:
+#   ANTHROPIC_API_KEY → claude-haiku-4-5, annars GEMINI_API_KEY → gemini-2.0-flash
+#   (gratis-tier), annars GROQ_API_KEY. Nyckel ur env eller otrackad fil i repo-roten
+#   (.cns-agent-key / .cns-gemini-key / .cns-groq-key).
+# OBS: browser-use pinnar anthropic ~0.76 — installeras därför inte på Railway
+# (requirements-agent.txt körs bara lokalt i agent-host-läget). Kräver en chromium
+# (browser-use installerar/hanterar den vid första körningen).
+browser-use>=0.13,<0.14
