@@ -1,9 +1,9 @@
 {
   "id": "session-f772fab5",
   "created_at": "2026-06-13T21:18:03",
-  "updated_at": "2026-06-13T21:18:03",
-  "status": "running",
-  "summary": "review-session: granska PR #143 (Browser Use → research-agent) + förena epic #2-avslut",
+  "updated_at": "2026-06-13T21:24:52",
+  "status": "done",
+  "summary": "Review epic #2: PR #143 + #144 förenade på main. 2 fynd (browser-läcka, provider-fallback) åtgärdade i #144, skarpt verifierat mot vitejs.dev. Inga blockerare.",
   "link": {
     "kind": "quest",
     "ref": "2"
