@@ -58,11 +58,6 @@ from scripts.md_parser import (  # noqa: E402
     read_node,
     write_node,
 )
-from scripts.validator import (  # noqa: E402
-    VALID_FAMILIES,
-    VALID_MVP_STAGES,
-    VALID_STATUSES,
-)
 from scripts.issues_client import (  # noqa: E402
     list_issues as ic_list_issues,
     get_issue as ic_get_issue,

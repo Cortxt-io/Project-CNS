@@ -583,6 +583,7 @@ def _normalize_milestone(ms: dict) -> dict:
         "progress": round(closed_n / total, 3) if total else 0.0,
         "url": ms.get("html_url"),
         "created_at": ms.get("created_at"),
+        "updated_at": ms.get("updated_at"),
         "closed_at": ms.get("closed_at"),
         "due_on": ms.get("due_on"),
     }

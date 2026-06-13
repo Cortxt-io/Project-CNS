@@ -16,13 +16,11 @@ from rich.console import Console
 from rich.panel import Panel
 
 from scripts.md_parser import apply_changes, read_node
-from scripts.validator import (
-    VALID_KINDS,
-    VALID_MVP_STAGES,
-    VALID_RISK_CATEGORIES,
-    VALID_STAGES,
-    VALID_STATUSES,
-)
+
+# Nodmodellens stage/status/mvp_stage/risk_category-enums pensionerades (teardown
+# #11): fälten lagras inte längre och enumsen är borta ur schemas/enums.json.
+# Analysen får fortfarande föreslå stage/status/risks som fritext, men de
+# enum-valideras inte längre — därav ingen import från scripts.validator här.
 
 ANTHROPIC_ENDPOINT = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_MODEL = "claude-sonnet-4-5"
@@ -332,9 +330,6 @@ def _build_user_prompt(context: str, devwatch_context: str = "", kind: str | Non
             f"{devwatch_section}\n\n"
             f"Du har tillgång till hela projektmappen ovan, inklusive planning-, notes- och research-filer. "
             f"Basera dina förslag på allt material, men prioritera devwatch-aktiviteten om den finns.\n\n"
-            f"Giltiga status-värden: {sorted(VALID_STATUSES)}\n"
-            f"Giltiga stage-värden: {sorted(VALID_STAGES)}\n"
-            f"Giltiga risk_categories: {sorted(VALID_RISK_CATEGORIES)}\n"
             f"Risk-schema: probability (1-5) × impact (1-5) = score (1-25). "
             f"Om du kan bedöma probability och impact separat, gör det. Annars behåll gammalt score-format (1-5). "
             f"Mitigation är en valfri text om hur risken kan hanteras.\n\n"
@@ -360,9 +355,6 @@ def _build_user_prompt(context: str, devwatch_context: str = "", kind: str | Non
         f"{devwatch_section}\n\n"
         f"Du har tillgång till hela projektmappen ovan, inklusive planning-, notes- och research-filer. "
         f"Basera dina förslag på allt material, men prioritera devwatch-aktiviteten om den finns.\n\n"
-        f"Giltiga status-värden: {sorted(VALID_STATUSES)}\n"
-        f"Giltiga mvp_stage-värden: {sorted(VALID_MVP_STAGES)}\n"
-        f"Giltiga risk_categories: {sorted(VALID_RISK_CATEGORIES)}\n"
         f"Risk-schema: probability (1-5) × impact (1-5) = score (1-25). "
         f"Om du kan bedöma probability och impact separat, gör det. Annars behåll gammalt score-format (1-5). "
         f"Mitigation är en valfri text om hur risken kan hanteras.\n\n"
@@ -421,36 +413,15 @@ def _parse_response(raw: str, kind: str | None = None) -> tuple[dict[str, Any], 
         if key not in allowed_fields:
             raise RuntimeError(f"Unexpected field in suggestions: '{key}'")
 
-    # Validate enum fields in suggestions
-    if kind is not None:
-        # Kind-aware node: validate stage enum
-        if suggestions_raw.get("stage") is not None and suggestions_raw["stage"] not in VALID_STAGES:
-            raise RuntimeError(
-                f"Invalid stage '{suggestions_raw['stage']}'. Valid: {sorted(VALID_STAGES)}"
-            )
-    else:
-        # Legacy node: validate mvp_stage enum
-        if suggestions_raw.get("mvp_stage") is not None and suggestions_raw["mvp_stage"] not in VALID_MVP_STAGES:
-            raise RuntimeError(
-                f"Invalid mvp_stage '{suggestions_raw['mvp_stage']}'. Valid: {sorted(VALID_MVP_STAGES)}"
-            )
-
-    if suggestions_raw.get("status") is not None and suggestions_raw["status"] not in VALID_STATUSES:
-        raise RuntimeError(
-            f"Invalid status '{suggestions_raw['status']}'. Valid: {sorted(VALID_STATUSES)}"
-        )
-
+    # stage/status/mvp_stage/risk_category enum-validering borttagen — enumsen
+    # pensionerades (teardown #11); fälten lagras inte och får föreslås fritt.
+    # Strukturell risk-validering (form, inte värdedomän) behålls.
     if suggestions_raw.get("risks") is not None:
         if not isinstance(suggestions_raw["risks"], list):
             raise RuntimeError("'risks' must be a list")
         for i, risk in enumerate(suggestions_raw["risks"]):
             if not isinstance(risk, dict):
                 raise RuntimeError(f"Risk at index {i} is not an object")
-            if risk.get("category") not in VALID_RISK_CATEGORIES:
-                raise RuntimeError(
-                    f"Invalid risk category '{risk.get('category')}'. "
-                    f"Valid: {sorted(VALID_RISK_CATEGORIES)}"
-                )
             if not isinstance(risk.get("description"), str):
                 raise RuntimeError(f"Risk at index {i} missing 'description' string")
             score = risk.get("score")
