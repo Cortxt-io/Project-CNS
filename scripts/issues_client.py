@@ -25,6 +25,8 @@ from typing import Any, Optional
 
 import requests
 
+from scripts.work_taxonomy import DEFAULT_ISSUE_TYPE, VALID_ISSUE_TYPES
+
 logger = logging.getLogger(__name__)
 
 GITHUB_API = "https://api.github.com"
@@ -38,10 +40,9 @@ _TODO_RE = re.compile(r"^(\s*[-*]\s+)\[([ xX])\]\s+(.*)$")
 
 # --- Decomposition primitives (work-model taxonomy) ---------------------------
 # Branschstandard-typ på en issue, lagrad som label ``type:<value>`` analogt med
-# ``node:<slug>``. Default ``story`` = fallback för gamla issues utan label.
+# ``node:<slug>``. ``VALID_ISSUE_TYPES``/``DEFAULT_ISSUE_TYPE`` har EN källa i
+# ``scripts/work_taxonomy.py`` (importerade ovan); ``type:``-prefixet är GitHub-mekaniken här.
 TYPE_LABEL_PREFIX = "type:"
-VALID_ISSUE_TYPES = {"story", "bug", "spike", "chore"}
-DEFAULT_ISSUE_TYPE = "story"
 
 # ``depends_on`` lagras som body-rad ``Depends-on: #12, #34`` (labels passar dåligt
 # för N dynamiska nummer). Idempotent replace via denna regex.
