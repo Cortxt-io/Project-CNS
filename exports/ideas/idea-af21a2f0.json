@@ -1,0 +1,9 @@
+{
+  "id": "idea-af21a2f0",
+  "text": "Reproducible local setup / onboarding for Cortxt dev machines. Today, machine-local config lives in unversioned places (e.g. `~/.claude.json` mcpServers — only `project-cns` was hand-added, so `github` + `railway` never load when claude is launched from the CNS workspace root instead of `Project-CNS/`). The versioned source of truth `Project-CNS/.mcp.json` already lists all three servers, but nothing reproducibly applies it to a fresh machine or a root-launch.\n\nNeed: a repo-driven bootstrap so a new machine (or moving the whole setup) becomes reproducible from a clone. Candidate: extend the existing `Project-CNS/scripts/install_hooks.py` pattern with an `install_mcp_servers()` step that reads `.mcp.json` and idempotently merges its servers into user-scope `~/.claude.json` (.mcp.json wins on name conflict, with backup). Plus a one-line onboarding note in `Project-CNS/CLAUDE.md`.\n\nBroader theme to scope at promotion time: what else is machine-local and unversioned and should be reproducible — post-commit hook (currently POSIX-only `#!/bin/sh`), workspace `.claude/settings.json` (btw Stop-hook), and secrets that must stay OUT of the repo (`GITHUB_PAT`, `ANTHROPIC_API_KEY`) but need documented setup steps. Decide at promotion whether this is a single story (just the MCP merge) or an epic (full onboarding/bootstrap). Detailed scratch plan: ~/.claude/plans/fluttering-doodling-spark.md.",
+  "created_at": "2026-06-14T00:21:54",
+  "source": "chat",
+  "slug": null,
+  "session_id": null,
+  "status": "open"
+}
