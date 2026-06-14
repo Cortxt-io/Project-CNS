@@ -532,19 +532,22 @@ class WarRoomScreen(ModalScreen):
 
 
 class CouncilScreen(ModalScreen):
-    """Council — beslutskö (tangent c). Väntande human-in-the-loop-beslut = öppna PR:er agenturen
-    producerat (draft väntar på review, övriga på merge). ↑↓ navigera · Enter/o öppnar PR i browser
-    (där du tar beslutet). esc stänger. (Real merge/close i UI = nästa inkrement.)"""
+    """Council — beslutskö (tangent c). Väntande beslut = öppna PR:er agenturen producerat. Ta beslut
+    DIREKT här: a=Approve (merge, ready PR) · x=Reject (close) · o=öppna i browser · Enter=öppna.
+    Muterande beslut kräver två tryck (bekräfta). esc stänger."""
 
     BINDINGS = [
         Binding("escape", "dismiss", "Stäng"),
         Binding("q", "dismiss", "Stäng"),
+        Binding("a", "approve", "Approve (merge)"),
+        Binding("x", "reject", "Reject (close)"),
         Binding("o", "open_pr", "Öppna PR"),
     ]
 
     def __init__(self) -> None:
         super().__init__()
         self._decisions: list[dict] = []
+        self._pending: tuple[str, int] | None = None  # (action, pr-number) för två-tryck-bekräftelse
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="council-box"):
@@ -556,7 +559,13 @@ class CouncilScreen(ModalScreen):
         from scripts.command_center import council_decisions
 
         self._decisions = council_decisions()
+        self._load("[dim]↑↓ navigera · a approve(merge) · x reject(close) · o browser · esc stäng[/dim]")
+        if self._decisions:
+            self.query_one("#council-list", OptionList).focus()
+
+    def _load(self, status: str = "") -> None:
         ol = self.query_one("#council-list", OptionList)
+        ol.clear_options()
         if self._decisions:
             for d in self._decisions:
                 tag = "[yellow]draft[/yellow]" if d.get("draft") else "[green]ready[/green]"
@@ -570,28 +579,74 @@ class CouncilScreen(ModalScreen):
                     )
                 )
             ol.highlighted = 0
-            ol.focus()
         else:
             ol.add_option(Option("inga väntande beslut (inga öppna PR:er, el. token saknas)", id="__none__", disabled=True))
-        self.query_one("#council-status", Static).update("[dim]↑↓ navigera · Enter/o öppnar PR i browser · esc stänger[/dim]")
+        if status:
+            self.query_one("#council-status", Static).update(status)
+
+    def _current(self) -> dict | None:
+        ol = self.query_one("#council-list", OptionList)
+        if ol.highlighted is None:
+            return None
+        oid = ol.get_option_at_index(ol.highlighted).id
+        return next((x for x in self._decisions if str(x.get("number")) == oid), None)
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        self._open(event.option.id)
+        self.action_open_pr()
 
     def action_open_pr(self) -> None:
-        ol = self.query_one("#council-list", OptionList)
-        if ol.highlighted is not None:
-            self._open(ol.get_option_at_index(ol.highlighted).id)
-
-    def _open(self, opt_id) -> None:
-        if not opt_id or opt_id == "__none__":
-            return
-        d = next((x for x in self._decisions if str(x.get("number")) == opt_id), None)
+        d = self._current()
         if d and d.get("url"):
             import webbrowser
 
             webbrowser.open(d["url"])
             self.query_one("#council-status", Static).update(f"[green]↗ öppnade PR #{d['number']} i browser[/green]")
+
+    def action_approve(self) -> None:
+        d = self._current()
+        if not d:
+            return
+        num = d["number"]
+        if d.get("draft"):
+            self._pending = None
+            self.query_one("#council-status", Static).update(
+                f"[yellow]⚠ #{num} är draft — kan ej mergas. Tryck o för att markera ready i browsern.[/yellow]"
+            )
+            return
+        if self._pending == ("merge", num):
+            self._execute("merge", d)
+        else:
+            self._pending = ("merge", num)
+            self.query_one("#council-status", Static).update(f"[bold yellow]⚠ Bekräfta MERGE av PR #{num} — tryck a igen[/bold yellow]")
+
+    def action_reject(self) -> None:
+        d = self._current()
+        if not d:
+            return
+        num = d["number"]
+        if self._pending == ("close", num):
+            self._execute("close", d)
+        else:
+            self._pending = ("close", num)
+            self.query_one("#council-status", Static).update(f"[bold red]⚠ Bekräfta CLOSE av PR #{num} — tryck x igen[/bold red]")
+
+    def _execute(self, action: str, d: dict) -> None:
+        from scripts import prs_client
+
+        num = d["number"]
+        self._pending = None
+        try:
+            if action == "merge":
+                prs_client.merge_pr(num)
+                msg = f"[bold green]✅ Mergade PR #{num}[/bold green]"
+            else:
+                prs_client.close_pr(num)
+                msg = f"[bold]🗙 Stängde PR #{num}[/bold]"
+            self._decisions = [x for x in self._decisions if x.get("number") != num]
+            self._load(msg)
+            self.app.notify(f"Council: {action} #{num}", title="Command Center")
+        except Exception as exc:
+            self.query_one("#council-status", Static).update(f"[red]⚠ {action} #{num} misslyckades: {exc}[/red]")
 
 
 class FOBScreen(_ModeScreen):
