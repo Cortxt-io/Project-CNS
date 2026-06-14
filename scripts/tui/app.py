@@ -229,6 +229,19 @@ def _logistics_markup(state: dict) -> str:
     return "[bold]⚙ Logistics[/bold]  [dim](försörjning)[/dim]  " + " · ".join(parts)
 
 
+def _badges_markup(state: dict) -> str:
+    """C2-badges: dispatch-läge · väntande beslut · FOB. Placeholders tills wirat (o/c/f öppnar)."""
+    cmd = state.get("command") or {}
+    dispatch = cmd.get("dispatch", "IDLE")
+    decisions = cmd.get("decisions", 0)
+    fobs = cmd.get("fobs", 0)
+    dec = f"[red]⚖ {decisions} beslut[/red]" if decisions else "[dim]⚖ 0 beslut[/dim]"
+    return (
+        f"[dim]🎖 War Room:[/dim] {dispatch}  ·  {dec}  ·  [dim]🏕 {fobs} FOB[/dim]"
+        f"   [dim](o war room · c council · f fob · : radio)[/dim]"
+    )
+
+
 def _rec_link(rec: dict) -> tuple[str | None, str | None]:
     """Härled (link_kind, link_ref) ur en rekommendations ``refs`` för dra-loopen.
 
@@ -253,6 +266,10 @@ class CommandCenterScreen(Screen):
     (hävstångs-rankad FRAGO: Enter verkställer dra-loop). `h` döljer friska. Wiki bakom `w`."""
 
     BINDINGS = [
+        Binding("o", "war_room", "War Room"),
+        Binding("c", "council", "Council"),
+        Binding("f", "fob", "FOB"),
+        Binding("colon", "radio", "Radio"),
         Binding("h", "toggle_healthy", "Dölj/visa friska"),
         Binding("w", "wiki", "Wiki"),
         Binding("s", "sessions", "Sessioner"),
@@ -270,6 +287,7 @@ class CommandCenterScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static("", id="cc-sitrep")
+        yield Static("", id="cc-badges")  # dispatch · beslut · FOB (o/c/f/: öppnar lägena)
         yield OptionList(id="cc-missions")  # FRONTLINE — navigerbar (↑↓), Enter = recon-brief
         yield Static("", id="cc-logistics")
         yield Static("[bold]🎯 ORDERS[/bold]  [dim](Tab hit · Enter verkställer)[/dim]", id="cc-orders-label")
@@ -288,6 +306,7 @@ class CommandCenterScreen(Screen):
         self._orders = state.get("orders") or []
 
         self.query_one("#cc-sitrep", Static).update(_sitrep_markup(state))
+        self.query_one("#cc-badges", Static).update(_badges_markup(state))
 
         # FRONTLINE som navigerbar lista (en option per Mission).
         missions = state.get("missions") or []
@@ -338,6 +357,18 @@ class CommandCenterScreen(Screen):
 
     def action_knowledge(self) -> None:
         self.app.push_screen(KnowledgeScreen())
+
+    def action_war_room(self) -> None:
+        self.app.push_screen(WarRoomScreen())
+
+    def action_council(self) -> None:
+        self.app.push_screen(CouncilScreen())
+
+    def action_fob(self) -> None:
+        self.app.push_screen(FOBScreen())
+
+    def action_radio(self) -> None:
+        self.app.push_screen(RadioScreen())
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         """Enter: på FRONTLINE → recon-brief (mission-detalj); på ORDERS → verkställ FRAGO."""
@@ -425,6 +456,104 @@ class MissionDetailScreen(ModalScreen):
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="mission-box"):
             yield Static(_mission_detail_markup(self._mission), id="mission-detail")
+
+
+# ── C2-lägen (egna Screens, ej paneler på hemmet — research-IA). Placeholders tills wirade. ──
+
+class _ModeScreen(ModalScreen):
+    """Gemensam bas för C2-lägena: titel + placeholder-text, esc stänger."""
+
+    _TITLE = ""
+    _BODY = ""
+
+    BINDINGS = [Binding("escape", "dismiss", "Stäng"), Binding("q", "dismiss", "Stäng")]
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="mode-box"):
+            yield Static(f"{self._TITLE}\n\n{self._BODY}\n\n[dim]esc stänger[/dim]", id="mode-detail")
+
+
+class WarRoomScreen(_ModeScreen):
+    """War Room — dispatch & autonomi (tangent o). Placeholder tills wirat mot dispatch.py."""
+
+    _TITLE = "[bold]🎖 WAR ROOM[/bold]  [dim]— dispatch & autonomi[/dim]"
+    _BODY = (
+        "[yellow]Ej kopplat än.[/yellow] Härifrån styrs den autonoma loopen:\n"
+        "  • Start / Pause / Kill\n"
+        "  • Rules of Engagement — autonominivå: read-first → write → autonomy\n"
+        "  • Throughput · error-rate · log-stream\n\n"
+        "[dim]Kopplas mot scripts/dispatch.py.[/dim]"
+    )
+
+
+class CouncilScreen(_ModeScreen):
+    """Council — beslutskö / human-in-the-loop approvals (tangent c). Placeholder."""
+
+    _TITLE = "[bold]⚖ COUNCIL[/bold]  [dim]— command decisions (approvals)[/dim]"
+    _BODY = (
+        "[yellow]Ej kopplat än.[/yellow] Väntande beslut agenterna eskalerat:\n"
+        "  • Approve / Reject / Defer (inline-hotkeys)\n"
+        "  • Hoppa till kontext (Mission / Objective / PR)\n\n"
+        "[dim]Kopplas mot dispatch approve()-grinden.[/dim]"
+    )
+
+
+class FOBScreen(_ModeScreen):
+    """FOB — off-host exekveringsbaser / container-sandlådor (tangent f). Placeholder."""
+
+    _TITLE = "[bold]🏕 FOB[/bold]  [dim]— forward operating bases (exekvering)[/dim]"
+    _BODY = (
+        "[yellow]Inga FOB provisionerade.[/yellow] Här bor den off-host container-exekveringen:\n"
+        "  • Sandlådor: kapacitet (CPU/mem) · agenter i fält · uptime\n"
+        "  • Drain / Restart / logs\n\n"
+        "[dim]Kopplas mot Docker/microVM-spåret (FOB ≠ Command Center: exekvering vs orientering).[/dim]"
+    )
+
+
+class RadioScreen(ModalScreen):
+    """Radio — command palette (tangent `:`). Skalbar ingång till alla lägen/kommandon."""
+
+    BINDINGS = [Binding("escape", "dismiss", "Stäng")]
+
+    _COMMANDS = [
+        ("war_room", "🎖 War Room — dispatch & autonomi"),
+        ("council", "⚖ Council — beslut / approvals"),
+        ("fob", "🏕 FOB — exekveringsbaser"),
+        ("wiki", "📖 Wiki — nod-/struktur-dyk"),
+        ("sessions", "🗂 Sessioner"),
+        ("refresh", "↻ Refresh"),
+        ("quit", "⏻ Avsluta"),
+    ]
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="radio-box"):
+            yield Static("[bold]📻 RADIO[/bold]  [dim]— issue command · Enter[/dim]\n", id="radio-head")
+            yield OptionList(*[Option(label, id=cid) for cid, label in self._COMMANDS], id="radio-list")
+
+    def on_mount(self) -> None:
+        ol = self.query_one("#radio-list", OptionList)
+        ol.focus()
+        ol.highlighted = 0
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        cmd = event.option.id
+        self.dismiss()
+        if cmd == "war_room":
+            self.app.push_screen(WarRoomScreen())
+        elif cmd == "council":
+            self.app.push_screen(CouncilScreen())
+        elif cmd == "fob":
+            self.app.push_screen(FOBScreen())
+        elif cmd == "wiki":
+            self.app.push_screen(WikiScreen())
+        elif cmd == "sessions":
+            self.app.push_screen(SessionsScreen(self.app.transcripts))
+        elif cmd == "refresh":
+            scr = self.app.screen
+            if isinstance(scr, CommandCenterScreen):
+                scr._refresh_view(status="[dim]↻ refresh (radio)[/dim]")
+        elif cmd == "quit":
+            self.app.exit()
 
 
 class WikiScreen(Screen):

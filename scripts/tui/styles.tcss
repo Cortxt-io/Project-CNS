@@ -30,9 +30,31 @@
     border-bottom: solid $panel;
 }
 
+#cc-badges {
+    padding: 0 2;
+}
+
 #cc-missions {
     height: 1fr;
     padding: 0 1;
+}
+
+/* C2-lägen (War Room/Council/FOB) + Radio = centrerade modaler. */
+WarRoomScreen, CouncilScreen, FOBScreen, RadioScreen {
+    align: center middle;
+}
+
+#mode-box, #radio-box {
+    width: 70%;
+    height: 60%;
+    border: round $accent;
+    background: $surface;
+    padding: 1 2;
+}
+
+#radio-list {
+    height: auto;
+    margin: 1 0 0 0;
 }
 
 MissionDetailScreen {
