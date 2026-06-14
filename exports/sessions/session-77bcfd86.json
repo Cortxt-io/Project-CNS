@@ -1,9 +1,9 @@
 {
   "id": "session-77bcfd86",
   "created_at": "2026-06-14T02:01:38",
-  "updated_at": "2026-06-14T02:01:38",
-  "status": "running",
-  "summary": "Discovery-pass: lätt research — är fas-medveten beslutspunkt-kritiker rätt mönster (vs prior art)?",
+  "updated_at": "2026-06-14T02:05:37",
+  "status": "done",
+  "summary": "Research klar (lätt riktad, 1 agent): ansatsen strukturellt rimlig men utmanad på 2 pelare. Tre riktningsändringar fästa i decisions/decision-point-critic.md + #146: (1) grinda mot EXTERN signal (katalog/board/kod), ej ren self-critique — intrinsic self-correction empiriskt svag (Huang 2023/TACL); (2) läs fas ur OBJEKTET, ej sessionstyp (Jira/GitLab/Plane); (3) Jaccard = grovsåll, lägg embeddings-lager. find_overlaps korrekt som steg 1. Pushat 6355641. Konsekvens: bygg återstående #146-varianter på den nya premissen; embeddings-tröskel testas mot egen data.",
   "link": {
     "kind": "issue",
     "ref": "146"
