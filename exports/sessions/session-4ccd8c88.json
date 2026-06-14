@@ -1,0 +1,23 @@
+{
+  "id": "session-4ccd8c88",
+  "created_at": "2026-06-14T00:55:04",
+  "updated_at": "2026-06-14T00:55:04",
+  "status": "running",
+  "summary": "Delivery-pass: #43 Control Tower som landningsvy + handlingsbar Härnäst (dra-loop)",
+  "link": {
+    "kind": "issue",
+    "ref": "43"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null,
+  "metrics": {
+    "tool_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "tools_seen": [],
+    "artifacts": []
+  }
+}
