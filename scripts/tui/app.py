@@ -22,10 +22,12 @@ from textual.widgets import (
     Label,
     ListItem,
     ListView,
+    OptionList,
     RichLog,
     Static,
     Tree,
 )
+from textual.widgets.option_list import Option
 from textual.widgets.tree import TreeNode
 
 from scripts.tui.data import (
@@ -185,13 +187,12 @@ def _freshness_label(freshness: dict | None) -> str:
     return f"[dim]färsk · {when}[/dim]"
 
 
-def _overview_markup() -> str:
-    """Orienteringsytan (idea-7548a67a / epic #8): EN läsning, ingen hopsättning.
+def _overview_top_markup(state: dict) -> str:
+    """Control Tower (epic #8), de icke-handlingsbara blocken: var du slutade · igång.
 
-    Fyra block ur ``cockpit_state()`` — var du slutade · igång · härnäst · i fokus
-    — så lägesbilden där man står inte behöver pusslas ihop ur flera datalager.
+    "Härnäst" renderas separat som en handlingsbar OptionList (dra-loop, #43),
+    inte som text — därför slutar denna markup före det blocket.
     """
-    state = cockpit_state()
     lines: list[str] = [f"[bold]📍 Lägesbild[/bold]   {_freshness_label(state.get('freshness'))}", ""]
 
     # — Var du slutade —
@@ -222,21 +223,13 @@ def _overview_markup() -> str:
         age = f"  [dim]({elapsed})[/dim]" if elapsed else ""
         lines.append(f"  {tag + '  ' if tag else ''}{summ}{age}{phantom}")
     lines.append("")
+    lines.append("[bold]Härnäst[/bold]  [dim](Enter drar in dig i passet)[/dim]")
+    return "\n".join(lines)
 
-    # — Härnäst —
-    lines.append("[bold]Härnäst[/bold]")
-    recs = state.get("recommendations") or []
-    if not recs:
-        lines.append("  [dim]inga rekommendationer just nu[/dim]")
-    for rec in recs:
-        tag = _type_tag(rec.get("type"))
-        title = rec.get("title", "")
-        lines.append(f"  {tag + '  ' if tag else ''}{title}")
-        if rec.get("motivation"):
-            lines.append(f"     [dim]{rec['motivation'][:80]}[/dim]")
-    lines.append("")
 
-    # — I fokus —
+def _overview_focus_markup(state: dict) -> str:
+    """Control Tower: i-fokus-blocket + fot (renderas under Härnäst-listan)."""
+    lines: list[str] = [""]
     focus = state.get("focus")
     if not focus:
         lines.append("[bold]I fokus[/bold]")
@@ -252,14 +245,33 @@ def _overview_markup() -> str:
             num = it.get("number") or it.get("id") or "?"
             title = it.get("title", "")
             lines.append(f"  🔧 #{num} {title[:56]}")
-
     lines.append("")
-    lines.append("[dim]esc / o stänger · s sessioner · k kunskap[/dim]")
+    lines.append("[dim]Enter startar · esc / o stänger · s sessioner · k kunskap[/dim]")
     return "\n".join(lines)
 
 
+def _rec_link(rec: dict) -> tuple[str | None, str | None]:
+    """Härled (link_kind, link_ref) ur en rekommendations ``refs`` för dra-loopen.
+
+    Rekommendationsmotorn (``recommend.recommend``) refererar quests som
+    "quest #N", issues som "#N" och idéer som "idea-…". None när inget spår finns.
+    """
+    refs = rec.get("refs") or []
+    if not refs:
+        return (None, None)
+    ref = str(refs[0]).strip()
+    if ref.startswith("quest #"):
+        return ("quest", ref.split("#", 1)[1].strip())
+    if ref.startswith("idea"):
+        return ("idea", ref)
+    if ref.startswith("#") and ref[1:].isdigit():
+        return ("issue", ref[1:])
+    return (None, None)
+
+
 class OverviewScreen(ModalScreen):
-    """Modal lägesbild över brancher och idéer (tangent o)."""
+    """Control Tower — lägesbilden vid start (tangent o). "Härnäst" är handlingsbar:
+    Enter på en rekommendation drar in dig i det passet (dra-loop, idea-5132a8f6)."""
 
     BINDINGS = [
         Binding("escape", "dismiss", "Stäng"),
@@ -268,8 +280,52 @@ class OverviewScreen(ModalScreen):
     ]
 
     def compose(self) -> ComposeResult:
+        state = cockpit_state()
+        self._recs = state.get("recommendations") or []
         with VerticalScroll(id="overview-box"):
-            yield Static(_overview_markup(), id="overview")
+            yield Static(_overview_top_markup(state), id="overview-top")
+            options = [
+                Option(Text.from_markup(
+                    f"{_type_tag(r.get('type')) + '  ' if _type_tag(r.get('type')) else ''}"
+                    f"{r.get('title', '')}"
+                ), id=str(i))
+                for i, r in enumerate(self._recs)
+            ]
+            if options:
+                ol = OptionList(*options, id="overview-recs")
+                yield ol
+            else:
+                yield Static("  [dim]inga rekommendationer just nu[/dim]", id="overview-recs")
+            yield Static(_overview_focus_markup(state), id="overview-focus")
+
+    def on_mount(self) -> None:
+        if self._recs:
+            self.query_one("#overview-recs", OptionList).focus()
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        """Dra-loop: starta det rekommenderade passet (lokalt: markör + pass + fokus)."""
+        try:
+            rec = self._recs[int(event.option.id)]
+        except (ValueError, TypeError, IndexError):
+            return
+        from scripts.session_store import set_active, set_focus, start_session
+
+        rtype = rec.get("type")
+        link_kind, link_ref = _rec_link(rec)
+        try:
+            set_active(rtype)
+            start_session(
+                link_kind=link_kind,
+                link_ref=link_ref,
+                summary=rec.get("title", ""),
+                session_type=rtype,
+            )
+            if link_kind:
+                set_focus(link_kind, link_ref)
+            self.notify(f"Drog in dig i {rtype}-pass", title="Control Tower")
+        except Exception as exc:  # degradera synligt, krascha inte vyn
+            self.notify(f"Kunde inte starta: {exc}", severity="error", title="Control Tower")
+        self.dismiss()
 
 
 class SessionsScreen(ModalScreen):
