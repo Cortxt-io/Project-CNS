@@ -26,7 +26,7 @@ systems:
     feeds: []
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   cns-analyst:
     title: CNS Analyst
     summary: AI-driven analysmotor som föreslår uppdateringar av stage, risker och
@@ -36,7 +36,7 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
     tags:
     - pipeline
     - review
@@ -49,7 +49,7 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
     tags:
     - pipeline
     - intern
@@ -62,7 +62,7 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   cns-devlog:
     title: CNS Devlog
     summary: Genererar daglig AI-sammanfattning av portföljförändringar och publicerar
@@ -73,7 +73,7 @@ systems:
     feeds:
     - cns-brief
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
     tags:
     - pipeline
     - intern
@@ -86,7 +86,7 @@ systems:
     feeds:
     - cns-devlog
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
     tags:
     - pipeline
     - intern
@@ -100,7 +100,7 @@ systems:
     owner_agent: devops-engineer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   cns-mcp:
     title: CNS MCP Server
     summary: Remote MCP-server på Railway (GitHub OAuth, Redis-token-store) som exponerar
@@ -112,7 +112,7 @@ systems:
     feeds: []
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   cns-triage:
     title: CNS Triage
     summary: Intern triage av CNS idé-inkorg och noder — gruppera, resolva/promota
@@ -131,7 +131,7 @@ systems:
     owner_agent: backend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   cortxt:
     title: Cortxt
     summary: Verktygskedja för AI-assisterad produktutveckling — från idé till leverans.
@@ -149,7 +149,7 @@ systems:
     owner_agent: frontend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/cortxt
   cortxt-eventstream:
     title: Cortxt Eventstream
     summary: Enhetlig händelselogning av alla systemaktiviteter med sex dimensioner.
@@ -171,7 +171,7 @@ systems:
     owner_agent: frontend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/cortxt
   cortxt-landing:
     title: Cortxt Landing
     summary: Publik landningssida på cortxt.io — förklarar Cortxt, visar pipelinen,
@@ -182,7 +182,7 @@ systems:
     owner_agent: frontend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/cortxt
   dev-changelog-engine:
     title: Dev Changelog Engine
     summary: Fullskalig pipeline för changelog-digest med source-adaptrar, LLM-analys
@@ -230,7 +230,7 @@ systems:
     - cortxt-eventstream
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   infrastructure:
     title: Infrastructure
     summary: Infrastruktursystem — drift, hosting, webhooks och lagring.
@@ -279,7 +279,7 @@ systems:
     feeds: []
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   research-agent:
     title: Research Agent
     summary: Research-agent som söker på webben, verifierar källor och skriver findings
