@@ -40,3 +40,6 @@ tmp/
 
 .devwatch_state.json
 catalog.derived.yaml
+plans/
+research/
+strategy/

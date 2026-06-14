@@ -18,7 +18,7 @@ re-discovering context. Two layers:
   structure, never stored. Health is *derived* at read time. Stage/status are delegated to the board.
 - **The work layer** — work items live on **GitHub**: `epic` = Milestone, `story` = Issue (+ `type:`/`node:`
   labels), `todo` = task-list checkbox. An optional `initiative` top level + status flow live on an
-  **org-level GitHub Project v2** (see `plans/taxonomy-mirror-skeleton.md`).
+  **org-level GitHub Project v2**.
 
 The **agency** runs the portfolio: a dispatch loop picks suitable issues, routes them to role-based
 agents, runs gated passes, and opens draft PRs (`scripts/dispatch.py`). Agents reach CNS through an
@@ -64,8 +64,11 @@ scripts/              <- catalog reader, validator, exporter, dispatch loop, MCP
 app/                  <- Flask backend + FastMCP server (Railway); git_ops.py pushes via GitHub API
 schemas/enums.json    <- single source for node-model enums (kind/type/domain)
 .github/workflows/    <- CI + org-Project automation
-plans/                <- implementation specs   ·   .claude/ <- the agency's tooling (versioned)
+.claude/              <- the agency's tooling (versioned)
 ```
+
+> Implementation specs and research live in a separate **private** repo (`cns-internal`); finished
+> decisions are promoted into `decisions/` here.
 
 Full layout, the node-model rationale, the deploy/data-flow gotchas, and the agency/tooling model are
 documented in **[`CLAUDE.md`](CLAUDE.md)**.
