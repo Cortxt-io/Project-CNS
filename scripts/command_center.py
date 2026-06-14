@@ -88,6 +88,7 @@ def command_center_state(
     sessions_fn: Callable[[], list[dict]] | None = None,
     recommend_fn: Callable[[], list[dict]] | None = None,
     health_fn: Callable[..., dict] | None = None,
+    prs_fn: Callable[[], list[dict]] | None = None,
     now: datetime | None = None,
 ) -> dict:
     """Komponera Command Center i EN läsning. Ren data; degraderar tyst per källa.
@@ -186,13 +187,31 @@ def command_center_state(
         if s.get("type") == "enablement" and s.get("status") == "running"
     ]
 
+    decisions = council_decisions(prs_fn)
+
     return {
         "missions": missions,
         "sitrep": sitrep,
         "logistics": logistics,
         "orders": orders,
+        "command": {"dispatch": "IDLE", "decisions": len(decisions), "fobs": 0},
         "freshness": _freshness(),
     }
+
+
+def council_decisions(prs_fn: Callable[[], list[dict]] | None = None) -> list[dict]:
+    """Väntande beslut för Council = öppna PR:er agenturen/dispatch producerat. Draft (väntar på
+    'ready'/review) först, sen övriga öppna (väntar på merge). Degraderar tyst (ingen token → tom)."""
+    if prs_fn is None:
+        from scripts.prs_client import list_prs
+
+        prs_fn = lambda: list_prs(state="open")  # noqa: E731
+    try:
+        prs = prs_fn() or []
+    except Exception:
+        return []
+    prs.sort(key=lambda p: (not p.get("draft"), p.get("created_at", "")))
+    return prs
 
 
 def _freshness() -> dict:

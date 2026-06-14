@@ -531,16 +531,67 @@ class WarRoomScreen(ModalScreen):
             self.query_one("#war-status", Static).update(f"[red]⚠ kunde inte starta: {exc}[/red]")
 
 
-class CouncilScreen(_ModeScreen):
-    """Council — beslutskö / human-in-the-loop approvals (tangent c). Placeholder."""
+class CouncilScreen(ModalScreen):
+    """Council — beslutskö (tangent c). Väntande human-in-the-loop-beslut = öppna PR:er agenturen
+    producerat (draft väntar på review, övriga på merge). ↑↓ navigera · Enter/o öppnar PR i browser
+    (där du tar beslutet). esc stänger. (Real merge/close i UI = nästa inkrement.)"""
 
-    _TITLE = "[bold]⚖ COUNCIL[/bold]  [dim]— command decisions (approvals)[/dim]"
-    _BODY = (
-        "[yellow]Ej kopplat än.[/yellow] Väntande beslut agenterna eskalerat:\n"
-        "  • Approve / Reject / Defer (inline-hotkeys)\n"
-        "  • Hoppa till kontext (Mission / Objective / PR)\n\n"
-        "[dim]Kopplas mot dispatch approve()-grinden.[/dim]"
-    )
+    BINDINGS = [
+        Binding("escape", "dismiss", "Stäng"),
+        Binding("q", "dismiss", "Stäng"),
+        Binding("o", "open_pr", "Öppna PR"),
+    ]
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._decisions: list[dict] = []
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="council-box"):
+            yield Static("[bold]⚖ COUNCIL[/bold]  [dim]— command decisions (väntande PR:er)[/dim]\n", id="council-head")
+            yield OptionList(id="council-list")
+            yield Static("", id="council-status")
+
+    def on_mount(self) -> None:
+        from scripts.command_center import council_decisions
+
+        self._decisions = council_decisions()
+        ol = self.query_one("#council-list", OptionList)
+        if self._decisions:
+            for d in self._decisions:
+                tag = "[yellow]draft[/yellow]" if d.get("draft") else "[green]ready[/green]"
+                title = " ".join((d.get("title", "") or "").split())[:46]
+                ol.add_option(
+                    Option(
+                        Text.from_markup(
+                            f"{tag}  [bold]#{d.get('number')}[/bold] {title}  [dim]· {d.get('author', '')} · {d.get('head', '')}[/dim]"
+                        ),
+                        id=str(d.get("number")),
+                    )
+                )
+            ol.highlighted = 0
+            ol.focus()
+        else:
+            ol.add_option(Option("inga väntande beslut (inga öppna PR:er, el. token saknas)", id="__none__", disabled=True))
+        self.query_one("#council-status", Static).update("[dim]↑↓ navigera · Enter/o öppnar PR i browser · esc stänger[/dim]")
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        self._open(event.option.id)
+
+    def action_open_pr(self) -> None:
+        ol = self.query_one("#council-list", OptionList)
+        if ol.highlighted is not None:
+            self._open(ol.get_option_at_index(ol.highlighted).id)
+
+    def _open(self, opt_id) -> None:
+        if not opt_id or opt_id == "__none__":
+            return
+        d = next((x for x in self._decisions if str(x.get("number")) == opt_id), None)
+        if d and d.get("url"):
+            import webbrowser
+
+            webbrowser.open(d["url"])
+            self.query_one("#council-status", Static).update(f"[green]↗ öppnade PR #{d['number']} i browser[/green]")
 
 
 class FOBScreen(_ModeScreen):

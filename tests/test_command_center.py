@@ -23,7 +23,7 @@ def _sess(issue, stype, status="running"):
     return {"type": stype, "status": status, "link": {"kind": "issue", "ref": str(issue)}}
 
 
-def _state(*, milestones, issues_map, all_open, sessions, orders=None, health_map=None):
+def _state(*, milestones, issues_map, all_open, sessions, orders=None, health_map=None, prs=None):
     def health(ms, now=None):
         lvl = (health_map or {}).get(ms["number"], "unknown")
         checks = [{"name": "blocked", "level": "degraded", "feedback": "PR #99 väntar på review"}] if lvl == "degraded" else []
@@ -36,6 +36,7 @@ def _state(*, milestones, issues_map, all_open, sessions, orders=None, health_ma
         sessions_fn=lambda: sessions,
         recommend_fn=lambda: orders or [],
         health_fn=health,
+        prs_fn=lambda: prs or [],
         now=NOW,
     )
 
@@ -93,16 +94,29 @@ def test_logistics_track() -> None:
     assert len(s["logistics"]) == 1 and s["logistics"][0]["summary"] == "uppdatera skill"
 
 
+def test_council_decisions_and_badge() -> None:
+    prs = [
+        {"number": 50, "title": "draft A", "draft": True, "created_at": "2026-06-14T10:00:00Z"},
+        {"number": 51, "title": "ready B", "draft": False, "created_at": "2026-06-13T10:00:00Z"},
+    ]
+    # draft sorteras först (väntar på review), oavsett ålder
+    decisions = cc.council_decisions(prs_fn=lambda: prs)
+    assert [d["number"] for d in decisions] == [50, 51]
+    # badge-räknaren speglar antalet
+    s = _state(milestones=[], issues_map={}, all_open=[], sessions=[], prs=prs)
+    assert s["command"]["decisions"] == 2
+
+
 def test_degrades_silently() -> None:
     def boom(*a, **k):
         raise RuntimeError("nere")
 
     s = cc.command_center_state(
         milestones_fn=boom, issues_for_fn=boom, all_open_issues_fn=boom,
-        sessions_fn=boom, recommend_fn=boom, health_fn=boom, now=NOW,
+        sessions_fn=boom, recommend_fn=boom, health_fn=boom, prs_fn=boom, now=NOW,
     )
     assert s["missions"] == [] and s["orders"] == [] and s["logistics"] == []
-    assert s["sitrep"]["degraded"] == 0 and "reachable" in s["freshness"]
+    assert s["sitrep"]["degraded"] == 0 and s["command"]["decisions"] == 0 and "reachable" in s["freshness"]
 
 
 if __name__ == "__main__":
