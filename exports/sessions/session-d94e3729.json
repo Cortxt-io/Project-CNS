@@ -1,9 +1,9 @@
 {
   "id": "session-d94e3729",
   "created_at": "2026-06-14T01:00:20",
-  "updated_at": "2026-06-14T01:00:20",
-  "status": "running",
-  "summary": "Delivery-pass: #41 Automatiska färger + namn per sessionstyp",
+  "updated_at": "2026-06-14T01:05:15",
+  "status": "done",
+  "summary": "#41 kärna levererad: SESSION_TYPE_STYLE enkälla (icon/ansi/rich) i session_store; recommend.py + scripts/tui härleder, dubblerade _TYPE_RICH/_TYPE_ICON borttagna. auto_session_name (\"Triage #3 – 14 jun\") i start_session vid tom summary. 7 nya tester, full svit 201 grön, Pilot-smoke ok. CLAUDE.md uppdaterad. Pushat c4571ea. KVAR i #41 (öppen): del 3 flik-titel via maskinlokal /flik-skill. Epic #8 nu: #39 (form a), #43 stängd, #41 kärna klar; kvar #40, #42 + triage b/c.",
   "link": {
     "kind": "issue",
     "ref": "41"
