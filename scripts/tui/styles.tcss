@@ -44,12 +44,17 @@ WarRoomScreen, CouncilScreen, FOBScreen, RadioScreen {
     align: center middle;
 }
 
-#mode-box, #radio-box {
+#mode-box, #radio-box, #war-box {
     width: 70%;
     height: 60%;
     border: round $accent;
     background: $surface;
     padding: 1 2;
+}
+
+#roe-list {
+    height: auto;
+    margin: 1 0;
 }
 
 #radio-list {

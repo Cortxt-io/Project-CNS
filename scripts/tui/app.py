@@ -473,17 +473,62 @@ class _ModeScreen(ModalScreen):
             yield Static(f"{self._TITLE}\n\n{self._BODY}\n\n[dim]esc stänger[/dim]", id="mode-detail")
 
 
-class WarRoomScreen(_ModeScreen):
-    """War Room — dispatch & autonomi (tangent o). Placeholder tills wirat mot dispatch.py."""
+class WarRoomScreen(ModalScreen):
+    """War Room — dispatch & autonomi (tangent o). Välj Rules of Engagement, Enter = Engage:
+    startar ETT gated dispatch-crawl i ett NYTT fönster (kör synligt, gateas per steg där, fryser
+    inte TUI:t). dispatch.main kör ett crawl per anrop; default interaktiv y/N-grind."""
 
-    _TITLE = "[bold]🎖 WAR ROOM[/bold]  [dim]— dispatch & autonomi[/dim]"
-    _BODY = (
-        "[yellow]Ej kopplat än.[/yellow] Härifrån styrs den autonoma loopen:\n"
-        "  • Start / Pause / Kill\n"
-        "  • Rules of Engagement — autonominivå: read-first → write → autonomy\n"
-        "  • Throughput · error-rate · log-stream\n\n"
-        "[dim]Kopplas mot scripts/dispatch.py.[/dim]"
-    )
+    BINDINGS = [Binding("escape", "dismiss", "Stäng"), Binding("q", "dismiss", "Stäng")]
+
+    # (id, label, beskrivning, dispatch-flaggor)
+    _ROE = [
+        ("recon", "🔭 Recon — read-first", "Föreslår, skriver inget. Säkrast.", ""),
+        ("assault", "⚔ Assault — write", "Worktree + draft-PR. Gateas per steg (y/N).", "--write"),
+        ("autonomy", "🎲 Autonomy — self-merge", "Self-mergar LÅGRISK (kräver write). Gateas.", "--write --autonomy"),
+    ]
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="war-box"):
+            yield Static(
+                "[bold]🎖 WAR ROOM[/bold]  [dim]— dispatch & autonomi[/dim]\n\n"
+                "[bold]Rules of Engagement[/bold]  [dim](↑↓ välj · Enter = Engage ett crawl i nytt fönster)[/dim]",
+                id="war-head",
+            )
+            yield OptionList(
+                *[Option(Text.from_markup(f"{lbl}  [dim]— {desc}[/dim]"), id=rid) for rid, lbl, desc, _ in self._ROE],
+                id="roe-list",
+            )
+            yield Static(
+                "[dim]Engage öppnar ett nytt fönster: python -m scripts.dispatch [flaggor].\n"
+                "Varje muterande steg frågar y/N där (människan i loopen). esc stänger.[/dim]",
+                id="war-status",
+            )
+
+    def on_mount(self) -> None:
+        ol = self.query_one("#roe-list", OptionList)
+        ol.focus()
+        ol.highlighted = 0
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        flags = next((f for rid, _, _, f in self._ROE if rid == event.option.id), None)
+        if flags is None:
+            return
+        self._engage(event.option.id, flags)
+
+    def _engage(self, posture: str, flags: str) -> None:
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parents[2]  # Project-CNS
+        try:
+            cmd = f'start "War Room — dispatch ({posture})" cmd /k "cd /d {root} && python -m scripts.dispatch {flags}"'
+            subprocess.Popen(cmd, shell=True)
+            self.query_one("#war-status", Static).update(
+                f"[bold green]✅ Engaged: {posture}[/bold green] i nytt fönster — "
+                f"[dim]gateas per steg där (y/N). Kill: Ctrl-C i det fönstret.[/dim]"
+            )
+            self.app.notify(f"War Room: engaged {posture}", title="Command Center")
+        except Exception as exc:
+            self.query_one("#war-status", Static).update(f"[red]⚠ kunde inte starta: {exc}[/red]")
 
 
 class CouncilScreen(_ModeScreen):
