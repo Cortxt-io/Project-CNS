@@ -692,6 +692,23 @@ def cmd_tui(args: argparse.Namespace) -> None:
     tui_main()
 
 
+def cmd_triage(args: argparse.Namespace) -> None:
+    """Gruppera den öppna idé-inkorgen i åtgärdbara hinkar (#39, Control Tower)."""
+    import json as _json
+    import sys as _sys
+
+    from scripts.idea_inbox import list_ideas
+    from scripts.triage import group_ideas, render_triage
+
+    if hasattr(_sys.stdout, "reconfigure"):
+        _sys.stdout.reconfigure(encoding="utf-8")  # Windows-konsol klarar inte å-ä-ö/emoji
+    grouping = group_ideas(list_ideas(status="open"))
+    if getattr(args, "json", False):
+        print(_json.dumps(grouping, ensure_ascii=False, indent=2))
+    else:
+        print(render_triage(grouping))
+
+
 def cmd_derive(args: argparse.Namespace) -> None:
     """Härled nodkatalogen ur verkligheten; diffa eller bygg den sammanslagna kartan."""
     from scripts import derive_catalog as dc
@@ -1069,6 +1086,10 @@ def main() -> None:
     # cns tui
     sp_tui = subparsers.add_parser("tui", help="Starta interaktiv terminal-överblick (Textual)")
     sp_tui.set_defaults(func=cmd_tui)
+
+    sp_triage = subparsers.add_parser("triage", help="Gruppera öppna idéer i åtgärdbara hinkar (#39)")
+    sp_triage.add_argument("--json", action="store_true", help="Skriv grupperingen som JSON")
+    sp_triage.set_defaults(func=cmd_triage)
 
     args = parser.parse_args()
 
