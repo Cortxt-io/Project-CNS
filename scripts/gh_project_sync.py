@@ -109,3 +109,43 @@ def set_initiative(
     item_id = add_item(project_id, content_id, graphql_fn)
     field_id, option_id = resolve_single_select(project_id, "Initiative", initiative_name, graphql_fn)
     return set_single_select(project_id, item_id, field_id, option_id, graphql_fn)
+
+
+# --- Backfill (Fas 1d): befintliga issues initiativ → org-Project --------------------
+def plan_initiative_backfill(
+    issues: list[dict], milestone_initiative: dict[int, str]
+) -> list[dict]:
+    """Ren planerare. ``issues``: [{number, node_id, milestone}] (milestone = ms-nummer eller None).
+
+    En issues initiativ = dess milestones initiativ. Returnerar handlingsplanen
+    [{number, node_id, initiative}] för de issues vars milestone HAR ett initiativ.
+    Inga sidoeffekter — testbar; live-applicering sker i :func:`backfill_initiatives`.
+    """
+    plan = []
+    for it in issues:
+        ms = it.get("milestone")
+        init = milestone_initiative.get(ms) if ms is not None else None
+        if init and it.get("node_id"):
+            plan.append({"number": it["number"], "node_id": it["node_id"], "initiative": init})
+    return plan
+
+
+def backfill_initiatives(
+    project_id: str,
+    issues: list[dict],
+    milestone_initiative: dict[int, str],
+    dry_run: bool = True,
+    graphql_fn: GraphQLFn = _default_graphql,
+) -> dict:
+    """Sätt Initiative på alla issues utifrån deras milestone. ``dry_run`` skriver inget.
+
+    Returnerar {dry_run, actions:[...]}. Vid live: varje action får ``item_id``.
+    """
+    plan = plan_initiative_backfill(issues, milestone_initiative)
+    if dry_run:
+        return {"dry_run": True, "actions": plan}
+    done = []
+    for a in plan:
+        item = set_initiative(project_id, a["node_id"], a["initiative"], graphql_fn)
+        done.append({**a, "item_id": item})
+    return {"dry_run": False, "actions": done}
