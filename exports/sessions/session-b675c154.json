@@ -1,0 +1,23 @@
+{
+  "id": "session-b675c154",
+  "created_at": "2026-06-14T00:40:19",
+  "updated_at": "2026-06-14T00:40:19",
+  "status": "running",
+  "summary": "Definition-pass: Control Tower (epic #8) — ratificera spec-beslut, väv in dra-loop, redundanssvep, namnbyte, sekvensera #39–43",
+  "link": {
+    "kind": "quest",
+    "ref": "8"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null,
+  "metrics": {
+    "tool_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "tools_seen": [],
+    "artifacts": []
+  }
+}
