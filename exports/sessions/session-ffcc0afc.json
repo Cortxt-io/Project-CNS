@@ -1,9 +1,9 @@
 {
   "id": "session-ffcc0afc",
   "created_at": "2026-06-14T01:43:56",
-  "updated_at": "2026-06-14T01:43:56",
-  "status": "running",
-  "summary": "Definition-pass: #146 fas-medveten beslutspunkt-kritiker (per-fas-matris + fas härleds ur aktiv sessionstyp)",
+  "updated_at": "2026-06-14T01:44:50",
+  "status": "done",
+  "summary": "#146 fas-medveten design inskriven: per-fas-matris (capture exempt → triage/promote överlapp → discovery prior art → definition/delivery grep → review substans → retro) + kärninsikt att fasen HÄRLEDS ur aktiv sessionstyp (get_active). Återanvänder group_ideas/list_open_issues/decisions/grep — ingen ny detektering. Öppna def-frågor uppdaterade (form, textlikhets-tröskel, första slice = triage-överlapp på group_ideas). Ingen kod. #146 öppen, redo för delivery.",
   "link": {
     "kind": "issue",
     "ref": "146"
