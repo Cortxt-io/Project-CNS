@@ -264,23 +264,23 @@ class CommandCenterScreen(Screen):
     def __init__(self) -> None:
         super().__init__()
         self._orders: list[dict] = []
+        self._missions: list[dict] = []
         self._show_operational: bool = True
 
     def compose(self) -> ComposeResult:
         yield Header()
         yield Static("", id="cc-sitrep")
-        with VerticalScroll(id="cc-frontline"):
-            yield Static("", id="cc-missions")
+        yield OptionList(id="cc-missions")  # FRONTLINE — navigerbar (↑↓), Enter = recon-brief
         yield Static("", id="cc-logistics")
-        yield Static("[bold]🎯 ORDERS[/bold]  [dim](hävstångs-rankat nästa drag · Enter verkställer)[/dim]", id="cc-orders-label")
+        yield Static("[bold]🎯 ORDERS[/bold]  [dim](Tab hit · Enter verkställer)[/dim]", id="cc-orders-label")
         yield OptionList(id="cc-orders")
         yield Static("", id="cc-status")
         yield Footer()
 
     def on_mount(self) -> None:
         self._refresh_view()
-        if self._orders:
-            self.query_one("#cc-orders", OptionList).focus()
+        # Fokusera FRONTLINE primärt (huvudytan); Tab växlar till ORDERS.
+        self.query_one("#cc-missions", OptionList).focus()
 
     def _refresh_view(self, status: str = "") -> None:
         """(Om)komponera Command Center ur färsk command_center_state."""
@@ -288,7 +288,21 @@ class CommandCenterScreen(Screen):
         self._orders = state.get("orders") or []
 
         self.query_one("#cc-sitrep", Static).update(_sitrep_markup(state))
-        self.query_one("#cc-missions", Static).update(_frontline_markup(state, self._show_operational))
+
+        # FRONTLINE som navigerbar lista (en option per Mission).
+        missions = state.get("missions") or []
+        if not self._show_operational:
+            missions = [m for m in missions if m.get("readiness") != "operational"]
+        self._missions = missions
+        front = self.query_one("#cc-missions", OptionList)
+        front.clear_options()
+        if missions:
+            for m in missions:
+                front.add_option(Option(Text.from_markup(_mission_markup(m)), id=str(m["number"])))
+            front.highlighted = 0
+        else:
+            front.add_option(Option("inga missioner på fronten (h = visa friska)", id="__none__", disabled=True))
+
         self.query_one("#cc-logistics", Static).update(_logistics_markup(state))
 
         orders = self.query_one("#cc-orders", OptionList)
@@ -306,7 +320,7 @@ class CommandCenterScreen(Screen):
 
         mode = "alla" if self._show_operational else "endast aktiva"
         self.query_one("#cc-status", Static).update(
-            status or f"[dim]frontline: {mode} (h växlar) · Enter verkställ order · w wiki · s sessioner · r refresh[/dim]"
+            status or f"[dim]↑↓ navigera · Enter recon-brief · Tab→orders · h {mode} · w wiki · r refresh · q[/dim]"
         )
 
     def action_toggle_healthy(self) -> None:
@@ -326,10 +340,19 @@ class CommandCenterScreen(Screen):
         self.app.push_screen(KnowledgeScreen())
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        """Verkställ ORDER (FRAGO): starta passet (markör + pass + fokus), idempotent."""
+        """Enter: på FRONTLINE → recon-brief (mission-detalj); på ORDERS → verkställ FRAGO."""
         opt_id = event.option.id
         if not opt_id or opt_id == "__none__":
             return
+
+        # FRONTLINE: dyk in i missionen (progressive disclosure).
+        if event.option_list.id == "cc-missions":
+            mission = next((m for m in self._missions if str(m["number"]) == opt_id), None)
+            if mission:
+                self.app.push_screen(MissionDetailScreen(mission))
+            return
+
+        # ORDERS: verkställ FRAGO.
         try:
             order = self._orders[int(opt_id)]
         except (ValueError, TypeError, IndexError):
@@ -359,6 +382,49 @@ class CommandCenterScreen(Screen):
         except Exception as exc:  # degradera synligt, krascha inte vyn
             self.notify(f"Kunde inte verkställa: {exc}", severity="error", title="Command Center")
             self._refresh_view(status=f"[red]⚠ kunde inte verkställa order: {exc}[/red]")
+
+
+def _mission_detail_markup(m: dict) -> str:
+    """Recon-brief för en Mission: readiness, fronter, vem-agerar, contact, order, hävstång."""
+    icon = _READINESS_MARK.get(m.get("readiness"), "⚪")
+    rcolor = {"operational": "green", "watch": "yellow", "degraded": "red", "dark": "dim"}.get(m.get("readiness"), "dim")
+    lines = [
+        f"{icon} [bold]{m.get('title', '')}[/bold]   [dim]Mission #{m.get('number')}[/dim]",
+        "",
+        f"[bold]Readiness:[/bold] [{rcolor}]{m.get('readiness')}[/{rcolor}]",
+    ]
+    fronts = m.get("fronts") or []
+    fronts_txt = " · ".join(_FRONT_LABEL.get(f, f) for f in fronts) if fronts else "[dim]inga aktiva fronter[/dim]"
+    lines.append(f"[bold]Aktiva fronter:[/bold] {fronts_txt}")
+    if m.get("units"):
+        lines.append(f"[bold]Enheter i fält:[/bold] 🤖×{m['units']}")
+    elif m.get("commander"):
+        lines.append("[bold]Chain of command:[/bold] [yellow]👤 väntar på dig (Commander)[/yellow]")
+    lines.append(f"[bold]Hävstång:[/bold] låser upp {m.get('leverage', 0)} nedströms-objekt")
+    lines.append(f"[bold]Öppna objectives:[/bold] {m.get('open_objectives', 0)}")
+    if m.get("contact"):
+        lines.append("")
+        lines.append(f"[red]⚠ Contact report:[/red] {m['contact']}")
+    if m.get("order"):
+        lines.append("")
+        lines.append(f"[bold cyan]Order:[/bold cyan] {m['order']}")
+    lines.append("")
+    lines.append("[dim]esc stänger · (objectives-detalj kräver GitHub-token)[/dim]")
+    return "\n".join(lines)
+
+
+class MissionDetailScreen(ModalScreen):
+    """Recon-brief för en Mission (drill-down från FRONTLINE). esc stänger."""
+
+    BINDINGS = [Binding("escape", "dismiss", "Stäng"), Binding("q", "dismiss", "Stäng")]
+
+    def __init__(self, mission: dict) -> None:
+        super().__init__()
+        self._mission = mission
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="mission-box"):
+            yield Static(_mission_detail_markup(self._mission), id="mission-detail")
 
 
 class WikiScreen(Screen):

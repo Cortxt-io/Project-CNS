@@ -30,9 +30,21 @@
     border-bottom: solid $panel;
 }
 
-#cc-frontline {
+#cc-missions {
     height: 1fr;
-    padding: 0 2;
+    padding: 0 1;
+}
+
+MissionDetailScreen {
+    align: center middle;
+}
+
+#mission-box {
+    width: 70%;
+    height: 70%;
+    border: round $accent;
+    background: $surface;
+    padding: 1 2;
 }
 
 #cc-logistics {
