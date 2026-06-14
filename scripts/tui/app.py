@@ -299,6 +299,8 @@ class CommandCenterScreen(Screen):
                 orders.add_option(
                     Option(Text.from_markup(f"{tag + '  ' if tag else ''}{o.get('title', '')}"), id=str(i))
                 )
+            # Markera första ordern så Enter direkt verkställer (annars highlighted=None → inget händer).
+            orders.highlighted = 0
         else:
             orders.add_option(Option("inga orders just nu", id="__none__", disabled=True))
 
