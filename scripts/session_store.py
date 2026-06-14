@@ -329,6 +329,17 @@ def elapsed_seconds(session: dict) -> float | None:
         return None
 
 
+def find_running(session_type: str | None, link_ref: str | None) -> dict | None:
+    """Hitta ett redan pågående pass med samma typ + länkad ref, annars None.
+
+    Gör dra-loopen idempotent: trycker du "Härnäst" på samma rekommendation två
+    gånger ska inte två identiska running-pass skapas."""
+    for s in list_sessions(status="running"):
+        if s.get("type") == session_type and (s.get("link") or {}).get("ref") == link_ref:
+            return s
+    return None
+
+
 def load_all_sessions() -> list[dict]:
     if not SESSIONS_DIR.exists():
         return []

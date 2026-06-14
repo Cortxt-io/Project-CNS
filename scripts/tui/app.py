@@ -1,8 +1,10 @@
-"""CnsTuiApp — interaktiv wiki-överblick byggd med textual.
+"""CnsTuiApp — CNS Control Tower i terminalen, byggt med textual.
 
-Vänster: part_of-nästlat träd, färgat på stage. Höger: detaljpanel för vald
-nod (kind/stage/status/summary/feeds/depends_on). `/` filtrerar på stage/status.
-Körs via `python -m scripts.tui`.
+Hemskärm = **fas-kolumn-aktivitetstavlan** (epic #8, idea-a7b4b7e5): sex fas-kolumner
+(triage→…→retro) med kort som flödar, komponerade ur `board.board_state()`. NUDGE-rad
+överst är handlingsbar (dra-loop, #43/idea-5132a8f6); mellanslag växlar överblick↔jobba;
+enablement = parallellt spår. Wiki-trädet (part_of-nästlat) är inte default — det öppnas
+med tangenten `w` som dyk-perspektiv. Körs via `python -m scripts.tui`.
 """
 
 from __future__ import annotations
@@ -14,7 +16,8 @@ from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.screen import ModalScreen
+from textual.css.query import NoMatches
+from textual.screen import ModalScreen, Screen
 from textual.widgets import (
     Footer,
     Header,
@@ -30,13 +33,13 @@ from textual.widgets import (
 from textual.widgets.option_list import Option
 from textual.widgets.tree import TreeNode
 
+from scripts.board import PHASES, WIP_CAPS, board_state
 from scripts.tui.data import (
     KIND_COLORS,
     STAGE_COLORS,
     STATUS_COLORS,
     NodeView,
     build_forest,
-    cockpit_state,
     filter_nodes,
     load_nodes,
 )
@@ -97,7 +100,6 @@ def _detail_markup(
         lines.extend(f"  • {t}" for t in node.depends_on)
         lines.append("")
 
-    # Länkade idéer (idé-inkorgen, filtrerad på slug).
     if ideas:
         lines.append("[bold]💡 Idéer (öppna)[/bold]")
         for i in ideas:
@@ -105,7 +107,6 @@ def _detail_markup(
             lines.append(f"  • {text[:72]}")
         lines.append("")
 
-    # Öppna issues (grindade — degraderar tyst om klient/token saknas).
     if issue_status:
         lines.append(f"[dim]issues: {issue_status}[/dim]")
     elif issues:
@@ -144,10 +145,6 @@ def _type_tag(session_type: str | None) -> str:
     return f"{icon} [{color}]{session_type}[/{color}]"
 
 
-def _short_when(iso: str | None) -> str:
-    return (iso or "")[:16].replace("T", " ")
-
-
 def _human_elapsed(seconds: float | None) -> str:
     if not seconds or seconds < 0:
         return ""
@@ -170,75 +167,61 @@ def _freshness_label(freshness: dict | None) -> str:
     return f"[dim]färsk · {when}[/dim]"
 
 
-def _overview_top_markup(state: dict) -> str:
-    """Control Tower (epic #8), de icke-handlingsbara blocken: var du slutade · igång.
-
-    "Härnäst" renderas separat som en handlingsbar OptionList (dra-loop, #43),
-    inte som text — därför slutar denna markup före det blocket.
-    """
-    lines: list[str] = [f"[bold]📍 Lägesbild[/bold]   {_freshness_label(state.get('freshness'))}", ""]
-
-    # — Var du slutade —
-    lines.append("[bold]Var du slutade[/bold]")
-    last = state.get("last_done")
-    if not last:
-        lines.append("  [dim]inget avslutat pass än[/dim]")
-    else:
-        tag = _type_tag(last.get("type"))
-        link = _link_label(last.get("link"))
-        meta = "  [dim]→ " + " · ".join(x for x in (link, _short_when(last.get("when"))) if x) + "[/dim]"
-        summ = " ".join((last.get("summary", "") or "").split())[:68] or "[dim](utan sammanfattning)[/dim]"
-        lines.append(f"  {tag + '  ' if tag else ''}{summ}{meta}")
-    lines.append("")
-
-    # — Igång —
-    active = state.get("active") or {}
-    active_tag = f"  [dim](aktiv: {active.get('type')})[/dim]" if active.get("type") else ""
-    lines.append(f"[bold]Igång[/bold]{active_tag}")
-    running = state.get("running") or []
-    if not running:
-        lines.append("  [dim]inget pass igång[/dim]")
-    for r in running:
-        tag = _type_tag(r.get("type"))
-        elapsed = _human_elapsed(r.get("elapsed"))
-        phantom = "  [red]⚠ fantom[/red]" if r.get("phantom") else ""
-        summ = " ".join((r.get("summary", "") or "").split())[:56] or _link_label(r.get("link")) or "(pass)"
-        age = f"  [dim]({elapsed})[/dim]" if elapsed else ""
-        lines.append(f"  {tag + '  ' if tag else ''}{summ}{age}{phantom}")
-    lines.append("")
-    lines.append("[bold]Härnäst[/bold]  [dim](Enter drar in dig i passet)[/dim]")
-    return "\n".join(lines)
+_WHO_MARK = {"you": "⚠ ", "agent": "🟢 ", None: "  "}
 
 
-def _overview_focus_markup(state: dict) -> str:
-    """Control Tower: i-fokus-blocket + fot (renderas under Härnäst-listan)."""
-    lines: list[str] = [""]
-    focus = state.get("focus")
-    if not focus:
-        lines.append("[bold]I fokus[/bold]")
-        lines.append("  [dim]ingen fokus satt — `cns session set-focus <kind> <ref>`[/dim]")
-    else:
-        ref = focus.get("ref")
-        kind = focus.get("kind") or ""
-        lines.append(f"[bold]I fokus[/bold]   📍 [cyan]{ref}[/cyan] [dim]{kind}[/dim]")
-        issues = focus.get("issues") or []
-        if not issues:
-            lines.append("  [dim]inga öppna issues[/dim]")
-        for it in issues[:6]:
-            num = it.get("number") or it.get("id") or "?"
-            title = it.get("title", "")
-            lines.append(f"  🔧 #{num} {title[:56]}")
-    lines.append("")
-    lines.append("[dim]Enter startar · esc / o stänger · s sessioner · k kunskap[/dim]")
-    return "\n".join(lines)
+def _col_header_markup(phase: str, col: dict) -> str:
+    """Kolumnrubrik: ikon/färg per fas (enkällan) + antal/WIP-tak + over-WIP-varning."""
+    from scripts.session_store import type_style
+
+    style = type_style(phase)
+    color = style.get("rich", "white")
+    icon = style.get("icon", "")
+    count = col.get("count", 0)
+    cap = col.get("wip_cap")
+    cap_txt = f"/{cap}" if cap else ""
+    over = "  [red]⚠ WIP[/red]" if col.get("over_wip") else ""
+    return f"{icon} [{color}]{phase}[/{color}]  [dim]{count}{cap_txt}[/dim]{over}"
+
+
+def _card_line(card: dict) -> str:
+    """En rad per kort: vem-agerar-markör · #num titel · ↑avblockering · stale."""
+    who = _WHO_MARK.get(card.get("who_acts"), "  ")
+    title = " ".join((card.get("title", "") or "").split())[:28]
+    unlocks = f" [green]↑{card['unlocks']}[/green]" if card.get("unlocks") else ""
+    stale = " [red]stale[/red]" if card.get("phase_stale") else ""
+    return f"{who}[dim]#{card.get('number')}[/dim] {title}{unlocks}{stale}"
+
+
+def _col_cards_markup(col: dict, work_mode: bool) -> str:
+    """Jobba-läge = kort-rader; överblick-läge = pulsrad (få tal: antal + väntar-på-dig)."""
+    cards = col.get("cards") or []
+    if not work_mode:
+        you = sum(1 for c in cards if c.get("who_acts") == "you")
+        you_txt = f"  [yellow]⚠{you}[/yellow]" if you else ""
+        return f"[dim]{len(cards)} kort[/dim]{you_txt}" if cards else "[dim]—[/dim]"
+    if not cards:
+        return "[dim]—[/dim]"
+    return "\n".join(_card_line(c) for c in cards)
+
+
+def _enablement_markup(state: dict) -> str:
+    """Enablement-spår (parallellt, ej en kolumn): agenturen på sig själv."""
+    items = state.get("enablement") or []
+    if not items:
+        return "[dim]Enablement: —[/dim]"
+    parts = []
+    for e in items:
+        summ = " ".join((e.get("summary", "") or "").split())[:40] or _link_label(e.get("link")) or "(pass)"
+        parts.append(summ)
+    return "[bold]⚙ Enablement[/bold]  [dim](agenturen på sig själv)[/dim]  " + " · ".join(parts)
 
 
 def _rec_link(rec: dict) -> tuple[str | None, str | None]:
     """Härled (link_kind, link_ref) ur en rekommendations ``refs`` för dra-loopen.
 
-    Rekommendationsmotorn (``recommend.recommend``) refererar quests som
-    "quest #N", issues som "#N" och idéer som "idea-…". None när inget spår finns.
-    """
+    Rekommendationsmotorn refererar quests som "quest #N", issues som "#N" och
+    idéer som "idea-…". None när inget spår finns."""
     refs = rec.get("refs") or []
     if not refs:
         return (None, None)
@@ -252,63 +235,232 @@ def _rec_link(rec: dict) -> tuple[str | None, str | None]:
     return (None, None)
 
 
-class OverviewScreen(ModalScreen):
-    """Control Tower — lägesbilden vid start (tangent o). "Härnäst" är handlingsbar:
-    Enter på en rekommendation drar in dig i det passet (dra-loop, idea-5132a8f6)."""
+class CockpitScreen(Screen):
+    """Control Tower — **hemskärmen som fas-kolumn-aktivitetstavla** (idea-a7b4b7e5).
+
+    Sex fas-kolumner (triage→…→retro) med kort som flödar; review/retro alltid synliga
+    (med WIP-tak som faktisk dragkraft). NUDGE-rad överst är handlingsbar: Enter drar in
+    dig i passet (dra-loop, idea-5132a8f6). Enablement = parallellt spår, ej kolumn.
+    Mellanslag växlar överblick (pulsrad) ↔ jobba (kort). Wiki-trädet bakom `w`."""
 
     BINDINGS = [
-        Binding("escape", "dismiss", "Stäng"),
-        Binding("o", "dismiss", "Stäng"),
-        Binding("q", "dismiss", "Stäng"),
+        Binding("space", "toggle_mode", "Överblick/Jobba"),
+        Binding("w", "wiki", "Wiki"),
+        Binding("s", "sessions", "Sessioner"),
+        Binding("k", "knowledge", "Kunskap"),
+        Binding("r", "reload", "Ladda om"),
+        Binding("q", "quit", "Avsluta"),
     ]
 
+    def __init__(self) -> None:
+        super().__init__()
+        self._recs: list[dict] = []
+        self._work_mode: bool = True
+
     def compose(self) -> ComposeResult:
-        state = cockpit_state()
-        self._recs = state.get("recommendations") or []
-        with VerticalScroll(id="overview-box"):
-            yield Static(_overview_top_markup(state), id="overview-top")
-            options = [
-                Option(Text.from_markup(
-                    f"{_type_tag(r.get('type')) + '  ' if _type_tag(r.get('type')) else ''}"
-                    f"{r.get('title', '')}"
-                ), id=str(i))
-                for i, r in enumerate(self._recs)
-            ]
-            if options:
-                ol = OptionList(*options, id="overview-recs")
-                yield ol
-            else:
-                yield Static("  [dim]inga rekommendationer just nu[/dim]", id="overview-recs")
-            yield Static(_overview_focus_markup(state), id="overview-focus")
+        yield Header()
+        yield Static("", id="nudge-label")
+        yield OptionList(id="nudge-recs")
+        with Horizontal(id="columns"):
+            for p in PHASES:
+                with Vertical(classes="phase-col"):
+                    yield Static("", id=f"colhead-{p}")
+                    with VerticalScroll():
+                        yield Static("", id=f"colcards-{p}")
+        yield Static("", id="enablement-row")
+        yield Static("", id="cockpit-status")
+        yield Footer()
 
     def on_mount(self) -> None:
+        self._refresh_view()
         if self._recs:
-            self.query_one("#overview-recs", OptionList).focus()
+            self.query_one("#nudge-recs", OptionList).focus()
+
+    def _refresh_view(self, status: str = "") -> None:
+        """(Om)komponera tavlan ur färsk board_state. Idempotent — mount, reload,
+        läges-toggle och efter en dragen rekommendation (kortet syns då i sin kolumn)."""
+        state = board_state()
+        self._recs = state.get("nudges") or []
+
+        self.query_one("#nudge-label", Static).update(
+            f"[bold]🎯 Härnäst[/bold]  [dim]{_freshness_label(state.get('freshness'))} · Enter drar in dig[/dim]"
+        )
+        recs = self.query_one("#nudge-recs", OptionList)
+        recs.clear_options()
+        if self._recs:
+            for i, r in enumerate(self._recs):
+                tag = _type_tag(r.get("type"))
+                recs.add_option(
+                    Option(Text.from_markup(f"{tag + '  ' if tag else ''}{r.get('title', '')}"), id=str(i))
+                )
+        else:
+            recs.add_option(Option("inga rekommendationer just nu", id="__none__", disabled=True))
+
+        cols = state.get("columns") or {}
+        for p in PHASES:
+            col = cols.get(p) or {"cards": [], "count": 0, "wip_cap": WIP_CAPS.get(p), "over_wip": False}
+            self.query_one(f"#colhead-{p}", Static).update(_col_header_markup(p, col))
+            self.query_one(f"#colcards-{p}", Static).update(_col_cards_markup(col, self._work_mode))
+
+        self.query_one("#enablement-row", Static).update(_enablement_markup(state))
+        mode = "jobba" if self._work_mode else "överblick"
+        self.query_one("#cockpit-status", Static).update(
+            status or f"[dim]läge: {mode} (mellanslag växlar) · w wiki · s sessioner · k kunskap · r ladda om[/dim]"
+        )
+
+    def action_toggle_mode(self) -> None:
+        self._work_mode = not self._work_mode
+        self._refresh_view()
+
+    def action_reload(self) -> None:
+        self._refresh_view(status="[dim]↻ uppdaterad[/dim]")
+
+    def action_wiki(self) -> None:
+        self.app.push_screen(WikiScreen())
+
+    def action_sessions(self) -> None:
+        self.app.push_screen(SessionsScreen(self.app.transcripts))
+
+    def action_knowledge(self) -> None:
+        self.app.push_screen(KnowledgeScreen())
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        """Dra-loop: starta det rekommenderade passet (lokalt: markör + pass + fokus)."""
+        """Dra-loop: starta det rekommenderade passet (markör + pass + fokus), idempotent,
+        uppdatera sedan tavlan på plats så kortet syns i sin kolumn."""
+        opt_id = event.option.id
+        if not opt_id or opt_id == "__none__":
+            return
         try:
-            rec = self._recs[int(event.option.id)]
+            rec = self._recs[int(opt_id)]
         except (ValueError, TypeError, IndexError):
             return
-        from scripts.session_store import set_active, set_focus, start_session
+        from scripts.session_store import find_running, set_active, set_focus, start_session
 
         rtype = rec.get("type")
+        title = rec.get("title", "")
         link_kind, link_ref = _rec_link(rec)
         try:
+            existing = find_running(rtype, link_ref)
             set_active(rtype)
-            start_session(
-                link_kind=link_kind,
-                link_ref=link_ref,
-                summary=rec.get("title", ""),
-                session_type=rtype,
-            )
             if link_kind:
                 set_focus(link_kind, link_ref)
+            ref_txt = f" · [cyan]{_link_label({'kind': link_kind, 'ref': link_ref})}[/cyan]" if link_ref else ""
+            if existing:
+                self.notify(f"{rtype}-pass redan igång — återupptog fokus", title="Control Tower")
+                self._refresh_view(
+                    status=f"[bold yellow]↻ Redan igång:[/bold yellow] {_type_tag(rtype)}{ref_txt}  "
+                    f"[dim]— återupptog fokus, ingen dubblett[/dim]"
+                )
+                return
+            start_session(link_kind=link_kind, link_ref=link_ref, summary=title, session_type=rtype)
             self.notify(f"Drog in dig i {rtype}-pass", title="Control Tower")
+            self._refresh_view(
+                status=f"[bold green]✅ Pass igång:[/bold green] {_type_tag(rtype)}{ref_txt}  "
+                f"[dim]— jobba i den här fliken[/dim]"
+            )
         except Exception as exc:  # degradera synligt, krascha inte vyn
             self.notify(f"Kunde inte starta: {exc}", severity="error", title="Control Tower")
-        self.dismiss()
+            self._refresh_view(status=f"[red]⚠ kunde inte starta passet: {exc}[/red]")
+
+
+class WikiScreen(Screen):
+    """Wiki-överblick (sekundär yta, tangent w från tavlan). Vänster: part_of-nästlat
+    träd färgat på stage. Höger: detaljpanel för vald nod. `/` filtrerar, `c` frågar
+    Claude om noden, esc/w tillbaka."""
+
+    BINDINGS = [
+        Binding("escape", "back", "Tillbaka"),
+        Binding("w", "back", "Tillbaka"),
+        Binding("r", "reload", "Ladda om"),
+        Binding("c", "agent", "Fråga Claude"),
+        Binding("s", "sessions", "Sessioner"),
+        Binding("k", "knowledge", "Kunskap"),
+        Binding("slash", "focus_filter", "Filter"),
+        Binding("q", "quit", "Avsluta"),
+    ]
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._current_slug: str | None = None
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        with Horizontal():
+            yield Tree("Wiki", id="tree")
+            with Vertical(id="detail-pane"):
+                yield Input(placeholder="Filtrera på stage/status…", id="filter")
+                with VerticalScroll(id="detail-scroll"):
+                    yield Static("Välj en nod i trädet.", id="detail")
+        yield Footer()
+
+    def on_mount(self) -> None:
+        self.query_one("#filter", Input).display = False
+        self._populate_tree(self.app.all_nodes)
+
+    def _populate_tree(self, nodes: dict[str, NodeView]) -> None:
+        tree = self.query_one("#tree", Tree)
+        tree.clear()
+        tree.root.expand()
+        roots = build_forest(nodes)
+        if not roots:
+            tree.root.set_label("Inga noder matchar")
+            return
+        tree.root.set_label(f"Wiki ({len(nodes)} noder)")
+        for root in roots:
+            self._add_node(tree.root, root)
+
+    def _add_node(self, parent: TreeNode, node: NodeView) -> None:
+        if node.children:
+            branch = parent.add(_tree_label(node), data=node, expand=True)
+            for child in node.children:
+                self._add_node(branch, child)
+        else:
+            parent.add_leaf(_tree_label(node), data=node)
+
+    def on_tree_node_highlighted(self, event: Tree.NodeHighlighted) -> None:
+        node = event.node.data
+        # Trädet auto-markerar sin första nod medan det fylls i (on_mount), vilket kan
+        # avfyra denna händelse innan detaljpanelen monterats. Hoppa tyst då.
+        try:
+            detail = self.query_one("#detail", Static)
+        except NoMatches:
+            return
+        if isinstance(node, NodeView):
+            self._current_slug = node.slug
+            ideas = [i for i in self.app.ideas if i.get("slug") == node.slug]
+            issue_status, issues = open_issues_for_slug(node.slug)
+            detail.update(_detail_markup(node, ideas, issue_status, issues))
+        else:
+            detail.update("Välj en nod i trädet.")
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        if event.input.id != "filter":
+            return
+        subset = filter_nodes(self.app.all_nodes, event.value)
+        self._populate_tree(subset)
+
+    def action_back(self) -> None:
+        self.app.pop_screen()
+
+    def action_reload(self) -> None:
+        self.app.reload_data()
+        filter_input = self.query_one("#filter", Input)
+        subset = filter_nodes(self.app.all_nodes, filter_input.value)
+        self._populate_tree(subset)
+
+    def action_sessions(self) -> None:
+        self.app.push_screen(SessionsScreen(self.app.transcripts))
+
+    def action_knowledge(self) -> None:
+        self.app.push_screen(KnowledgeScreen())
+
+    def action_agent(self) -> None:
+        self.app.push_screen(AgentScreen(self._current_slug))
+
+    def action_focus_filter(self) -> None:
+        filter_input = self.query_one("#filter", Input)
+        filter_input.display = True
+        filter_input.focus()
 
 
 class SessionsScreen(ModalScreen):
@@ -352,7 +504,6 @@ class SessionsScreen(ModalScreen):
                 timeout=8,
             )
             return
-        # Suspenda TUI:t, kör claude --resume i samma terminal, återuppta sedan.
         with self.app.suspend():
             subprocess.run([claude, "--resume", t.session_id])
 
@@ -374,12 +525,7 @@ def _knowledge_markup() -> str:
     cards = load_memory_cards()
     if not cards:
         lines.append("[dim]inga memory-cards[/dim]")
-    type_color = {
-        "feedback": "yellow",
-        "project": "green",
-        "reference": "cyan",
-        "user": "magenta",
-    }
+    type_color = {"feedback": "yellow", "project": "green", "reference": "cyan", "user": "magenta"}
     for c in cards:
         col = type_color.get(c.get("type", ""), "dim")
         tag = f"[{col}]{c.get('type') or '—'}[/{col}]"
@@ -481,124 +627,31 @@ class AgentScreen(ModalScreen):
 
 
 class CnsTuiApp(App):
-    """Glanceable wiki-överblick i terminalen."""
+    """CNS Control Tower. Hemskärm = fas-kolumn-tavlan (CockpitScreen); wiki bakom `w`.
+
+    Appen äger delad data (noder/idéer/transkript) som båda skärmarna läser, så en
+    reload på ett ställe slår igenom överallt."""
 
     CSS_PATH = "styles.tcss"
-    TITLE = "CNS Wiki"
-
-    BINDINGS = [
-        Binding("q", "quit", "Avsluta"),
-        Binding("r", "reload", "Ladda om"),
-        Binding("o", "overview", "Översikt"),
-        Binding("s", "sessions", "Sessioner"),
-        Binding("k", "knowledge", "Kunskap"),
-        Binding("c", "agent", "Fråga Claude"),
-        Binding("slash", "focus_filter", "Filter"),
-        Binding("escape", "clear_filter", "Rensa filter", show=False),
-    ]
+    TITLE = "CNS Control Tower"
 
     def __init__(self) -> None:
         super().__init__()
-        self._all_nodes: dict[str, NodeView] = {}
-        self._ideas: list[dict] = []
-        self._transcripts: list[Transcript] = []
-        self._current_slug: str | None = None
+        self.all_nodes: dict[str, NodeView] = {}
+        self.ideas: list[dict] = []
+        self.transcripts: list[Transcript] = []
 
-    def compose(self) -> ComposeResult:
-        yield Header()
-        with Horizontal():
-            yield Tree("Wiki", id="tree")
-            with Vertical(id="detail-pane"):
-                yield Input(placeholder="Filtrera på stage/status…", id="filter")
-                with VerticalScroll(id="detail-scroll"):
-                    yield Static("Välj en nod i trädet.", id="detail")
-        yield Footer()
+    def get_default_screen(self) -> Screen:
+        return CockpitScreen()
 
     def on_mount(self) -> None:
-        self.query_one("#filter", Input).display = False
-        self._all_nodes = load_nodes()
-        self._ideas = load_ideas()
-        self._transcripts = list_transcripts()
-        self._populate_tree(self._all_nodes)
-        # Orienteringsytan först (epic #8): lägesbilden öppnas vid start så man
-        # ser var man står direkt; esc/o tar fram nodträdet. Deferred så skärmen
-        # hinner monteras innan modalen pushas.
-        self.call_after_refresh(self.action_overview)
+        self.reload_data()
 
-    # -- trädbygge ---------------------------------------------------------
-
-    def _populate_tree(self, nodes: dict[str, NodeView]) -> None:
-        tree = self.query_one("#tree", Tree)
-        tree.clear()
-        tree.root.expand()
-        roots = build_forest(nodes)
-        if not roots:
-            tree.root.set_label("Inga noder matchar")
-            return
-        tree.root.set_label(f"Wiki ({len(nodes)} noder)")
-        for root in roots:
-            self._add_node(tree.root, root)
-
-    def _add_node(self, parent: TreeNode, node: NodeView) -> None:
-        if node.children:
-            branch = parent.add(_tree_label(node), data=node, expand=True)
-            for child in node.children:
-                self._add_node(branch, child)
-        else:
-            parent.add_leaf(_tree_label(node), data=node)
-
-    # -- händelser ---------------------------------------------------------
-
-    def on_tree_node_highlighted(self, event: Tree.NodeHighlighted) -> None:
-        node = event.node.data
-        detail = self.query_one("#detail", Static)
-        if isinstance(node, NodeView):
-            self._current_slug = node.slug
-            ideas = [i for i in self._ideas if i.get("slug") == node.slug]
-            issue_status, issues = open_issues_for_slug(node.slug)
-            detail.update(_detail_markup(node, ideas, issue_status, issues))
-        else:
-            detail.update("Välj en nod i trädet.")
-
-    def on_input_changed(self, event: Input.Changed) -> None:
-        if event.input.id != "filter":
-            return
-        subset = filter_nodes(self._all_nodes, event.value)
-        self._populate_tree(subset)
-
-    # -- actions -----------------------------------------------------------
-
-    def action_reload(self) -> None:
-        self._all_nodes = load_nodes()
-        self._ideas = load_ideas()
-        self._transcripts = list_transcripts()
-        filter_input = self.query_one("#filter", Input)
-        subset = filter_nodes(self._all_nodes, filter_input.value)
-        self._populate_tree(subset)
-
-    def action_overview(self) -> None:
-        self.push_screen(OverviewScreen())
-
-    def action_sessions(self) -> None:
-        self.push_screen(SessionsScreen(self._transcripts))
-
-    def action_knowledge(self) -> None:
-        self.push_screen(KnowledgeScreen())
-
-    def action_agent(self) -> None:
-        self.push_screen(AgentScreen(self._current_slug))
-
-    def action_focus_filter(self) -> None:
-        filter_input = self.query_one("#filter", Input)
-        filter_input.display = True
-        filter_input.focus()
-
-    def action_clear_filter(self) -> None:
-        filter_input = self.query_one("#filter", Input)
-        filter_input.value = ""
-        filter_input.display = False
-        self._populate_tree(self._all_nodes)
-        self.query_one("#tree", Tree).focus()
+    def reload_data(self) -> None:
+        """Läs om delad data (noder/idéer/transkript) från datalagret."""
+        self.all_nodes = load_nodes()
+        self.ideas = load_ideas()
+        self.transcripts = list_transcripts()
 
 
 def main() -> None:
