@@ -189,27 +189,13 @@ def recommend(state: dict | None = None) -> list[dict]:
     return sorted(recs, key=lambda r: r["score"], reverse=True)
 
 
-# Emoji per sessionstyp för snabb visuell identifiering i statusraden
-SESSION_ICONS: dict[str, str] = {
-    "discovery": "🟣",
-    "definition": "🟠",
-    "delivery": "🟢",
-    "triage": "🟡",
-    "review": "🔵",
-}
+# Emoji + ANSI per sessionstyp HÄRLEDS ur enkällan i session_store (#41,
+# idea-2cc3ae24) — statusraden renderar ANSI, ikonen ger snabb visuell identitet.
+# Tidigare dubblerade dessa paletten; nu speglar TUI och statusrad samma källa.
+from scripts.session_store import SESSION_TYPE_STYLE  # noqa: E402
 
-
-# ANSI-färg per sessionstyp (idea-2cc3ae24) — statusraden renderar ANSI.
-# Ger varje typ en visuell identitet utöver emoji-ikonen.
-SESSION_COLORS: dict[str, str] = {
-    "discovery": "35",        # magenta  🟣
-    "definition": "38;5;208", # orange   🟠
-    "delivery": "32",         # grön     🟢
-    "triage": "33",           # gul      🟡
-    "review": "34",           # blå      🔵
-    "enablement": "36",       # cyan
-    "retro": "90",            # grå
-}
+SESSION_ICONS: dict[str, str] = {t: s["icon"] for t, s in SESSION_TYPE_STYLE.items()}
+SESSION_COLORS: dict[str, str] = {t: s["ansi"] for t, s in SESSION_TYPE_STYLE.items()}
 
 
 def _colored(text: str, session_type: str | None) -> str:

@@ -124,26 +124,6 @@ def _detail_markup(
     return "\n".join(lines).rstrip()
 
 
-# Sessionstyp → rich-färg (speglar recommend.SESSION_ICONS/SESSION_COLORS, men
-# rich-färgnamn i stället för ANSI-koder så TUI och statusrad ser likadana ut).
-_TYPE_RICH: dict[str, str] = {
-    "discovery": "magenta",
-    "definition": "orange3",
-    "delivery": "green",
-    "triage": "yellow",
-    "review": "blue",
-    "enablement": "cyan",
-    "retro": "grey50",
-}
-_TYPE_ICON: dict[str, str] = {
-    "discovery": "🟣",
-    "definition": "🟠",
-    "delivery": "🟢",
-    "triage": "🟡",
-    "review": "🔵",
-}
-
-
 def _link_label(link: dict | None) -> str:
     """Läsbar etikett för en sessions link ({kind, ref})."""
     if not link or not link.get("ref"):
@@ -153,11 +133,14 @@ def _link_label(link: dict | None) -> str:
 
 
 def _type_tag(session_type: str | None) -> str:
-    """Färgad typ-badge med ikon (tom om typ saknas)."""
+    """Färgad typ-badge med ikon (tom om typ saknas). Färg/ikon ur enkällan (#41)."""
     if not session_type:
         return ""
-    icon = _TYPE_ICON.get(session_type, "⚪")
-    color = _TYPE_RICH.get(session_type, "dim")
+    from scripts.session_store import type_style
+
+    style = type_style(session_type)
+    icon = style.get("icon", "⚪")
+    color = style.get("rich", "dim")
     return f"{icon} [{color}]{session_type}[/{color}]"
 
 

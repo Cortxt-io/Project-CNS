@@ -57,6 +57,57 @@ def canonical_session_type(session_type: str | None) -> str | None:
         return None
     return SESSION_TYPE_ALIASES.get(session_type, session_type)
 
+
+# Visuell identitet per sessionstyp — ENKÄLLA (#41). Konsumenter härleder härifrån
+# i stället för att duplicera paletten: recommend.py (ANSI i statusraden) och
+# scripts/tui (rich-färg i TUI:t). icon = emoji, ansi = SGR-kod, rich = rich-färgnamn.
+SESSION_TYPE_STYLE: dict[str, dict[str, str]] = {
+    "discovery":  {"icon": "🟣", "ansi": "35",       "rich": "magenta"},
+    "definition": {"icon": "🟠", "ansi": "38;5;208", "rich": "orange3"},
+    "delivery":   {"icon": "🟢", "ansi": "32",       "rich": "green"},
+    "triage":     {"icon": "🟡", "ansi": "33",       "rich": "yellow"},
+    "review":     {"icon": "🔵", "ansi": "34",       "rich": "blue"},
+    "enablement": {"icon": "⚪", "ansi": "36",       "rich": "cyan"},
+    "retro":      {"icon": "⚪", "ansi": "90",       "rich": "grey50"},
+}
+
+# Svenska månadsförkortningar för auto-genererade sessionsnamn (#41).
+_SV_MONTHS = ["", "jan", "feb", "mar", "apr", "maj", "jun",
+              "jul", "aug", "sep", "okt", "nov", "dec"]
+
+
+def type_style(session_type: str | None) -> dict[str, str]:
+    """Visuell identitet (icon/ansi/rich) för en ev. legacy sessionstyp ({} om okänd)."""
+    return SESSION_TYPE_STYLE.get(canonical_session_type(session_type) or "", {})
+
+
+def _count_sessions_of_type(canon: str | None) -> int:
+    """Antal befintliga pass av en kanonisk typ (för auto-namnens löpnummer)."""
+    if not canon:
+        return 0
+    return sum(
+        1 for s in load_all_sessions()
+        if canonical_session_type(s.get("type")) == canon
+    )
+
+
+def auto_session_name(
+    session_type: str | None,
+    when: datetime | None = None,
+    count: int | None = None,
+) -> str:
+    """Automatiskt sessionsnamn när ingen summary gavs: t.ex. 'Triage #3 – 14 jun' (#41).
+
+    ``count`` (löpnummer) härleds ur befintliga pass av samma typ om utelämnat;
+    ``when`` injiceras i test (annars nu).
+    """
+    when = when or datetime.now()
+    canon = canonical_session_type(session_type)
+    label = (canon or "session").capitalize()
+    if count is None:
+        count = _count_sessions_of_type(canon) + 1
+    return f"{label} #{count} – {when.day} {_SV_MONTHS[when.month]}"
+
 # Lokal markör för aktiv sessionstyp — läses av router-hooken varje prompt,
 # skrivs av /session-skillen. Sidofil, inte en session-post: hooken behöver
 # omedelbar lokal synlighet medan den kanoniska bokföringen (cortxt_*) går
@@ -135,6 +186,9 @@ def start_session(
         )
     _validate_type(session_type)
     _ensure_dir()
+    # Auto-namn när inget gavs (#41): "Triage #3 – 14 jun" slår tom/generisk summary.
+    if not (summary or "").strip():
+        summary = auto_session_name(session_type)
     now = datetime.now().isoformat(timespec="seconds")
     session = {
         "id": _short_id(),
