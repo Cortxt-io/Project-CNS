@@ -1,0 +1,23 @@
+{
+  "id": "session-d6c86e86",
+  "created_at": "2026-06-14T01:53:35",
+  "updated_at": "2026-06-14T01:53:35",
+  "status": "running",
+  "summary": "Delivery-pass: #146 triage-variant — flagga sannolikt överlappande öppna idéer (textlikhet) ovanpå group_ideas",
+  "link": {
+    "kind": "issue",
+    "ref": "146"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null,
+  "metrics": {
+    "tool_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "tools_seen": [],
+    "artifacts": []
+  }
+}
