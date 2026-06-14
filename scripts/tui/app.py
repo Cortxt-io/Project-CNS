@@ -1,10 +1,11 @@
-"""CnsTuiApp — CNS Control Tower i terminalen, byggt med textual.
+"""CnsTuiApp — CNS Command Center i terminalen, byggt med textual.
 
-Hemskärm = **fas-kolumn-aktivitetstavlan** (epic #8, idea-a7b4b7e5): sex fas-kolumner
-(triage→…→retro) med kort som flödar, komponerade ur `board.board_state()`. NUDGE-rad
-överst är handlingsbar (dra-loop, #43/idea-5132a8f6); mellanslag växlar överblick↔jobba;
-enablement = parallellt spår. Wiki-trädet (part_of-nästlat) är inte default — det öppnas
-med tangenten `w` som dyk-perspektiv. Körs via `python -m scripts.tui`.
+Hemskärm = **Command Center** (militär doktrin, spec: cns-internal/plans/command-center-spec.md):
+en rad-vy (INTE kanban, INTE fyra-block) ur `command_center.command_center_state()`. SITREP-header
+(beredskap) · FRONTLINE (Missioner sorterade degraded→operational, sen hävstång; readiness-färg +
+multi-fas-fronter + vem-agerar + contact report + order) · LOGISTICS (enablement) · ORDERS-footer
+(hävstångs-rankad FRAGO, Enter verkställer dra-loop). Wiki-trädet bakom `w` (recon-dyk).
+Körs via `python -m scripts.tui`.
 """
 
 from __future__ import annotations
@@ -33,7 +34,7 @@ from textual.widgets import (
 from textual.widgets.option_list import Option
 from textual.widgets.tree import TreeNode
 
-from scripts.board import PHASES, WIP_CAPS, board_state
+from scripts.command_center import command_center_state
 from scripts.tui.data import (
     KIND_COLORS,
     STAGE_COLORS,
@@ -167,54 +168,65 @@ def _freshness_label(freshness: dict | None) -> str:
     return f"[dim]färsk · {when}[/dim]"
 
 
-_WHO_MARK = {"you": "⚠ ", "agent": "🟢 ", None: "  "}
+# — Command Center-doktrin: readiness-färg + fas-skin (Triage→Recon→…→Debrief) —
+_READINESS_MARK = {"operational": "🟢", "watch": "🟡", "degraded": "🔴", "dark": "⚪"}
+_FRONT_LABEL = {
+    "triage": "Triage", "discovery": "Recon", "definition": "Briefing",
+    "delivery": "Assault", "review": "Hold", "retro": "Debrief",
+}
 
 
-def _col_header_markup(phase: str, col: dict) -> str:
-    """Kolumnrubrik: ikon/färg per fas (enkällan) + antal/WIP-tak + over-WIP-varning."""
-    from scripts.session_store import type_style
-
-    style = type_style(phase)
-    color = style.get("rich", "white")
-    icon = style.get("icon", "")
-    count = col.get("count", 0)
-    cap = col.get("wip_cap")
-    cap_txt = f"/{cap}" if cap else ""
-    over = "  [red]⚠ WIP[/red]" if col.get("over_wip") else ""
-    return f"{icon} [{color}]{phase}[/{color}]  [dim]{count}{cap_txt}[/dim]{over}"
+def _sitrep_markup(state: dict) -> str:
+    """SITREP-header: beredskaps-rollup i siffror + färskhet."""
+    s = state.get("sitrep") or {}
+    return (
+        f"[bold]SITREP[/bold]   [green]{s.get('operational', 0)} operational[/green] · "
+        f"[yellow]{s.get('watch', 0)} watch[/yellow] · [red]{s.get('degraded', 0)} degraded[/red]"
+        f"   {_freshness_label(state.get('freshness'))}"
+    )
 
 
-def _card_line(card: dict) -> str:
-    """En rad per kort: vem-agerar-markör · #num titel · ↑avblockering · stale."""
-    who = _WHO_MARK.get(card.get("who_acts"), "  ")
-    title = " ".join((card.get("title", "") or "").split())[:28]
-    unlocks = f" [green]↑{card['unlocks']}[/green]" if card.get("unlocks") else ""
-    stale = " [red]stale[/red]" if card.get("phase_stale") else ""
-    return f"{who}[dim]#{card.get('number')}[/dim] {title}{unlocks}{stale}"
+def _mission_markup(m: dict) -> str:
+    """En Mission (epic) som ~3 rader: readiness + namn + fronter + vem-agerar · contact · order."""
+    icon = _READINESS_MARK.get(m.get("readiness"), "⚪")
+    fronts = m.get("fronts") or []
+    fronts_badge = (
+        "  [cyan]\\[" + "|".join(_FRONT_LABEL.get(f, f) for f in fronts) + "][/cyan]" if fronts else ""
+    )
+    units = m.get("units", 0)
+    if units:
+        actor = f"  🤖×{units}"
+    elif m.get("commander"):
+        actor = "  [yellow]👤 väntar på dig[/yellow]"
+    else:
+        actor = ""
+    lev = f"  [green]↑{m['leverage']}[/green]" if m.get("leverage") else ""
+    title = " ".join((m.get("title", "") or "").split())[:54]
+    lines = [f"{icon} [bold]{title}[/bold]{fronts_badge}{actor}{lev}"]
+    if m.get("contact"):
+        lines.append(f"   [red]↳ contact:[/red] {m['contact'][:72]}")
+    if m.get("order"):
+        lines.append(f"   [dim]↳ order:[/dim] {m['order']}")
+    return "\n".join(lines)
 
 
-def _col_cards_markup(col: dict, work_mode: bool) -> str:
-    """Jobba-läge = kort-rader; överblick-läge = pulsrad (få tal: antal + väntar-på-dig)."""
-    cards = col.get("cards") or []
-    if not work_mode:
-        you = sum(1 for c in cards if c.get("who_acts") == "you")
-        you_txt = f"  [yellow]⚠{you}[/yellow]" if you else ""
-        return f"[dim]{len(cards)} kort[/dim]{you_txt}" if cards else "[dim]—[/dim]"
-    if not cards:
-        return "[dim]—[/dim]"
-    return "\n".join(_card_line(c) for c in cards)
+def _frontline_markup(state: dict, show_operational: bool) -> str:
+    """FRONTLINE: Missioner (redan sorterade degraded→operational, sen hävstång)."""
+    missions = state.get("missions") or []
+    if not show_operational:
+        missions = [m for m in missions if m.get("readiness") != "operational"]
+    if not missions:
+        return "[dim]inga missioner på fronten (h = visa friska)[/dim]"
+    return "\n\n".join(_mission_markup(m) for m in missions)
 
 
-def _enablement_markup(state: dict) -> str:
-    """Enablement-spår (parallellt, ej en kolumn): agenturen på sig själv."""
-    items = state.get("enablement") or []
+def _logistics_markup(state: dict) -> str:
+    """LOGISTICS: enablement-spåret (agenturen underhåller sig själv)."""
+    items = state.get("logistics") or []
     if not items:
-        return "[dim]Enablement: —[/dim]"
-    parts = []
-    for e in items:
-        summ = " ".join((e.get("summary", "") or "").split())[:40] or _link_label(e.get("link")) or "(pass)"
-        parts.append(summ)
-    return "[bold]⚙ Enablement[/bold]  [dim](agenturen på sig själv)[/dim]  " + " · ".join(parts)
+        return "[dim]Logistics: —[/dim]"
+    parts = [" ".join((e.get("summary", "") or "").split())[:40] or "(pass)" for e in items]
+    return "[bold]⚙ Logistics[/bold]  [dim](försörjning)[/dim]  " + " · ".join(parts)
 
 
 def _rec_link(rec: dict) -> tuple[str | None, str | None]:
@@ -235,85 +247,72 @@ def _rec_link(rec: dict) -> tuple[str | None, str | None]:
     return (None, None)
 
 
-class CockpitScreen(Screen):
-    """Control Tower — **hemskärmen som fas-kolumn-aktivitetstavla** (idea-a7b4b7e5).
-
-    Sex fas-kolumner (triage→…→retro) med kort som flödar; review/retro alltid synliga
-    (med WIP-tak som faktisk dragkraft). NUDGE-rad överst är handlingsbar: Enter drar in
-    dig i passet (dra-loop, idea-5132a8f6). Enablement = parallellt spår, ej kolumn.
-    Mellanslag växlar överblick (pulsrad) ↔ jobba (kort). Wiki-trädet bakom `w`."""
+class CommandCenterScreen(Screen):
+    """Command Center — **hemskärmen** (militär doktrin, rad-vy). SITREP-header · FRONTLINE
+    (Missioner sorterade degraded→operational, sen hävstång) · LOGISTICS · ORDERS-footer
+    (hävstångs-rankad FRAGO: Enter verkställer dra-loop). `h` döljer friska. Wiki bakom `w`."""
 
     BINDINGS = [
-        Binding("space", "toggle_mode", "Överblick/Jobba"),
+        Binding("h", "toggle_healthy", "Dölj/visa friska"),
         Binding("w", "wiki", "Wiki"),
         Binding("s", "sessions", "Sessioner"),
         Binding("k", "knowledge", "Kunskap"),
-        Binding("r", "reload", "Ladda om"),
+        Binding("r", "reload", "Refresh"),
         Binding("q", "quit", "Avsluta"),
     ]
 
     def __init__(self) -> None:
         super().__init__()
-        self._recs: list[dict] = []
-        self._work_mode: bool = True
+        self._orders: list[dict] = []
+        self._show_operational: bool = True
 
     def compose(self) -> ComposeResult:
         yield Header()
-        yield Static("", id="nudge-label")
-        yield OptionList(id="nudge-recs")
-        with Horizontal(id="columns"):
-            for p in PHASES:
-                with Vertical(classes="phase-col"):
-                    yield Static("", id=f"colhead-{p}")
-                    with VerticalScroll():
-                        yield Static("", id=f"colcards-{p}")
-        yield Static("", id="enablement-row")
-        yield Static("", id="cockpit-status")
+        yield Static("", id="cc-sitrep")
+        with VerticalScroll(id="cc-frontline"):
+            yield Static("", id="cc-missions")
+        yield Static("", id="cc-logistics")
+        yield Static("[bold]🎯 ORDERS[/bold]  [dim](hävstångs-rankat nästa drag · Enter verkställer)[/dim]", id="cc-orders-label")
+        yield OptionList(id="cc-orders")
+        yield Static("", id="cc-status")
         yield Footer()
 
     def on_mount(self) -> None:
         self._refresh_view()
-        if self._recs:
-            self.query_one("#nudge-recs", OptionList).focus()
+        if self._orders:
+            self.query_one("#cc-orders", OptionList).focus()
 
     def _refresh_view(self, status: str = "") -> None:
-        """(Om)komponera tavlan ur färsk board_state. Idempotent — mount, reload,
-        läges-toggle och efter en dragen rekommendation (kortet syns då i sin kolumn)."""
-        state = board_state()
-        self._recs = state.get("nudges") or []
+        """(Om)komponera Command Center ur färsk command_center_state."""
+        state = command_center_state()
+        self._orders = state.get("orders") or []
 
-        self.query_one("#nudge-label", Static).update(
-            f"[bold]🎯 Härnäst[/bold]  [dim]{_freshness_label(state.get('freshness'))} · Enter drar in dig[/dim]"
-        )
-        recs = self.query_one("#nudge-recs", OptionList)
-        recs.clear_options()
-        if self._recs:
-            for i, r in enumerate(self._recs):
-                tag = _type_tag(r.get("type"))
-                recs.add_option(
-                    Option(Text.from_markup(f"{tag + '  ' if tag else ''}{r.get('title', '')}"), id=str(i))
+        self.query_one("#cc-sitrep", Static).update(_sitrep_markup(state))
+        self.query_one("#cc-missions", Static).update(_frontline_markup(state, self._show_operational))
+        self.query_one("#cc-logistics", Static).update(_logistics_markup(state))
+
+        orders = self.query_one("#cc-orders", OptionList)
+        orders.clear_options()
+        if self._orders:
+            for i, o in enumerate(self._orders):
+                tag = _type_tag(o.get("type"))
+                orders.add_option(
+                    Option(Text.from_markup(f"{tag + '  ' if tag else ''}{o.get('title', '')}"), id=str(i))
                 )
         else:
-            recs.add_option(Option("inga rekommendationer just nu", id="__none__", disabled=True))
+            orders.add_option(Option("inga orders just nu", id="__none__", disabled=True))
 
-        cols = state.get("columns") or {}
-        for p in PHASES:
-            col = cols.get(p) or {"cards": [], "count": 0, "wip_cap": WIP_CAPS.get(p), "over_wip": False}
-            self.query_one(f"#colhead-{p}", Static).update(_col_header_markup(p, col))
-            self.query_one(f"#colcards-{p}", Static).update(_col_cards_markup(col, self._work_mode))
-
-        self.query_one("#enablement-row", Static).update(_enablement_markup(state))
-        mode = "jobba" if self._work_mode else "överblick"
-        self.query_one("#cockpit-status", Static).update(
-            status or f"[dim]läge: {mode} (mellanslag växlar) · w wiki · s sessioner · k kunskap · r ladda om[/dim]"
+        mode = "alla" if self._show_operational else "endast aktiva"
+        self.query_one("#cc-status", Static).update(
+            status or f"[dim]frontline: {mode} (h växlar) · Enter verkställ order · w wiki · s sessioner · r refresh[/dim]"
         )
 
-    def action_toggle_mode(self) -> None:
-        self._work_mode = not self._work_mode
+    def action_toggle_healthy(self) -> None:
+        self._show_operational = not self._show_operational
         self._refresh_view()
 
     def action_reload(self) -> None:
-        self._refresh_view(status="[dim]↻ uppdaterad[/dim]")
+        self._refresh_view(status="[dim]↻ refresh[/dim]")
 
     def action_wiki(self) -> None:
         self.app.push_screen(WikiScreen())
@@ -325,20 +324,19 @@ class CockpitScreen(Screen):
         self.app.push_screen(KnowledgeScreen())
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        """Dra-loop: starta det rekommenderade passet (markör + pass + fokus), idempotent,
-        uppdatera sedan tavlan på plats så kortet syns i sin kolumn."""
+        """Verkställ ORDER (FRAGO): starta passet (markör + pass + fokus), idempotent."""
         opt_id = event.option.id
         if not opt_id or opt_id == "__none__":
             return
         try:
-            rec = self._recs[int(opt_id)]
+            order = self._orders[int(opt_id)]
         except (ValueError, TypeError, IndexError):
             return
         from scripts.session_store import find_running, set_active, set_focus, start_session
 
-        rtype = rec.get("type")
-        title = rec.get("title", "")
-        link_kind, link_ref = _rec_link(rec)
+        rtype = order.get("type")
+        title = order.get("title", "")
+        link_kind, link_ref = _rec_link(order)
         try:
             existing = find_running(rtype, link_ref)
             set_active(rtype)
@@ -346,27 +344,24 @@ class CockpitScreen(Screen):
                 set_focus(link_kind, link_ref)
             ref_txt = f" · [cyan]{_link_label({'kind': link_kind, 'ref': link_ref})}[/cyan]" if link_ref else ""
             if existing:
-                self.notify(f"{rtype}-pass redan igång — återupptog fokus", title="Control Tower")
+                self.notify(f"{rtype}-pass redan igång — återupptog fokus", title="Command Center")
                 self._refresh_view(
-                    status=f"[bold yellow]↻ Redan igång:[/bold yellow] {_type_tag(rtype)}{ref_txt}  "
-                    f"[dim]— återupptog fokus, ingen dubblett[/dim]"
+                    status=f"[bold yellow]↻ Redan i fält:[/bold yellow] {_type_tag(rtype)}{ref_txt}"
                 )
                 return
             start_session(link_kind=link_kind, link_ref=link_ref, summary=title, session_type=rtype)
-            self.notify(f"Drog in dig i {rtype}-pass", title="Control Tower")
+            self.notify(f"Order verkställd: {rtype}", title="Command Center")
             self._refresh_view(
-                status=f"[bold green]✅ Pass igång:[/bold green] {_type_tag(rtype)}{ref_txt}  "
-                f"[dim]— jobba i den här fliken[/dim]"
+                status=f"[bold green]✅ Order verkställd:[/bold green] {_type_tag(rtype)}{ref_txt}  [dim]— jobba i fliken[/dim]"
             )
         except Exception as exc:  # degradera synligt, krascha inte vyn
-            self.notify(f"Kunde inte starta: {exc}", severity="error", title="Control Tower")
-            self._refresh_view(status=f"[red]⚠ kunde inte starta passet: {exc}[/red]")
+            self.notify(f"Kunde inte verkställa: {exc}", severity="error", title="Command Center")
+            self._refresh_view(status=f"[red]⚠ kunde inte verkställa order: {exc}[/red]")
 
 
 class WikiScreen(Screen):
-    """Wiki-överblick (sekundär yta, tangent w från tavlan). Vänster: part_of-nästlat
-    träd färgat på stage. Höger: detaljpanel för vald nod. `/` filtrerar, `c` frågar
-    Claude om noden, esc/w tillbaka."""
+    """Wiki-överblick (sekundär yta, tangent w). Vänster: part_of-nästlat träd färgat på
+    stage. Höger: detaljpanel för vald nod. `/` filtrerar, `c` frågar Claude, esc/w tillbaka."""
 
     BINDINGS = [
         Binding("escape", "back", "Tillbaka"),
@@ -627,7 +622,7 @@ class AgentScreen(ModalScreen):
 
 
 class CnsTuiApp(App):
-    """CNS Control Tower. Hemskärm = fas-kolumn-tavlan (CockpitScreen); wiki bakom `w`.
+    """CNS Control Tower. Hemskärm = lägesbilden (CockpitScreen); wiki bakom `w`.
 
     Appen äger delad data (noder/idéer/transkript) som båda skärmarna läser, så en
     reload på ett ställe slår igenom överallt."""
@@ -642,7 +637,7 @@ class CnsTuiApp(App):
         self.transcripts: list[Transcript] = []
 
     def get_default_screen(self) -> Screen:
-        return CockpitScreen()
+        return CommandCenterScreen()
 
     def on_mount(self) -> None:
         self.reload_data()

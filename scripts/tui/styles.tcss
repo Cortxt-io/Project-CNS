@@ -24,33 +24,33 @@
     padding: 1 1;
 }
 
-/* Kontrolltornet = fas-kolumn-aktivitetstavla (CockpitScreen). */
-#nudge-label {
+/* Command Center (CommandCenterScreen) — rad-vy, militär doktrin. */
+#cc-sitrep {
+    padding: 0 2;
+    border-bottom: solid $panel;
+}
+
+#cc-frontline {
+    height: 1fr;
     padding: 0 2;
 }
 
-#nudge-recs {
-    margin: 0 1 1 1;
-    height: auto;
-    max-height: 6;
-}
-
-/* Fas-kolumnerna ligger i en Horizontal och delar bredden lika. */
-#columns {
-    height: 1fr;
-}
-
-.phase-col {
-    width: 1fr;
-    border-right: solid $panel;
-    padding: 0 1;
-}
-
-#enablement-row {
+#cc-logistics {
     padding: 1 2 0 2;
+    border-top: solid $panel;
 }
 
-#cockpit-status {
+#cc-orders-label {
+    padding: 0 2;
+}
+
+#cc-orders {
+    margin: 0 1 0 1;
+    height: auto;
+    max-height: 5;
+}
+
+#cc-status {
     padding: 0 2;
 }
 
