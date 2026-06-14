@@ -136,7 +136,7 @@ Agenturens fulla roster: `.claude/agents/AGENTUR.md` (**genererad** av `gen_agen
 ## Arbetsregler
 - **Git/GitHub-grund:** repo-topologi + branchstandard (trunk-based, `feat/`/`fix/`/`chore/`/`docs/` + `dispatch/issue-N`,
   squash-merge, radera efter merge) + org/branch-protection är låsta i `decisions/git-github-grund.md`. Följ den.
-- **Spec först:** skriv/granska en implementationsspec innan kod. Vid osäkerhet — ställ frågan i specen så den måste besvaras.
+- **Spec först:** skriv/granska en implementationsspec innan kod. Vid osäkerhet — ställ frågan i specen så den måste besvaras. **Specs bor i det privata repot `cns-internal` (`plans/`), inte här** — det publika repot är showcase. "Spec: plans/…"-referenser nedan avser `cns-internal/plans/…`. När en ADR når Accepted: promota till `decisions/<slug>.md` via PR (publikt = färdiga beslut, aldrig utkast).
 - **Additiv migrering:** nya fält är valfria; migrera en nod i taget; behåll fallback på gamla fält så dashboarden inte bryts.
 - **Övergeneralisera inte mallar:** inga mallvarianter förrän en verklig nod kräver det.
 - Validera (`cns validate <slug>`) innan commit — särskilt handskrivna noder.
