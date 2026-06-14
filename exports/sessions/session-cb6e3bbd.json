@@ -1,0 +1,23 @@
+{
+  "id": "session-cb6e3bbd",
+  "created_at": "2026-06-14T00:46:01",
+  "updated_at": "2026-06-14T00:46:01",
+  "status": "running",
+  "summary": "Delivery-pass: #39 Triage-verktyg + handlingsbar statusrad (epic #8 Control Tower foundation)",
+  "link": {
+    "kind": "issue",
+    "ref": "39"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null,
+  "metrics": {
+    "tool_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "tools_seen": [],
+    "artifacts": []
+  }
+}
