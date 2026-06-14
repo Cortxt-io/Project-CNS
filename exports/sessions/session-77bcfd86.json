@@ -1,0 +1,23 @@
+{
+  "id": "session-77bcfd86",
+  "created_at": "2026-06-14T02:01:38",
+  "updated_at": "2026-06-14T02:01:38",
+  "status": "running",
+  "summary": "Discovery-pass: lätt research — är fas-medveten beslutspunkt-kritiker rätt mönster (vs prior art)?",
+  "link": {
+    "kind": "issue",
+    "ref": "146"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null,
+  "metrics": {
+    "tool_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "tools_seen": [],
+    "artifacts": []
+  }
+}
