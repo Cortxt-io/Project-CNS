@@ -134,6 +134,8 @@ Routing sker via hooken `scripts/router.py` (UserPromptSubmit): den injicerar `[
 Agenturens fulla roster: `.claude/agents/AGENTUR.md` (**genererad** av `gen_agentur.py` ur frontmatter — redigera inte för hand). **Lägg/ändra routing i `router.py`, inte här** — en handhållen tabell driver isär från hooken.
 
 ## Arbetsregler
+- **Git/GitHub-grund:** repo-topologi + branchstandard (trunk-based, `feat/`/`fix/`/`chore/`/`docs/` + `dispatch/issue-N`,
+  squash-merge, radera efter merge) + org/branch-protection är låsta i `decisions/git-github-grund.md`. Följ den.
 - **Spec först:** skriv/granska en implementationsspec innan kod. Vid osäkerhet — ställ frågan i specen så den måste besvaras.
 - **Additiv migrering:** nya fält är valfria; migrera en nod i taget; behåll fallback på gamla fält så dashboarden inte bryts.
 - **Övergeneralisera inte mallar:** inga mallvarianter förrän en verklig nod kräver det.
