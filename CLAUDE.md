@@ -99,6 +99,26 @@ CNS-termerna mappar mot branschstandard (granskad spec: `plans/work-model-taxono
 
 Valfri toppnivå **initiative** över epic. `issue_type`-enkälla: `VALID_ISSUE_TYPES` i `issues_client.py` (inte `enums.json` — issues schemavalideras inte).
 
+### Två axlar — håll isär (objekt vs session)
+Förvirring uppstår när man blandar *vad* som jobbas på med *hur* man jobbar just nu. Det är två oberoende axlar som löper samtidigt:
+
+```
+AXEL 1 — OBJEKT (vad jobbas på; en hierarki som LAGRAS)
+  initiative          strategisk satsning, spänner över flera epics
+    └─ epic           sammanhållet spår (= GitHub Milestone)
+         └─ story     en konkret uppgift (= GitHub issue, type:story)
+              └─ sub-task   checkbox i issuen (todo)
+  opportunity         billig fångst INNAN nivån bestäms (idé-inkorg)
+
+AXEL 2 — SESSION (hur du jobbar just NU; ett LÄGE, lagras ej som objekt)
+  discovery → definition → triage → delivery → review → retro   (+ enablement)
+```
+
+- **Objektet rör sig uppåt i sin egen hierarki** (opportunity → story → ev. epic) via promotion.
+- **Sessionen är ett läge du växlar mellan** för samma objekt — en story går genom definition → delivery → review utan att själv byta nivå.
+- Idéfångst = discovery · forma en story (scope/approach/acceptans, ingen kod) = definition · skriva koden = delivery.
+- Sessionstyperna bor i `session_store.py` (intent-enum); objekt-hierarkin i ordlistan ovan. Förväxla dem inte.
+
 ### CNS · cortxt · Cortxt — tre distinkta begrepp
 - **CNS** = hjärnan/datalagret — repo `Project-CNS`, Python-backend, nodmodellen.
 - **cortxt** = ansiktet/dashboarden — repo `cortxt`, React-frontend på Vercel.
