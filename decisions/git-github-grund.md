@@ -76,6 +76,11 @@ Webhooks + repo-secrets ÖVERLEVER transfer. Railway- och Vercel-auto-deploy BRY
 - Rensa mergade/stale brancher (båda repon, lokalt + remote) efter verifiering att de landat.
 - Sätt branch protection på `main` i båda repona enligt Beslut 3.
 
+## Status
+- **2026-06-14:** org `Cortxt-io` skapad; `Project-CNS` + `cortxt` transfererade dit (webhook-router kvar under
+  rian010194). Remotes + `catalog.yaml:url_repo` uppdaterade; branch protection + webhooks + secrets överlevde.
+  Railway/Vercel omkopplade.
+
 ## Relaterat
 - Spegel-/projektion-skelettet (kanonisk taxonomi → org-Projects/Linear/Vercel) är parkerat tills detta fundament
   sitter: `plans/taxonomy-mirror-skeleton.md`.
