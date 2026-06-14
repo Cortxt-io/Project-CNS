@@ -18,6 +18,7 @@ Rules are deliberately simple and deterministic (same philosophy as
 
 from __future__ import annotations
 
+import re
 from datetime import datetime
 
 # An idea is "stale" once it has sat untriaged (no slug) this long.
@@ -26,6 +27,21 @@ STALE_DAYS = 14
 MATURE_MIN_LEN = 40
 # Phrase that marks a direction question (a decision, not a deliverable).
 DIRECTION_MARKER = "riktningsfråga"
+
+# Token-set (Jaccard) similarity at/above this flags two ideas as likely overlapping
+# (#146 triage variant). Heuristic + conservative — surfaces merge CANDIDATES for the
+# agent/skill to judge, never auto-merges. Calibrated against real body-length ideas:
+# distinct ideas rarely share >0.30 of their topic tokens, so this catches genuine
+# topic overlap (incl. across different slugs, which slug clustering misses) without
+# drowning triage in weak pairs. Tunable per call via find_overlaps(threshold=…).
+OVERLAP_THRESHOLD = 0.30
+# Short/common tokens carry no topic signal; drop them before comparing.
+_STOPWORDS = frozenset(
+    "som ett att och det den för med inte att vad vid via per den ena via "
+    "the and for that this with not via per each into over from idea idé "
+    "ska kan vill bygg bygga göra gör finns redan över".split()
+)
+_TOKEN_RE = re.compile(r"[a-zA-Z0-9åäöÅÄÖ]{4,}")
 
 
 def _age_days(created_at: str, now: datetime) -> float | None:
@@ -44,6 +60,53 @@ def _is_mature(idea: dict) -> bool:
     if len(text) < MATURE_MIN_LEN:
         return False
     return DIRECTION_MARKER not in text.lower()
+
+
+def _tokens(text: str) -> set[str]:
+    """Topic tokens of an idea body: 4+ char words, lowercased, stopwords dropped."""
+    return {t for t in _TOKEN_RE.findall((text or "").lower()) if t not in _STOPWORDS}
+
+
+def _similarity(a: set[str], b: set[str]) -> float:
+    """Jaccard similarity of two token sets (0..1; 0 if either is empty)."""
+    if not a or not b:
+        return 0.0
+    return len(a & b) / len(a | b)
+
+
+def find_overlaps(ideas: list[dict], threshold: float = OVERLAP_THRESHOLD) -> list[list[dict]]:
+    """Group OPEN ideas that likely overlap by text similarity (#146 triage variant).
+
+    Catches duplicates that share a topic but not a slug — what slug clustering in
+    ``group_ideas`` misses. Pairwise Jaccard above ``threshold`` links two ideas;
+    links are merged transitively (union-find) into candidate groups. Returns groups
+    of 2+ ideas (newest-first within a group), heaviest-overlap groups first. These
+    are merge CANDIDATES for the agent to judge — never an auto-merge.
+    """
+    open_ideas = [i for i in ideas if i.get("status", "open") == "open"]
+    toks = [_tokens(i.get("text", "")) for i in open_ideas]
+
+    parent = list(range(len(open_ideas)))
+
+    def find(x: int) -> int:
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for i in range(len(open_ideas)):
+        for j in range(i + 1, len(open_ideas)):
+            if _similarity(toks[i], toks[j]) >= threshold:
+                parent[find(i)] = find(j)
+
+    groups: dict[int, list[dict]] = {}
+    for idx, idea in enumerate(open_ideas):
+        groups.setdefault(find(idx), []).append(idea)
+    result = [g for g in groups.values() if len(g) >= 2]
+    for g in result:
+        g.sort(key=lambda i: i.get("created_at", ""), reverse=True)
+    result.sort(key=len, reverse=True)
+    return result
 
 
 def group_ideas(
@@ -88,17 +151,21 @@ def group_ideas(
         if len(members) >= 2
     ]
 
+    overlaps = find_overlaps(open_ideas)
+
     return {
         "clusters": clusters,
         "mature": mature,
         "stale": stale,
         "untriaged": untriaged,
+        "overlaps": overlaps,
         "counts": {
             "open": len(open_ideas),
             "clusters": len(clusters),
             "mature": len(mature),
             "stale": len(stale),
             "untriaged": len(untriaged),
+            "overlaps": len(overlaps),
         },
     }
 
@@ -117,9 +184,18 @@ def render_triage(grouping: dict) -> str:
     lines = [
         f"# Triage — {c['open']} open ideas "
         f"({c['untriaged']} untriaged · {c['mature']} mature · "
-        f"{c['stale']} stale · {c['clusters']} clusters)",
+        f"{c['stale']} stale · {c['clusters']} clusters · "
+        f"{c.get('overlaps', 0)} overlap groups)",
         "",
     ]
+
+    lines.append("## Likely overlaps (review for merge — #146)")
+    if not grouping.get("overlaps"):
+        lines.append("  (none)")
+    for group in grouping.get("overlaps", []):
+        lines.append(f"  ~ {len(group)} ideas:")
+        lines += [_one_line(i, width=66).replace("  ", "    ", 1) for i in group]
+    lines.append("")
 
     lines.append("## Mature (promotion candidates)")
     lines += [_one_line(i) for i in grouping["mature"]] or ["  (none)"]

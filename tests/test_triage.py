@@ -78,6 +78,46 @@ def test_unparseable_created_at_does_not_crash_staleness():
     assert [i["id"] for i in g["untriaged"]] == ["idea-x"]
 
 
+def test_find_overlaps_flags_similar_text_across_slugs():
+    ideas = [
+        _idea("idea-a", "Build a triage tool that groups ideas into clusters and stale buckets", slug="cns-core"),
+        _idea("idea-b", "Triage tool grouping ideas: clusters, stale buckets, mature promotion", slug="interface"),
+        _idea("idea-c", "Completely unrelated thought about Vercel deploy adapters and storefront", slug="cortxt"),
+    ]
+    groups = __import__("scripts.triage", fromlist=["find_overlaps"]).find_overlaps(ideas)
+    assert len(groups) == 1
+    assert {i["id"] for i in groups[0]} == {"idea-a", "idea-b"}  # c not pulled in
+
+
+def test_find_overlaps_respects_threshold():
+    from scripts.triage import find_overlaps
+    ideas = [
+        _idea("idea-a", "alpha beta gamma delta epsilon zeta theta"),
+        _idea("idea-b", "alpha beta gamma kappa lambda omikron sigma"),
+    ]
+    assert find_overlaps(ideas, threshold=0.99) == []          # too strict → no pair
+    assert len(find_overlaps(ideas, threshold=0.2)) == 1       # loose → paired
+
+
+def test_find_overlaps_ignores_non_open():
+    from scripts.triage import find_overlaps
+    ideas = [
+        _idea("idea-a", "shared topic words here clearly", status="open"),
+        _idea("idea-b", "shared topic words here clearly", status="resolved"),
+    ]
+    assert find_overlaps(ideas) == []  # only one open → no group
+
+
+def test_grouping_exposes_overlaps_and_count():
+    ideas = [
+        _idea("idea-a", "shared overlapping topic words alpha beta", slug="cns-core"),
+        _idea("idea-b", "shared overlapping topic words alpha gamma", slug="interface"),
+    ]
+    g = group_ideas(ideas, now=NOW)
+    assert g["counts"]["overlaps"] == 1
+    assert len(g["overlaps"]) == 1
+
+
 def test_render_is_stable_markdown():
     ideas = [_idea("idea-1", "A concrete and clearly described deliverable here.", slug="cns-core")]
     out = render_triage(group_ideas(ideas, now=NOW))
