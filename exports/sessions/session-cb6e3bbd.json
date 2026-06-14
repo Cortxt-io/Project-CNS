@@ -1,9 +1,9 @@
 {
   "id": "session-cb6e3bbd",
   "created_at": "2026-06-14T00:46:01",
-  "updated_at": "2026-06-14T00:46:01",
-  "status": "running",
-  "summary": "Delivery-pass: #39 Triage-verktyg + handlingsbar statusrad (epic #8 Control Tower foundation)",
+  "updated_at": "2026-06-14T00:50:31",
+  "status": "done",
+  "summary": "#39 form (a) levererad: scripts/triage.group_ideas() (delad, transport-fri, 7 tester gröna) + `cns triage [--json]` + omskriven idea-triage-skill (driver list→gruppera→döm→utför med cortxt_idea). Grupperar live-inkorgen (23 idéer). CLAUDE.md repo-layout uppdaterad. Pushat c1cd165. Kvar i #39: form (b) MCP cortxt_triage + (c) TUI-vy (återanvänder group_ideas), samt djupare statusrad-handlingsbarhet — noterat som todo på #39.",
   "link": {
     "kind": "issue",
     "ref": "39"
