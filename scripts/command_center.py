@@ -98,8 +98,16 @@ def command_center_state(
     now = now or datetime.now()
 
     if milestones_fn is None:
-        from scripts.issues_client import list_milestones
-        milestones_fn = lambda: list_milestones(state="open")  # noqa: E731
+        # Missionerna läser samma recommend-cache som ORDERS (hybrid-källan i specen) så
+        # FRONTLINE kommer till liv UTAN lokal GitHub-token. Faller tillbaka på live-hämtning.
+        from scripts.recommend import _cached_quests
+
+        def milestones_fn():
+            cached = _cached_quests()
+            if cached:
+                return [q for q in cached if q.get("state") != "closed"]
+            from scripts.issues_client import list_milestones
+            return list_milestones(state="open")
     if issues_for_fn is None:
         from scripts.issues_client import list_issues
         issues_for_fn = lambda n: list_issues(state="open", milestone=n)  # noqa: E731
