@@ -62,6 +62,24 @@ WarRoomScreen, CouncilScreen, FOBScreen, RadioScreen {
     margin: 1 0;
 }
 
+#war-log {
+    height: 1fr;
+    border: round $panel;
+    margin: 1 0 0 0;
+}
+
+ConfirmScreen {
+    align: center middle;
+}
+
+#confirm-box {
+    width: 60%;
+    height: auto;
+    border: round $warning;
+    background: $surface;
+    padding: 1 2;
+}
+
 #radio-list {
     height: auto;
     margin: 1 0 0 0;

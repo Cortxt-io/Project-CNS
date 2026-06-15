@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import shutil
 import subprocess
+import threading
 
 from rich.text import Text
 from textual.app import App, ComposeResult
@@ -487,22 +488,23 @@ class WarRoomScreen(ModalScreen):
         ("autonomy", "🎲 Autonomy — self-merge", "Self-mergar LÅGRISK (kräver write). Gateas.", "--write --autonomy"),
     ]
 
+    def __init__(self) -> None:
+        super().__init__()
+        self._busy = False
+
     def compose(self) -> ComposeResult:
-        with VerticalScroll(id="war-box"):
+        with Vertical(id="war-box"):
             yield Static(
-                "[bold]🎖 WAR ROOM[/bold]  [dim]— dispatch & autonomi[/dim]\n\n"
-                "[bold]Rules of Engagement[/bold]  [dim](↑↓ välj · Enter = Engage ett crawl i nytt fönster)[/dim]",
+                "[bold]🎖 WAR ROOM[/bold]  [dim]— dispatch & autonomi · körs INLINE (inga fönster)[/dim]\n"
+                "[bold]Rules of Engagement[/bold]  [dim](↑↓ välj · Enter = Engage ett crawl här)[/dim]",
                 id="war-head",
             )
             yield OptionList(
                 *[Option(Text.from_markup(f"{lbl}  [dim]— {desc}[/dim]"), id=rid) for rid, lbl, desc, _ in self._ROE],
                 id="roe-list",
             )
-            yield Static(
-                "[dim]Engage öppnar ett nytt fönster: python -m scripts.dispatch [flaggor].\n"
-                "Varje muterande steg frågar y/N där (människan i loopen). esc stänger.[/dim]",
-                id="war-status",
-            )
+            yield RichLog(id="war-log", wrap=True, markup=True)
+            yield Static("[dim]Mutation gateas som dialog här (y/n) · esc stänger[/dim]", id="war-status")
 
     def on_mount(self) -> None:
         ol = self.query_one("#roe-list", OptionList)
@@ -510,25 +512,94 @@ class WarRoomScreen(ModalScreen):
         ol.highlighted = 0
 
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
-        flags = next((f for rid, _, _, f in self._ROE if rid == event.option.id), None)
-        if flags is None:
+        if self._busy:
             return
-        self._engage(event.option.id, flags)
+        roe = event.option.id
+        if roe not in {rid for rid, *_ in self._ROE}:
+            return
+        self._busy = True
+        log = self.query_one("#war-log", RichLog)
+        log.write(f"[bold]🎖 Engaging {roe} (inline)…[/bold]  [dim](kan ta en stund — kör ett pass)[/dim]")
+        self.run_worker(lambda: self._run_crawl(roe), thread=True, exclusive=True, name="dispatch")
 
-    def _engage(self, posture: str, flags: str) -> None:
-        from pathlib import Path
+    def _log(self, text: str) -> None:
+        self.query_one("#war-log", RichLog).write(text)
 
-        root = Path(__file__).resolve().parents[2]  # Project-CNS
+    def _approver(self, roe: str):
+        """Recon (read-first): auto-ja (muterar inget). Annars: poppa confirm-dialog i TUI:t."""
+        def approve(action: str, ctx: dict) -> bool:
+            if roe == "recon":
+                return True
+            ev = threading.Event()
+            box: dict = {}
+
+            def ask() -> None:
+                self.app.push_screen(ConfirmScreen(action, ctx), lambda v: (box.__setitem__("v", v), ev.set()))
+
+            self.app.call_from_thread(ask)
+            ev.wait()
+            return bool(box.get("v"))
+
+        return approve
+
+    def _run_crawl(self, roe: str) -> None:
+        """Körs i worker-tråd. Kör ETT crawl via dispatch; loggar steg + resultat i TUI:t."""
+        import os
+
         try:
-            cmd = f'start "War Room — dispatch ({posture})" cmd /k "cd /d {root} && python -m scripts.dispatch {flags}"'
-            subprocess.Popen(cmd, shell=True)
-            self.query_one("#war-status", Static).update(
-                f"[bold green]✅ Engaged: {posture}[/bold green] i nytt fönster — "
-                f"[dim]gateas per steg där (y/N). Kill: Ctrl-C i det fönstret.[/dim]"
+            from scripts import dispatch, issues_client
+
+            write = roe in ("assault", "autonomy")
+            autonomy = roe == "autonomy"
+            owner = os.getenv("CNS_AGENT_OWNER") or "command-center"
+            res = dispatch.crawl_once(
+                owner=owner,
+                candidates_fn=lambda: issues_client.list_issues(state="open"),
+                closed_numbers_fn=lambda: {int(i["number"]) for i in issues_client.list_issues(state="closed")},
+                approve=self._approver(roe),
+                worktree_fn=dispatch.default_worktree_fn if write else None,
+                open_pr_fn=dispatch.build_open_pr_fn() if write else None,
+                autonomy=autonomy and write,
+                merge_fn=dispatch.build_merge_fn() if (autonomy and write) else None,
             )
-            self.app.notify(f"War Room: engaged {posture}", title="Command Center")
+            for step in getattr(res, "log", []) or []:
+                self.app.call_from_thread(self._log, f"  [dim]· {step}[/dim]")
+            color = {"ran": "green", "no-work": "dim", "blocked": "yellow", "denied": "yellow", "escalated": "yellow"}.get(res.status, "red")
+            self.app.call_from_thread(self._log, f"[bold {color}]→ {res.status}[/bold {color}]: {res.detail or ''}")
         except Exception as exc:
-            self.query_one("#war-status", Static).update(f"[red]⚠ kunde inte starta: {exc}[/red]")
+            self.app.call_from_thread(self._log, f"[red]⚠ kunde inte köra: {type(exc).__name__}: {exc}[/red]")
+        finally:
+            self.app.call_from_thread(setattr, self, "_busy", False)
+
+
+class ConfirmScreen(ModalScreen):
+    """Godkännande-dialog för ett muterande dispatch-steg (human-in-the-loop, i TUI:t)."""
+
+    BINDINGS = [
+        Binding("y", "yes", "Ja"),
+        Binding("j", "yes", "Ja"),
+        Binding("n", "no", "Nej"),
+        Binding("escape", "no", "Nej"),
+    ]
+
+    def __init__(self, action: str, ctx: dict) -> None:
+        super().__init__()
+        self._text = {
+            "claim": f"Claima issue #{ctx.get('issue')} ({ctx.get('type')})?",
+            "run_pass": f"Kör pass på #{ctx.get('issue')} som '{ctx.get('agent') or 'generisk'}'?",
+            "open_pr": f"Öppna DRAFT-PR för #{ctx.get('issue')}?",
+            "merge": f"Self-merga LÅGRISK-PR #{ctx.get('pr')} (#{ctx.get('issue')})?",
+        }.get(action, f"Godkänn '{action}'?")
+
+    def compose(self) -> ComposeResult:
+        with Vertical(id="confirm-box"):
+            yield Static(f"[bold yellow]⚖ Beslut[/bold yellow]\n\n{self._text}\n\n[bold][y][/bold] ja  ·  [bold][n][/bold] nej")
+
+    def action_yes(self) -> None:
+        self.dismiss(True)
+
+    def action_no(self) -> None:
+        self.dismiss(False)
 
 
 class CouncilScreen(ModalScreen):
