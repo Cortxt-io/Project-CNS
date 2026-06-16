@@ -22,7 +22,7 @@
       "command_env": "GITHUB_MCP_COMMAND",
       "args": ["stdio"],
       "url_env": "GITHUB_MCP_URL",
-      "token_env": "GITHUB_MCP_TOKEN",
+      "token_env": "GITHUB_PAT",
       "token_header": "Authorization",
       "token_header_prefix": "Bearer ",
       "token_env_passthrough": "GITHUB_PERSONAL_ACCESS_TOKEN"
