@@ -34,10 +34,30 @@ def test_required_from_node_type():
 def test_required_with_needs_override_and_integrations():
     req = cap.required_capabilities(
         "service",
-        integrations={"deploy": {"vercel": {}}},
+        integrations={"deploy": {"vercel": {}}},   # dict-form (bakåtkompat)
         needs=["github"],
     )
     assert set(req) >= {"code", "vercel", "github"}
+
+
+def test_required_deploy_flat_list_form():
+    # Nuvarande katalog-form: platt lista av strängar.
+    req = cap.required_capabilities("service", integrations={"deploy": ["railway"]})
+    assert "railway" in req
+
+
+def test_required_deploy_object_list_form():
+    # Vald form #78: list av objekt med target/project.
+    req = cap.required_capabilities(
+        "frontend",
+        integrations={"deploy": [{"target": "vercel", "project": "cortxt-dashboard"}]},
+    )
+    assert "vercel" in req
+
+
+def test_required_deploy_object_without_target_ignored():
+    req = cap.required_capabilities("service", integrations={"deploy": [{"project": "x"}]})
+    assert req == ["code"]   # bara node-typ-kravet; tom target ignoreras
 
 
 def test_capability_score_counts_covered():

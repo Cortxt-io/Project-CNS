@@ -158,7 +158,8 @@ systems:
     url_repo: https://github.com/Cortxt-io/cortxt
     integrations:
       deploy:
-      - vercel
+      - target: vercel
+        project: cortxt-dashboard
   cortxt-eventstream:
     title: Cortxt Eventstream
     summary: Enhetlig händelselogning av alla systemaktiviteter med sex dimensioner.
