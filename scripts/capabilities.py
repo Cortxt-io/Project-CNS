@@ -57,6 +57,29 @@ _NODE_TYPE_CAPABILITY = {
 }
 
 
+def _deploy_surfaces(integrations: dict | None) -> list[str]:
+    """Plocka deploy-ytornas NAMN ur integrations-fältet, robust mot alla former (#78).
+
+    Stöder additivt tre former (ingen bryts):
+    - dict ``{vercel: {...}}``                 → nycklarna (``"vercel"``)
+    - list av str ``["railway"]``              → elementen (``"railway"``)
+    - list av objekt ``[{target: vercel, …}]`` → varje ``item['target']`` (vald form, #78)
+    """
+    deploy = (integrations or {}).get("deploy") or {}
+    out: list[str] = []
+    if isinstance(deploy, dict):
+        out = [str(k) for k in deploy if k]
+    elif isinstance(deploy, (list, tuple)):
+        for item in deploy:
+            if isinstance(item, dict):
+                target = item.get("target")
+                if target:
+                    out.append(str(target))
+            elif item:
+                out.append(str(item))
+    return out
+
+
 def required_capabilities(
     node_type: str = "",
     *,
@@ -70,9 +93,7 @@ def required_capabilities(
     """
     req: set[str] = set(needs or [])
     req.update(_NODE_TYPE_CAPABILITY.get(node_type, []))
-    for surface in (integrations or {}).get("deploy", {}) or {}:
-        if surface:
-            req.add(str(surface))           # t.ex. "vercel", "railway"
+    req.update(_deploy_surfaces(integrations))   # t.ex. "vercel", "railway"
     return sorted(req)
 
 

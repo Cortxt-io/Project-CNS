@@ -8,6 +8,7 @@ import json
 import os
 import sys
 from datetime import date
+from typing import Optional
 
 from rich.console import Console
 from rich.panel import Panel
@@ -225,6 +226,74 @@ def cmd_validate(args: argparse.Namespace) -> None:
         console.print(f"[red]{target} har {len(errors)} fel:[/red]")
         for err in errors:
             console.print(f"  [red]- {err}[/red]")
+        sys.exit(1)
+
+
+def _deploy_entry(slug: str, target: str = "vercel") -> Optional[dict]:
+    """Plocka nodens deploy-post för en target ur catalog.integrations (#77/#78).
+
+    Returnerar ett normaliserat ``{"target", "project"}``-dict (project tomt om platt str-form),
+    eller ``None`` om noden saknar/inte deployar till target. Robust mot alla integrations-former.
+    """
+    from scripts.catalog import load_catalog
+
+    systems = load_catalog()
+    if slug not in systems:
+        return None
+    deploy = (systems[slug].get("integrations") or {}).get("deploy") or {}
+    items = list(deploy.keys()) if isinstance(deploy, dict) else deploy
+    for item in items:
+        if isinstance(item, dict) and item.get("target") == target:
+            return {"target": target, "project": item.get("project", "")}
+        if isinstance(item, str) and item == target:
+            return {"target": target, "project": ""}
+    return None
+
+
+def cmd_deploy_connect(args: argparse.Namespace) -> None:
+    """`cns deploy connect` — verifiera Vercel-token (read-only)."""
+    from scripts.adapters import vercel
+
+    out = vercel.connect()
+    if out.get("ok"):
+        console.print(f"[green]Vercel: ansluten som {out.get('user', '')}[/green]")
+    else:
+        console.print(f"[yellow]Vercel ej ansluten: {out.get('error', '')}[/yellow]")
+
+
+def cmd_deploy_status(args: argparse.Namespace) -> None:
+    """`cns deploy status <slug>` — senaste Vercel-deployment-status för en nod (read-only)."""
+    from scripts.adapters import vercel
+
+    entry = _deploy_entry(args.slug, "vercel")
+    if entry is None:
+        console.print(f"[yellow]'{args.slug}' har ingen vercel-deploy i catalog.integrations[/yellow]")
+        return
+    project = entry.get("project") or args.slug
+    out = vercel.status(project)
+    if out.get("ok"):
+        console.print(f"[green]{args.slug} → vercel/{project}: {out.get('state')}[/green] {out.get('url', '')}")
+    else:
+        console.print(f"[yellow]Vercel-status otillgänglig: {out.get('error', '')}[/yellow]")
+
+
+def cmd_deploy_deploy(args: argparse.Namespace) -> None:
+    """`cns deploy deploy <slug> --yes` — trigga en Vercel-deployment (MUTATING, gated)."""
+    from scripts.adapters import vercel
+
+    entry = _deploy_entry(args.slug, "vercel")
+    if entry is None:
+        console.print(f"[yellow]'{args.slug}' har ingen vercel-deploy i catalog.integrations[/yellow]")
+        return
+    if not getattr(args, "yes", False):
+        console.print("[red]deploy är muterande — kräver --yes för att köras.[/red]")
+        sys.exit(1)
+    project = entry.get("project") or args.slug
+    out = vercel.deploy(project, ref=getattr(args, "ref", "main"))
+    if out.get("ok"):
+        console.print(f"[green]Deploy triggad: {project} ({out.get('state')}) {out.get('url', '')}[/green]")
+    else:
+        console.print(f"[red]Deploy misslyckades: {out.get('error', '')}[/red]")
         sys.exit(1)
 
 
@@ -897,6 +966,20 @@ def main() -> None:
     )
     sp_atools.add_argument("role", help="Roll-slug (t.ex. backend-utvecklare)")
     sp_atools.set_defaults(func=cmd_agent_tools)
+
+    # cns deploy {connect|status|deploy} — drift-ekrar (#78). Läser nodens integrations.deploy.
+    sp_deploy = subparsers.add_parser("deploy", help="Drift-adaptrar (Vercel): connect/status/deploy")
+    deploy_sub = sp_deploy.add_subparsers(dest="deploy_cmd")
+    sp_dc = deploy_sub.add_parser("connect", help="Verifiera Vercel-token (read-only)")
+    sp_dc.set_defaults(func=cmd_deploy_connect)
+    sp_ds = deploy_sub.add_parser("status", help="Senaste deployment-status för en nod (read-only)")
+    sp_ds.add_argument("slug", help="System-slug (måste ha vercel i integrations.deploy)")
+    sp_ds.set_defaults(func=cmd_deploy_status)
+    sp_dd = deploy_sub.add_parser("deploy", help="Trigga en deployment (MUTATING — kräver --yes)")
+    sp_dd.add_argument("slug", help="System-slug")
+    sp_dd.add_argument("--ref", default="main", help="Git-ref att deploya (default main)")
+    sp_dd.add_argument("--yes", action="store_true", help="Bekräfta den muterande deployen")
+    sp_dd.set_defaults(func=cmd_deploy_deploy)
 
     # cns quest {init|show|sync} <slug>
     sp_quest = subparsers.add_parser("quest", help="Manage active build quest workflow")

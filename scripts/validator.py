@@ -106,11 +106,19 @@ def validate_catalog(systems: dict[str, dict] | None = None) -> tuple[list[str],
         if domain and VALID_DOMAINS and domain not in VALID_DOMAINS:
             warnings.append(f"{slug}: okänd domain '{domain}'")
 
-        # Mjuk validering av integrations (#77) — WARN, aldrig ERROR (additivt).
+        # Mjuk validering av integrations (#77/#78) — WARN, aldrig ERROR (additivt).
+        # deploy-element är antingen en platt str ("railway") eller ett objekt
+        # ({target: vercel, project: ...}, vald form #78). Båda valideras.
         integrations = entry.get("integrations")
         if isinstance(integrations, dict):
-            for target in integrations.get("deploy") or []:
-                if VALID_DEPLOY_TARGETS and target not in VALID_DEPLOY_TARGETS:
+            for item in integrations.get("deploy") or []:
+                if isinstance(item, dict):
+                    target = item.get("target")
+                    if not item.get("project"):
+                        warnings.append(f"{slug}: deploy-target '{target}' saknar 'project'")
+                else:
+                    target = item
+                if target and VALID_DEPLOY_TARGETS and target not in VALID_DEPLOY_TARGETS:
                     warnings.append(f"{slug}: okänt deploy-target '{target}'")
             for source in integrations.get("sources") or []:
                 source_type = source.split(":", 1)[0] if isinstance(source, str) else ""
