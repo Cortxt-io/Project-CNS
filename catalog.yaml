@@ -260,6 +260,16 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
+  juvahem:
+    title: Juvahem
+    summary: Decision tool for couples choosing where to relocate — ranks all 290
+      Swedish municipalities against a couple's combined profile (both partners'
+      jobs, budget, household). Own venture, own repo.
+    type: tool
+    domain: juvahem
+    feeds: []
+    depends_on: []
+    url_repo: https://github.com/rian010194/juvahem
   local-ai:
     title: Local AI
     summary: Lokal AI-inferens (Qwen/GLM via Ollama/LM Studio) som fallback och kodfokuserat
