@@ -18,6 +18,9 @@ _ENUMS = json.loads(ENUMS_PATH.read_text(encoding="utf-8"))
 VALID_KINDS = set(_ENUMS["kinds"])
 VALID_TYPES = set(_ENUMS.get("types", []))
 VALID_DOMAINS = set(_ENUMS.get("domains", []))
+# integrations-fältet (#77): kända deploy-targets/source-types för mjuk validering.
+VALID_DEPLOY_TARGETS = set(_ENUMS.get("deploy_targets", []))
+VALID_SOURCE_TYPES = set(_ENUMS.get("source_types", []))
 
 AGENTS_PATH = Path(__file__).resolve().parent.parent / "exports" / "agents.json"
 
@@ -102,6 +105,17 @@ def validate_catalog(systems: dict[str, dict] | None = None) -> tuple[list[str],
         domain = entry.get("domain")
         if domain and VALID_DOMAINS and domain not in VALID_DOMAINS:
             warnings.append(f"{slug}: okänd domain '{domain}'")
+
+        # Mjuk validering av integrations (#77) — WARN, aldrig ERROR (additivt).
+        integrations = entry.get("integrations")
+        if isinstance(integrations, dict):
+            for target in integrations.get("deploy") or []:
+                if VALID_DEPLOY_TARGETS and target not in VALID_DEPLOY_TARGETS:
+                    warnings.append(f"{slug}: okänt deploy-target '{target}'")
+            for source in integrations.get("sources") or []:
+                source_type = source.split(":", 1)[0] if isinstance(source, str) else ""
+                if VALID_SOURCE_TYPES and source_type not in VALID_SOURCE_TYPES:
+                    warnings.append(f"{slug}: okänd source-type '{source_type}'")
 
     # Cykelkoll i part_of.
     for slug in sorted(set(_detect_part_of_cycle(systems))):
