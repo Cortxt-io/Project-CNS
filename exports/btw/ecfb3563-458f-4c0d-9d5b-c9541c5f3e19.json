@@ -1,0 +1,15 @@
+{
+  "session_id": "ecfb3563-458f-4c0d-9d5b-c9541c5f3e19",
+  "created_at": "2026-06-16T12:25:03",
+  "updated_at": "2026-06-16T12:25:03",
+  "linked_quest": null,
+  "linked_idea": null,
+  "asides": [
+    {
+      "ts": "2026-06-16T10:24:48.075Z",
+      "text": "vad ör formspree?",
+      "fork": "vad-r-formspree (3f1b)",
+      "src_uuid": "455e3580-12ba-4d00-8d6d-a3f93241e389"
+    }
+  ]
+}
