@@ -1,0 +1,9 @@
+{
+  "id": "idea-1cb9f1c5",
+  "text": "Decision-point critic: bygg kvarvarande faser-varianter (discovery/definition/delivery/review/enablement/retro) ovanpå levererad triage-variant (find_overlaps, ur stängda #146). Per discovery-domen i decisions/decision-point-critic.md: grinda mot EXTERN signal ej ren självkritik; läs fas ur arbetsobjektets status ej sessionstyp; lägg embeddings/cosine-lager ovanpå Jaccard-sållet.",
+  "created_at": "2026-06-16T16:07:32",
+  "source": "chat",
+  "slug": "cns-core",
+  "session_id": null,
+  "status": "open"
+}
