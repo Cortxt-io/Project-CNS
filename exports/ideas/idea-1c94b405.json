@@ -1,0 +1,9 @@
+{
+  "id": "idea-1c94b405",
+  "text": "Flik-titel per sessionstyp via /flik-skillen (del 3 ur stängda #41). Windows Terminal-tab-titel via escape-sekvenser, färgkodad per typ. Ligger i arbetsytans maskinlokala .claude/ utanför repot — kräver eget grepp där, ej dispatchbart i Project-CNS.",
+  "created_at": "2026-06-16T16:07:26",
+  "source": "chat",
+  "slug": "interface",
+  "session_id": null,
+  "status": "open"
+}
