@@ -113,6 +113,9 @@ systems:
     depends_on:
     - cns-core
     url_repo: https://github.com/Cortxt-io/Project-CNS
+    integrations:
+      deploy:
+      - railway
   cns-triage:
     title: CNS Triage
     summary: Intern triage av CNS idé-inkorg och noder — gruppera, resolva/promota
@@ -132,6 +135,9 @@ systems:
     feeds: []
     depends_on: []
     url_repo: https://github.com/Cortxt-io/Project-CNS
+    integrations:
+      deploy:
+      - railway
   cortxt:
     title: Cortxt
     summary: Verktygskedja för AI-assisterad produktutveckling — från idé till leverans.
@@ -150,6 +156,9 @@ systems:
     feeds: []
     depends_on: []
     url_repo: https://github.com/Cortxt-io/cortxt
+    integrations:
+      deploy:
+      - vercel
   cortxt-eventstream:
     title: Cortxt Eventstream
     summary: Enhetlig händelselogning av alla systemaktiviteter med sex dimensioner.
@@ -183,6 +192,9 @@ systems:
     feeds: []
     depends_on: []
     url_repo: https://github.com/Cortxt-io/cortxt
+    integrations:
+      deploy:
+      - github-pages
   dev-changelog-engine:
     title: Dev Changelog Engine
     summary: Fullskalig pipeline för changelog-digest med source-adaptrar, LLM-analys
