@@ -284,7 +284,7 @@ systems:
     domain: juvahem
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/juvahem
+    url_repo: https://github.com/Cortxt-io/juvahem
   local-ai:
     title: Local AI
     summary: Lokal AI-inferens (Qwen/GLM via Ollama/LM Studio) som fallback och kodfokuserat
