@@ -278,15 +278,6 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-  jumpyard-org-explorer:
-    title: JumpYard Org Explorer
-    summary: Interactive explorer for JumpYard's proposed organisation — hierarchy + the
-      cross-department responsibility/dependency map. Customer delivery, rebuilt from the
-      archived OrgVis project. React/Vite/ReactFlow. Own venture, own repo.
-    type: frontend
-    domain: jumpyard
-    feeds: []
-    depends_on: []
   juvahem:
     title: Juvahem
     summary: Decision tool for couples choosing where to relocate — ranks all 290 Swedish
@@ -319,6 +310,17 @@ systems:
     feeds: []
     depends_on:
     - cns-mcp
+  orgkomp:
+    title: Orgkomp
+    summary: Interactive, editable explorer for an organisation's roles, responsibilities,
+      and dependencies — hierarchy + the cross-department responsibility/dependency map.
+      Customer delivery for JumpYard, rebuilt from the archived OrgVis project. Next.js
+      (App Router), AntV G6, zod, Vitest. Own venture, own repo.
+    type: frontend
+    domain: orgkomp
+    feeds: []
+    depends_on: []
+    url_repo: https://github.com/Cortxt-io/orgkomp
   quest-engine:
     title: Quest Engine
     summary: Quest-livscykel (suggested → active → in_progress → completed/archived)

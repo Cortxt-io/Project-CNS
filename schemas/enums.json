@@ -2,5 +2,5 @@
   "_comment": "Canonical enum values for the CNS node model. SINGLE SOURCE OF TRUTH. Consumed by scripts/validator.py (Python, as sets) and cortxt/packages/cns-schema (JS, generated via its generate.mjs). Array order is semantic (progression where applicable) and preserved on the JS side. Retired enums (statuses/stages/mvp_stages/risk_categories) were removed in the health-scorecard work — node lifecycle/maturity is delegated to board, and per-entity health is derived at read-time (see scripts/health.py), not declared. Legacy layer/pipeline/family enums are likewise NOT here.",
   "kinds": ["component", "system", "framework"],
   "types": ["frontend", "service", "mcp-server", "pipeline", "cli", "tool", "agent", "infra", "library", "dataset", "ai-model"],
-  "domains": ["cortxt", "shopify-venture", "juvahem", "crusade", "jumpyard", "bkfinans"]
+  "domains": ["cortxt", "shopify-venture", "juvahem", "crusade", "orgkomp", "bkfinans"]
 }
