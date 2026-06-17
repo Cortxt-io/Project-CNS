@@ -27,6 +27,18 @@ systems:
     depends_on:
     - cns-core
     url_repo: https://github.com/Cortxt-io/Project-CNS
+  bkfinans:
+    title: BK Finans
+    summary: Decision-support tool that helps people make hard economic decisions during
+      life changes. v0.1 is deliberately narrow — helps someone weighing self-employment
+      judge whether their household economy carries the step from a secure salary to
+      uncertain income, and what to secure first. Transparent rule-based model, no advice.
+      Structure prepared for further contexts (separation, first-home, household-stress).
+      Own venture, own repo. SvelteKit. Domain bkfinans.se.
+    type: tool
+    domain: bkfinans
+    feeds: []
+    depends_on: []
   cns-analyst:
     title: CNS Analyst
     summary: AI-driven analysmotor som föreslår uppdateringar av stage, risker och
