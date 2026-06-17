@@ -18,6 +18,7 @@ _ENUMS = json.loads(ENUMS_PATH.read_text(encoding="utf-8"))
 VALID_KINDS = set(_ENUMS["kinds"])
 VALID_TYPES = set(_ENUMS.get("types", []))
 VALID_DOMAINS = set(_ENUMS.get("domains", []))
+VALID_ENTITY_TYPES = set(_ENUMS.get("entity_types", []))
 
 AGENTS_PATH = Path(__file__).resolve().parent.parent / "exports" / "agents.json"
 
@@ -102,6 +103,9 @@ def validate_catalog(systems: dict[str, dict] | None = None) -> tuple[list[str],
         domain = entry.get("domain")
         if domain and VALID_DOMAINS and domain not in VALID_DOMAINS:
             warnings.append(f"{slug}: okänd domain '{domain}'")
+        entity_type = entry.get("entity_type")
+        if entity_type and VALID_ENTITY_TYPES and entity_type not in VALID_ENTITY_TYPES:
+            warnings.append(f"{slug}: okänd entity_type '{entity_type}'")
 
     # Cykelkoll i part_of.
     for slug in sorted(set(_detect_part_of_cycle(systems))):

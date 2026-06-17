@@ -312,8 +312,8 @@ def _render_node_markdown(payload: dict) -> str:
 
     lines += ["## Structure", ""]
     for key, label in (
-        ("type", "Type"), ("domain", "Domain"), ("part_of", "Part of"),
-        ("owner_agent", "Owner agent"), ("url_repo", "Repo"),
+        ("type", "Type"), ("domain", "Domain"), ("entity_type", "Entity type"),
+        ("part_of", "Part of"), ("owner_agent", "Owner agent"), ("url_repo", "Repo"),
     ):
         if f.get(key):
             lines.append(f"- **{label}:** {f[key]}")

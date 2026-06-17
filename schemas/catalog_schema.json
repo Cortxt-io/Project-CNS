@@ -15,6 +15,7 @@
           "part_of":             { "type": "string" },
           "type":                { "type": "string" },
           "domain":              { "type": "string" },
+          "entity_type":         { "type": "string" },
           "owner_agent":         { "type": "string" },
           "contributing_agents": { "type": "array", "items": { "type": "string" } },
           "feeds":               { "type": "array", "items": { "type": "string" } },
