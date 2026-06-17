@@ -1,9 +1,8 @@
-cat > README.md << 'EOF'
 # CNS — Central Node Store
 
 A local-first system for modelling a product portfolio.
 `catalog.yaml` is the single source of truth. `decisions/` holds durable decision prose.
-`cns.py` is the CLI.
+`cns.py` is the Core CLI.
 
 ## Daily workflow
 
@@ -15,8 +14,10 @@ python cns.py validate <slug>       # validate one system
 python cns.py new <slug>            # add a new system to catalog.yaml
 python cns.py export <slug>         # export a decision brief (Markdown)
 python cns.py export <slug> --format=json   # JSON output
-# python cns.py export <slug> --with-llm   # reserved: agent enrichment (not in Core v1)
+# python cns.py export <slug> --with-llm    # reserved: agent enrichment (not in Core v1)
 ```
+
+`python cns.py -h` shows exactly these three commands. Everything else is Lab/Agency.
 
 ## Architecture layers
 
@@ -29,30 +30,44 @@ The minimal, self-contained layer. No network calls, no agents required.
 | `catalog.yaml` | Node model — all systems + graph |
 | `decisions/<slug>.md` | Decision prose per system |
 | `schemas/` | Enum definitions, used by validate |
-| `cns.py` | CLI: `validate`, `new`, `export` |
-| `requirements.txt` | Core dependencies only |
-| `tests/` | Core test suite |
+| `scripts/` | Core modules: `catalog`, `md_parser`, `validator`, `derive_catalog` |
+| `cns.py` | Core CLI: `validate`, `new`, `export` |
+| `requirements.txt` | Core dependencies only (pyyaml, rich) |
+| `tests/` | Test suite (Core + Lab, via `tests/conftest.py`) |
+
+`scripts/` (Core) and `lab/scripts/` (Lab) form one PEP 420 namespace package. Core never
+imports from Lab; Lab may import Core. Running `cns.py` from the repo root only ever sees the
+Core modules.
 
 ### CNS Lab / Agency
 
-The R&D layer for AI agency, dispatch, MCP and the Flask backend.
-Lives in `lab/`. Not required for Core. See [`lab/README.md`](lab/README.md).
+The R&D layer for AI agency, dispatch, MCP and the Flask backend. Lives in `lab/`, with its own
+entrypoint:
 
+```bash
+python lab/cns_lab.py -h          # full command surface (Core + everything else)
+python lab/cns_lab.py tui         # Textual Control Tower
+python lab/cns_lab.py dispatch --dry-run
+```
+
+Not required for Core. See [`lab/README.md`](lab/README.md).
 Includes: `agents/`, `skills/`, `sessions/`, `scripts/`, `app/`, `config/`, `.claude/`, `CLAUDE.md`.
 
 ## Parked features
 
-These are intentionally out of scope for Core v1:
+Intentionally out of scope for Core v1 — reachable only via `lab/cns_lab.py`:
 
-- **TUI / Control Tower** — `cns.py tui` (moved to lab)
-- **Dispatch loop** — `lab/scripts/dispatch.py`
-- **MCP server** — `lab/app/` + `lab/config/mcp_servers.json`
-- **Session management** — `lab/sessions/`
+- **TUI / Control Tower** — `python lab/cns_lab.py tui`
+- **Dispatch loop** — `lab/scripts/dispatch.py` (`python lab/cns_lab.py dispatch`)
+- **MCP server** — `lab/app/` + `lab/config/`
+- **Sessions / quests / PR client** — `lab/cns_lab.py session|quest|pr`
+- **Dashboard exports** — `lab/cns_lab.py export-json|export-xlsx`
 - **Flask backend / Railway deploy** — `lab/Procfile`, `lab/railway.json`
 
 ## Archive
 
-Historical artefacts in `archive/`: old `nodes/`, generated `exports/`, `research/` notes, `docs/`.
+Historical artefacts in `archive/`: old `nodes/`, generated `exports/`, `research/` notes,
+`docs/`, and superseded `catalog.*.yaml` migration files.
 
 ## Design principles
 
@@ -60,7 +75,3 @@ Historical artefacts in `archive/`: old `nodes/`, generated `exports/`, `researc
 - **Derive, don't store** — `kind` and health emerge from structure; never hand-set.
 - **One canonical model** — CNS owns the model; dashboards and other tools are projection targets.
 - **Core first** — Lab/Agency is activated on top of Core, never the other way around.
-EOF
-
-git add README.md
-git commit -m "docs: rewrite README for Core v1 — Core/Lab/Archive split, new daily workflow"

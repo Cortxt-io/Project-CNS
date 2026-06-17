@@ -2,6 +2,14 @@
 
 CNS-kärnan och backenden. Läs detta först varje session. Arbetsspråk: **svenska**.
 
+> **Core/Lab-split (2026-06-17):** Core-CLI:t (`cns.py`, repo-rot) exponerar bara `validate`/`new`/`export`
+> och importerar bara fyra moduler ur **root-`scripts/`** (`catalog`, `md_parser`, `validator`,
+> `derive_catalog`). Allt agentur (dispatch, agent-host, MCP-router, sessions, TUI, dashboard-export,
+> Flask/MCP-backend) bor i **`lab/scripts/`** + `lab/app/` och nås via **`python lab/cns_lab.py`**.
+> `scripts/` (Core) och `lab/scripts/` (Lab) är ETT PEP 420 namespace-paket — Core importerar aldrig Lab,
+> Lab får importera Core. Sökvägshänvisningar `scripts/<modul>` nedan som inte är de fyra Core-modulerna
+> avser numera `lab/scripts/<modul>`; de konverteras när respektive rad ändå rörs (ingen bulk-omskrivning).
+
 ## Vad det är
 CNS (Central Node Store): ett lokalt-först system för att modellera och driva ett produktsystem från idé till drift. Varje system är en post i **`catalog.yaml`** (graf + routing) plus en valfri **`decisions/<slug>.md`** (ADR-prosa). **GitHub är källan till sanning.**
 
