@@ -193,13 +193,13 @@ systems:
     feeds: []
     depends_on:
     - cns-core
-  crucible:
-    title: Crucible
+  crusade:
+    title: Crusade
     summary: Standing efficiency benchmark — a leaderboard where human+agent teams solve
       hard tasks ranked on efficiency (tokens/cost) on top of correctness. A token-gateway
-      meters usage server-side (the moat). Own venture, own repo.
+      meters usage server-side (the moat). Own venture, own repo. Domains crusade.com/.se/.info.
     type: service
-    domain: crucible
+    domain: crusade
     feeds: []
     depends_on: []
   dev-changelog-engine:

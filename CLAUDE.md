@@ -78,7 +78,7 @@ Tre kanaler, lätta att förväxla: inkommande webhooks (GitHub → Flask, quest
 **Enkälla: `schemas/enums.json`** — läses av `scripts/validator.py` (Python, som `set`) och av `cortxt/packages/cns-schema` (JS, genererad via dess `generate.mjs`). Ändra värden där, inte handkodat. Lägg INTE in layer/pipeline/family (legacy, ovaliderade — kvar som referens i validator.py).
 - kind: component | system | framework — **härleds ur `part_of`, lagras inte** (se `catalog.derive_kind`)
 - type: frontend | service | mcp-server | pipeline | cli | tool | agent | infra | library | dataset | ai-model — driver agent-routing
-- domain: cortxt | shopify-venture | juvahem | crucible | jumpyard
+- domain: cortxt | shopify-venture | juvahem | crusade | jumpyard
 - **Pensionerade (borttagna ur `enums.json`):** `status`, `stage`, `mvp_stage`, `risk_category`. De var produkt-livscykel, delegerade till board och oanvända i katalogen — men levde kvar kod-vägen i `analyst.py`/`server.py` (förslag för fält som inte längre lagras). Städade i hälso-scorecard-arbetet. **Entitetshälsa härleds nu vid läsning** (se nedan), inte som deklarerad status.
 
 ## Hälso-scorecard (härledd, ej deklarerad)
