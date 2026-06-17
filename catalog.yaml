@@ -183,6 +183,25 @@ systems:
     feeds: []
     depends_on: []
     url_repo: https://github.com/Cortxt-io/cortxt
+  cortxt-tui:
+    title: Cortxt TUI (Control Tower)
+    summary: Standalone terminal cockpit — the Control Tower orientation surface extracted
+      from CNS to its own repo. Reads CNS as a data source via a seam; owns orientation
+      logic + UI. Planned — repo not yet created. Spec is cns-internal/plans/tui-standalone-product-spec.md.
+    type: cli
+    domain: cortxt
+    feeds: []
+    depends_on:
+    - cns-core
+  crucible:
+    title: Crucible
+    summary: Standing efficiency benchmark — a leaderboard where human+agent teams solve
+      hard tasks ranked on efficiency (tokens/cost) on top of correctness. A token-gateway
+      meters usage server-side (the moat). Own venture, own repo.
+    type: service
+    domain: crucible
+    feeds: []
+    depends_on: []
   dev-changelog-engine:
     title: Dev Changelog Engine
     summary: Fullskalig pipeline för changelog-digest med source-adaptrar, LLM-analys
@@ -247,6 +266,25 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
+  jumpyard-org-explorer:
+    title: JumpYard Org Explorer
+    summary: Interactive explorer for JumpYard's proposed organisation — hierarchy + the
+      cross-department responsibility/dependency map. Customer delivery, rebuilt from the
+      archived OrgVis project. React/Vite/ReactFlow. Own venture, own repo.
+    type: frontend
+    domain: jumpyard
+    feeds: []
+    depends_on: []
+  juvahem:
+    title: Juvahem
+    summary: Decision tool for couples choosing where to relocate — ranks all 290 Swedish
+      municipalities against a couple's combined profile (both partners' jobs, budget,
+      household). Own venture, own repo.
+    type: tool
+    domain: juvahem
+    feeds: []
+    depends_on: []
+    url_repo: https://github.com/rian010194/juvahem
   local-ai:
     title: Local AI
     summary: Lokal AI-inferens (Qwen/GLM via Ollama/LM Studio) som fallback och kodfokuserat
