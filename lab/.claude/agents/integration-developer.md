@@ -41,6 +41,23 @@ Du är Integrationsutvecklaren. Du äger CNS:s **integrationsyta**: MCP-verktyge
 
 Verktyg härleds ur bemanningsmatrisen (C1, `scripts/tool_families.py`) via rollens `department`/nivå + universell baslinje (`sessions`/`ideas`). Kör `cns agent-tools <slug>` för utfallet. Lista här bara genuina undantag (t.ex. `Bash` eller externa MCP-verktyg som cellen inte ger).
 
+Externa GitHub-MCP-verktyg (verifierade namn mot hostad endpoint 2026-06-16; matrisen ger dem inte — routern monterar github-servern först när rollen listar dem, #127/#128). Godkända av Rikard 2026-06-16 (läs+skriv). Läsformade auto-godkänns i read-läge; skrivformade kräver skriv-läge (read-first-grinden #137, + dispatch-guardrails):
+
+- mcp__github__issue_read
+- mcp__github__list_issues
+- mcp__github__search_issues
+- mcp__github__pull_request_read
+- mcp__github__list_pull_requests
+- mcp__github__get_file_contents
+- mcp__github__list_commits
+- mcp__github__search_code
+- mcp__github__issue_write
+- mcp__github__add_issue_comment
+- mcp__github__create_pull_request
+- mcp__github__create_or_update_file
+- mcp__github__push_files
+- mcp__github__create_branch
+
 ## Session-protokoll
 
 Bokför alltid ditt arbetspass:

@@ -206,6 +206,9 @@ def export_json(
             "health": _node_health(meta.get("slug", ""), issues, _systems),
             "owner_agent": meta.get("owner_agent", ""),
             "contributing_agents": meta.get("contributing_agents") or [],
+            # External integrations (#77): deploy (drift) vs sources (källor). Additive;
+            # {} fallback so the dashboard never breaks on systems without it.
+            "integrations": meta.get("integrations") or {},
             # Legacy product fields (kept for backward compatibility)
             "status": meta.get("status", ""),
             "mvp_stage": meta.get("mvp_stage", ""),
