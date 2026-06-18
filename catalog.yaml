@@ -27,6 +27,18 @@ systems:
     depends_on:
     - cns-core
     url_repo: https://github.com/Cortxt-io/Project-CNS
+  bkfinans:
+    title: BK Finans
+    summary: Decision-support tool that helps people make hard economic decisions during
+      life changes. v0.1 is deliberately narrow — helps someone weighing self-employment
+      judge whether their household economy carries the step from a secure salary to
+      uncertain income, and what to secure first. Transparent rule-based model, no advice.
+      Structure prepared for further contexts (separation, first-home, household-stress).
+      Own venture, own repo. SvelteKit. Domain bkfinans.se.
+    type: tool
+    domain: bkfinans
+    feeds: []
+    depends_on: []
   cns-analyst:
     title: CNS Analyst
     summary: AI-driven analysmotor som föreslår uppdateringar av stage, risker och
@@ -113,6 +125,9 @@ systems:
     depends_on:
     - cns-core
     url_repo: https://github.com/Cortxt-io/Project-CNS
+    integrations:
+      deploy:
+      - railway
   cns-triage:
     title: CNS Triage
     summary: Intern triage av CNS idé-inkorg och noder — gruppera, resolva/promota
@@ -132,6 +147,9 @@ systems:
     feeds: []
     depends_on: []
     url_repo: https://github.com/Cortxt-io/Project-CNS
+    integrations:
+      deploy:
+      - railway
   cortxt:
     title: Cortxt
     summary: Verktygskedja för AI-assisterad produktutveckling — från idé till leverans.
@@ -150,6 +168,10 @@ systems:
     feeds: []
     depends_on: []
     url_repo: https://github.com/Cortxt-io/cortxt
+    integrations:
+      deploy:
+      - target: vercel
+        project: cortxt-dashboard
   cortxt-eventstream:
     title: Cortxt Eventstream
     summary: Enhetlig händelselogning av alla systemaktiviteter med sex dimensioner.
@@ -183,6 +205,9 @@ systems:
     feeds: []
     depends_on: []
     url_repo: https://github.com/Cortxt-io/cortxt
+    integrations:
+      deploy:
+      - github-pages
   cortxt-tui:
     title: Cortxt TUI (Control Tower)
     summary: Standalone terminal cockpit — the Control Tower orientation surface extracted
@@ -266,15 +291,6 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-  jumpyard-org-explorer:
-    title: JumpYard Org Explorer
-    summary: Interactive explorer for JumpYard's proposed organisation — hierarchy + the
-      cross-department responsibility/dependency map. Customer delivery, rebuilt from the
-      archived OrgVis project. React/Vite/ReactFlow. Own venture, own repo.
-    type: frontend
-    domain: jumpyard
-    feeds: []
-    depends_on: []
   juvahem:
     title: Juvahem
     summary: Decision tool for couples choosing where to relocate — ranks all 290 Swedish
@@ -307,6 +323,17 @@ systems:
     feeds: []
     depends_on:
     - cns-mcp
+  orgkomp:
+    title: Orgkomp
+    summary: Interactive, editable explorer for an organisation's roles, responsibilities,
+      and dependencies — hierarchy + the cross-department responsibility/dependency map.
+      Customer delivery for JumpYard, rebuilt from the archived OrgVis project. Next.js
+      (App Router), AntV G6, zod, Vitest. Own venture, own repo.
+    type: frontend
+    domain: orgkomp
+    feeds: []
+    depends_on: []
+    url_repo: https://github.com/Cortxt-io/orgkomp
   quest-engine:
     title: Quest Engine
     summary: Quest-livscykel (suggested → active → in_progress → completed/archived)
