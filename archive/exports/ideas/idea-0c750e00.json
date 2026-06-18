@@ -1,0 +1,12 @@
+{
+  "id": "idea-0c750e00",
+  "text": "Redundans-skill för vissa pass: \"gör detta gammalt redundant?\". Ett återanvändbart pass-moment (definition/review/retro) som tvingar frågan om en ny riktning/spec gör befintligt överflödigt — stories som kollapsar, kod som redan implementerar det föreslagna, dubbelspårade mekanismer att konsolidera. Föddes i Control Tower-definition-passet (session-b675c154, epic #8) där svepet visade att ~70% av v1 redan var byggt (recommend.statusline, _overview_markup, set_focus) och avslöjade fokus-dubbelspår + en CLI-lucka — utan svepet hade vi byggt om det som redan fanns. Knyter an till minnet \"alla objekt genom sina pass\" och till idea-5132a8f6 (dra-loop: systemet drar dig genom faserna — skillen är ett moment i den loopen). Form-fråga vid promotion: skill (slash/pass-profil-moment) vs MCP-verktyg vs hook. Bygg inte nu — riktning, scopas vid promotion.",
+  "created_at": "2026-06-14T00:43:44",
+  "source": "chat",
+  "slug": "cns-core",
+  "session_id": "session-b675c154",
+  "status": "resolved",
+  "resolution": "duplicate",
+  "resolution_reason": "Mergad in i idea-9b92e560 (beslutspunkt-kritiker) som slår ihop redundanssvep + sak-granskning (#42) till EN self-invokad skill — samma yta, skalbarare som en artefakt.",
+  "resolved_at": "2026-06-14T01:26:22"
+}

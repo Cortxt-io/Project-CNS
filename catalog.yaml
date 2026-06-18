@@ -15,26 +15,56 @@ systems:
     depends_on:
     - cns-mcp
     - local-ai
+  agentur:
+    title: Agentur
+    summary: Orkestreringslagret — dispatch-loop, agent-host, routing och agent-roster
+      som låter agenturen exekvera backloggen autonomt (issue→PR) med guardrails.
+    part_of: infrastructure
+    type: service
+    domain: cortxt
+    owner_agent: backend-developer
+    feeds: []
+    depends_on:
+    - cns-core
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+  bkfinans:
+    title: BK Finans
+    summary: Decision-support tool that helps people make hard economic decisions during
+      life changes. v0.1 is deliberately narrow — helps someone weighing self-employment
+      judge whether their household economy carries the step from a secure salary to
+      uncertain income, and what to secure first. Transparent rule-based model, no advice.
+      Structure prepared for further contexts (separation, first-home, household-stress).
+      Own venture, own repo. SvelteKit. Domain bkfinans.se.
+    type: tool
+    domain: bkfinans
+    feeds: []
+    depends_on: []
   cns-analyst:
     title: CNS Analyst
     summary: AI-driven analysmotor som föreslår uppdateringar av stage, risker och
       summary.
-    part_of: pipeline-review
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+    tags:
+    - pipeline
+    - review
   cns-brief:
     title: CNS Brief
     summary: AI-driven portföljbrief som varje morgon returnerar situation, prioriteringar
       och questförslag.
-    part_of: pipeline-intern
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+    tags:
+    - pipeline
+    - intern
   cns-core:
     title: CNS Core
     summary: CLI, markdown-parser, validator och exportörer — substratet som läser,
@@ -44,28 +74,34 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   cns-devlog:
     title: CNS Devlog
     summary: Genererar daglig AI-sammanfattning av portföljförändringar och publicerar
       som statisk sida.
-    part_of: pipeline-intern
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds:
     - cns-brief
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+    tags:
+    - pipeline
+    - intern
   cns-devwatch:
     title: CNS Devwatch
     summary: Bevakar dagliga git-ändringar i project.md-filer och exporterar som ChangeEvents.
-    part_of: pipeline-intern
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds:
     - cns-devlog
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+    tags:
+    - pipeline
+    - intern
   cns-hosting-infra:
     title: CNS Hosting Infra
     summary: GitHub Actions-infrastruktur som kör CNS-pipelinen schemalagt och publicerar
@@ -73,10 +109,10 @@ systems:
     part_of: infrastructure
     type: infra
     domain: cortxt
-    owner_agent: devops-ingenjor
+    owner_agent: devops-engineer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   cns-mcp:
     title: CNS MCP Server
     summary: Remote MCP-server på Railway (GitHub OAuth, Redis-token-store) som exponerar
@@ -84,11 +120,14 @@ systems:
     part_of: infrastructure
     type: mcp-server
     domain: cortxt
-    owner_agent: backend-utvecklare
+    owner_agent: backend-developer
     feeds: []
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+    integrations:
+      deploy:
+      - railway
   cns-triage:
     title: CNS Triage
     summary: Intern triage av CNS idé-inkorg och noder — gruppera, resolva/promota
@@ -104,10 +143,13 @@ systems:
     part_of: infrastructure
     type: service
     domain: cortxt
-    owner_agent: backend-utvecklare
+    owner_agent: backend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+    integrations:
+      deploy:
+      - railway
   cortxt:
     title: Cortxt
     summary: Verktygskedja för AI-assisterad produktutveckling — från idé till leverans.
@@ -122,10 +164,14 @@ systems:
     part_of: interface
     type: frontend
     domain: cortxt
-    owner_agent: frontend-utvecklare
+    owner_agent: frontend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/cortxt
+    integrations:
+      deploy:
+      - target: vercel
+        project: cortxt-dashboard
   cortxt-eventstream:
     title: Cortxt Eventstream
     summary: Enhetlig händelselogning av alla systemaktiviteter med sex dimensioner.
@@ -144,10 +190,10 @@ systems:
     part_of: interface
     type: frontend
     domain: cortxt
-    owner_agent: frontend-utvecklare
+    owner_agent: frontend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/cortxt
   cortxt-landing:
     title: Cortxt Landing
     summary: Publik landningssida på cortxt.io — förklarar Cortxt, visar pipelinen,
@@ -155,10 +201,32 @@ systems:
     part_of: interface
     type: frontend
     domain: cortxt
-    owner_agent: frontend-utvecklare
+    owner_agent: frontend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/cortxt
+    integrations:
+      deploy:
+      - github-pages
+  cortxt-tui:
+    title: Cortxt TUI (Control Tower)
+    summary: Standalone terminal cockpit — the Control Tower orientation surface extracted
+      from CNS to its own repo. Reads CNS as a data source via a seam; owns orientation
+      logic + UI. Planned — repo not yet created. Spec is cns-internal/plans/tui-standalone-product-spec.md.
+    type: cli
+    domain: cortxt
+    feeds: []
+    depends_on:
+    - cns-core
+  crusade:
+    title: Crusade
+    summary: Standing efficiency benchmark — a leaderboard where human+agent teams solve
+      hard tasks ranked on efficiency (tokens/cost) on top of correctness. A token-gateway
+      meters usage server-side (the moat). Own venture, own repo. Domains crusade.com/.se/.info.
+    type: service
+    domain: crusade
+    feeds: []
+    depends_on: []
   dev-changelog-engine:
     title: Dev Changelog Engine
     summary: Fullskalig pipeline för changelog-digest med source-adaptrar, LLM-analys
@@ -171,23 +239,29 @@ systems:
     title: Dev Changelog Engine Mini
     summary: Pipeline that transforms DocsWatch data into prioritized weekly digests
       in Markdown and HTML.
-    part_of: pipeline-extern
+    part_of: cortxt
     type: pipeline
     domain: cortxt
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/dev-changelog-engine-mini
+    tags:
+    - pipeline
+    - extern
   docs-watch:
     title: DocsWatch
     summary: CLI tool that monitors external changelogs, docs and release notes for
       dev teams.
-    part_of: pipeline-extern
+    part_of: cortxt
     type: cli
     domain: cortxt
     feeds:
     - dev-changelog-engine-mini
     depends_on: []
     url_repo: https://github.com/rian010194/docs-watch
+    tags:
+    - pipeline
+    - extern
   github-webhook:
     title: GitHub Webhook Receiver
     summary: HMAC-verifierad mottagare på /api/webhook/github som auto-completar quests
@@ -200,7 +274,7 @@ systems:
     - cortxt-eventstream
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   infrastructure:
     title: Infrastructure
     summary: Infrastruktursystem — drift, hosting, webhooks och lagring.
@@ -217,6 +291,16 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
+  juvahem:
+    title: Juvahem
+    summary: Decision tool for couples choosing where to relocate — ranks all 290 Swedish
+      municipalities against a couple's combined profile (both partners' jobs, budget,
+      household). Own venture, own repo.
+    type: tool
+    domain: juvahem
+    feeds: []
+    depends_on: []
+    url_repo: https://github.com/Cortxt-io/juvahem
   local-ai:
     title: Local AI
     summary: Lokal AI-inferens (Qwen/GLM via Ollama/LM Studio) som fallback och kodfokuserat
@@ -239,39 +323,17 @@ systems:
     feeds: []
     depends_on:
     - cns-mcp
-  pipeline-extern:
-    title: Pipeline Extern
-    summary: Extern pipeline — hanterar utgående data och publicering.
-    part_of: cortxt
-    type: pipeline
-    domain: cortxt
-    feeds: []
-    depends_on: []
-  pipeline-intern:
-    title: Pipeline Intern
-    summary: Intern datapipeline — bearbetar och förädlar information internt.
-    part_of: cortxt
-    type: pipeline
-    domain: cortxt
-    feeds: []
-    depends_on: []
-  pipeline-review:
-    title: Pipeline Review
-    summary: Granskningspipeline — analyserar och utvärderar projekt och data.
-    part_of: cortxt
-    type: pipeline
-    domain: cortxt
-    feeds: []
-    depends_on: []
-  project-vault-dashboard:
-    title: Project Vault Dashboard
-    summary: Superseded by cortxt-dashboard-app. Kept for historical reference.
-    part_of: infrastructure
+  orgkomp:
+    title: Orgkomp
+    summary: Interactive, editable explorer for an organisation's roles, responsibilities,
+      and dependencies — hierarchy + the cross-department responsibility/dependency map.
+      Customer delivery for JumpYard, rebuilt from the archived OrgVis project. Next.js
+      (App Router), AntV G6, zod, Vitest. Own venture, own repo.
     type: frontend
-    domain: cortxt
+    domain: orgkomp
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/orgkomp
   quest-engine:
     title: Quest Engine
     summary: Quest-livscykel (suggested → active → in_progress → completed/archived)
@@ -282,7 +344,7 @@ systems:
     feeds: []
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   research-agent:
     title: Research Agent
     summary: Research-agent som söker på webben, verifierar källor och skriver findings
@@ -290,17 +352,20 @@ systems:
     part_of: agent-studio
     type: agent
     domain: cortxt
-    owner_agent: forskningsledare
+    owner_agent: research-lead
     feeds: []
     depends_on: []
   scoring-studio:
     title: Scoring Studio
     summary: Visuellt verktyg för att justera scoring-vikter utan att redigera kod.
-    part_of: pipeline-extern
+    part_of: cortxt
     type: tool
     domain: cortxt
     feeds: []
     depends_on: []
+    tags:
+    - pipeline
+    - extern
   webhook-router:
     title: Webhook Router
     summary: Self-hosted webhook proxy that logs, searches, and replays incoming webhooks

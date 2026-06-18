@@ -1,0 +1,20 @@
+{
+  "id": "session-7a102019",
+  "created_at": "2026-06-13T21:03:03",
+  "updated_at": "2026-06-13T21:03:03",
+  "status": "running",
+  "summary": "Undersöker issue #119: Live-uppsättning Backlog GitHub Project — läsläge, kartlägger gh_project-verktyg och project sync-kod",
+  "link": null,
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": null,
+  "fork_name": null,
+  "type": null,
+  "metrics": {
+    "tool_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "tools_seen": [],
+    "artifacts": []
+  }
+}

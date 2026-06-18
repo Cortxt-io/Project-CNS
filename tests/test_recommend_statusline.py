@@ -48,7 +48,7 @@ def test_focus_label() -> None:
 def test_colored() -> None:
     # Känd typ → ANSI-wrappad; okänd/None → oförändrad (statusraden bryts ej).
     assert recommend._colored("triage", "triage") == "\033[33mtriage\033[0m"
-    assert recommend._colored("bygg", "bygg") == "\033[32mbygg\033[0m"
+    assert recommend._colored("delivery", "delivery") == "\033[32mdelivery\033[0m"
     assert recommend._colored("x", None) == "x"
     assert recommend._colored("x", "okänd-typ") == "x"
 

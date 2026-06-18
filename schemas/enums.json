@@ -1,10 +1,9 @@
 {
-  "_comment": "Canonical enum values for the CNS node model. SINGLE SOURCE OF TRUTH. Consumed by scripts/validator.py (Python, as sets) and cortxt/packages/cns-schema (JS, generated via its generate.mjs). Array order is semantic (progression where applicable) and preserved on the JS side. Legacy layer/pipeline/family enums are intentionally NOT here — they are no longer validated (see validator.py).",
-  "statuses": ["idea", "early_mvp", "mvp", "live", "shelved"],
+  "_comment": "Canonical enum values for the CNS node model. SINGLE SOURCE OF TRUTH. Consumed by scripts/validator.py (Python, as sets) and cortxt/packages/cns-schema (JS, generated via its generate.mjs). Array order is semantic (progression where applicable) and preserved on the JS side. Retired enums (statuses/stages/mvp_stages/risk_categories) were removed in the health-scorecard work — node lifecycle/maturity is delegated to board, and per-entity health is derived at read-time (see scripts/health.py), not declared. Legacy layer/pipeline/family enums are likewise NOT here. `entity_types` is an orthogonal, optional axis — what a node MODELS in its vertical (municipality/course/...) — distinct from `types` (technical/routing) and `domains` (vertical).",
   "kinds": ["component", "system", "framework"],
-  "stages": ["idea", "building", "working", "maturing"],
-  "mvp_stages": ["hypothesis", "problem_interviews", "solution_test", "demand_test", "launch"],
-  "risk_categories": ["technical", "market", "legal", "ops", "competition", "positioning", "adoption"],
   "types": ["frontend", "service", "mcp-server", "pipeline", "cli", "tool", "agent", "infra", "library", "dataset", "ai-model"],
-  "domains": ["cortxt", "shopify-venture"]
+  "domains": ["cortxt", "shopify-venture", "juvahem", "crusade", "orgkomp", "bkfinans"],
+  "entity_types": ["municipality", "course", "organisation", "financing_case"],
+  "deploy_targets": ["vercel", "railway", "cloudflare-pages", "netlify", "github-pages", "fly", "render"],
+  "source_types": ["shopify", "stripe", "slack", "linear", "notion", "google-sheets"]
 }

@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "project-cns": {
-      "type": "http",
-      "url": "https://project-cns-production.up.railway.app/mcp"
-    }
-  }
-}

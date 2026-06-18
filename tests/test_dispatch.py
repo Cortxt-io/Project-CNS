@@ -366,13 +366,28 @@ def test_crawl_pass_crash_releases_lease():
 # --- autonomi-policy (Fas 5): classify_risk + self-merge/eskalering ---------
 
 
+GREEN_EVAL = {"status": "ok", "all_pass": True, "passed": 2, "total": 2}
+
+
 def test_classify_risk_low_for_docs_and_tests():
-    v = classify_risk(_issue(10), ["docs/x.md", "tests/test_y.py", "plans/z.md"])
+    # Lågrisk kräver nu BÅDE lågrisk-filer OCH grön eval (#112).
+    v = classify_risk(_issue(10), ["docs/x.md", "tests/test_y.py", "plans/z.md"], eval_verdict=GREEN_EVAL)
     assert v.level == "low" and not v.reasons
 
 
+def test_classify_risk_escalates_on_skipped_eval():
+    # Eval-gate (#112): lågrisk-filer men eval hoppad (t.ex. saknad nyckel) → eskalera.
+    v = classify_risk(_issue(10), ["docs/x.md"], eval_verdict={"status": "skipped", "reason": "nyckel saknas"})
+    assert v.level == "escalate" and any("eval ej grön" in r for r in v.reasons)
+
+
+def test_classify_risk_escalates_on_missing_eval():
+    v = classify_risk(_issue(10), ["docs/x.md"], eval_verdict=None)
+    assert v.level == "escalate" and any("eval ej grön" in r for r in v.reasons)
+
+
 def test_classify_risk_escalates_feature_code():
-    v = classify_risk(_issue(10), ["scripts/dispatch.py"])
+    v = classify_risk(_issue(10), ["scripts/dispatch.py"], eval_verdict=GREEN_EVAL)
     assert v.level == "escalate" and any("feature-kod" in r for r in v.reasons)
 
 

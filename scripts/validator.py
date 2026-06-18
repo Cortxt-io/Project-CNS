@@ -15,13 +15,13 @@ from pathlib import Path
 ENUMS_PATH = Path(__file__).resolve().parent.parent / "schemas" / "enums.json"
 _ENUMS = json.loads(ENUMS_PATH.read_text(encoding="utf-8"))
 
-VALID_STATUSES = set(_ENUMS["statuses"])
-VALID_MVP_STAGES = set(_ENUMS["mvp_stages"])
-VALID_RISK_CATEGORIES = set(_ENUMS["risk_categories"])
 VALID_KINDS = set(_ENUMS["kinds"])
-VALID_STAGES = set(_ENUMS["stages"])
 VALID_TYPES = set(_ENUMS.get("types", []))
 VALID_DOMAINS = set(_ENUMS.get("domains", []))
+VALID_ENTITY_TYPES = set(_ENUMS.get("entity_types", []))
+# integrations-fältet (#77): kända deploy-targets/source-types för mjuk validering.
+VALID_DEPLOY_TARGETS = set(_ENUMS.get("deploy_targets", []))
+VALID_SOURCE_TYPES = set(_ENUMS.get("source_types", []))
 
 AGENTS_PATH = Path(__file__).resolve().parent.parent / "exports" / "agents.json"
 
@@ -106,6 +106,28 @@ def validate_catalog(systems: dict[str, dict] | None = None) -> tuple[list[str],
         domain = entry.get("domain")
         if domain and VALID_DOMAINS and domain not in VALID_DOMAINS:
             warnings.append(f"{slug}: okänd domain '{domain}'")
+        entity_type = entry.get("entity_type")
+        if entity_type and VALID_ENTITY_TYPES and entity_type not in VALID_ENTITY_TYPES:
+            warnings.append(f"{slug}: okänd entity_type '{entity_type}'")
+
+        # Mjuk validering av integrations (#77/#78) — WARN, aldrig ERROR (additivt).
+        # deploy-element är antingen en platt str ("railway") eller ett objekt
+        # ({target: vercel, project: ...}, vald form #78). Båda valideras.
+        integrations = entry.get("integrations")
+        if isinstance(integrations, dict):
+            for item in integrations.get("deploy") or []:
+                if isinstance(item, dict):
+                    target = item.get("target")
+                    if not item.get("project"):
+                        warnings.append(f"{slug}: deploy-target '{target}' saknar 'project'")
+                else:
+                    target = item
+                if target and VALID_DEPLOY_TARGETS and target not in VALID_DEPLOY_TARGETS:
+                    warnings.append(f"{slug}: okänt deploy-target '{target}'")
+            for source in integrations.get("sources") or []:
+                source_type = source.split(":", 1)[0] if isinstance(source, str) else ""
+                if VALID_SOURCE_TYPES and source_type not in VALID_SOURCE_TYPES:
+                    warnings.append(f"{slug}: okänd source-type '{source_type}'")
 
     # Cykelkoll i part_of.
     for slug in sorted(set(_detect_part_of_cycle(systems))):

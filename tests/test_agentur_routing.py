@@ -92,6 +92,36 @@ def test_degrades_without_config_or_agents() -> None:
     assert r["flow"] == ar.DEFAULT_FLOW and r["squad"] == [] and r["model"] == "sonnet"
 
 
+def test_capability_ranking_picks_capable_agent_first() -> None:
+    # Två agenter i disciplinen; bara en har 'github'. Med github-krav rankas den först.
+    agents = [
+        {"slug": "be-1", "sub_department": "Integrations", "status": "active",
+         "department": "Eng", "capabilities": ["cns"]},
+        {"slug": "be-2", "sub_department": "Integrations", "status": "active",
+         "department": "Eng", "capabilities": ["cns", "github"]},
+    ]
+    cfg = {"slug": "t", "disciplines": {"mcp-server": "Integrations"}, "flows": {},
+           "default_flow": ["x"], "model_tiers": {"_default": "sonnet"}}
+    r = route("mcp-server", "chore", agents=agents, agentur=cfg,
+              required_capabilities=["github"])
+    assert r["squad"][0] == "be-2"          # kapabel agent först
+    assert r["required_capabilities"] == ["github"]
+
+
+def test_capability_no_requirement_preserves_discipline_order() -> None:
+    # Utan krav bevaras disciplin-ordningen (bakåtkompatibelt — bryter inget).
+    agents = [
+        {"slug": "be-1", "sub_department": "Integrations", "status": "active",
+         "department": "Eng", "capabilities": ["cns"]},
+        {"slug": "be-2", "sub_department": "Integrations", "status": "active",
+         "department": "Eng", "capabilities": ["cns", "github"]},
+    ]
+    cfg = {"slug": "t", "disciplines": {"mcp-server": "Integrations"}, "flows": {},
+           "default_flow": ["x"], "model_tiers": {"_default": "sonnet"}}
+    r = route("mcp-server", "chore", agents=agents, agentur=cfg)
+    assert r["squad"] == ["be-1", "be-2"]   # orörd ordning
+
+
 def test_real_config_loads() -> None:
     # Skarpa konfigfilen ska gå att läsa och betjäna cortxt-domänen.
     cfg = resolve_agentur(domain="cortxt")

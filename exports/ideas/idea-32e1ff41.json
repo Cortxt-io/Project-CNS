@@ -1,9 +1,0 @@
-{
-  "id": "idea-32e1ff41",
-  "text": "Säkert token-provisioneringsflöde — aldrig klartext i chatt. Trigger: Rikard klistrade en OAuth-token (CLAUDE_CODE_OAUTH_TOKEN) direkt i chatten 2026-06-11, vilket exponerar den i transkriptet. Detta återkommer med fler hemligheter (CI-tokens, MCP-nycklar, deploy-credentials, ANTHROPIC_API_KEY-rotation). Behov: ett återanvändbart, säkert flöde för att skapa OCH lägga in tokens som GitHub-secrets utan att de passerar chatten. Skiss: (1) PowerShell-helper som läser token via Read-Host -AsSecureString (eller stdin-pipe) och kör `gh secret set <NAMN> --repo <repo>` — token rör aldrig terminalhistorik/chatt; (2) en skill/konvention som dokumenterar 'be aldrig om token i klartext; peka alltid på helpern'; (3) ev. lista vilka secrets varje integration kräver (claude-app→CLAUDE_CODE_OAUTH_TOKEN, etc.) som en katalog. Inkl. rotationsrutin (token-TTL 1 år för OAuth). Hör ihop med Ekonomen/säkerhets-grind och @claude-dispatch-uppsättningen (#67).",
-  "created_at": "2026-06-11T17:01:53",
-  "source": "chat",
-  "slug": "agentur",
-  "session_id": null,
-  "status": "open"
-}

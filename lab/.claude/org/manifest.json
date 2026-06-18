@@ -1,0 +1,726 @@
+{
+  "_doc": "Org-register för agenturen. Roll-format: [slug, title, model(opus|sonnet|haiku), lead, active]. active=true ⇒ redan en agentfil i .claude/agents/ (skapas ej som skal). Generera via scripts/scaffold_roster.py + scripts/gen_agentur.py.",
+  "departments": {
+    "Leadership": {
+      "Exec": [
+        [
+          "coo",
+          "COO",
+          "opus",
+          true,
+          true
+        ],
+        [
+          "cto",
+          "CTO",
+          "opus",
+          true,
+          true
+        ],
+        [
+          "cpo",
+          "CPO",
+          "opus",
+          true,
+          false
+        ],
+        [
+          "chief-of-staff",
+          "Chief Of Staff",
+          "sonnet",
+          true,
+          true
+        ],
+        [
+          "strategy-lead",
+          "Strategy Lead",
+          "opus",
+          true,
+          false
+        ]
+      ]
+    },
+    "Product": {
+      "PM": [
+        [
+          "product-lead",
+          "Product Lead",
+          "sonnet",
+          true,
+          true
+        ],
+        [
+          "product-lead-dashboard",
+          "Product Lead Dashboard",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "product-lead-mcp",
+          "Product Lead MCP",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "product-lead-tui",
+          "Product Lead TUI",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "product-lead-core",
+          "Product Lead Core",
+          "sonnet",
+          false,
+          false
+        ]
+      ],
+      "Arkitektur": [
+        [
+          "solution-architect",
+          "Solution Architect",
+          "sonnet",
+          false,
+          true
+        ]
+      ],
+      "Design": [
+        [
+          "ux-lead",
+          "UX-lead",
+          "sonnet",
+          true,
+          false
+        ],
+        [
+          "ux-designer",
+          "UX-designer",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "interaktionsdesigner",
+          "Interaktionsdesigner",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "ux-researcher",
+          "UX-researcher",
+          "sonnet",
+          false,
+          false
+        ]
+      ],
+      "ProductOps": [
+        [
+          "product-ops",
+          "Product Ops",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "product-analyst",
+          "Product Analyst",
+          "haiku",
+          false,
+          false
+        ]
+      ]
+    },
+    "R&D": {
+      "Research": [
+        [
+          "research-lead",
+          "Research Lead",
+          "sonnet",
+          true,
+          true
+        ],
+        [
+          "web-researcher",
+          "Web Researcher",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "market-analyst",
+          "Market Analyst",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "competitor-analyst",
+          "Competitor Analyst",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "teknikspanare",
+          "Teknikspanare",
+          "sonnet",
+          false,
+          false
+        ]
+      ],
+      "Innovation": [
+        [
+          "datavetare",
+          "Datavetare",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "prototypare",
+          "Prototypare",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "innovation-lead",
+          "Innovation Lead",
+          "sonnet",
+          true,
+          false
+        ]
+      ]
+    },
+    "Engineering": {
+      "Backend": [
+        [
+          "backend-lead",
+          "Backend-lead",
+          "sonnet",
+          true,
+          false
+        ],
+        [
+          "backend-developer",
+          "Backend Developer",
+          "sonnet",
+          false,
+          true
+        ],
+        [
+          "backend-developer-2",
+          "Backend Developer 2",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "backend-developer-3",
+          "Backend Developer 3",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "backend-developer-4",
+          "Backend Developer 4",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "Frontend": [
+        [
+          "frontend-lead",
+          "Frontend-lead",
+          "sonnet",
+          true,
+          false
+        ],
+        [
+          "frontend-developer",
+          "Frontend Developer",
+          "sonnet",
+          false,
+          true
+        ],
+        [
+          "frontend-developer-2",
+          "Frontend Developer 2",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "frontend-developer-3",
+          "Frontend Developer 3",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "terminal-developer",
+          "Terminal Developer",
+          "sonnet",
+          false,
+          true
+        ],
+        [
+          "terminal-developer-2",
+          "Terminal Developer 2",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "Fullstack": [
+        [
+          "fullstack-developer",
+          "Fullstack Developer",
+          "sonnet",
+          false,
+          true
+        ],
+        [
+          "fullstack-developer-2",
+          "Fullstack Developer 2",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "Data": [
+        [
+          "data-engineer",
+          "Data Engineer",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "data-engineer-2",
+          "Data Engineer 2",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "QA": [
+        [
+          "qa-lead",
+          "QA-lead",
+          "sonnet",
+          true,
+          true
+        ],
+        [
+          "testautomatiserare",
+          "Testautomatiserare",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "testautomatiserare-2",
+          "Testautomatiserare",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "testautomatiserare-3",
+          "Testautomatiserare",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "Integrations": [
+        [
+          "integration-developer",
+          "Integration Developer",
+          "sonnet",
+          false,
+          true
+        ],
+        [
+          "integration-developer-2",
+          "Integration Developer 2",
+          "haiku",
+          false,
+          false
+        ]
+      ]
+    },
+    "Platform": {
+      "Infra": [
+        [
+          "platform-lead",
+          "Platform Lead",
+          "sonnet",
+          true,
+          true
+        ],
+        [
+          "platform-engineer",
+          "Platform Engineer",
+          "sonnet",
+          false,
+          true
+        ],
+        [
+          "platform-engineer-2",
+          "Platform Engineer 2",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "DevOps": [
+        [
+          "devops-engineer",
+          "DevOps Engineer",
+          "haiku",
+          false,
+          true
+        ],
+        [
+          "devops-engineer-2",
+          "DevOps Engineer 2",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "DevEx": [
+        [
+          "build-engineer",
+          "Build Engineer",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "devex-engineer",
+          "DevEx Engineer",
+          "sonnet",
+          false,
+          false
+        ]
+      ]
+    },
+    "People": {
+      "Talent": [
+        [
+          "people-lead",
+          "People Lead",
+          "sonnet",
+          true,
+          true
+        ],
+        [
+          "rekryterare",
+          "Rekryterare",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "rekryterare-2",
+          "Rekryterare",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "L&D": [
+        [
+          "learning-developer",
+          "Learning Developer",
+          "sonnet",
+          false,
+          true
+        ],
+        [
+          "learning-developer-2",
+          "Learning Developer 2",
+          "sonnet",
+          false,
+          false
+        ]
+      ],
+      "Culture": [
+        [
+          "kulturansvarig",
+          "Kulturansvarig",
+          "sonnet",
+          false,
+          false
+        ]
+      ],
+      "Org Design": [
+        [
+          "org-architect",
+          "Org Architect",
+          "sonnet",
+          true,
+          true
+        ]
+      ]
+    },
+    "Program": {
+      "Delivery": [
+        [
+          "program-lead",
+          "Program Lead",
+          "sonnet",
+          true,
+          true
+        ],
+        [
+          "scrum-master",
+          "Scrum Master",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "scrum-master-2",
+          "Scrum Master",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "Release": [
+        [
+          "release-coordinator",
+          "Release Coordinator",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "delivery-lead",
+          "Delivery Lead",
+          "sonnet",
+          true,
+          false
+        ]
+      ],
+      "Coordination": [
+        [
+          "session-coordinator",
+          "Session Coordinator",
+          "haiku",
+          false,
+          true
+        ],
+        [
+          "session-coordinator-2",
+          "Session Coordinator 2",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "Coaching": [
+        [
+          "agile-coach",
+          "Agile Coach",
+          "sonnet",
+          false,
+          true
+        ]
+      ]
+    },
+    "Operations": {
+      "SRE": [
+        [
+          "operations-lead",
+          "Operations Lead",
+          "sonnet",
+          true,
+          true
+        ],
+        [
+          "sre-engineer",
+          "SRE Engineer",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "sre-engineer-2",
+          "SRE Engineer 2",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "Incident": [
+        [
+          "incident-lead",
+          "Incident Lead",
+          "sonnet",
+          true,
+          false
+        ]
+      ],
+      "Monitoring": [
+        [
+          "monitoring-analyst",
+          "Monitoring Analyst",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "situation-analyst",
+          "Situation Analyst",
+          "haiku",
+          false,
+          true
+        ]
+      ],
+      "Maintenance": [
+        [
+          "maintenance-engineer",
+          "Maintenance Engineer",
+          "sonnet",
+          false,
+          true
+        ],
+        [
+          "maintenance-engineer-2",
+          "Maintenance Engineer 2",
+          "haiku",
+          false,
+          false
+        ]
+      ]
+    },
+    "Finance": {
+      "Controlling": [
+        [
+          "finance-lead",
+          "Finance Lead",
+          "haiku",
+          true,
+          true
+        ],
+        [
+          "controller",
+          "Controller",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "FinOps": [
+        [
+          "finops-analyst",
+          "FinOps Analyst",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "inkop",
+          "Inköpsansvarig",
+          "haiku",
+          false,
+          false
+        ],
+        [
+          "faktureringsansvarig",
+          "Faktureringsansvarig",
+          "haiku",
+          false,
+          false
+        ]
+      ]
+    },
+    "Communications": {
+      "DevRel": [
+        [
+          "devrel-ansvarig",
+          "DevRel-ansvarig",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "community-ansvarig",
+          "Community-ansvarig",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "Docs": [
+        [
+          "communications-lead",
+          "Communications Lead",
+          "sonnet",
+          true,
+          true
+        ],
+        [
+          "technical-writer",
+          "Technical Writer",
+          "sonnet",
+          false,
+          true
+        ],
+        [
+          "technical-writer-2",
+          "Technical Writer 2",
+          "haiku",
+          false,
+          false
+        ]
+      ],
+      "Marketing": [
+        [
+          "marketer",
+          "Marketer",
+          "sonnet",
+          false,
+          false
+        ],
+        [
+          "innehallsskapare",
+          "Innehållsskapare",
+          "haiku",
+          false,
+          false
+        ]
+      ]
+    }
+  },
+  "_squads_doc": "Tvärfunktionella missionsteam, namngivna efter VÄRDET de levererar (mission/värde-stil), inte teknik/yta — ortogonalt mot department. squad → medlems-slugs ur valfria avdelningar.",
+  "squads": {
+    "Överblick": [
+      "terminal-developer",
+      "terminal-developer-2",
+      "product-lead-tui"
+    ],
+    "Insikter": [
+      "frontend-developer",
+      "product-lead-dashboard"
+    ],
+    "Integrationer": [
+      "backend-developer",
+      "product-lead-mcp"
+    ],
+    "Modellering": [
+      "product-lead-core"
+    ]
+  }
+}

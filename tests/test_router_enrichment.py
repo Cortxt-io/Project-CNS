@@ -43,7 +43,7 @@ _FRONTEND_BUG_ROUTE = {
 }
 
 _ACTIVE_FRONTEND_BUG = {
-    "type": "bygg",
+    "type": "delivery",
     "focus_kind": "node",
     "focus_ref": "cortxt-dashboard",
     "focus_issue_type": "bug",
