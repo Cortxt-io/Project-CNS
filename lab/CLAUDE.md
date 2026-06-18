@@ -89,6 +89,7 @@ Tre kanaler, lätta att förväxla: inkommande webhooks (GitHub → Flask, quest
 - kind: component | system | framework — **härleds ur `part_of`, lagras inte** (se `catalog.derive_kind`)
 - type: frontend | service | mcp-server | pipeline | cli | tool | agent | infra | library | dataset | ai-model — driver agent-routing
 - domain: cortxt | shopify-venture | juvahem | crusade | orgkomp | bkfinans
+- entity_type (valfritt, ortogonal axel): municipality | course | organisation | financing_case — **vad en nod MODELLERAR i sin vertikal**, skilt från `type` (teknisk/routing) och `domain` (vertikal). Mjukvalidering, framåtblickande (CNS modellerar idag mjukvarusystemen, inte domänentiteterna). Export-adapters kan keya per vertikal på detta fält.
 - **Pensionerade (borttagna ur `enums.json`):** `status`, `stage`, `mvp_stage`, `risk_category`. De var produkt-livscykel, delegerade till board och oanvända i katalogen — men levde kvar kod-vägen i `analyst.py`/`server.py` (förslag för fält som inte längre lagras). Städade i hälso-scorecard-arbetet. **Entitetshälsa härleds nu vid läsning** (se nedan), inte som deklarerad status.
 
 ## Hälso-scorecard (härledd, ej deklarerad)

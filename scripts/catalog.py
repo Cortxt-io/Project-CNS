@@ -28,7 +28,7 @@ DECISIONS_DIR = REPO_ROOT / "decisions"
 
 # Kanonisk fältordning per system i catalog.yaml (utskriftsordning).
 CATALOG_FIELD_ORDER = [
-    "title", "summary", "part_of", "type", "domain",
+    "title", "summary", "part_of", "type", "domain", "entity_type",
     "owner_agent", "contributing_agents", "feeds", "depends_on", "url_repo",
     "integrations",
 ]
