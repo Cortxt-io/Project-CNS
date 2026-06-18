@@ -39,6 +39,7 @@ systems:
     domain: bkfinans
     feeds: []
     depends_on: []
+    url_live: https://bkfinans.se
   cns-analyst:
     title: CNS Analyst
     summary: AI-driven analysmotor som föreslår uppdateringar av stage, risker och
@@ -300,6 +301,7 @@ systems:
     domain: juvahem
     feeds: []
     depends_on: []
+    url_live: https://juvahem.se
     url_repo: https://github.com/Cortxt-io/juvahem
   local-ai:
     title: Local AI
@@ -333,6 +335,7 @@ systems:
     domain: orgkomp
     feeds: []
     depends_on: []
+    url_live: https://orgkomp.com
     url_repo: https://github.com/Cortxt-io/orgkomp
   quest-engine:
     title: Quest Engine

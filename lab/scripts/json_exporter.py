@@ -200,6 +200,9 @@ def export_json(
             # v3.0 node-model fields (optional; empty fallback — dashboarden fallbackar)
             "type": meta.get("type", ""),
             "domain": meta.get("domain", ""),
+            # Härlett: en produkt = system med egen venture-domän (≠ cortxt). Backenden
+            # äger klassningen så frontenden slipper hårdkoda venture-listan. Additivt.
+            "is_product": bool(meta.get("domain")) and meta.get("domain") != "cortxt",
             # Härledd verklighets-status (true|stale|aspirational|grouping), tom om okänd.
             "reality_status": reality.get(meta.get("slug", ""), ("", ""))[0],
             # Härledd hälso-scorecard {level, checks:[...]} — additiv; {} utan GitHub.

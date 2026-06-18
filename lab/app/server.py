@@ -851,6 +851,18 @@ def api_nodes():
     git_pull()
     path = export_json()
     data = json.loads(path.read_text(encoding="utf-8"))
+    # Optional, additive filters (default = full portfolio, unchanged for v2 consumers):
+    #   ?domain=juvahem  → only that domain
+    #   ?products=1      → only product nodes (is_product, i.e. domain != cortxt)
+    domain = request.args.get("domain")
+    products = request.args.get("products", "").lower() in ("1", "true", "yes")
+    if domain or products:
+        nodes = data.get("nodes", [])
+        if domain:
+            nodes = [n for n in nodes if n.get("domain") == domain]
+        if products:
+            nodes = [n for n in nodes if n.get("is_product")]
+        data["nodes"] = nodes
     return jsonify(data)
 
 
