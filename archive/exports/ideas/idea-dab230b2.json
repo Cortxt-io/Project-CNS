@@ -1,0 +1,9 @@
+{
+  "id": "idea-dab230b2",
+  "text": "Fas per OBJEKT, inte per session (ur bakgrundsfork 2026-06-14: prompts spänner ofta discovery+definition[+delivery] samtidigt). Aktiv-markören (active_session.json {type, session_id}) bär EN typ, men en prompt rör flera objekt i olika faser — en idé i discovery, en story i definition, en PR i delivery existerar parallellt av naturen. Roten: fasen hör till objektet, inte till arbetspasset. Nu: dominant-fas (markör = tyngdpunkt, oftast delivery när kod rörs) räcker och skalar till N faser utan ändring — bara mindre exakt. Riktig lösning (defer): läs fas per objekt (idé/story/PR) i stället för en markör-typ; gör beslutspunkt-kritikern (#146) mer precis eftersom dess lins härleds ur fasen. Mellansteg: utöka markören till {type, from} för \"definition (ur discovery)\". Bygg om/när dominant-fas börjar skava. Hänger ihop med #146, two-axis-modellen (objekt vs session) i CLAUDE.md, router._detect_type.",
+  "created_at": "2026-06-14T01:57:03",
+  "source": "chat",
+  "slug": "cns-core",
+  "session_id": null,
+  "status": "open"
+}

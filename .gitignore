@@ -9,8 +9,10 @@ __pycache__/
 *.pyo
 .env
 
-# Agent-host: otrackad lokal API-nyckel (aldrig committas)
+# Agent-host: otrackade lokala API-nycklar (aldrig committas)
+# .cns-agent-key (Anthropic), .cns-gemini-key (Google), .cns-groq-key (Groq) — se web_tools._build_llm
 .cns-agent-key
+.cns-*-key
 
 # Session-hub: lokala loop-markeringar (read-first, ej GitHub-sanning)
 .cns-loop-marks
@@ -38,3 +40,6 @@ tmp/
 
 .devwatch_state.json
 catalog.derived.yaml
+plans/
+research/
+strategy/

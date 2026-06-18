@@ -1,0 +1,23 @@
+{
+  "id": "session-d0d034df",
+  "created_at": "2026-06-13T21:24:55",
+  "updated_at": "2026-06-13T21:26:19",
+  "status": "done",
+  "summary": "Retro epic #2: friktion = nyckel-strul + dold API-drift (kod committad utan skarp körning) + skippade pass. Åtgärder fångade: idea-83ba1747 (statusline quest→epic), idea-c9176eac (cns-tui-synk). Princip: alla objekt genom sina pass.",
+  "link": {
+    "kind": "quest",
+    "ref": "2"
+  },
+  "transcript_id": null,
+  "source": "chat",
+  "parent_id": "session-f772fab5",
+  "fork_name": "retro",
+  "type": null,
+  "metrics": {
+    "tool_calls": 0,
+    "tokens_in": 0,
+    "tokens_out": 0,
+    "tools_seen": [],
+    "artifacts": []
+  }
+}

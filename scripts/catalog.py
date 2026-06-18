@@ -28,7 +28,7 @@ DECISIONS_DIR = REPO_ROOT / "decisions"
 
 # Kanonisk fältordning per system i catalog.yaml (utskriftsordning).
 CATALOG_FIELD_ORDER = [
-    "title", "summary", "part_of", "type", "domain",
+    "title", "summary", "part_of", "type", "domain", "entity_type",
     "owner_agent", "contributing_agents", "feeds", "depends_on", "url_repo",
     "integrations",
 ]
@@ -153,6 +153,9 @@ def catalog_to_meta(slug: str, entry: dict[str, Any], systems: dict[str, dict]) 
         "owner_agent": entry.get("owner_agent", "") or "",
         "contributing_agents": entry.get("contributing_agents") or [],
         "url_repo": entry.get("url_repo", "") or "",
+        # integrations: externa integrationer per system — deploy (drift, CNS agerar) vs
+        # sources (källor, CNS bär konfig vidare). Additivt/valfritt (#77). Tomt dict = inga.
+        "integrations": entry.get("integrations") or {},
         # tags: nu en aktiv grupperingsdimension (ersätter pipeline-attrapperna, spec 3.3).
         "tags": entry.get("tags") or [],
         # Delegerade/borttagna fält — tomt fallback (dashboarden fallbackar):

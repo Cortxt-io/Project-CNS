@@ -1,0 +1,49 @@
+# Sätt Status=Done på org-Projektet när en issue stängs eller en PR mergas
+# (ersätter GitHubs UI-only "closed -> Done"-workflow). Status ägs av boarden; detta är
+# bara automation-som-kod. Fork-återanvändbar via CNS_PROJECT_URL + CNS_GITHUB_TOKEN.
+name: CNS project status -> Done
+
+on:
+  issues:
+    types: [closed]
+  pull_request:
+    types: [closed]
+
+jobs:
+  set-done:
+    runs-on: ubuntu-latest
+    # Issues: alltid vid close. PR: bara om den mergades (inte stängd utan merge).
+    if: >-
+      vars.CNS_PROJECT_URL != '' &&
+      (github.event_name == 'issues' || github.event.pull_request.merged == true)
+    env:
+      GH_TOKEN: ${{ secrets.CNS_GITHUB_TOKEN }}
+      PROJECT_URL: ${{ vars.CNS_PROJECT_URL }}
+      CONTENT_ID: ${{ github.event.issue.node_id || github.event.pull_request.node_id }}
+    steps:
+      - name: Set Status=Done
+        run: |
+          set -euo pipefail
+          owner=$(printf '%s' "$PROJECT_URL" | sed -E 's#.*/(orgs|users)/([^/]+)/projects/.*#\2#')
+          number=$(printf '%s' "$PROJECT_URL" | sed -E 's#.*/projects/([0-9]+).*#\1#')
+
+          pid=$(gh api graphql -f query='
+            query($o:String!,$n:Int!){ organization(login:$o){ projectV2(number:$n){ id
+              field(name:"Status"){ ... on ProjectV2SingleSelectField { id options{ id name } } } } } }' \
+            -F o="$owner" -F n="$number" > resp.json && cat resp.json | jq -r '.data.organization.projectV2.id')
+          fid=$(jq -r '.data.organization.projectV2.field.id' resp.json)
+          done_opt=$(jq -r '.data.organization.projectV2.field.options[] | select(.name=="Done") | .id' resp.json)
+          if [ -z "$pid" ] || [ -z "$fid" ] || [ -z "$done_opt" ]; then
+            echo "Projekt/Status/Done ej konfigurerat — hoppar."; exit 0
+          fi
+
+          # Lägg item (idempotent) -> item-id, sätt sedan Status=Done.
+          item=$(gh api graphql -f query='
+            mutation($p:ID!,$c:ID!){ addProjectV2ItemById(input:{projectId:$p,contentId:$c}){ item{ id } } }' \
+            -F p="$pid" -F c="$CONTENT_ID" --jq '.data.addProjectV2ItemById.item.id')
+
+          gh api graphql -f query='
+            mutation($p:ID!,$i:ID!,$f:ID!,$o:String!){ updateProjectV2ItemFieldValue(input:{
+              projectId:$p,itemId:$i,fieldId:$f,value:{singleSelectOptionId:$o}}){ projectV2Item{ id } } }' \
+            -F p="$pid" -F i="$item" -F f="$fid" -F o="$done_opt" --jq '.data.updateProjectV2ItemFieldValue.projectV2Item.id'
+          echo "Status=Done satt för $CONTENT_ID"

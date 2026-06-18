@@ -1,0 +1,9 @@
+{
+  "id": "idea-63ce2f0c",
+  "text": "Nudge: rekommenderad modell per sessionstyp (rest ur stängda #40). Deklarera model: i sessions/profiles/<typ>.md-frontmatter (triage→Haiku, delivery→Sonnet, review/discovery→toppmodell) och yta den som en nudge i Control Tower/statusraden vid sessionstart (\"triage → byt till Haiku med /model\"). INTE tvingande — harnessen kan inte programstyra Claude Codes /model från en hook, så det förblir ett förslag. Marginellt värde ovanpå router [MODEL] + ekonomen-grinden som redan löser modellval per prompt/agent; bygg bara om nudge-ytan (dra-loop) visar sig vilja bära det. Återanvänder SESSION_TYPE_STYLE-mönstret (#41) och recommend-statusraden.",
+  "created_at": "2026-06-14T01:10:04",
+  "source": "chat",
+  "slug": "interface",
+  "session_id": null,
+  "status": "open"
+}

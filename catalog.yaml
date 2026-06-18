@@ -22,11 +22,23 @@ systems:
     part_of: infrastructure
     type: service
     domain: cortxt
-    owner_agent: backend-utvecklare
+    owner_agent: backend-developer
     feeds: []
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+  bkfinans:
+    title: BK Finans
+    summary: Decision-support tool that helps people make hard economic decisions during
+      life changes. v0.1 is deliberately narrow — helps someone weighing self-employment
+      judge whether their household economy carries the step from a secure salary to
+      uncertain income, and what to secure first. Transparent rule-based model, no advice.
+      Structure prepared for further contexts (separation, first-home, household-stress).
+      Own venture, own repo. SvelteKit. Domain bkfinans.se.
+    type: tool
+    domain: bkfinans
+    feeds: []
+    depends_on: []
   cns-analyst:
     title: CNS Analyst
     summary: AI-driven analysmotor som föreslår uppdateringar av stage, risker och
@@ -36,7 +48,7 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
     tags:
     - pipeline
     - review
@@ -49,7 +61,7 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
     tags:
     - pipeline
     - intern
@@ -62,7 +74,7 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   cns-devlog:
     title: CNS Devlog
     summary: Genererar daglig AI-sammanfattning av portföljförändringar och publicerar
@@ -73,7 +85,7 @@ systems:
     feeds:
     - cns-brief
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
     tags:
     - pipeline
     - intern
@@ -86,7 +98,7 @@ systems:
     feeds:
     - cns-devlog
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
     tags:
     - pipeline
     - intern
@@ -97,10 +109,10 @@ systems:
     part_of: infrastructure
     type: infra
     domain: cortxt
-    owner_agent: devops-ingenjor
+    owner_agent: devops-engineer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   cns-mcp:
     title: CNS MCP Server
     summary: Remote MCP-server på Railway (GitHub OAuth, Redis-token-store) som exponerar
@@ -108,11 +120,14 @@ systems:
     part_of: infrastructure
     type: mcp-server
     domain: cortxt
-    owner_agent: backend-utvecklare
+    owner_agent: backend-developer
     feeds: []
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+    integrations:
+      deploy:
+      - railway
   cns-triage:
     title: CNS Triage
     summary: Intern triage av CNS idé-inkorg och noder — gruppera, resolva/promota
@@ -128,10 +143,13 @@ systems:
     part_of: infrastructure
     type: service
     domain: cortxt
-    owner_agent: backend-utvecklare
+    owner_agent: backend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
+    integrations:
+      deploy:
+      - railway
   cortxt:
     title: Cortxt
     summary: Verktygskedja för AI-assisterad produktutveckling — från idé till leverans.
@@ -146,10 +164,14 @@ systems:
     part_of: interface
     type: frontend
     domain: cortxt
-    owner_agent: frontend-utvecklare
+    owner_agent: frontend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/cortxt
+    integrations:
+      deploy:
+      - target: vercel
+        project: cortxt-dashboard
   cortxt-eventstream:
     title: Cortxt Eventstream
     summary: Enhetlig händelselogning av alla systemaktiviteter med sex dimensioner.
@@ -168,10 +190,10 @@ systems:
     part_of: interface
     type: frontend
     domain: cortxt
-    owner_agent: frontend-utvecklare
+    owner_agent: frontend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/cortxt
   cortxt-landing:
     title: Cortxt Landing
     summary: Publik landningssida på cortxt.io — förklarar Cortxt, visar pipelinen,
@@ -179,10 +201,32 @@ systems:
     part_of: interface
     type: frontend
     domain: cortxt
-    owner_agent: frontend-utvecklare
+    owner_agent: frontend-developer
     feeds: []
     depends_on: []
-    url_repo: https://github.com/rian010194/cortxt
+    url_repo: https://github.com/Cortxt-io/cortxt
+    integrations:
+      deploy:
+      - github-pages
+  cortxt-tui:
+    title: Cortxt TUI (Control Tower)
+    summary: Standalone terminal cockpit — the Control Tower orientation surface extracted
+      from CNS to its own repo. Reads CNS as a data source via a seam; owns orientation
+      logic + UI. Planned — repo not yet created. Spec is cns-internal/plans/tui-standalone-product-spec.md.
+    type: cli
+    domain: cortxt
+    feeds: []
+    depends_on:
+    - cns-core
+  crusade:
+    title: Crusade
+    summary: Standing efficiency benchmark — a leaderboard where human+agent teams solve
+      hard tasks ranked on efficiency (tokens/cost) on top of correctness. A token-gateway
+      meters usage server-side (the moat). Own venture, own repo. Domains crusade.com/.se/.info.
+    type: service
+    domain: crusade
+    feeds: []
+    depends_on: []
   dev-changelog-engine:
     title: Dev Changelog Engine
     summary: Fullskalig pipeline för changelog-digest med source-adaptrar, LLM-analys
@@ -230,7 +274,7 @@ systems:
     - cortxt-eventstream
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   infrastructure:
     title: Infrastructure
     summary: Infrastruktursystem — drift, hosting, webhooks och lagring.
@@ -247,6 +291,16 @@ systems:
     domain: cortxt
     feeds: []
     depends_on: []
+  juvahem:
+    title: Juvahem
+    summary: Decision tool for couples choosing where to relocate — ranks all 290 Swedish
+      municipalities against a couple's combined profile (both partners' jobs, budget,
+      household). Own venture, own repo.
+    type: tool
+    domain: juvahem
+    feeds: []
+    depends_on: []
+    url_repo: https://github.com/Cortxt-io/juvahem
   local-ai:
     title: Local AI
     summary: Lokal AI-inferens (Qwen/GLM via Ollama/LM Studio) som fallback och kodfokuserat
@@ -269,6 +323,17 @@ systems:
     feeds: []
     depends_on:
     - cns-mcp
+  orgkomp:
+    title: Orgkomp
+    summary: Interactive, editable explorer for an organisation's roles, responsibilities,
+      and dependencies — hierarchy + the cross-department responsibility/dependency map.
+      Customer delivery for JumpYard, rebuilt from the archived OrgVis project. Next.js
+      (App Router), AntV G6, zod, Vitest. Own venture, own repo.
+    type: frontend
+    domain: orgkomp
+    feeds: []
+    depends_on: []
+    url_repo: https://github.com/Cortxt-io/orgkomp
   quest-engine:
     title: Quest Engine
     summary: Quest-livscykel (suggested → active → in_progress → completed/archived)
@@ -279,7 +344,7 @@ systems:
     feeds: []
     depends_on:
     - cns-core
-    url_repo: https://github.com/rian010194/Project-CNS
+    url_repo: https://github.com/Cortxt-io/Project-CNS
   research-agent:
     title: Research Agent
     summary: Research-agent som söker på webben, verifierar källor och skriver findings
@@ -287,7 +352,7 @@ systems:
     part_of: agent-studio
     type: agent
     domain: cortxt
-    owner_agent: forskningsledare
+    owner_agent: research-lead
     feeds: []
     depends_on: []
   scoring-studio:
