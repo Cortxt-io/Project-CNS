@@ -107,6 +107,31 @@ def create_pr(
     return {"number": pr["number"], "url": pr["html_url"], "state": pr["state"], "draft": pr["draft"]}
 
 
+def merge_pr(number: int, *, method: str = "squash", token: Optional[str] = None) -> dict:
+    """Merga en PR (method: merge | squash | rebase). Kastar vid fel (t.ex. draft/ej mergebar)."""
+    resp = requests.put(
+        f"{GITHUB_API}/repos/{_repo()}/pulls/{number}/merge",
+        headers=_headers(token),
+        json={"merge_method": method},
+        timeout=_TIMEOUT,
+    )
+    resp.raise_for_status()
+    data = resp.json()
+    return {"number": number, "merged": bool(data.get("merged", True)), "message": data.get("message")}
+
+
+def close_pr(number: int, token: Optional[str] = None) -> dict:
+    """Stäng en PR utan merge (PATCH state=closed)."""
+    resp = requests.patch(
+        f"{GITHUB_API}/repos/{_repo()}/pulls/{number}",
+        headers=_headers(token),
+        json={"state": "closed"},
+        timeout=_TIMEOUT,
+    )
+    resp.raise_for_status()
+    return {"number": number, "state": "closed"}
+
+
 def set_reviewers(number: int, reviewers: list[str], token: Optional[str] = None) -> dict:
     """Begär review från GitHub-användare (logins) på en PR."""
     resp = requests.post(

@@ -18,8 +18,8 @@ from scripts.md_parser import (
     read_node,
     read_all_nodes,
 )
-from scripts.xlsx_exporter import export_xlsx
-from scripts.json_exporter import export_json
+# NB: xlsx_exporter/json_exporter live in lab/scripts (dashboard/agency exports)
+# and are imported lazily inside their command functions, so Core runs without lab/.
 
 # Tvinga utf-8 på stdout så Rich inte kraschar på cp1252-konsoler när nod-/
 # sessiondata innehåller unicode (pilar, em-dash m.m.) — samma skydd som dash.py.
@@ -298,7 +298,8 @@ def cmd_deploy_deploy(args: argparse.Namespace) -> None:
 
 
 def cmd_export_xlsx(_args: argparse.Namespace) -> None:
-    """Export all nodes to an xlsx file."""
+    """Export all nodes to an xlsx file. [Lab: dashboard export]"""
+    from scripts.xlsx_exporter import export_xlsx
     try:
         path = export_xlsx()
         console.print(f"[green]Exported to {path}[/green]")
@@ -308,7 +309,8 @@ def cmd_export_xlsx(_args: argparse.Namespace) -> None:
 
 
 def cmd_export_json(args: argparse.Namespace) -> None:
-    """Export all nodes to a JSON file."""
+    """Export all nodes to a JSON file. [Lab: dashboard nodes.json]"""
+    from scripts.json_exporter import export_json
     output = getattr(args, "output", None)
     try:
         path = export_json(output_path=output)
@@ -344,6 +346,78 @@ def cmd_new(args: argparse.Namespace) -> None:
     console.print(f"[green]Skapade system '{slug}' i catalog.yaml.[/green]")
     console.print("[dim]kind härleds ur part_of. Redigera vidare med 'cns update' eller i catalog.yaml. "
                   "Varaktig beslutsprosa → decisions/<slug>.md.[/dim]")
+
+
+def _node_export_payload(slug: str) -> dict:
+    """Gather a node's catalog fields + decision prose into one dict.
+
+    Pure local read — no network, no agency. Used by `cns export <slug>`.
+    """
+    from scripts.catalog import load_catalog, CATALOG_FIELD_ORDER, DECISIONS_DIR
+
+    systems = load_catalog()
+    if slug not in systems:
+        console.print(f"[red]System '{slug}' saknas i catalog.yaml[/red]")
+        sys.exit(1)
+
+    entry = systems[slug]
+    decision_path = DECISIONS_DIR / f"{slug}.md"
+    decision = decision_path.read_text(encoding="utf-8").strip() if decision_path.exists() else None
+
+    # Behåll kanonisk fältordning för stabil output.
+    fields = {f: entry[f] for f in CATALOG_FIELD_ORDER if f in entry}
+    for k, v in entry.items():  # ev. okända fält sist
+        fields.setdefault(k, v)
+
+    return {"slug": slug, "fields": fields, "decision": decision}
+
+
+def _render_node_markdown(payload: dict) -> str:
+    """Render an export payload as a structured decision brief (Markdown)."""
+    f = payload["fields"]
+    lines = [f"# {f.get('title', payload['slug'])}", ""]
+    if f.get("summary"):
+        lines += [f["summary"].strip(), ""]
+
+    lines += ["## Structure", ""]
+    for key, label in (
+        ("type", "Type"), ("domain", "Domain"), ("part_of", "Part of"),
+        ("owner_agent", "Owner agent"), ("url_repo", "Repo"),
+    ):
+        if f.get(key):
+            lines.append(f"- **{label}:** {f[key]}")
+    for key, label in (("depends_on", "Depends on"), ("feeds", "Feeds")):
+        vals = f.get(key) or []
+        if vals:
+            lines.append(f"- **{label}:** {', '.join(vals)}")
+    lines.append("")
+
+    lines += ["## Decision", ""]
+    lines.append(payload["decision"] or "_No decision recorded (decisions/%s.md missing)._" % payload["slug"])
+    lines.append("")
+    return "\n".join(lines)
+
+
+def cmd_export_node(args: argparse.Namespace) -> None:
+    """Export ONE node as a decision brief — Markdown (default) or JSON.
+
+    Core command: pure local read of catalog.yaml + decisions/<slug>.md.
+    `--with-llm` is a reserved hook for Lab/Agency enrichment (e.g. an agent
+    that turns this brief into a report or course module); not implemented in
+    Core v1 — see lab/cns_lab.py.
+    """
+    if getattr(args, "with_llm", False):
+        console.print(
+            "[yellow]--with-llm is a reserved Lab/Agency hook and is not "
+            "implemented in Core v1.[/yellow] Run the plain export and enrich it "
+            "via the Lab layer (lab/). Continuing with the plain export below.\n"
+        )
+
+    payload = _node_export_payload(args.slug)
+    if getattr(args, "format", "md") == "json":
+        print(json.dumps(payload, ensure_ascii=False, indent=2))
+    else:
+        print(_render_node_markdown(payload))
 
 
 # ---------------------------------------------------------------------------
@@ -869,17 +943,334 @@ def cmd_agent_tools(args: argparse.Namespace) -> None:
     )
 
 
+def cmd_status(args: argparse.Namespace) -> None:
+    """Orientering headless: arbetslistan + statusräkning (samma data som ex-TUI-hemvyn)."""
+    from scripts.command_center import command_center_state
+    from scripts.tui import viewmodel as vm
+
+    state = command_center_state()
+    if getattr(args, "json", False):
+        print(json.dumps(state, ensure_ascii=False, indent=2, default=str))
+        return
+    c = vm.status_counts(state)
+    console.print(
+        f"[bold]Status[/bold]  [green]{c['ok']} ok[/green] · [yellow]{c['watch']} ser över[/yellow] · "
+        f"[red]{c['degraded']} fast[/red]  ·  {vm.pending_reviews(state)} att granska  {vm.freshness_label(state)}"
+    )
+    items = vm.work_items(state)
+    if not items:
+        console.print("[dim]  inget arbete[/dim]")
+    for it in items:
+        actor = f"🤖×{it.agents}" if it.agents else ("👤 din tur" if it.waiting_for_you else "")
+        nxt = f" → {it.next_action}" if it.next_action else ""
+        lev = f" ↑{it.leverage}" if it.leverage else ""
+        warn = "⚠ " if it.contact else ""
+        console.print(
+            f"  {it.status_icon} {warn}#{it.number} {it.title[:48]}  "
+            f"[{it.status_color}]{it.status_label}[/{it.status_color}]  {actor}{lev}{nxt}"
+        )
+    for o in vm.loose_orders(state):
+        console.print(f"  · {vm.type_tag(o.get('type'))} {o.get('title', '')}")
+
+
+def cmd_health(args: argparse.Namespace) -> None:
+    """Härledd hälso-scorecard för en nod (samma härledning som /api/nodes)."""
+    from scripts.health import health_for_node
+
+    sc = health_for_node(args.slug)
+    if getattr(args, "json", False):
+        print(json.dumps(sc, ensure_ascii=False, indent=2, default=str))
+        return
+    colors = {"healthy": "green", "attention": "yellow", "degraded": "red", "unknown": "dim"}
+    lvl = sc.get("level", "unknown")
+    console.print(f"[bold]{args.slug}[/bold] — [{colors.get(lvl, 'dim')}]{lvl}[/{colors.get(lvl, 'dim')}]")
+    for ch in sc.get("checks", []):
+        cc = colors.get(ch.get("level"), "dim")
+        console.print(f"  [{cc}]{ch.get('level')}[/{cc}]  {ch.get('name')}: {ch.get('feedback', '')}")
+
+
+def _github_guard() -> bool:
+    """True om GitHub-credentials är satta; annars skriv en vänlig pekare och returnera False."""
+    if os.getenv("GITHUB_REPO") and os.getenv("CNS_GITHUB_TOKEN"):
+        return True
+    console.print("[yellow]GitHub-credentials saknas[/yellow] — sätt [bold]GITHUB_REPO[/bold] + [bold]CNS_GITHUB_TOKEN[/bold] (User-env) och försök igen.")
+    return False
+
+
+def cmd_pr_list(args: argparse.Namespace) -> None:
+    if not _github_guard():
+        return
+    from scripts import prs_client
+
+    try:
+        prs = prs_client.list_prs(state=getattr(args, "state", "open"))
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Kunde inte hämta PR:er:[/red] {exc}")
+        return
+    if getattr(args, "json", False):
+        print(json.dumps(prs, ensure_ascii=False, indent=2, default=str))
+        return
+    if not prs:
+        console.print("[dim]inga PR:er[/dim]")
+        return
+    for p in prs:
+        tag = "[yellow]utkast[/yellow]" if p.get("draft") else "[green]klar[/green]"
+        console.print(
+            f"  {tag}  #{p.get('number')} {(p.get('title') or '')[:54]}  "
+            f"[dim]{p.get('author', '')} · {p.get('head', '')}[/dim]"
+        )
+
+
+def cmd_pr_merge(args: argparse.Namespace) -> None:
+    if not _github_guard():
+        return
+    from scripts import prs_client
+
+    try:
+        prs_client.merge_pr(args.number)
+        console.print(f"[green]✅ Mergade PR #{args.number}[/green]")
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Merge misslyckades:[/red] {exc}")
+
+
+def cmd_pr_close(args: argparse.Namespace) -> None:
+    if not _github_guard():
+        return
+    from scripts import prs_client
+
+    try:
+        prs_client.close_pr(args.number)
+        console.print(f"[bold]🗙 Stängde PR #{args.number}[/bold]")
+    except Exception as exc:  # noqa: BLE001
+        console.print(f"[red]Close misslyckades:[/red] {exc}")
+
+
+def cmd_dispatch(args: argparse.Namespace) -> None:
+    """Kör ETT dispatch-pass headless (delegerar till scripts.dispatch.main). read-first default."""
+    from scripts import dispatch
+
+    argv: list[str] = []
+    if getattr(args, "write", False) and not getattr(args, "dry_run", False):
+        argv.append("--write")
+    if getattr(args, "autonomy", False) and not getattr(args, "dry_run", False):
+        argv.append("--autonomy")
+    if getattr(args, "yes", False):
+        argv.append("--yes")
+    sys.exit(dispatch.main(argv) or 0)
+
+
+def cmd_agent_ask(args: argparse.Namespace) -> None:
+    """Fråga Claude om en nod headless (agent-host, läs-först)."""
+    import asyncio
+
+    from scripts.tui.agent_host import run_turn
+
+    question = args.question or f"Sammanfatta noden {args.slug} och dess roll."
+
+    async def run() -> None:
+        got = False
+        async for kind, payload in run_turn(question, slug=args.slug):
+            if kind == "text":
+                got = True
+                print(payload, end="", flush=True)
+            elif kind == "tool":
+                print(f"\n[verktyg: {payload}]", file=sys.stderr)
+            elif kind == "error":
+                print(f"\nFEL: {payload}", file=sys.stderr)
+            elif kind == "result" and not got and payload:
+                print(payload, end="", flush=True)
+        print()
+
+    asyncio.run(run())
+
+
+def cmd_selftest(args: argparse.Namespace) -> None:
+    """Förtroende-loop: kör varje kärn-förmåga → grönt/rött. Default = rena checkar (ingen mutation);
+    --live = läs-only-pingar mot GitHub/LLM-seamen (bevisar de osäkra lagren)."""
+    results: list[tuple[str, bool, str]] = []
+
+    def check(name: str, fn) -> None:
+        try:
+            results.append((name, True, str(fn() or "")[:70]))
+        except Exception as exc:  # noqa: BLE001 — selftest fångar ALLT med flit
+            results.append((name, False, f"{type(exc).__name__}: {exc}"[:90]))
+
+    def _catalog():
+        return f"{len(read_all_nodes())} noder"
+
+    def _validate():
+        from scripts.validator import validate_catalog
+
+        errors, warnings = validate_catalog()
+        if errors:
+            raise ValueError(f"{len(errors)} fel: {errors[0]}")
+        return f"{len(warnings)} varningar"
+
+    def _orientering():
+        from scripts.command_center import command_center_state
+        from scripts.tui import viewmodel as vm
+
+        return f"{len(vm.work_items(command_center_state()))} arbets-rader"
+
+    def _recommend():
+        from scripts.recommend import recommend
+
+        return f"{len(recommend())} förslag"
+
+    def _triage():
+        from scripts.idea_inbox import list_ideas
+        from scripts.triage import group_ideas
+
+        group_ideas(list_ideas(status="open"))
+        return "ok"
+
+    def _sessions():
+        from scripts import session_store
+
+        return f"{len(session_store.list_sessions())} sessioner"
+
+    def _health():
+        from scripts.health import health_for_node
+
+        nodes = read_all_nodes()
+        if not nodes:
+            return "inga noder"
+        slug = nodes[0][0].get("slug") or "?"
+        return f"{slug}: {health_for_node(slug).get('level')}"
+
+    def _dispatch_loop():
+        from scripts import dispatch
+
+        res = dispatch.crawl_once(
+            owner="selftest",
+            candidates_fn=lambda: [],
+            closed_numbers_fn=lambda: set(),
+            approve=lambda a, c: False,
+        )
+        return res.status  # "no-work" = loopen körde rent
+
+    check("katalog-läs (read_all_nodes)", _catalog)
+    check("katalog-validering (validate_catalog)", _validate)
+    check("orientering (command_center)", _orientering)
+    check("rekommendationer (recommend)", _recommend)
+    check("triage (group_ideas)", _triage)
+    check("sessioner (session_store)", _sessions)
+    check("hälsa (health_for_node)", _health)
+    check("dispatch-loop (injicerad)", _dispatch_loop)
+
+    if getattr(args, "live", False):
+        def _gh_prs():
+            from scripts import prs_client
+
+            return f"{len(prs_client.list_prs(state='open'))} öppna PR:er"
+
+        def _gh_issues():
+            from scripts import issues_client
+
+            return f"{len(issues_client.list_issues(state='open'))} öppna issues"
+
+        def _llm_ping():
+            import asyncio
+
+            from scripts.tui.agent_host import run_turn
+
+            async def ping():
+                out = []
+                async for kind, payload in run_turn("Svara bara med ordet pong.", slug=None):
+                    if kind == "error":
+                        raise RuntimeError(payload)
+                    if kind in ("text", "result") and payload:
+                        out.append(str(payload))
+                return "".join(out)[:20]
+
+            return f"svar: {asyncio.run(ping()) or '(tomt)'}"
+
+        check("GitHub: PR-läs (live)", _gh_prs)
+        check("GitHub: issue-läs (live)", _gh_issues)
+        check("LLM: agent-host ping (live)", _llm_ping)
+
+    if getattr(args, "json", False):
+        print(json.dumps([{"check": n, "ok": ok, "detail": d} for n, ok, d in results], ensure_ascii=False, indent=2))
+    else:
+        for n, ok, d in results:
+            mark = "[green]✓[/green]" if ok else "[red]✗[/red]"
+            console.print(f"  {mark} {n}  [dim]{d}[/dim]")
+        n_ok = sum(1 for _, ok, _ in results if ok)
+        color = "green" if n_ok == len(results) else "red"
+        console.print(f"\n[bold {color}]{n_ok}/{len(results)} gröna[/bold {color}]")
+    sys.exit(0 if all(ok for _, ok, _ in results) else 1)
+
+
 # ---------------------------------------------------------------------------
 # CLI setup
 # ---------------------------------------------------------------------------
 
+def register_core(subparsers) -> None:
+    """Register the three CNS Core commands: validate, new, export.
+
+    Core is the daily minimal flow — model nodes in catalog.yaml, write decision
+    prose in decisions/, validate, and export a brief. No agency, no network.
+    """
+    # cns new <slug>
+    sp_new = subparsers.add_parser("new", help="Create a new system in catalog.yaml")
+    sp_new.add_argument("slug", help="System-slug (e.g. my-new-system)")
+    sp_new.add_argument(
+        "--skip-prompts", action="store_true", default=False,
+        help="Hoppa interaktiva prompts, skapa en minimal post",
+    )
+    sp_new.set_defaults(func=cmd_new)
+
+    # cns validate [slug]  — utan slug: hela catalog.yaml
+    sp_validate = subparsers.add_parser("validate", help="Validate the catalog (or one system)")
+    sp_validate.add_argument("slug", nargs="?", default=None, help="System-slug (utelämna för hela katalogen)")
+    sp_validate.set_defaults(func=cmd_validate)
+
+    # cns export <slug> [--format md|json] [--with-llm]
+    sp_export = subparsers.add_parser("export", help="Export a node's decision brief (Markdown/JSON)")
+    sp_export.add_argument("slug", help="System slug")
+    sp_export.add_argument("--format", choices=["md", "json"], default="md", help="Output format (default: md)")
+    sp_export.add_argument(
+        "--with-llm", action="store_true", dest="with_llm",
+        help="Reserved hook: Lab/Agency enrichment (not implemented in Core v1)",
+    )
+    sp_export.set_defaults(func=cmd_export_node)
+
+
+def _load_env() -> None:
+    # Plocka upp GITHUB_REPO/CNS_GITHUB_TOKEN m.m. ur den otrackade .env (samma flöde som
+    # scripts/dispatch.py) — Windows fryser processens miljöblock vid start, så User-env satt
+    # efteråt syns inte i $env; .env gör credentials synliga för ALLA cns-kommandon ändå.
+    try:
+        from dotenv import load_dotenv
+
+        load_dotenv()
+    except Exception:
+        pass
+
+
 def main() -> None:
+    """CNS Core entrypoint — exposes only validate / new / export.
+
+    Lab/Agency commands (tui, dispatch, sessions, …) live behind a separate
+    entrypoint: `python lab/cns_lab.py`.
+    """
+    _load_env()
     parser = argparse.ArgumentParser(
         prog="cns",
-        description="CNS (Central Node Store) - Local-first node management CLI",
+        description="CNS Core — local-first node modelling (validate / new / export)",
     )
-    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+    subparsers = parser.add_subparsers(dest="command", help="Core commands")
+    register_core(subparsers)
 
+    args = parser.parse_args()
+    if not args.command or not hasattr(args, "func"):
+        parser.print_help()
+        sys.exit(1)
+    args.func(args)
+
+
+def register_lab(subparsers) -> None:
+    """Register Lab/Agency commands (advanced/R&D — invoked via lab/cns_lab.py)."""
     # cns list
     sp_list = subparsers.add_parser("list", help="List all nodes")
     sp_list.set_defaults(func=cmd_list)
@@ -909,32 +1300,16 @@ def main() -> None:
     sp_doctor = subparsers.add_parser("doctor", help="Check environment and configuration")
     sp_doctor.set_defaults(func=cmd_doctor)
 
-    # cns export xlsx
-    sp_export = subparsers.add_parser("export", help="Export data")
-    export_sub = sp_export.add_subparsers(dest="format")
-    sp_xlsx = export_sub.add_parser("xlsx", help="Export to Excel")
+    # cns export-xlsx / export-json — Lab: dashboard/portfolio exports
+    sp_xlsx = subparsers.add_parser("export-xlsx", help="[Lab] Export all nodes to Excel")
     sp_xlsx.set_defaults(func=cmd_export_xlsx)
 
-    sp_json = export_sub.add_parser("json", help="Export to JSON")
+    sp_json = subparsers.add_parser("export-json", help="[Lab] Export nodes.json for the dashboard")
     sp_json.add_argument(
         "--output", "-o", default=None,
         help="Override output path (default: exports/nodes.json)",
     )
     sp_json.set_defaults(func=cmd_export_json)
-
-    # cns new <slug>
-    sp_new = subparsers.add_parser("new", help="Create a new system in catalog.yaml")
-    sp_new.add_argument("slug", help="System-slug (e.g. my-new-system)")
-    sp_new.add_argument(
-        "--skip-prompts", action="store_true", default=False,
-        help="Hoppa interaktiva prompts, skapa en minimal post",
-    )
-    sp_new.set_defaults(func=cmd_new)
-
-    # cns validate [slug]  — utan slug: hela catalog.yaml
-    sp_validate = subparsers.add_parser("validate", help="Validate the catalog (or one system)")
-    sp_validate.add_argument("slug", nargs="?", default=None, help="System-slug (utelämna för hela katalogen)")
-    sp_validate.set_defaults(func=cmd_validate)
 
     # cns derive — härled katalogen ur verkligheten + diffa (Del A)
     sp_derive = subparsers.add_parser(
@@ -1174,17 +1549,50 @@ def main() -> None:
     sp_triage.add_argument("--json", action="store_true", help="Skriv grupperingen som JSON")
     sp_triage.set_defaults(func=cmd_triage)
 
-    args = parser.parse_args()
+    # cns status — orientering/arbetslista headless
+    sp_status = subparsers.add_parser("status", help="Orientering: arbetslista + statusräkning (headless)")
+    sp_status.add_argument("--json", action="store_true", help="Skriv command_center_state som JSON")
+    sp_status.set_defaults(func=cmd_status)
 
-    if not args.command:
-        parser.print_help()
-        sys.exit(1)
+    # cns health <slug>
+    sp_health = subparsers.add_parser("health", help="Härledd hälso-scorecard för en nod")
+    sp_health.add_argument("slug", help="Nod-slug")
+    sp_health.add_argument("--json", action="store_true")
+    sp_health.set_defaults(func=cmd_health)
 
-    if hasattr(args, "func"):
-        args.func(args)
-    else:
-        parser.print_help()
-        sys.exit(1)
+    # cns pr {list|merge|close}
+    sp_pr = subparsers.add_parser("pr", help="Pull requests: list/merge/close (review headless)")
+    pr_sub = sp_pr.add_subparsers(dest="pr_cmd")
+    sp_pr_list = pr_sub.add_parser("list", help="Lista PR:er")
+    sp_pr_list.add_argument("--state", default="open", help="open|closed|all (default open)")
+    sp_pr_list.add_argument("--json", action="store_true")
+    sp_pr_list.set_defaults(func=cmd_pr_list)
+    sp_pr_merge = pr_sub.add_parser("merge", help="Merga en PR")
+    sp_pr_merge.add_argument("number", type=int, help="PR-nummer")
+    sp_pr_merge.set_defaults(func=cmd_pr_merge)
+    sp_pr_close = pr_sub.add_parser("close", help="Stäng en PR")
+    sp_pr_close.add_argument("number", type=int, help="PR-nummer")
+    sp_pr_close.set_defaults(func=cmd_pr_close)
+
+    # cns dispatch — kör ETT pass (read-first default)
+    sp_dispatch = subparsers.add_parser("dispatch", help="Kör ETT dispatch-pass (read-first default)")
+    sp_dispatch.add_argument("--write", action="store_true", help="Skriv-läge: worktree + draft-PR")
+    sp_dispatch.add_argument("--autonomy", action="store_true", help="Self-merga lågrisk (kräver --write)")
+    sp_dispatch.add_argument("--yes", action="store_true", help="Auto-ja på grindar")
+    sp_dispatch.add_argument("--dry-run", action="store_true", dest="dry_run", help="Tvinga read-first (ignorera --write/--autonomy)")
+    sp_dispatch.set_defaults(func=cmd_dispatch)
+
+    # cns agent-ask <slug>
+    sp_aa = subparsers.add_parser("agent-ask", help="Fråga Claude om en nod (agent-host, läs-först)")
+    sp_aa.add_argument("slug", help="Nod-slug")
+    sp_aa.add_argument("-q", "--question", default=None, help="Frågan (default: sammanfatta noden)")
+    sp_aa.set_defaults(func=cmd_agent_ask)
+
+    # cns selftest — förtroende-loop
+    sp_self = subparsers.add_parser("selftest", help="Kör varje kärn-förmåga → grönt/rött")
+    sp_self.add_argument("--live", action="store_true", help="Inkl. läs-only GitHub/LLM-pingar")
+    sp_self.add_argument("--json", action="store_true")
+    sp_self.set_defaults(func=cmd_selftest)
 
 
 if __name__ == "__main__":
