@@ -29,6 +29,16 @@ def idea(action: str, **kw: Any) -> Any:
             session_id=kw.get("session_id"),
         )
 
+    if action == "update":
+        from scripts.idea_inbox import update_idea
+
+        return update_idea(
+            idea_id=kw["idea_id"],
+            text=kw.get("text"),
+            append=kw.get("append"),
+            slug=kw.get("slug"),
+        )
+
     if action == "promote":
         from scripts.idea_inbox import get_idea, mark_promoted
         from scripts.issues_client import create_issue

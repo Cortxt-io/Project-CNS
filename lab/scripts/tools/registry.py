@@ -112,6 +112,8 @@ FAT_TOOLS: tuple[FatTool, ...] = (
             Action("capture", write=True, required=("text",),
                    doc="Fånga en idé (params: text, source, slug, session_id)."),
             Action("list", doc="Lista idéer (params: status, slug, session_id)."),
+            Action("update", write=True, required=("idea_id",),
+                   doc="Redigera en befintlig idé i stället för en dubblett (params: idea_id, text|append, slug)."),
             Action("promote", write=True, required=("idea_id", "title"),
                    doc="Promota en idé till en issue (params: idea_id, title, slug, body, quest_number)."),
             Action("resolve", write=True, required=("idea_id", "resolution", "reason"),
