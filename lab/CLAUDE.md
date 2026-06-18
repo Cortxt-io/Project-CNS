@@ -10,6 +10,9 @@ CNS-kärnan och backenden. Läs detta först varje session. Arbetsspråk: **sven
 > Lab får importera Core. Sökvägshänvisningar `scripts/<modul>` nedan som inte är de fyra Core-modulerna
 > avser numera `lab/scripts/<modul>`; de konverteras när respektive rad ändå rörs (ingen bulk-omskrivning).
 
+> **Orienteringsvy** (visuell karta — infra-topologi, arbetsflöde uppåt mot main, begreppskarta +
+> ordlista, med Mermaid-diagram): `ORIENTERING.md` (repo-rot). Den här filen är referens; den filen är vyn.
+
 ## Vad det är
 CNS (Central Node Store): ett lokalt-först system för att modellera och driva ett produktsystem från idé till drift. Varje system är en post i **`catalog.yaml`** (graf + routing) plus en valfri **`decisions/<slug>.md`** (ADR-prosa). **GitHub är källan till sanning.**
 
