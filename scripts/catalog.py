@@ -184,6 +184,7 @@ def catalog_to_meta(slug: str, entry: dict[str, Any], systems: dict[str, dict]) 
         # integrations: externa integrationer per system — deploy (drift, CNS agerar) vs
         # sources (källor, CNS bär konfig vidare). Additivt/valfritt (#77). Tomt dict = inga.
         "integrations": entry.get("integrations") or {},
+        "url_live": entry.get("url_live", "") or "",
         # tags: nu en aktiv grupperingsdimension (ersätter pipeline-attrapperna, spec 3.3).
         "tags": entry.get("tags") or [],
         # Delegerade/borttagna fält — tomt fallback (dashboarden fallbackar):
