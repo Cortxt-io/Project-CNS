@@ -11,8 +11,11 @@ returnerar samma (meta, sections)-form som förr → konsumenterna (json_exporte
 app/tools/projects, tui, analyst, recommend) är oförändrade.
 
 Fält som inte längre finns (delegerade till board / borttagna): status, stage, risks,
-mvp_stage, cost_sek, value_sek, roi_percent, family, layer, pipeline, url_live, tags.
+mvp_stage, cost_sek, value_sek, roi_percent, family, pipeline, url_live, tags.
 Konsumenter som läser dem får tomt fallback-värde.
+
+`layer` (substrate/fog/vertical) härleds — som kind — ur type/domain/part_of, inte lagras.
+Se derive_layer() och decisions/portfolio-layers.md.
 """
 
 from __future__ import annotations
@@ -128,6 +131,30 @@ def derive_kind(slug: str, systems: dict[str, dict] | None = None) -> str:
     return "component"
 
 
+def derive_layer(slug: str, systems: dict[str, dict] | None = None) -> str:
+    """Härled portföljlager (substrate/fog/vertical) — som kind, inte lagrat.
+
+    T-format-modellen (decisions/portfolio-layers.md):
+    - vertical:  egen produktdomän (domain != "cortxt") — sammanfaller med is_product.
+    - substrate: CNS Core-kärnan — cns-core eller part_of-rotat i cns-core.
+    - fog:       allt övrigt i cortxt-domänen (orkestrering, infra, gränssnitt).
+    """
+    if systems is None:
+        systems = load_catalog()
+    entry = systems.get(slug, {})
+    if (entry.get("domain") or "").strip() not in ("", "cortxt"):
+        return "vertical"
+    # substrate = cns-core och allt vars part_of-kedja bottnar i cns-core.
+    cursor = slug
+    seen: set[str] = set()
+    while cursor and cursor not in seen:
+        if cursor == "cns-core":
+            return "substrate"
+        seen.add(cursor)
+        cursor = (systems.get(cursor, {}).get("part_of") or "").strip()
+    return "fog"
+
+
 def read_decision(slug: str) -> str:
     """Returnera decisions/<slug>.md-innehållet (ADR-prosa) eller tom sträng."""
     path = DECISIONS_DIR / f"{slug}.md"
@@ -145,6 +172,7 @@ def catalog_to_meta(slug: str, entry: dict[str, Any], systems: dict[str, dict]) 
         "title": entry.get("title", ""),
         "summary": entry.get("summary", ""),
         "kind": derive_kind(slug, systems),
+        "layer": derive_layer(slug, systems),
         "part_of": entry.get("part_of", "") or "",
         "feeds": entry.get("feeds") or [],
         "depends_on": entry.get("depends_on") or [],
