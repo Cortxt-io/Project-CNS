@@ -32,7 +32,8 @@ The minimal, self-contained layer. No network calls, no agents required.
 | `schemas/` | Enum definitions, used by validate |
 | `scripts/` | Core modules: `catalog`, `md_parser`, `validator`, `derive_catalog` |
 | `cns.py` | Core CLI: `validate`, `new`, `export` |
-| `requirements.txt` | Core dependencies only (pyyaml, rich) |
+| `requirements.txt` | Full backend dependency set (Flask, FastMCP, gunicorn, uvicorn, anthropic, redis, …) — installed by the Railway deploy and the export-dashboard CI; not Core-only |
+| `railway.json` | Railway deploy config (NIXPACKS; runs `app.asgi` from `lab/` with both repo-root and `lab/` on `PYTHONPATH`) |
 | `tests/` | Test suite (Core + Lab, via `tests/conftest.py`) |
 
 `scripts/` (Core) and `lab/scripts/` (Lab) form one PEP 420 namespace package. Core never

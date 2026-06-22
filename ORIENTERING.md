@@ -65,6 +65,11 @@ flowchart TB
 - **Railway pullar INTE vid runtime.** `git_pull()` är en no-op; `/api/nodes` kör `export_json()` mot
   den utcheckning som gjordes **vid deploy**. Färskhet i dashboarden = Railway **auto-redeployar vid
   push till main**. Syns inte en ändring trots att den ligger på main ⇒ Railway har inte redeployat.
+- **Deployen byggs från repo-roten och bär BÅDE Core och Lab.** Root-`railway.json` (NIXPACKS) kör
+  `app.asgi` från `lab/` med `PYTHONPATH=/app:/app/lab`. Skälet: `scripts/` är ett namespace-paket
+  som spänner root (Core) + `lab/` (Lab), och backenden importerar Core (`cns-mcp depends_on cns-core`).
+  Root Directory = `lab/` skulle bryta det. (Core/Lab-splitten flyttade av misstag bort root-config →
+  5 dagars frusna deploys; root-`railway.json` är enkällan nu.)
 - **Redis = flyktig state** (MCP-tokens, dispatch-leases, eventstream-live-buffer); **GitHub = durabel
   state**. Samma sorts sak (state) på en durabilitetsskala — inte två olika lager. **Sessioner ligger
   INTE i Redis** — de är filbaserade (`exports/sessions/`, pushas via MCP-wrappern). Leasen är
