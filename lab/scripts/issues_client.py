@@ -80,8 +80,10 @@ class IssuesConfigError(RuntimeError):
     """Raised when GITHUB_REPO or a usable token is missing."""
 
 
-def _require_config(token: Optional[str]) -> tuple[str, str]:
-    repo, tok = _repo(), _resolve_token(token)
+def _require_config(token: Optional[str], repo: Optional[str] = None) -> tuple[str, str]:
+    # ``repo`` override → läs ett annat repo än GITHUB_REPO (t.ex. en vertikals eget
+    # repo för per-vertikal-vyn); default = GITHUB_REPO (oförändrat beteende).
+    repo, tok = (repo or _repo()), _resolve_token(token)
     if not repo or not tok:
         raise IssuesConfigError(
             "GITHUB_REPO and a token (arg or CNS_GITHUB_TOKEN) are required."
@@ -224,13 +226,15 @@ def list_issues(
     state: str = "open",
     milestone: Optional[int] = None,
     token: Optional[str] = None,
+    repo: Optional[str] = None,
 ) -> list[dict]:
     """List node issues. Filters by ``node:<slug>`` label and/or *milestone* (quest).
 
     Pull requests are excluded (the REST issues endpoint includes them).
-    Mirrors ``quest_manager.list_quests``.
+    Mirrors ``quest_manager.list_quests``. ``repo`` override → läs en annan repos
+    issues (t.ex. en vertikals eget repo); default = GITHUB_REPO.
     """
-    repo, _ = _require_config(token)
+    repo, _ = _require_config(token, repo)
     params: dict[str, str] = {"state": state, "per_page": "100"}
     if node_slug:
         params["labels"] = node_label(node_slug)
@@ -590,9 +594,12 @@ def _normalize_milestone(ms: dict) -> dict:
     }
 
 
-def list_milestones(state: str = "open", token: Optional[str] = None) -> list[dict]:
-    """List quests (milestones). Mirrors ``list_quests`` at the grouping level."""
-    repo, _ = _require_config(token)
+def list_milestones(state: str = "open", token: Optional[str] = None, repo: Optional[str] = None) -> list[dict]:
+    """List quests (milestones). Mirrors ``list_quests`` at the grouping level.
+
+    ``repo`` override → läs en annan repos milestones; default = GITHUB_REPO.
+    """
+    repo, _ = _require_config(token, repo)
     resp = requests.get(
         f"{GITHUB_API}/repos/{repo}/milestones",
         headers=_headers(token),

@@ -39,6 +39,7 @@ systems:
     domain: bkfinans
     feeds: []
     depends_on: []
+    url_repo: https://github.com/Cortxt-io/bkfinans
     url_live: https://bkfinans.se
   cns-analyst:
     title: CNS Analyst
