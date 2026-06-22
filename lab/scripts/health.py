@@ -36,6 +36,10 @@ SESSION_SLA_HOURS = 12      # running-pass tyst > 12h → attention
 ISSUE_SLA_WEEKS = 2         # öppen issue, todos ej klara, > 2v → attention
 EPIC_SLA_WEEKS = 4          # epic öppen, inget stängt, > 4v → attention
 NODE_SLA_MONTHS = 6         # reserverad för ev. nod-ålderscheck
+# Deploy-staleness: prod kör en annan commit än main HEAD. Korta avvikelser är
+# normala (en deploy tar minuter), så bara en gammal avvikelse är degraded.
+DEPLOY_LAG_ATTENTION_S = 1800     # < 30 min bakom → troligen en deploy som pågår
+DEPLOY_LAG_DEGRADED_S = 3 * 3600  # > 3h bakom → prod stale, deployen kan ha failat
 
 
 @dataclass
@@ -336,3 +340,43 @@ def health_for_node(slug: str, *, issues: list[dict] | None = None, systems: dic
         check_node_issue_rollup(slug, issues or [], now=now),
         check_node_structural(slug, systems),
     ])
+
+
+# ---------------------------------------------------------------------------
+# Deploy / infra (prod vs main HEAD)
+# ---------------------------------------------------------------------------
+
+def check_deploy_staleness(
+    running_sha: str | None,
+    main_head_sha: str | None,
+    gap_seconds: float | None,
+) -> Check:
+    """Kör prod main HEAD? Annars: hur länge har den varit bakom?
+
+    Ren och IO-fri (jämför SHA + ålder) så den är testbar; `_infra_health` i
+    ``command_center`` gör nätrundan och matar in värdena. Saknad SHA / onåbar
+    källa ⇒ ``unknown`` (aldrig en falsk grön — det var precis så en 5-dygns
+    frysning kunde gömma sig bakom "allt operativt").
+    """
+    if not running_sha or not main_head_sha:
+        return Check("deploy_staleness", "unknown",
+                     "Kan inte avgöra deploy-läge (saknar körande SHA eller main HEAD).")
+    if running_sha[:12] == main_head_sha[:12]:
+        return Check("deploy_staleness", "healthy", "Prod kör main HEAD.")
+    behind = f" ({int(gap_seconds // 3600)}h bakom)" if gap_seconds else ""
+    if gap_seconds is not None and gap_seconds >= DEPLOY_LAG_DEGRADED_S:
+        return Check("deploy_staleness", "degraded",
+                     f"Prod stale — kör inte main{behind}; senaste deployen kan ha failat. "
+                     "Kolla Railway Deployments-loggen.")
+    return Check("deploy_staleness", "attention",
+                 f"Prod ligger bakom main{behind} — troligen en deploy som pågår.")
+
+
+def health_for_deploy(
+    running_sha: str | None,
+    main_head_sha: str | None,
+    *,
+    gap_seconds: float | None = None,
+) -> dict:
+    """Scorecard för prod-deployens färskhet (körande commit vs main HEAD)."""
+    return _scorecard([check_deploy_staleness(running_sha, main_head_sha, gap_seconds)])

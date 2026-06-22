@@ -37,6 +37,7 @@ def _state(*, milestones, issues_map, all_open, sessions, orders=None, health_ma
         recommend_fn=lambda: orders or [],
         health_fn=health,
         prs_fn=lambda: prs or [],
+        infra_fn=lambda: {"level": "healthy", "checks": [], "running": "abc", "main_head": "abc", "behind_s": None},
         now=NOW,
     )
 
@@ -126,3 +127,17 @@ if __name__ == "__main__":
     test_logistics_track()
     test_degrades_silently()
     print("OK — command_center_state: readiness/fronter/units/contact/sortering/sitrep/logistics/degradering gröna")
+
+
+def test_infra_field_injected() -> None:
+    """infra-fältet kommer från injicerad infra_fn (deploy-/driftshälsa, parallellt med freshness)."""
+    degraded = {"level": "degraded", "checks": [{"name": "deploy_staleness", "level": "degraded",
+                "feedback": "Prod stale"}], "running": "old1234", "main_head": "new5678", "behind_s": 432000}
+    s = cc.command_center_state(
+        milestones_fn=lambda: [], issues_for_fn=lambda n: [], all_open_issues_fn=lambda: [],
+        sessions_fn=lambda: [], recommend_fn=lambda: [], health_fn=lambda ms, now=None: {"level": "unknown", "checks": []},
+        prs_fn=lambda: [], infra_fn=lambda: degraded, now=NOW,
+    )
+    assert s["infra"]["level"] == "degraded"
+    assert s["infra"]["running"] == "old1234" and s["infra"]["main_head"] == "new5678"
+    assert s["infra"]["checks"][0]["name"] == "deploy_staleness"
