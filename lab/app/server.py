@@ -914,6 +914,34 @@ def api_eventstream_events():
     })
 
 
+@app.route("/api/command-center")
+def api_command_center():
+    """Return the composed Command Center state in one read.
+
+    Wraps scripts.command_center.command_center_state() — the existing composer
+    that weaves health + recommend + sessions + quests into one orientation view.
+    Read-only and safe to expose publicly; no git_pull (the composer reads cached
+    data). Optional ?now=<iso8601> freezes time for testing.
+
+    Returns: {missions, sitrep, logistics, orders, command, freshness}.
+    """
+    try:
+        from scripts.command_center import command_center_state
+
+        now = None
+        now_param = request.args.get("now")
+        if now_param:
+            try:
+                from datetime import datetime as _dt
+                now = _dt.fromisoformat(now_param)
+            except (ValueError, TypeError):
+                now = None  # fall back to datetime.now() inside the composer
+
+        return jsonify(command_center_state(now=now))
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
 @app.route("/brief")
 @auth.login_required
 def brief_page():
