@@ -222,3 +222,15 @@ if __name__ == "__main__":
             traceback.print_exc()
     print(f"\n{len(fns) - failed}/{len(fns)} passerade")
     sys.exit(1 if failed else 0)
+
+
+def test_deploy_staleness() -> None:
+    """check_deploy_staleness: prod vs main HEAD — degraderar till unknown, aldrig falsk grön."""
+    assert health.check_deploy_staleness("abc123def456", "abc123def456ff", None).level == "healthy"
+    assert health.check_deploy_staleness("aaa", "bbb", 600).level == "attention"
+    assert health.check_deploy_staleness("aaa", "bbb", 5 * 3600).level == "degraded"
+    assert health.check_deploy_staleness(None, "bbb", None).level == "unknown"
+    assert health.check_deploy_staleness("aaa", None, None).level == "unknown"
+    # scorecard-form
+    sc = health.health_for_deploy("aaa", "bbb", gap_seconds=5 * 3600)
+    assert sc["level"] == "degraded" and sc["checks"][0]["name"] == "deploy_staleness"

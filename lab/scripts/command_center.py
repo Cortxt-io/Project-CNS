@@ -89,6 +89,7 @@ def command_center_state(
     recommend_fn: Callable[[], list[dict]] | None = None,
     health_fn: Callable[..., dict] | None = None,
     prs_fn: Callable[[], list[dict]] | None = None,
+    infra_fn: Callable[[], dict] | None = None,
     now: datetime | None = None,
 ) -> dict:
     """Komponera Command Center i EN läsning. Ren data; degraderar tyst per källa.
@@ -196,6 +197,7 @@ def command_center_state(
         "orders": orders,
         "command": {"dispatch": "IDLE", "decisions": len(decisions), "fobs": 0},
         "freshness": _freshness(),
+        "infra": (infra_fn or _infra_health)(),
     }
 
 
@@ -226,3 +228,74 @@ def _freshness() -> dict:
         return {"reachable": True, "age_s": time.time() - cache.get("fetched_at", 0)}
     except Exception:
         return {"reachable": False, "age_s": None}
+
+
+_INFRA_CACHE_TTL_S = 300  # cockpit laddas ofta — cacha GitHub-rundan, överlev gunicorn-workers
+
+
+def _infra_health() -> dict:
+    """Deploy-/infra-hälsa: kör prod main HEAD?
+
+    Jämför Railways auto-injicerade ``RAILWAY_GIT_COMMIT_SHA`` (körande commit) mot
+    GitHub ``main`` HEAD, och hur gammal den körande committen är. Cachad (fil, TTL
+    300s) så per-request-laddningar inte hamrar GitHub. Kastar aldrig — degraderar
+    till ``unknown`` (aldrig falsk grön: så här kunde en 5-dygns frysning gömma sig).
+    """
+    import json
+    import os
+    import time
+    from datetime import datetime, timezone
+    from pathlib import Path
+
+    from scripts.health import health_for_deploy
+
+    cache_file = Path(__file__).resolve().parent.parent / "exports" / "infra_health_cache.json"
+    try:
+        cached = json.loads(cache_file.read_text(encoding="utf-8"))
+        if time.time() - cached.get("checked_at", 0) < _INFRA_CACHE_TTL_S:
+            return cached["infra"]
+    except Exception:
+        pass
+
+    running = os.getenv("RAILWAY_GIT_COMMIT_SHA") or None
+    main_sha = None
+    gap_s = None
+    try:
+        import requests as req
+
+        repo = os.getenv("GITHUB_REPO", "")
+        token = os.getenv("CNS_GITHUB_TOKEN", "")
+        if repo and token:
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+            }
+            base = f"https://api.github.com/repos/{repo}/commits"
+            head = req.get(f"{base}/main", headers=headers, timeout=15)
+            if head.status_code == 200:
+                main_sha = head.json().get("sha")
+            # Bara om prod ligger bakom behöver vi den körande committens ålder.
+            if running and main_sha and running[:12] != main_sha[:12]:
+                run = req.get(f"{base}/{running}", headers=headers, timeout=15)
+                if run.status_code == 200:
+                    date = run.json().get("commit", {}).get("committer", {}).get("date")
+                    dt = datetime.fromisoformat(date.replace("Z", "+00:00")) if date else None
+                    if dt is not None:
+                        gap_s = (datetime.now(timezone.utc) - dt).total_seconds()
+    except Exception:
+        pass
+
+    sc = health_for_deploy(running, main_sha, gap_seconds=gap_s)
+    infra = {
+        **sc,
+        "running": running[:8] if running else None,
+        "main_head": main_sha[:8] if main_sha else None,
+        "behind_s": gap_s,
+    }
+    try:
+        cache_file.parent.mkdir(parents=True, exist_ok=True)
+        cache_file.write_text(json.dumps({"checked_at": time.time(), "infra": infra}), encoding="utf-8")
+    except Exception:
+        pass
+    return infra
