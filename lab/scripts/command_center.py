@@ -90,6 +90,7 @@ def command_center_state(
     health_fn: Callable[..., dict] | None = None,
     prs_fn: Callable[[], list[dict]] | None = None,
     infra_fn: Callable[[], dict] | None = None,
+    verticals_fn: Callable[[], list[dict]] | None = None,
     now: datetime | None = None,
 ) -> dict:
     """Komponera Command Center i EN läsning. Ren data; degraderar tyst per källa.
@@ -198,6 +199,7 @@ def command_center_state(
         "command": {"dispatch": "IDLE", "decisions": len(decisions), "fobs": 0},
         "freshness": _freshness(),
         "infra": (infra_fn or _infra_health)(),
+        "verticals": (verticals_fn or _verticals)(),
     }
 
 
@@ -299,3 +301,134 @@ def _infra_health() -> dict:
     except Exception:
         pass
     return infra
+
+
+# ---------------------------------------------------------------------------
+# Vertikaler — per-produkt läge + nästa steg (beskrivande, ej recept)
+# ---------------------------------------------------------------------------
+
+VERTICAL_STALE_DAYS = 7             # live men inga commits på > N dagar → driver/parkera-beslut
+_VERTICALS_CACHE_TTL_S = 300
+
+
+def _repo_slug(url_repo: str | None) -> str | None:
+    """``https://github.com/Cortxt-io/juvahem`` → ``Cortxt-io/juvahem`` (annars None)."""
+    if not url_repo or "github.com/" not in url_repo:
+        return None
+    return url_repo.rstrip("/").split("github.com/")[-1]
+
+
+def _vertical_next_step(rec: dict) -> str:
+    """Beskrivande nästa drag, härlett ur en vertikals signaler (INTE ett recept).
+
+    Ren och IO-fri → testbar. Ordnad: ej-live slår allt, sen staleness, sen öppet arbete.
+    """
+    if not rec.get("url_live"):
+        return "Skeppa/deploya MVP"
+    age = rec.get("activity", {}).get("last_commit_age_s")
+    if age is not None and age > VERTICAL_STALE_DAYS * 86400:
+        return "Stale — besluta: driv eller parkera"
+    if rec.get("open_issues"):
+        top = rec.get("top_issue")
+        return f"Bygg: {top}" if top else "Bygg öppna issues"
+    return "Definiera nästa arbete / skaffa användare"
+
+
+def _verticals() -> list[dict]:
+    """Per-vertikal läge: deploy + aktivitet + öppet arbete + härlett nästa steg.
+
+    En post per vertikal (katalognod där ``slug == domain`` och domänen ej cortxt).
+    Signalerna hämtas cross-repo (vertikalerna är egna repon): deploy via Vercel-adaptern
+    (``find_project(url_repo) → status``), aktivitet via ``eventstream`` (per-repo commits),
+    öppet arbete via ``issues_client(repo=…)``. Cachad (fil, TTL 300s); kastar aldrig —
+    varje signal degraderar tyst till unknown (aldrig falsk grön, samma princip som infra).
+    """
+    import json
+    import time
+    from datetime import datetime, timedelta, timezone
+    from pathlib import Path
+
+    cache_file = Path(__file__).resolve().parent.parent / "exports" / "verticals_cache.json"
+    try:
+        cached = json.loads(cache_file.read_text(encoding="utf-8"))
+        if time.time() - cached.get("checked_at", 0) < _VERTICALS_CACHE_TTL_S:
+            return cached["verticals"]
+    except Exception:
+        pass
+
+    try:
+        from scripts.catalog import load_catalog
+        cat = load_catalog()
+    except Exception:
+        cat = {}
+
+    now = datetime.now(timezone.utc)
+    since = (now - timedelta(days=30)).isoformat()
+    out: list[dict] = []
+    for slug, n in cat.items():
+        dom = n.get("domain")
+        if not dom or dom == "cortxt" or slug != dom:
+            continue
+        url_repo = n.get("url_repo") or ""
+        repo = _repo_slug(url_repo)
+
+        deploy = {"state": "unknown"}
+        try:
+            from scripts.adapters import vercel
+            if url_repo and vercel.configured():
+                proj = vercel.find_project(url_repo)
+                if proj:
+                    st = vercel.status(proj["id"])
+                    if st.get("ok"):
+                        deploy = {"state": st.get("state", "unknown")}
+        except Exception:
+            pass
+
+        last_age = None
+        try:
+            if repo:
+                from scripts.eventstream import fetch_github_commits
+                commits = fetch_github_commits(since, repo=repo)
+                if commits:
+                    when = commits[0].get("when")
+                    dt = datetime.fromisoformat(when.replace("Z", "+00:00")) if when else None
+                    if dt is not None:
+                        last_age = (now - dt).total_seconds()
+                else:
+                    last_age = 30 * 86400.0  # inga commits i 30-dagarsfönstret → minst 30d stale
+        except Exception:
+            pass
+
+        open_issues, top_issue, milestones = 0, None, []
+        try:
+            if repo:
+                from scripts.issues_client import list_issues, list_milestones
+                issues = list_issues(state="open", repo=repo) or []
+                open_issues = len(issues)
+                if issues:
+                    top_issue = issues[0].get("title")
+                milestones = [m.get("title") for m in (list_milestones(state="open", repo=repo) or [])]
+        except Exception:
+            pass
+
+        rec = {
+            "slug": slug,
+            "domain": dom,
+            "title": n.get("title", slug),
+            "url_live": n.get("url_live") or "",
+            "url_repo": url_repo,
+            "deploy": deploy,
+            "activity": {"last_commit_age_s": last_age},
+            "open_issues": open_issues,
+            "top_issue": top_issue,
+            "open_milestones": milestones,
+        }
+        rec["next_step"] = _vertical_next_step(rec)
+        out.append(rec)
+
+    try:
+        cache_file.parent.mkdir(parents=True, exist_ok=True)
+        cache_file.write_text(json.dumps({"checked_at": time.time(), "verticals": out}), encoding="utf-8")
+    except Exception:
+        pass
+    return out

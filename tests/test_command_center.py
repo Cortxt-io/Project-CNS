@@ -141,3 +141,39 @@ def test_infra_field_injected() -> None:
     assert s["infra"]["level"] == "degraded"
     assert s["infra"]["running"] == "old1234" and s["infra"]["main_head"] == "new5678"
     assert s["infra"]["checks"][0]["name"] == "deploy_staleness"
+
+
+def test_vertical_next_step_rule() -> None:
+    """Beskrivande nästa-steg-regel per vertikal (ren, härledd ur signaler)."""
+    assert cc._vertical_next_step({"url_live": ""}) == "Skeppa/deploya MVP"
+    assert cc._vertical_next_step({"url_live": "x", "activity": {"last_commit_age_s": 10 * 86400}}).startswith("Stale")
+    assert cc._vertical_next_step({"url_live": "x", "activity": {"last_commit_age_s": 100},
+                                   "open_issues": 2, "top_issue": "Fix scoring"}) == "Bygg: Fix scoring"
+    assert cc._vertical_next_step({"url_live": "x", "activity": {"last_commit_age_s": 100},
+                                   "open_issues": 0}) == "Definiera nästa arbete / skaffa användare"
+    # repo_slug-parsning
+    assert cc._repo_slug("https://github.com/Cortxt-io/juvahem") == "Cortxt-io/juvahem"
+    assert cc._repo_slug("") is None
+
+
+def test_verticals_field_injected() -> None:
+    """verticals-fältet kommer från injicerad verticals_fn (parallellt med missions/infra)."""
+    fake = [{"slug": "juvahem", "title": "Juvahem", "url_live": "https://juvahem.se",
+             "open_issues": 1, "next_step": "Bygg: X"}]
+    s = cc.command_center_state(
+        milestones_fn=lambda: [], issues_for_fn=lambda n: [], all_open_issues_fn=lambda: [],
+        sessions_fn=lambda: [], recommend_fn=lambda: [], health_fn=lambda ms, now=None: {"level": "unknown", "checks": []},
+        prs_fn=lambda: [], infra_fn=lambda: {"level": "healthy", "checks": []},
+        verticals_fn=lambda: fake, now=NOW,
+    )
+    assert s["verticals"] == fake and s["verticals"][0]["next_step"] == "Bygg: X"
+
+
+def test_issues_client_repo_override() -> None:
+    """list_issues/list_milestones repo-param overridar GITHUB_REPO (default oförändrat)."""
+    import os
+    from scripts import issues_client as ic
+    os.environ["CNS_GITHUB_TOKEN"] = "t"
+    os.environ["GITHUB_REPO"] = "Cortxt-io/Project-CNS"
+    assert ic._require_config(None, "Cortxt-io/juvahem")[0] == "Cortxt-io/juvahem"
+    assert ic._require_config(None)[0] == "Cortxt-io/Project-CNS"
