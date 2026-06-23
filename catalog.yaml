@@ -381,3 +381,99 @@ systems:
     feeds: []
     depends_on: []
     url_repo: https://github.com/rian010194/webhook-router
+  # --- Vertikal-interna noder (scaffold, rena ombyggnads-arkitekturer — finslipas) ---
+  juvahem-etl:
+    title: Juvahem ETL
+    summary: Hämtar och normaliserar kommundata (Kolada m.fl.) till ett scoring-underlag.
+    part_of: juvahem
+    type: pipeline
+    domain: juvahem
+    feeds:
+    - juvahem-scoring
+    depends_on: []
+  juvahem-scoring:
+    title: Juvahem Scoring
+    summary: Rankar 290 kommuner mot parets kombinerade profil.
+    part_of: juvahem
+    type: service
+    domain: juvahem
+    feeds:
+    - juvahem-ui
+    depends_on: []
+  juvahem-ui:
+    title: Juvahem UI
+    summary: Parets inmatning + ranknings-resultat (frontend).
+    part_of: juvahem
+    type: frontend
+    domain: juvahem
+    feeds: []
+    depends_on: []
+  bkfinans-rules:
+    title: BK Finans Regelmotor
+    summary: Transparent, testdriven regelmotor för starta-eget-beslutet (ingen rådgivning).
+    part_of: bkfinans
+    type: service
+    domain: bkfinans
+    feeds:
+    - bkfinans-ui
+    depends_on: []
+  bkfinans-ui:
+    title: BK Finans UI
+    summary: Inmatning + beslutsunderlag-yta (SvelteKit).
+    part_of: bkfinans
+    type: frontend
+    domain: bkfinans
+    feeds: []
+    depends_on: []
+  orgkomp-model:
+    title: Orgkomp Datamodell
+    summary: Roller-först typad graf (reports_to / depends_on) + validering.
+    part_of: orgkomp
+    type: library
+    domain: orgkomp
+    feeds:
+    - orgkomp-graph
+    - orgkomp-export
+    depends_on: []
+  orgkomp-graph:
+    title: Orgkomp Graf-editor
+    summary: Interaktiv, redigerbar org-/ansvars-/beroende-graf (AntV G6).
+    part_of: orgkomp
+    type: frontend
+    domain: orgkomp
+    feeds: []
+    depends_on: []
+  orgkomp-export:
+    title: Orgkomp Export
+    summary: JSON-export + localStorage-persistens.
+    part_of: orgkomp
+    type: tool
+    domain: orgkomp
+    feeds: []
+    depends_on: []
+  crusade-gateway:
+    title: Crusade Gateway
+    summary: Go reverse-proxy som mäter token-förbrukning serverside (moat).
+    part_of: crusade
+    type: service
+    domain: crusade
+    feeds:
+    - crusade-store
+    depends_on: []
+  crusade-store:
+    title: Crusade Store
+    summary: Lagrar mätningar (tokens/korrekthet) per körning (Postgres).
+    part_of: crusade
+    type: dataset
+    domain: crusade
+    feeds:
+    - crusade-leaderboard
+    depends_on: []
+  crusade-leaderboard:
+    title: Crusade Leaderboard
+    summary: Rankar människa+agent-team på effektivitet ovanpå korrekthet.
+    part_of: crusade
+    type: frontend
+    domain: crusade
+    feeds: []
+    depends_on: []
