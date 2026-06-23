@@ -1,0 +1,22 @@
+# Delade produkt-faser (nivå 1) — den gemensamma vägen mot första betalande/återkommande
+# användare. Receptet är SAMMA för alla vertikaler; den per-vertikal-anpassade planen
+# (epics + öppna beslut) bor i roadmaps/<slug>.md (nivå 2). Redigera faserna här — enkälla.
+phases:
+  - key: spec
+    title: Spec
+    summary: Problem + vem + scope definierat
+  - key: mvp
+    title: MVP
+    summary: Kärnan byggd, funkar end-to-end
+  - key: live
+    title: Live
+    summary: Deployad på sin domän
+  - key: users
+    title: Första användare
+    summary: Riktiga människor använder den
+  - key: validated
+    title: Validerad
+    summary: Levererar värde — feedback bekräftar
+  - key: paying
+    title: Betalande/återkommande
+    summary: Intäkt eller återkommande användning — målet

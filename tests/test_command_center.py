@@ -177,3 +177,10 @@ def test_issues_client_repo_override() -> None:
     os.environ["GITHUB_REPO"] = "Cortxt-io/Project-CNS"
     assert ic._require_config(None, "Cortxt-io/juvahem")[0] == "Cortxt-io/juvahem"
     assert ic._require_config(None)[0] == "Cortxt-io/Project-CNS"
+
+
+def test_next_step_roadmap_aware() -> None:
+    """När en roadmap finns styr den next_step (öppet beslut → fas), annars grova signaler."""
+    assert cc._vertical_next_step({"url_live": "x", "roadmap": {"open_decisions": 2, "next_decision": "Publik yta?", "current_phase_title": "Spec"}}) == "Beslut: Publik yta?"
+    assert cc._vertical_next_step({"url_live": "x", "roadmap": {"open_decisions": 0, "current_phase_title": "MVP"}}) == "Driv fas: MVP"
+    assert cc._vertical_next_step({"url_live": "", "roadmap": None}) == "Skeppa/deploya MVP"

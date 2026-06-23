@@ -321,8 +321,15 @@ def _repo_slug(url_repo: str | None) -> str | None:
 def _vertical_next_step(rec: dict) -> str:
     """Beskrivande nästa drag, härlett ur en vertikals signaler (INTE ett recept).
 
-    Ren och IO-fri → testbar. Ordnad: ej-live slår allt, sen staleness, sen öppet arbete.
+    Ren och IO-fri → testbar. När en roadmap finns styr DEN (öppet beslut → aktuell fas);
+    annars faller vi tillbaka på de grova signalerna (ej-live → staleness → öppet arbete).
     """
+    rm = rec.get("roadmap")
+    if rm:
+        if rm.get("open_decisions"):
+            return f"Beslut: {rm.get('next_decision')}"
+        if rm.get("current_phase_title"):
+            return f"Driv fas: {rm['current_phase_title']}"
     if not rec.get("url_live"):
         return "Skeppa/deploya MVP"
     age = rec.get("activity", {}).get("last_commit_age_s")
@@ -394,8 +401,9 @@ def _verticals() -> list[dict]:
                     dt = datetime.fromisoformat(when.replace("Z", "+00:00")) if when else None
                     if dt is not None:
                         last_age = (now - dt).total_seconds()
-                else:
-                    last_age = 30 * 86400.0  # inga commits i 30-dagarsfönstret → minst 30d stale
+                # Tomt/misslyckat svar ⇒ last_age = None (OKÄNT), INTE falsk "stale". En
+                # misslyckad/token-spärrad läsning är inte detsamma som inaktivitet — så vi
+                # fabricerar aldrig staleness (det var buggen som flaggade aktiva repon stale).
         except Exception:
             pass
 
@@ -411,6 +419,13 @@ def _verticals() -> list[dict]:
         except Exception:
             pass
 
+        roadmap = None
+        try:
+            from scripts.roadmap import roadmap_summary
+            roadmap = roadmap_summary(slug)
+        except Exception:
+            pass
+
         rec = {
             "slug": slug,
             "domain": dom,
@@ -422,6 +437,7 @@ def _verticals() -> list[dict]:
             "open_issues": open_issues,
             "top_issue": top_issue,
             "open_milestones": milestones,
+            "roadmap": roadmap,
         }
         rec["next_step"] = _vertical_next_step(rec)
         out.append(rec)

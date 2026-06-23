@@ -942,6 +942,21 @@ def api_command_center():
         return jsonify({"status": "error", "message": str(exc)}), 500
 
 
+@app.route("/api/vertical/<slug>")
+def api_vertical(slug):
+    """Per-vertikal detalj för per-projekt-vyn: roadmap (recept-faser + status/epics +
+    öppna beslut) plus vertikal-posten ur command_center. Read-only; degraderar tyst.
+    """
+    try:
+        from scripts.roadmap import roadmap_detail
+        from scripts.command_center import _verticals
+
+        vertical = next((v for v in _verticals() if v.get("slug") == slug), None)
+        return jsonify({"slug": slug, "vertical": vertical, "roadmap": roadmap_detail(slug)})
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
 @app.route("/brief")
 @auth.login_required
 def brief_page():
