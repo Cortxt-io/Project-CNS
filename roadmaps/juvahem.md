@@ -6,17 +6,18 @@ phases:
   spec:
     status: active
     epics:
-      - { title: "Re-spec: parets kombinerade profil-input + ranknings-output (290 kommuner)", done: false }
-      - { title: "Datamodell + moat: vilken data ger ärligt försprång (Kolada m.m.)", done: false }
+      - { title: "Re-spec: parets kombinerade profil-input + ranknings-output (290 kommuner)", done: false, node: juvahem-scoring }
+      - { title: "Datamodell + moat: vilken data ger ärligt försprång (Kolada m.m.)", done: false, node: juvahem-etl }
   mvp:
     status: todo
     epics:
-      - { title: "ETL-pipeline (datakällor → kommun-score)", done: false }
-      - { title: "Scoring mot parets profil + UI", done: false }
+      - { title: "ETL-pipeline (datakällor → kommun-score)", done: false, node: juvahem-etl }
+      - { title: "Scoring mot parets profil", done: false, node: juvahem-scoring }
+      - { title: "Resultat-UI (kartvy + rankning)", done: false, node: juvahem-ui }
   live:
     status: todo
     epics:
-      - { title: "Deploy på juvahem.se (ren ombyggnad ersätter vibe-versionen)", done: false }
+      - { title: "Deploy på juvahem.se (ren ombyggnad ersätter vibe-versionen)", done: false, node: juvahem-ui }
   users:
     status: todo
     epics: []
@@ -28,7 +29,7 @@ phases:
     epics: []
 open_decisions:
   - { title: "Bygga om från grunden eller rädda vibe-koden?", why: "v1 är vibe-kodad och live; avgör om ombyggnaden startar rent eller refaktorerar." }
-  - { title: "Gratis-data-MVP räcker eller krävs betald datakälla?", why: "Booli var juridiskt spärrad; moat beror på datatillgång." }
+  - { title: "Gratis-data-MVP räcker eller krävs betald datakälla?", why: "Booli var juridiskt spärrad; moat beror på datatillgång.", node: juvahem-etl }
 ---
 
 Ombyggnads-roadmap för Juvahem (par-relocation, rankar 290 kommuner). v1 vibe-kodad och live på
