@@ -1,0 +1,9 @@
+{
+  "id": "idea-fd732ef6",
+  "text": "Framtida UX-feature (inspirerad av Hemnets AI-sök-experiment \"Hemnet testar\", 2026-06): naturligt-språk-input på /jamfor — \"Berätta med egna ord vad som är viktigt\" → en AI parsar frittexten och sätter profilen/vikterna (jobb, skatt, pris, skola, trygghet, pendling…) + ev. geografiskt filter, sen rankar motorn kommunerna. Ersätter/kompletterar snabbval-chips + viktreglage med en fri prompt + exempel-chips (\"billigt, bra skola, nära Stockholm, lugnt\"). Hänger ihop med CNS analyst/LLM-seamen (kör på abonnemang/nyckel, offline-parsning → committad profil eller klient-parsning). Skala: liten — NL→vikter-mappning ovanpå befintlig score.js (kärnan orörd). Inte nu; efter Konsolidera-fasen.",
+  "created_at": "2026-06-24T13:51:24",
+  "source": "chat",
+  "slug": "juvahem",
+  "session_id": null,
+  "status": "open"
+}
