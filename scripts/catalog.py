@@ -31,7 +31,7 @@ DECISIONS_DIR = REPO_ROOT / "decisions"
 
 # Kanonisk fältordning per system i catalog.yaml (utskriftsordning).
 CATALOG_FIELD_ORDER = [
-    "title", "summary", "part_of", "type", "domain", "entity_type",
+    "title", "summary", "part_of", "type", "domain", "entity_type", "archetype",
     "owner_agent", "contributing_agents", "feeds", "depends_on", "url_repo",
     "integrations",
 ]
@@ -178,6 +178,9 @@ def catalog_to_meta(slug: str, entry: dict[str, Any], systems: dict[str, dict]) 
         "depends_on": entry.get("depends_on") or [],
         "type": entry.get("type", "") or "",
         "domain": entry.get("domain", "") or "",
+        # archetype: komponentens återanvändbara funktionella roll (etl/decision-engine/...),
+        # ortogonal mot type/kind. Driver bl.a. arketyp-glyfen i @cortxt/graph. Additivt/valfritt.
+        "archetype": entry.get("archetype", "") or "",
         "owner_agent": entry.get("owner_agent", "") or "",
         "contributing_agents": entry.get("contributing_agents") or [],
         "url_repo": entry.get("url_repo", "") or "",
