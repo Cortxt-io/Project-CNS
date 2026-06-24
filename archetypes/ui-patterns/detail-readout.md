@@ -12,15 +12,16 @@ touches it). Secondary plan/context surfaces are reachable but not all at once.
 ## Layout / hierarchy
 ```
 ← back · Title · status line
-┌──────────── MAP / structure (HERO, full width, large) ───────────┐
-│  the graph IS the answer — large, with zoom/fit controls          │
-│  select a node → lean readout (overlay bottom-left on desktop)     │
-└───────────────────────────────────────────────────────────────────┘
+┌─────── MAP / structure (HERO, full width) ──────┬── READOUT ──┐
+│  the graph IS the answer — large, zoom/fit       │ (on select) │
+│  nothing selected → full width + hint            │ identity… ✕ │
+└──────────────────────────────────────────────────┴─────────────┘
 [Tabs: Plan A | Plan B | Decisions]   (secondary surfaces, one at a time)
   active tab content
 ```
 - **The map/graph is the hero** — full-width and *large* (the thing IS its structure);
   don't shrink it to a secondary-map size (that's the result-ranking treatment, wrong here).
+  Scale its height to node count, though — a 4-node graph in a 520px panel reads barren.
 - **Selection is the spine**: select a node → a *lean* readout appears (identity, summary,
   links, a "touches: N/M/K" count) — the detailed related rows light in the active tab, so
   the readout doesn't duplicate them. Nothing selected → clean map + a hint + tabs.
@@ -30,9 +31,10 @@ touches it). Secondary plan/context surfaces are reachable but not all at once.
 ## Progressive disclosure
 - Default = clean map + tabs; the readout is *on demand* (selection). Depth (roadmap,
   guide, decisions) sits behind tabs — pick one, don't scroll past all three.
-- **Readout is responsive** (same idiom as a mobile filter drawer): floating overlay on
-  the graph on desktop (`≥1000px`), a **stacked section below the graph on mobile** — a
-  floating card over an ELK graph covers it and clashes with pan/zoom on small screens.
+- **Readout is a docked rail, not a floating overlay**: on selection it docks *beside* the
+  graph (split grid, ~300px) on desktop, and **stacks below the graph on mobile** (`≤1000px`).
+  A floating card over an ELK graph covers it / clashes with pan/zoom and reads as loose —
+  a docked rail reads intentional. Default (nothing selected) = graph full-width.
 - Cross-highlight ties it together: selecting in the map lights related rows in the
   active tab; clicking a linked row selects its node. Same `nodeRefs()` helper both ways.
 
