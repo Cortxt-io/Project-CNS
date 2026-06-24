@@ -557,6 +557,16 @@ def cmd_watch(_args: argparse.Namespace) -> None:
     run_watch()
 
 
+def cmd_cookbook(args: argparse.Namespace) -> None:
+    """Generate/refresh a product's living build cookbook (AI-maintained per product)."""
+    from scripts.cookbook import run_cookbook
+    res = run_cookbook(args.domain, dry_run=args.dry_run)
+    if args.dry_run:
+        print(res["prompt"])
+    else:
+        print(f"Cookbook for {res['domain']} regenerated: {res['steps']} steps ({res['generated_at']}).")
+
+
 def cmd_analyze(args: argparse.Namespace) -> None:
     """AI-analyze a node and suggest field updates."""
     from scripts.analyst import run_analyze
@@ -1461,6 +1471,18 @@ def register_lab(subparsers) -> None:
         help="Run analysis without saving or applying changes",
     )
     sp_analyze.set_defaults(func=cmd_analyze)
+
+    # cns cookbook — AI-maintained per-product build guide
+    sp_cookbook = subparsers.add_parser(
+        "cookbook",
+        help="Generate/refresh a product's living build cookbook (AI)",
+    )
+    sp_cookbook.add_argument("domain", help="Product domain (juvahem/bkfinans/orgkomp/crusade/cortxt)")
+    sp_cookbook.add_argument(
+        "--dry-run", action="store_true", default=False,
+        help="Build context + prompt without calling the model (free)",
+    )
+    sp_cookbook.set_defaults(func=cmd_cookbook)
 
     # cns scaffold
     sp_scaffold = subparsers.add_parser(
