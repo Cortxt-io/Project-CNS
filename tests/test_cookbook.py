@@ -38,3 +38,10 @@ def test_missing_cookbook_is_none() -> None:
 if __name__ == "__main__":
     test_dry_run_builds_context_no_llm(); test_load_cookbook_seed(); test_missing_cookbook_is_none()
     print("OK — cookbook reader/generator (dry) green")
+
+
+def test_dry_run_evolves_from_previous() -> None:
+    """När en cookbook redan finns matas den in i prompten (evolve, ej regenerera)."""
+    r = cookbook.run_cookbook("juvahem", dry_run=True)
+    assert r["evolves_from_previous"] is True
+    assert "Föregående cookbook" in r["prompt"]
