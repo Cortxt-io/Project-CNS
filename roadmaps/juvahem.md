@@ -1,29 +1,34 @@
 ---
 slug: juvahem
 title: Juvahem
-current_phase: spec
+current_phase: konsolidera
 phases:
+  discovery:
+    status: done
+    epics:
+      - { title: "Vision: beslutsverktyg för par som väljer var de ska flytta", done: true }
   spec:
+    status: done
+    epics:
+      - { title: "Parets kombinerade profil-input + ranknings-output (290 kommuner)", done: true, nodes: [juvahem-scoring] }
+      - { title: "Datamodell + moat: Kolada/JobTech/SCB ger ärligt försprång", done: true, nodes: [juvahem-etl] }
+  mvp:
+    status: done
+    epics:
+      - { title: "ETL-pipeline (datakällor → kommun-score, provenance per värde)", done: true, nodes: [juvahem-etl] }
+      - { title: "Scoring mot parets profil (transparent WSM, dual-career)", done: true, nodes: [juvahem-scoring] }
+      - { title: "Resultat-UI (kartvy + rankning)", done: true, nodes: [juvahem-ui] }
+  konsolidera:
     status: active
     epics:
-      - { title: "Re-spec: parets kombinerade profil-input + ranknings-output (290 kommuner)", done: false, nodes: [juvahem-scoring] }
-      - { title: "Datamodell + moat: vilken data ger ärligt försprång (Kolada m.m.)", done: false, nodes: [juvahem-etl] }
-  mvp:
-    status: todo
-    epics:
-      - { title: "ETL-pipeline (datakällor → kommun-score)", done: false, nodes: [juvahem-etl] }
-      - { title: "Scoring mot parets profil", done: false, nodes: [juvahem-scoring] }
-      - { title: "Resultat-UI (kartvy + rankning)", done: false, nodes: [juvahem-ui] }
-  konsolidera:
-    status: todo
-    epics:
-      - { title: "Extrahera kärnan: data + scoring/etl ur UI:t till egen modul", done: false, nodes: [juvahem-scoring] }
-      - { title: "Lås en tunn typad API-söm mellan kärna och UI", done: false, nodes: [juvahem-scoring] }
-      - { title: "Sätt UI på designsystemet (shadcn/@cortxt/ui) så features komponeras", done: false, nodes: [juvahem-ui] }
+      - { title: "Tester: scoring + explain mot faktisk data/communes/*.json (kritisk lucka)", done: false, nodes: [juvahem-scoring] }
+      - { title: "Härda data→UI-sömmen: runtime-validering så ETL-fältändring ej tyst bryter UI", done: false, nodes: [juvahem-scoring, juvahem-ui] }
+      - { title: "UI-refaktor: ett rankings-dataflöde, ta bort Explanation-dubbletten", done: false, nodes: [juvahem-ui] }
+      - { title: "UI på designsystemet (shadcn-svelte) så features komponeras", done: false, nodes: [juvahem-ui] }
   live:
     status: todo
     epics:
-      - { title: "Deploy på juvahem.se (ren ombyggnad ersätter vibe-versionen)", done: false, nodes: [juvahem-ui] }
+      - { title: "Konsoliderad version ersätter vibe-v1 på juvahem.se", done: false, nodes: [juvahem-ui] }
   users:
     status: todo
     epics: []
@@ -34,9 +39,10 @@ phases:
     status: todo
     epics: []
 open_decisions:
-  - { title: "Bygga om från grunden eller rädda vibe-koden?", why: "v1 är vibe-kodad och live; avgör om ombyggnaden startar rent eller refaktorerar." }
   - { title: "Gratis-data-MVP räcker eller krävs betald datakälla?", why: "Booli var juridiskt spärrad; moat beror på datatillgång.", nodes: [juvahem-etl] }
 ---
 
-Ombyggnads-roadmap för Juvahem (par-relocation, rankar 290 kommuner). v1 vibe-kodad och live på
-juvahem.se — detta är den rena planen ombyggnaden drivs mot. Finslipa epics + beslut.
+Roadmap för Juvahem (par-relocation, rankar 290 kommuner). v1 är live på juvahem.se. Beslut
+(decisions/juvahem.md): **refaktorera, inte bygg om** — kodgranskningen visade att kärnan (ETL,
+scoring, explain, data-kontrakt) redan är ren och bevisad; arbetet är att konsolidera (tester,
+härda sömmen, UI-refaktor på designsystemet), inte starta från noll. Aktuell fas: Konsolidera.
