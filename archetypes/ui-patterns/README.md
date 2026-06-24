@@ -28,6 +28,11 @@ vacuum).
 | overview / dashboard | _tbd_ | planned | (cockpit home, later) |
 | input-wizard | _tbd_ | planned | — |
 
+## Shared primitives (used within surfaces)
+| Primitive | Doc | Recipe | Used by |
+|-----------|-----|--------|---------|
+| **node graph** | [graph.md](graph.md) | ELK + ReactFlow, skin per surface | cockpit `@cortxt/graph`, orgkomp `OrgGraph` |
+
 ## How to use
 Building a new surface? Identify its type → read that type's pattern doc → copy the
 worked example, adapting to the product's stack + identity. New type → run the method
