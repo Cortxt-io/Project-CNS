@@ -8,8 +8,8 @@
     {
       "key": "spec-profil-output",
       "discipline": "ui_ux",
-      "title": "Speca parets input + ranknings-output",
-      "detail": "Lås kontraktet: vad paret matar in (båda jobben, budget, hushåll) och vad de får ut (rankade kommuner + skäl). En sida, inga konton i MVP. Detta är fästpunkten allt annat hänger på — skriv det innan kod.",
+      "title": "Speca profil-input + ranknings-output",
+      "detail": "Lås kontraktet: vad användaren matar in (jobb, budget, hushåll) och vad de får ut (rankade kommuner + skäl). En sida, inga konton i MVP. Detta är fästpunkten allt annat hänger på — skriv det innan kod.",
       "done": true,
       "nodes": [
         "juvahem-scoring",
@@ -42,8 +42,8 @@
     {
       "key": "scoring-engine",
       "discipline": "backend",
-      "title": "Transparent scoring mot parets profil (juvahem-scoring)",
-      "detail": "Förklarbar rankning: varje kommun får score + skäl PER profil-dimension. Ingen black box — paret ska se varför. Ren funktion (underlag + profil → rankning), inga UI-beroenden.",
+      "title": "Transparent scoring mot profilen (juvahem-scoring)",
+      "detail": "Förklarbar rankning: varje kommun får score + skäl PER profil-dimension. Ingen black box — användaren ska se varför. Ren funktion (underlag + profil → rankning), inga UI-beroenden.",
       "done": true,
       "nodes": [
         "juvahem-scoring"
@@ -65,8 +65,8 @@
     {
       "key": "input-flow",
       "discipline": "ui_ux",
-      "title": "Inmatnings-flöde för paret",
-      "detail": "Kort tvåstegs-formulär för båda partners profiler. localStorage-persistens (ingen auth i MVP). Tydlig progress, inga onödiga fält, vägledande tomt/fel-tillstånd.",
+      "title": "Inmatnings-flöde för profilen",
+      "detail": "Kort formulär för profilen (1–2 personer). localStorage-persistens (ingen auth i MVP). Tydlig progress, inga onödiga fält, vägledande tomt/fel-tillstånd.",
       "done": true,
       "nodes": [
         "juvahem-ui"
@@ -99,7 +99,7 @@
     {
       "key": "first-users",
       "discipline": "ui_ux",
-      "title": "Få första riktiga paren att testa",
+      "title": "Få första riktiga användarna att testa",
       "detail": "Ställ verktyget framför 3–5 verkliga par. Mät om rankningen känns sann. Feedback → iteration som loop (lägg feature → hänger på sömmen → UI komponeras), inte ombyggnad. Mot första återkommande användning.",
       "done": false,
       "nodes": [

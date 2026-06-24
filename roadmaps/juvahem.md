@@ -6,17 +6,17 @@ phases:
   discovery:
     status: done
     epics:
-      - { title: "Vision: beslutsverktyg för par som väljer var de ska flytta", done: true }
+      - { title: "Vision: beslutsverktyg för den som väljer var hen ska flytta (290 kommuner mot din profil)", done: true }
   spec:
     status: done
     epics:
-      - { title: "Parets kombinerade profil-input + ranknings-output (290 kommuner)", done: true, nodes: [juvahem-scoring] }
+      - { title: "Profil-input + ranknings-output (290 kommuner mot dina prioriteringar)", done: true, nodes: [juvahem-scoring] }
       - { title: "Datamodell + moat: Kolada/JobTech/SCB ger ärligt försprång", done: true, nodes: [juvahem-etl] }
   mvp:
     status: done
     epics:
       - { title: "ETL-pipeline (datakällor → kommun-score, provenance per värde)", done: true, nodes: [juvahem-etl] }
-      - { title: "Scoring mot parets profil (transparent WSM, dual-career)", done: true, nodes: [juvahem-scoring] }
+      - { title: "Scoring mot profilens prioriteringar (transparent WSM; dual-career = ett läge)", done: true, nodes: [juvahem-scoring] }
       - { title: "Resultat-UI (kartvy + rankning)", done: true, nodes: [juvahem-ui] }
   konsolidera:
     status: active
@@ -42,7 +42,7 @@ open_decisions:
   - { title: "Gratis-data-MVP räcker eller krävs betald datakälla?", why: "Booli var juridiskt spärrad; moat beror på datatillgång.", nodes: [juvahem-etl] }
 ---
 
-Roadmap för Juvahem (par-relocation, rankar 290 kommuner). v1 är live på juvahem.se. Beslut
+Roadmap för Juvahem (kommunval/relocation — rankar 290 kommuner mot din profil). v1 är live på juvahem.se. Beslut
 (decisions/juvahem.md): **refaktorera, inte bygg om** — kodgranskningen visade att kärnan (ETL,
 scoring, explain, data-kontrakt) redan är ren och bevisad; arbetet är att konsolidera (tester,
 härda sömmen, UI-refaktor på designsystemet), inte starta från noll. Aktuell fas: Konsolidera.

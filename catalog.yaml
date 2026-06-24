@@ -295,8 +295,8 @@ systems:
     depends_on: []
   juvahem:
     title: Juvahem
-    summary: Decision tool for couples choosing where to relocate — ranks all 290 Swedish
-      municipalities against a couple's combined profile (both partners' jobs, budget,
+    summary: Decision tool for choosing where to relocate — ranks all 290 Swedish
+      municipalities against the user's profile priorities (jobs, budget,
       household). Own venture, own repo.
     type: tool
     domain: juvahem
@@ -394,7 +394,7 @@ systems:
     depends_on: []
   juvahem-scoring:
     title: Juvahem Scoring
-    summary: Rankar 290 kommuner mot parets kombinerade profil.
+    summary: Rankar 290 kommuner mot profilens prioriteringar (dual-career = ett läge).
     part_of: juvahem
     type: service
     domain: juvahem
@@ -404,7 +404,7 @@ systems:
     depends_on: []
   juvahem-ui:
     title: Juvahem UI
-    summary: Parets inmatning + ranknings-resultat (frontend).
+    summary: Profil-inmatning + ranknings-resultat (frontend).
     part_of: juvahem
     type: frontend
     domain: juvahem
