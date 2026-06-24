@@ -23,7 +23,7 @@ phases:
     epics:
       - { title: "Tester: scoring/explain/invest/presets/price mot faktisk data — wire:ade i npm test (run-all)", done: true, nodes: [juvahem-scoring] }
       - { title: "Härda data→UI-sömmen: runtime-validering så ETL-fältändring ej tyst bryter UI", done: false, nodes: [juvahem-scoring, juvahem-ui] }
-      - { title: "UI-refaktor: ett rankings-dataflöde, ta bort Explanation-dubbletten", done: false, nodes: [juvahem-ui] }
+      - { title: "UI-refaktor /jamfor: progressiv avtäckning, flik-expansion, Explanation-dedup (juvahem#6)", done: true, nodes: [juvahem-ui] }
       - { title: "UI på designsystemet (shadcn-svelte) så features komponeras", done: false, nodes: [juvahem-ui] }
   live:
     status: todo
