@@ -24,8 +24,8 @@ vacuum).
 | Type | Pattern | Status | Proven example |
 |------|---------|--------|----------------|
 | **result-ranking** | [result-ranking.md](result-ranking.md) | ✅ proven | juvahem `/jamfor` (Svelte) |
+| **detail / readout** | [detail-readout.md](detail-readout.md) | ✅ proven | cockpit `/vertikal` (React) |
 | overview / dashboard | _tbd_ | planned | (cockpit home, later) |
-| detail / readout | _tbd_ | planned | (cockpit /vertikal, later) |
 | input-wizard | _tbd_ | planned | — |
 
 ## How to use
