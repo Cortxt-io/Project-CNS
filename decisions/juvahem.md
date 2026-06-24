@@ -18,6 +18,26 @@ via GitHub auto-deploy. Modellerad i CNS som `domain: juvahem`.
 - **Datadriven, inte innehållsdriven:** värdet ligger i modellen + 290 förrenderade SEO-sidor,
   inte i redaktionellt innehåll.
 
+## Stack: SvelteKit (vs React) — rationale (2026-06-24)
+Valet var odokumenterat (konstaterat i NOTES/UI-SPEC, aldrig jämfört). Spikas här i efterhand som
+ett **medvetet behållet** val (jfr refaktor-beslutet nedan).
+
+**Fördelar (passar juvahems form):**
+- Kompilerar bort runtime → mindre bundle → snabbare laddning + bättre Core Web Vitals (rankingfaktor
+  för en publik, sök-driven sajt).
+- SvelteKit ger SSR/prerender per route out of the box: landing prerenderad, `/kommun/[slug]` statiska
+  SEO-sidor m. canonical, `/jamfor` interaktiv (`ssr=false`). React kräver Next.js för motsvarande.
+- Mindre boilerplate (Svelte 5 runes) → snabbt att bygga solo.
+
+**Nackdelar (= React-fördelar):**
+- Mindre ekosystem, mindre AI-träningsdata, mindre talangpool.
+- **Designsystem-divergens:** `@cortxt/ui` + övriga vertikaler lutar React/shadcn; juvahem-UI måste gå
+  via shadcn-svelte (separat port). Det är per-stack-priset (jfr [[per-stack-arketyp-beslut]]).
+
+**Motivering:** juvahem är SEO-statisk + sök-driven med EN interaktiv vy — exakt formen SvelteKit är
+bäst på. Konsekvent med per-stack/polyglott-valet (bästa verktyg per jobb + lärande). Konsekvens för
+arketyperna: juvahems UI-arketyp-referens blir **Svelte**, inte React.
+
 ## Bygga om från grunden vs rädda vibe-koden? (2026-06-24)
 **Beslut: REFAKTORERA, inte bygg om.** En kodgranskning (Explore, hela juvahem/etl + src, 34 filer)
 mot faktisk kod reviderar "vibe-kodad, bygg om allt"-premissen — juvahem är inte en röra. Det svåra
