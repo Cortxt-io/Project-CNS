@@ -1,0 +1,17 @@
+{
+  "domain": "juvahem",
+  "title": "Juvahem — bygg-cookbook",
+  "summary": "Ren ombyggnad av par-relocation-verktyget (rankar 290 kommuner). Fas: Spec. Seed — kör `cns cookbook juvahem` med ANTHROPIC_API_KEY för en AI-genererad, levande version mot nuläget.",
+  "source": "seed",
+  "generated_at": "2026-06-24",
+  "steps": [
+    {"key": "spec-profil-output", "discipline": "ui_ux", "title": "Speca parets input + ranknings-output", "detail": "Definiera vad paret matar in (båda jobben, budget, hushåll) och vad de får ut (rankade kommuner + varför). En sida, inga konton. Detta låser scope för MVP.", "agent_hint": "Skriv en kort spec av input/output-kontraktet ur juvahem-noden + roadmap."},
+    {"key": "data-moat", "discipline": "backend", "title": "Bestäm datakälla + moat", "detail": "Avgör vilken data ger ärligt försprång (Kolada m.fl.) och om gratis-data-MVP räcker. Booli är juridiskt spärrad. Datatillgången är moaten — beslutet gatar resten.", "agent_hint": "Sammanställ kandidat-datakällor + juridiska spärrar för en beslutsnot."},
+    {"key": "etl-pipeline", "discipline": "backend", "title": "Bygg ETL → scoring-underlag (juvahem-etl)", "detail": "Hämta och normalisera kommundata till ett stabilt scoring-underlag. Idempotent, schemalagd, versionerad output. Detta matar scoring.", "agent_hint": "Scaffolda en ETL-pipeline som normaliserar Kolada-data till ett tabellformat."},
+    {"key": "scoring-engine", "discipline": "backend", "title": "Scoring mot parets profil (juvahem-scoring)", "detail": "Transparent, förklarbar rankning: varje kommun får en score + skäl per profil-dimension. Ingen black box — paret ska se VARFÖR.", "agent_hint": "Implementera en viktad scoring-funktion med per-faktor-förklaringar."},
+    {"key": "result-ui", "discipline": "ui_ux", "title": "Resultat-UI: kartvy + rankning (juvahem-ui)", "detail": "Rankad lista + kartvy, varje kommun expanderbar till sina skäl. Återanvänd designsystem, mobil först, färg alltid parad med text. Tomt/fel-tillstånd som vägleder.", "agent_hint": "Bygg en rankningsvy med expanderbara skäl-kort och en kartintegration."},
+    {"key": "input-flow", "discipline": "ui_ux", "title": "Inmatnings-flöde för paret", "detail": "Enkelt, kort formulär för båda partners profiler. Spara lokalt (ingen auth i MVP). Tydlig progress, inga onödiga fält.", "agent_hint": "Designa ett tvåstegs profil-formulär med localStorage-persistens."},
+    {"key": "deploy", "discipline": "backend", "title": "Deploy-väg (ersätt vibe-versionen)", "detail": "Ren ombyggnad deployas på juvahem.se via GitHub auto-deploy. Bekräfta att prod kör den nya koden (ej den vibe-kodade). Observability på ETL-jobbet.", "agent_hint": "Sätt upp deploy + en hälsokoll som larmar om ETL-jobbet failar."},
+    {"key": "first-users", "discipline": "ui_ux", "title": "Få första riktiga paren att testa", "detail": "Ställ verktyget framför 3-5 verkliga par. Mät om rankningen känns sann. Feedback → iteration. Mot första återkommande användning.", "agent_hint": "Förbered ett kort feedback-formulär + en lista att rekrytera testare ur."}
+  ]
+}

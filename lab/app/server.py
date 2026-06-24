@@ -957,6 +957,18 @@ def api_vertical(slug):
         return jsonify({"status": "error", "message": str(exc)}), 500
 
 
+@app.route("/api/cookbook/<slug>")
+def api_cookbook(slug):
+    """Read a product's AI-maintained build cookbook (committed JSON), or null if none yet.
+    Generation runs offline (`cns cookbook <slug>` / CI), not in this request.
+    """
+    try:
+        from scripts.cookbook import load_cookbook
+        return jsonify(load_cookbook(slug) or {"slug": slug, "steps": []})
+    except Exception as exc:
+        return jsonify({"status": "error", "message": str(exc)}), 500
+
+
 @app.route("/brief")
 @auth.login_required
 def brief_page():
