@@ -47,10 +47,13 @@ Regler:
   "steps": [
     {"key": "<stabil-kebab-id>", "discipline": "ui_ux" | "backend",
      "title": "<kort steg-titel>", "detail": "<2-4 meningar: vad, varför, hur>",
+     "nodes": ["<slug>", ...],
      "agent_hint": "<en mening: vad en agent skulle göra för detta steg>"}
   ]
 }
-10-16 steg, blandat ui_ux och backend, i bygg-ordning."""
+10-16 steg, blandat ui_ux och backend, i bygg-ordning. ``nodes`` = de katalog-slug(s) steget rör
+(en eller flera; tom lista om tvärgående) — använd EXAKT slug:arna ur kontextens nodlista så
+bygg-guiden korslänkar mot arkitektur-grafen."""
 
 
 def _build_cookbook_context(domain: str) -> str:
