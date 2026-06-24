@@ -7,7 +7,12 @@ phases:
     summary: Problem + vem + scope definierat
   - key: mvp
     title: MVP
-    summary: Kärnan byggd, funkar end-to-end
+    summary: Kärnan byggd, funkar end-to-end (får vara slit-och-släng)
+  - key: konsolidera
+    title: Konsolidera
+    summary: Härda sömmarna innan features — extrahera kärnan (data + logik), lås en tunn
+      typad API-söm, sätt UI på designsystemet. Det saknade steget som gör features additiva
+      i stället för vibe-kaos.
   - key: live
     title: Live
     summary: Deployad på sin domän

@@ -14,6 +14,12 @@ phases:
       - { title: "ETL-pipeline (datakällor → kommun-score)", done: false, node: juvahem-etl }
       - { title: "Scoring mot parets profil", done: false, node: juvahem-scoring }
       - { title: "Resultat-UI (kartvy + rankning)", done: false, node: juvahem-ui }
+  konsolidera:
+    status: todo
+    epics:
+      - { title: "Extrahera kärnan: data + scoring/etl ur UI:t till egen modul", done: false, node: juvahem-scoring }
+      - { title: "Lås en tunn typad API-söm mellan kärna och UI", done: false, node: juvahem-scoring }
+      - { title: "Sätt UI på designsystemet (shadcn/@cortxt/ui) så features komponeras", done: false, node: juvahem-ui }
   live:
     status: todo
     epics:
