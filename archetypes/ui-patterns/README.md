@@ -25,8 +25,8 @@ vacuum).
 |------|---------|--------|----------------|
 | **result-ranking** | [result-ranking.md](result-ranking.md) | ✅ proven | juvahem `/jamfor` (Svelte) |
 | **detail / readout** | [detail-readout.md](detail-readout.md) | ✅ proven | cockpit `/vertikal` (React) |
-| overview / dashboard | _tbd_ | planned | (cockpit home, later) |
-| input-wizard | _tbd_ | planned | — |
+| **overview / portfolio** | [overview.md](overview.md) | ✅ proven | orgkomp Home (React) |
+| input / editor | _tbd_ | planned | (orgkomp /edit, next) |
 
 ## Shared primitives (used within surfaces)
 | Primitive | Doc | Recipe | Used by |
