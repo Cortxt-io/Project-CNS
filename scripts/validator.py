@@ -19,6 +19,7 @@ VALID_KINDS = set(_ENUMS["kinds"])
 VALID_TYPES = set(_ENUMS.get("types", []))
 VALID_DOMAINS = set(_ENUMS.get("domains", []))
 VALID_ENTITY_TYPES = set(_ENUMS.get("entity_types", []))
+VALID_ARCHETYPES = set(_ENUMS.get("archetypes", []))
 # integrations-fältet (#77): kända deploy-targets/source-types för mjuk validering.
 VALID_DEPLOY_TARGETS = set(_ENUMS.get("deploy_targets", []))
 VALID_SOURCE_TYPES = set(_ENUMS.get("source_types", []))
@@ -109,6 +110,9 @@ def validate_catalog(systems: dict[str, dict] | None = None) -> tuple[list[str],
         entity_type = entry.get("entity_type")
         if entity_type and VALID_ENTITY_TYPES and entity_type not in VALID_ENTITY_TYPES:
             warnings.append(f"{slug}: okänd entity_type '{entity_type}'")
+        archetype = entry.get("archetype")
+        if archetype and VALID_ARCHETYPES and archetype not in VALID_ARCHETYPES:
+            warnings.append(f"{slug}: okänd archetype '{archetype}'")
 
         # Mjuk validering av integrations (#77/#78) — WARN, aldrig ERROR (additivt).
         # deploy-element är antingen en platt str ("railway") eller ett objekt

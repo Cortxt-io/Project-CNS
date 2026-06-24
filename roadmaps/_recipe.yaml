@@ -2,9 +2,13 @@
 # användare. Receptet är SAMMA för alla vertikaler; den per-vertikal-anpassade planen
 # (epics + öppna beslut) bor i roadmaps/<slug>.md (nivå 2). Redigera faserna här — enkälla.
 phases:
+  - key: discovery
+    title: Discovery
+    summary: Utforska problemet + bestäm visionen — vad ska det bli, för vem, värt att bygga —
+      INNAN scope låses. Ger visionen en hemvist (det divergenta steget före Spec).
   - key: spec
     title: Spec
-    summary: Problem + vem + scope definierat
+    summary: Problem + vem + scope definierat (konvergerar visionen till ett kontrakt)
   - key: mvp
     title: MVP
     summary: Kärnan byggd, funkar end-to-end (får vara slit-och-släng)

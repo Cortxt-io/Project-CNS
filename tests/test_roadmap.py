@@ -17,13 +17,13 @@ from scripts import roadmap  # noqa: E402
 def test_recipe_phases() -> None:
     phases = roadmap.load_recipe()["phases"]
     keys = [p["key"] for p in phases]
-    assert keys == ["spec", "mvp", "konsolidera", "live", "users", "validated", "paying"]
+    assert keys == ["discovery", "spec", "mvp", "konsolidera", "live", "users", "validated", "paying"]
 
 
 def test_summary_crusade() -> None:
     s = roadmap.roadmap_summary("crusade")
     assert s is not None
-    assert s["current_phase"] == "spec" and s["phase_index"] == 1 and s["total_phases"] == 7
+    assert s["current_phase"] == "spec" and s["phase_index"] == 2 and s["total_phases"] == 8
     assert s["open_decisions"] >= 1 and s["next_decision"]
 
 
@@ -35,7 +35,7 @@ def test_missing_roadmap_is_none() -> None:
 def test_detail_merges_recipe_and_status() -> None:
     d = roadmap.roadmap_detail("crusade")
     assert d is not None
-    assert [p["key"] for p in d["phases"]] == ["spec", "mvp", "konsolidera", "live", "users", "validated", "paying"]
+    assert [p["key"] for p in d["phases"]] == ["discovery", "spec", "mvp", "konsolidera", "live", "users", "validated", "paying"]
     spec = next(p for p in d["phases"] if p["key"] == "spec")
     assert spec["status"] == "active" and len(spec["epics"]) >= 1
     assert isinstance(d["open_decisions"], list)

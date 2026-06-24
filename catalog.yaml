@@ -388,6 +388,7 @@ systems:
     part_of: juvahem
     type: pipeline
     domain: juvahem
+    archetype: etl
     feeds:
     - juvahem-scoring
     depends_on: []
@@ -397,6 +398,7 @@ systems:
     part_of: juvahem
     type: service
     domain: juvahem
+    archetype: decision-engine
     feeds:
     - juvahem-ui
     depends_on: []
@@ -406,6 +408,7 @@ systems:
     part_of: juvahem
     type: frontend
     domain: juvahem
+    archetype: result
     feeds: []
     depends_on: []
   bkfinans-rules:
@@ -414,6 +417,7 @@ systems:
     part_of: bkfinans
     type: service
     domain: bkfinans
+    archetype: decision-engine
     feeds:
     - bkfinans-ui
     depends_on: []
@@ -423,6 +427,7 @@ systems:
     part_of: bkfinans
     type: frontend
     domain: bkfinans
+    archetype: result
     feeds: []
     depends_on: []
   orgkomp-model:
