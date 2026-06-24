@@ -1,13 +1,13 @@
 # Juvahem — beslut & anteckningar
 
 ## Vad
-Beslutsstöd för par/familjer som ska flytta: rankar Sveriges 290 kommuner mot parets
-**kombinerade** profil (båda partnernas jobbmatch, kommunalskatt, boende, pendling, skola,
+Beslutsstöd för den som ska flytta: rankar Sveriges 290 kommuner mot din profils
+prioriteringar — dual-career (båda partnernas yrken) är ett läge bland flera (jobbmatch, kommunalskatt, boende, pendling, skola,
 energipris-zon). Eget venture, eget repo (`Cortxt-io/juvahem`), egen Vercel, live på juvahem.se
 via GitHub auto-deploy. Modellerad i CNS som `domain: juvahem`.
 
 ## Beslut
-- **Moat = personalisering per pars profil, inte generiska "bästa orter"-listor.** Två inkomster +
+- **Moat = personalisering mot profilens prioriteringar, inte generiska "bästa orter"-listor.** Två inkomster +
   två yrken + hushåll matchas samtidigt — det är det konkurrenterna inte gör.
 - **Gratis-/öppen-data-MVP (Tier 1):** Kolada (skatt/befolkning), JobTech (jobbannonser per
   yrkesfält × kommun), SCB PxWeb. Deterministisk klient-scoring (`src/lib/score.js`),
