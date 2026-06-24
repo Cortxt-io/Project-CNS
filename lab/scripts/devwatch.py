@@ -453,7 +453,9 @@ def run_devwatch(
     diff_output = run_git_diff(baseline_commit)
     slug_diffs = parse_diff_by_slug(diff_output)
 
-    all_slugs = [p.parent.name for p in list_node_files()]
+    # Slugs ur catalog.yaml (node.md-globen revs i teardown #11).
+    from scripts.catalog import load_catalog
+    all_slugs = list(load_catalog().keys())
     nodes_scanned = len(all_slugs)
 
     events: list[dict] = []

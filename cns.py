@@ -552,9 +552,9 @@ def cmd_devlog(args: argparse.Namespace) -> None:
 
 
 def cmd_watch(_args: argparse.Namespace) -> None:
-    """Start file watcher for auto-updating 'updated' timestamps."""
-    from scripts.file_watcher import run_watch
-    run_watch()
+    """PENSIONERAD (teardown #11) — bevakade borttagna nodes/<slug>/node.md."""
+    console.print("[yellow]cns watch är pensionerad (teardown #11): node.md-filerna revs, "
+                  "det finns inget att bevaka. Sanningen bor i catalog.yaml.[/yellow]")
 
 
 def cmd_cookbook(args: argparse.Namespace) -> None:
@@ -585,14 +585,9 @@ def cmd_analyze(args: argparse.Namespace) -> None:
 
 
 def cmd_scaffold(_args: argparse.Namespace) -> None:
-    """Ensure all node directories exist."""
-    from scripts.md_parser import ensure_all_node_dirs
-    created = ensure_all_node_dirs()
-    if created:
-        for slug in created:
-            console.print(f"[green]Scaffolded missing dirs for: {slug}[/green]")
-    else:
-        console.print("[dim]All node directories already complete.[/dim]")
+    """PENSIONERAD (teardown #11) — skapade döda nodes/<slug>/-mappar."""
+    console.print("[yellow]cns scaffold är pensionerad (teardown #11): nodes/<slug>/-mapparna revs. "
+                  "Nya system bor i catalog.yaml (cns new <slug>) + decisions/.[/yellow]")
 
 
 def cmd_install_hooks(_args: argparse.Namespace) -> None:
@@ -1185,7 +1180,21 @@ def cmd_selftest(args: argparse.Namespace) -> None:
         )
         return res.status  # "no-work" = loopen körde rent
 
+    def _node_seam_gated():
+        # Den rivna node.md-disk-modellen (teardown #11) ska resa fel, ej degradera tyst.
+        from scripts.md_parser import write_node, list_node_files, scaffold_node_dirs
+        for fn in (lambda: write_node("x", {}, {}),
+                   lambda: list_node_files(),
+                   lambda: scaffold_node_dirs("x")):
+            try:
+                fn()
+            except NotImplementedError:
+                continue
+            raise AssertionError("död node.md-seam degraderar tyst — grinden saknas")
+        return "grindad ✓"
+
     check("katalog-läs (read_all_nodes)", _catalog)
+    check("node.md-dödseam grindad (teardown #11)", _node_seam_gated)
     check("katalog-validering (validate_catalog)", _validate)
     check("orientering (command_center)", _orientering)
     check("rekommendationer (recommend)", _recommend)
