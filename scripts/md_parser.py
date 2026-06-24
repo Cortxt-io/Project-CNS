@@ -147,11 +147,24 @@ def _render_body(sections: dict[str, str], kind: str | None = None) -> str:
     return "\n".join(parts).rstrip() + "\n"
 
 
+def _dead_node_seam(fn: str) -> None:
+    """Grind för den rivna node.md-disk-modellen (teardown #11).
+
+    Speglar ``write_node``s pension: dessa funktioner pekade på ``nodes/<slug>/`` som
+    revs. Tidigare degraderade de TYST (tom lista / skapade döda dirs) — nu reser de ett
+    högljutt fel så ``cns selftest`` och importerande callers fångar varje död referens
+    rött, i stället för att producera tom/fel output ingen märker.
+    """
+    raise NotImplementedError(
+        f"{fn} är pensionerad (nodmodell-teardown #11): nodes/<slug>/node.md revs. "
+        "Sanningen bor i catalog.yaml (läs via catalog.load_catalog/read_node) + decisions/. "
+        "Rewira callern dit."
+    )
+
+
 def list_node_files() -> list[Path]:
-    """Return sorted list of node.md files in the nodes directory."""
-    if not NODES_DIR.exists():
-        return []
-    return sorted(NODES_DIR.glob("*/node.md"))
+    """PENSIONERAD (teardown #11) — globbade nodes/*/node.md som inte längre finns."""
+    _dead_node_seam("list_node_files")
 
 
 def read_node(slug: str) -> tuple[dict[str, Any], dict[str, str], str]:
@@ -247,55 +260,18 @@ def new_node_template(slug: str, kind: str | None = None) -> tuple[dict[str, Any
 
 
 def scaffold_node_dirs(slug: str) -> Path:
-    """Create the full folder scaffold for a new node.
-
-    Creates: nodes/<slug>/{notes, research, planning, exports, assets}/
-    with placeholder README.md files in notes/ and assets/.
-    Returns the node directory path.
-    """
-    pdir = node_dir(slug)
-    for sub in NODE_SUBDIRS:
-        (pdir / sub).mkdir(parents=True, exist_ok=True)
-
-    # Placeholder READMEs so empty dirs survive git/OneDrive sync
-    for sub in ("notes", "assets"):
-        readme = pdir / sub / "README.md"
-        if not readme.exists():
-            readme.write_text(
-                f"# {slug} / {sub}\n\nAdd {sub} files here.\n",
-                encoding="utf-8",
-            )
-
-    # Seed files for research and planning
-    _seed_if_missing(pdir / "research" / "sources.md", f"# {slug} / sources\n")
-    _seed_if_missing(pdir / "research" / "market-notes.md", f"# {slug} / market notes\n")
-    _seed_if_missing(pdir / "planning" / "roadmap.md", f"# {slug} / roadmap\n")
-    _seed_if_missing(pdir / "planning" / "decisions.md", f"# {slug} / decisions\n")
-
-    return pdir
+    """PENSIONERAD (teardown #11) — skapade döda nodes/<slug>/-mappar."""
+    _dead_node_seam("scaffold_node_dirs")
 
 
 def ensure_node_dirs(slug: str) -> None:
-    """Ensure all NODE_SUBDIRS exist for a node. Creates only directories,
-    no seed files and no node.md."""
-    pdir = node_dir(slug)
-    for sub in NODE_SUBDIRS:
-        (pdir / sub).mkdir(parents=True, exist_ok=True)
+    """PENSIONERAD (teardown #11) — skapade döda nodes/<slug>/-subdirs."""
+    _dead_node_seam("ensure_node_dirs")
 
 
 def ensure_all_node_dirs() -> list[str]:
-    """Run ensure_node_dirs for all existing nodes.
-    Returns list of slugs where directories were created."""
-    created: list[str] = []
-    for path in list_node_files():
-        slug = path.parent.name
-        # Check if any subdir was missing before creating
-        pdir = node_dir(slug)
-        had_missing = any(not (pdir / sub).exists() for sub in NODE_SUBDIRS)
-        ensure_node_dirs(slug)
-        if had_missing:
-            created.append(slug)
-    return created
+    """PENSIONERAD (teardown #11) — loopade döda node.md-globen."""
+    _dead_node_seam("ensure_all_node_dirs")
 
 
 def _seed_if_missing(path: Path, content: str) -> None:
