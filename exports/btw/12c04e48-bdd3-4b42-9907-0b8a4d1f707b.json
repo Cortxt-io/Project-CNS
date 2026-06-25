@@ -1,7 +1,7 @@
 {
   "session_id": "12c04e48-bdd3-4b42-9907-0b8a4d1f707b",
   "created_at": "2026-06-24T13:20:56",
-  "updated_at": "2026-06-24T13:20:56",
+  "updated_at": "2026-06-25T04:46:36",
   "linked_quest": null,
   "linked_idea": null,
   "asides": [
@@ -10,6 +10,12 @@
       "text": "bygguiden följs inte helt",
       "fork": "bygguiden-fljs-inte (c6d6)",
       "src_uuid": "c1fdf41f-fda2-4116-a08d-bfc227d35339"
+    },
+    {
+      "ts": "2026-06-25T02:36:42.025Z",
+      "text": "roadmap för orgkomp följs inte alls känns det som",
+      "fork": "roadmap-fr-orgkomp (7e7f)",
+      "src_uuid": "d459b89d-e8d4-464e-b415-102e95f31437"
     }
   ]
 }
