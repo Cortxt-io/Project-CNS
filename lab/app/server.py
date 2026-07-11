@@ -89,6 +89,15 @@ GUEST_PASSWORD = os.getenv("CNS_GUEST_PASSWORD", "")
 API_TOKEN = os.getenv("CNS_API_TOKEN", "")
 
 
+def _is_production() -> bool:
+    """True when running on Railway (any RAILWAY_* deploy signal present)."""
+    return bool(
+        os.getenv("RAILWAY_GIT_COMMIT_SHA")
+        or os.getenv("RAILWAY_ENVIRONMENT_NAME")
+        or os.getenv("RAILWAY_PROJECT_ID")
+    )
+
+
 @auth.verify_password
 def verify_password(username: str, password: str) -> bool:
     # Bearer token check (for React dashboard)
@@ -99,9 +108,14 @@ def verify_password(username: str, password: str) -> bool:
             g.role = "admin"
             return True
 
-    # Existing Basic Auth logic (unchanged)
+    # Existing Basic Auth logic
     if not PASSWORD:
-        # Dev mode – no password set, allow all
+        # No admin password configured. Fail OPEN locally (dev convenience),
+        # but fail CLOSED in production so @auth.login_required endpoints are
+        # never world-open. Set CNS_ADMIN_PASSWORD (or use CNS_API_TOKEN bearer)
+        # on Railway to enable admin access there.
+        if _is_production():
+            return False
         g.role = "admin"
         return True
     if username == USERNAME and password == PASSWORD:
@@ -496,48 +510,11 @@ def review():
     )
 
 
-@app.route("/activity")
-@auth.login_required
-def activity():
-    git_pull()
-
-    devwatch_events: list[dict[str, Any]] = []
-    devwatch_meta: dict[str, Any] = {}
-    devwatch_date = ""
-    no_activity = True
-
-    # Read devwatch from GitHub
-    devwatch_raw = read_file_from_github(
-        "nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json"
-    )
-    if devwatch_raw:
-        try:
-            data = json.loads(devwatch_raw)
-            devwatch_events = data.get("events", [])
-            devwatch_meta = data.get("meta", {})
-            devwatch_date = data.get("exported_at", "")
-            no_activity = not devwatch_events
-        except Exception:
-            pass
-
-    # Read devlog from GitHub
-    devlog_html = ""
-    devlog_raw = read_file_from_github(
-        "nodes/project-vault-dashboard/dashboard/data/devlog_latest.html"
-    )
-    if devlog_raw:
-        devlog_html = _extract_devlog_body_from_string(devlog_raw)
-        no_activity = no_activity and not devlog_html
-
-    return render_template(
-        "activity.html",
-        devwatch_events=devwatch_events,
-        devwatch_meta=devwatch_meta,
-        devwatch_date=devwatch_date,
-        devlog_html=devlog_html,
-        no_activity=no_activity,
-        is_admin=is_admin(),
-    )
+# NOTE: The server-rendered "/activity" view was removed 2026-07-11. It read
+# nodes/project-vault-dashboard/dashboard/data/* which was torn down (epic #11),
+# so it only ever rendered "no activity". No live consumer (the React app renders
+# its own views). The JSON endpoint /api/activity is kept below (parked
+# experiment dashboard references it) but no longer reads the dead paths.
 
 
 @app.route("/analyze")
@@ -868,9 +845,13 @@ def api_nodes():
 
 @app.route("/api/health")
 def api_health():
+    # running_sha lets you eyeball what commit Railway currently serves and
+    # compare it against GitHub main HEAD — cheap freshness check, no network.
+    # (Deeper running-vs-HEAD gap lives in /api/command-center → infra.)
     return jsonify({
         "status": "ok",
         "repo": os.getenv("GITHUB_REPO", "not configured"),
+        "running_sha": (os.getenv("RAILWAY_GIT_COMMIT_SHA") or "")[:8] or None,
     })
 
 
@@ -1181,41 +1162,19 @@ def api_quests_close(number):
 
 @app.route("/api/activity")
 def api_activity():
-    devwatch_events: list[dict[str, Any]] = []
-    devwatch_meta: dict[str, Any] = {}
-    devwatch_date = ""
-    devlog_html = ""
-    devlog_date = ""
-
-    # Read devwatch from GitHub
-    devwatch_raw = read_file_from_github(
-        "nodes/project-vault-dashboard/dashboard/data/devwatch_latest.json"
-    )
-    if devwatch_raw:
-        try:
-            data = json.loads(devwatch_raw)
-            devwatch_events = data.get("events", [])
-            devwatch_meta = data.get("meta", {})
-            devwatch_date = data.get("exported_at", "")
-        except Exception:
-            pass
-
-    # Read devlog from GitHub
-    devlog_raw = read_file_from_github(
-        "nodes/project-vault-dashboard/dashboard/data/devlog_latest.html"
-    )
-    if devlog_raw:
-        devlog_html = _extract_devlog_body_from_string(devlog_raw)
-        m = re.search(r"CNS DevLog — (\d{4}-\d{2}-\d{2})", devlog_raw)
-        devlog_date = m.group(1) if m else ""
-
+    # DEPRECATED (2026-07-11). This used to read
+    # nodes/project-vault-dashboard/dashboard/data/* which was torn down (epic #11),
+    # so every request made two guaranteed-404 GitHub calls and returned empty.
+    # We now return the empty payload directly — same shape, no dead-path reads —
+    # to keep the parked experiment dashboard from breaking.
     return jsonify({
-        "devwatch_events": devwatch_events,
-        "devwatch_meta": devwatch_meta,
-        "devwatch_date": devwatch_date,
-        "devlog_html": devlog_html,
-        "devlog_date": devlog_date,
-        "has_activity": bool(devwatch_events or devlog_html),
+        "devwatch_events": [],
+        "devwatch_meta": {},
+        "devwatch_date": "",
+        "devlog_html": "",
+        "devlog_date": "",
+        "has_activity": False,
+        "deprecated": True,
     })
 
 
@@ -1793,10 +1752,17 @@ def _setup() -> None:
 
 
 if not PASSWORD:
-    app.logger.warning(
-        "CNS_ADMIN_PASSWORD not set – running in dev mode (no auth). "
-        "Set CNS_PASSWORD for production."
-    )
+    if _is_production():
+        app.logger.warning(
+            "CNS_ADMIN_PASSWORD not set in production – admin endpoints are "
+            "FAIL-CLOSED (401). Set CNS_ADMIN_PASSWORD (or use CNS_API_TOKEN "
+            "bearer) on Railway to enable them. Public /api reads still work."
+        )
+    else:
+        app.logger.warning(
+            "CNS_ADMIN_PASSWORD not set – running in local dev mode (no auth). "
+            "Set CNS_ADMIN_PASSWORD for production."
+        )
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 5000))
