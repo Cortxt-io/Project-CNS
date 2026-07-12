@@ -21,10 +21,21 @@ def test_recipe_phases() -> None:
 
 
 def test_summary_crusade() -> None:
+    """Fasen HÄRLEDS numera — testa kontraktet, inte ett hårdkodat värde.
+
+    Den gamla versionen låste `current_phase == "spec"`, vilket bara var det handskrivna
+    fältet i filen. Det var fel i verkligheten (crusade har ett repo → mvp), och ett test
+    som låser fast ett osant fält skyddar bara lögnen.
+    """
     s = roadmap.roadmap_summary("crusade")
     assert s is not None
-    assert s["current_phase"] == "spec" and s["phase_index"] == 2 and s["total_phases"] == 8
+
+    keys = [p["key"] for p in roadmap.load_recipe()["phases"]]
+    assert s["current_phase"] in keys                       # en giltig receptfas
+    assert s["phase_index"] == keys.index(s["current_phase"]) + 1
+    assert s["total_phases"] == 8
     assert s["open_decisions"] >= 1 and s["next_decision"]
+    assert isinstance(s["gates_skipped"], list)             # skulden följer med
 
 
 def test_missing_roadmap_is_none() -> None:
@@ -33,12 +44,30 @@ def test_missing_roadmap_is_none() -> None:
 
 
 def test_detail_merges_recipe_and_status() -> None:
+    """Fas-status HÄRLEDS: passed / skipped / active / todo. `status:` finns inte i filerna längre."""
     d = roadmap.roadmap_detail("crusade")
     assert d is not None
-    assert [p["key"] for p in d["phases"]] == ["discovery", "spec", "mvp", "konsolidera", "live", "users", "validated", "paying"]
+    assert [p["key"] for p in d["phases"]] == [
+        "discovery", "spec", "mvp", "konsolidera", "live", "users", "validated", "paying"]
+
+    valid = {"passed", "skipped", "active", "todo"}
+    assert {p["status"] for p in d["phases"]} <= valid
+    assert sum(1 for p in d["phases"] if p["status"] == "active") == 1   # man står på ETT ställe
+
     spec = next(p for p in d["phases"] if p["key"] == "spec")
-    assert spec["status"] == "active" and len(spec["epics"]) >= 1
+    assert len(spec["epics"]) >= 1
+    assert spec["steps"]                                    # receptets steg följer med till appen
     assert isinstance(d["open_decisions"], list)
+
+
+def test_a_skipped_gate_is_visible_in_the_detail() -> None:
+    """Skulden ska synas i per-projekt-vyn — annars kan appen inte visa den."""
+    d = roadmap.roadmap_detail("orgkomp")
+    assert d is not None
+
+    skipped = [p["key"] for p in d["phases"] if p["status"] == "skipped"]
+    assert skipped == d["gates_skipped"]
+    assert "konsolidera" in skipped      # orgkomp är live men aldrig konsoliderad
 
 
 if __name__ == "__main__":
