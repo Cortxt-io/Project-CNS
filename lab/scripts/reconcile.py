@@ -40,6 +40,11 @@ class Report:
     contradictions: list[str] = field(default_factory=list)    # härlett ≠ deklarerat
     vault_findings: list[str] = field(default_factory=list)    # handlagret brister
 
+    # BEVISKÄLLOR SOM SAKNADES. Utan dessa mäter reconcile inte verkligheten — den mäter sin egen
+    # blindhet, och rapporterar den som hälsa. Första CI-körningen sa "0 motsägelser" enbart för
+    # att vaulten inte var klonad. Ett reconcile som inte kan se får ALDRIG säga "rent".
+    blind_spots: list[str] = field(default_factory=list)
+
     def as_text(self) -> str:
         lines = [
             "# Reconcile — katalogen mot verkligheten",
@@ -48,6 +53,17 @@ class Report:
             f"sammanslaget: {self.merged}",
             "",
         ]
+
+        if self.blind_spots:
+            lines += [
+                "## ⚠️ BLIND KÖRNING — resultatet nedan är INTE tillförlitligt",
+                "",
+                "Beviskällor saknades. Utan dem mäter reconcile inte verkligheten utan sin egen",
+                "blindhet: färre motsägelser betyder inte färre problem, bara färre ögon.",
+                "",
+            ]
+            lines += [f"  - {b}" for b in self.blind_spots]
+            lines.append("")
 
         def block(title: str, rows: list[str], hint: str = "") -> None:
             lines.append(f"## {title}: {len(rows)}")
@@ -69,8 +85,19 @@ class Report:
 
     @property
     def is_clean(self) -> bool:
-        """Ren = inget som kräver ett beslut. Utan-backing är kandidater, inte fel."""
+        """Ren = inget som kräver ett beslut. Utan-backing är kandidater, inte fel.
+
+        **En blind körning är aldrig ren.** Att sakna bevis är inte samma sak som att sakna
+        problem, och den distinktionen är hela systemet.
+        """
+        if self.blind_spots:
+            return False
         return not (self.only_in_reality or self.orphans or self.contradictions)
+
+    @property
+    def is_blind(self) -> bool:
+        """Saknades beviskällor? Då säger siffrorna ovan mer om oss än om portföljen."""
+        return bool(self.blind_spots)
 
 
 def run(*, write: bool = False) -> Report:
@@ -85,13 +112,35 @@ def run(*, write: bool = False) -> Report:
 
     report = Report()
 
+    # 0 — SER VI NÅGOT? Kolla beviskällorna innan vi mäter något alls.
+    #
+    # Första CI-körningen var grön och rapporterade "0 motsägelser" — enbart för att vaulten
+    # inte var klonad och tre av fyra vertikalrepon saknade access. Den mätte sin egen blindhet
+    # och kallade den hälsa. Det är exakt det fel systemet finns för att förhindra, begånget
+    # av systemet självt.
+    catalog = load_catalog()
+    venture_domains = sorted({
+        e.get("domain") for e in catalog.values()
+        if e.get("domain") and e.get("domain") != "cortxt"
+    })
+    for domain in venture_domains:
+        if signals.repo_path(domain) is None:
+            report.blind_spots.append(
+                f"repo '{domain}' saknas på disk — dess steg kan inte mätas (blir 'okänt', "
+                f"och okänt stänger ingen grind)"
+            )
+    if vault_reader.vault_root() is None:
+        report.blind_spots.append(
+            "vaulten saknas — HELA omdömeslagret är osynligt (kill-kriterier, grindbeslut). "
+            "Noll motsägelser här betyder noll ögon, inte noll problem."
+        )
+
     # 1 — verkligheten
     derived = derive_catalog.derive_from_disk()
     classified = derive_catalog.verify_from_disk()
     report.derived = len(derived)
 
     # 2 — omdömet
-    catalog = load_catalog()
     annotations = vault_reader.load_annotations()
     report.annotated = len(annotations)
     report.vault_findings = [

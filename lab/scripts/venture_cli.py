@@ -170,7 +170,10 @@ def cmd_reconcile(args) -> None:
         print(f"Skrev {reconcile.GENERATED_PATH.name} "
               f"(bredvid catalog.yaml — kröner ingenting).")
 
-    if report.is_clean:
+    if report.is_blind:
+        print("BLIND — beviskällor saknades. Siffrorna ovan säger mer om oss än om portföljen.")
+        sys.exit(1)          # ett blint reconcile ska FAILA, inte tyst rapportera hälsa
+    elif report.is_clean:
         print("REN — verkligheten och katalogen är överens.")
     else:
         print("EJ REN — se ovan. Flippen väntar tills detta är avgjort.")
