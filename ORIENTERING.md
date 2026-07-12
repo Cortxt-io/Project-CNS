@@ -177,7 +177,7 @@ flowchart TB
 
 | CNS-term | Kanonisk term | Vad det är |
 |----------|---------------|------------|
-| system (`catalog.yaml`-post) | **component** | En nod i systemkatalogen (förr `node.md`) |
+| system (`catalog.yaml`-post) | **component** | En nod i systemkatalogen (förr node.md, rivet 2026-06-12) |
 | idé | **opportunity** | Lättviktig fångst i idé-inkorgen |
 | quest | **epic** | GitHub Milestone — grupperar issues |
 | issue | **story** | Arbetsuppgift (bug/spike/chore via `type`-fält) |
@@ -224,15 +224,20 @@ Regel: lär du dig något *bestående om strukturen* → `catalog.yaml`; en *var
 | Vad | Var |
 |-----|-----|
 | Systemkatalogen | `catalog.yaml` (repo-rot) |
-| ADR-prosa | `decisions/<slug>.md` |
+| Nod-prosa | `decisions/<slug>.md` — varför ett system ser ut som det gör (maskinläst) |
+| Reglerna | Obsidian-vaulten, `Playbook/Rules/` — kanoniskt. Inte i detta repo. |
 | Katalog-läsaren | `scripts/catalog.py` (`load_catalog`, `derive_kind`) |
-| Export till dashboard | `scripts/json_exporter.py` → `exports/nodes.json` |
-| Arbetslagret | GitHub Issues/Milestones/PRs via `scripts/issues_client.py` |
-| Dispatch-loopen | `scripts/dispatch.py` |
-| Agent-routing | `scripts/agent_roles.py` (`role_for_node`) |
-| MCP-verktyg | `app/tools/` (`cortxt_*`) |
-| Backend | `app/server.py` (Flask) + `app/mcp_server.py` (MCP) på Railway |
+| Export till dashboard | `lab/scripts/json_exporter.py` |
+| Arbetslagret | GitHub Issues/Milestones/PRs via `lab/scripts/issues_client.py` |
+| Dispatch-loopen | `lab/scripts/dispatch.py` |
+| Agent-routing | `lab/scripts/agent_roles.py` (`role_for_node`) |
+| MCP-verktyg | `lab/app/tools/` (`cortxt_*`) |
+| Backend | `lab/app/server.py` (Flask) + `lab/app/mcp_server.py` (MCP) på Railway |
 | Dashboard | repo `cortxt`, Vercel, `app.cortxt.io` |
+| Färskhetscheck | `scripts/prose_check.py` — håller beskrivande prosa mot källan |
 
-> Detaljerad arkitektur per modul: `Project-CNS/CLAUDE.md`. Kontrollplanens koncept-topologi (inkl.
-> Vercel/Shopify-riktningen): `docs/cortxt-kontrollplan-arkitektur.md`.
+> Sökvägarna ovan bär `lab/`-prefix sedan Core/Lab-splitten: repo-roten är Core (katalog, CLI,
+> validering), allt övrigt bor i `lab/`.
+
+> Detaljerad arkitektur per modul: `lab/CLAUDE.md`. Kontrollplanens koncept-topologi (inkl.
+> Vercel/Shopify-riktningen) är arkiverad: `archive/docs/cortxt-kontrollplan-arkitektur.md`.
