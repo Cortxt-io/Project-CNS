@@ -52,3 +52,29 @@ def test_run_against_the_real_repo_produces_a_report():
     report = reconcile.run(write=False)
     assert report.merged > 0
     assert isinstance(report.orphans, list)
+
+
+# -- blindhet är inte hälsa --------------------------------------------------
+
+def test_a_blind_run_is_never_clean():
+    """DEN VIKTIGASTE REGELN HÄR.
+
+    Första CI-körningen var GRÖN och rapporterade "0 motsägelser" — enbart för att vaulten inte
+    var klonad och tre av fyra vertikalrepon saknade access. Den mätte sin egen blindhet och
+    kallade den hälsa. Att sakna bevis är inte samma sak som att sakna problem.
+    """
+    r = reconcile.Report(derived=2, annotated=0, merged=45,
+                         blind_spots=["vaulten saknas"])
+    assert r.is_blind
+    assert not r.is_clean          # inga motsägelser funna, men vi såg heller ingenting
+
+
+def test_blindness_is_shouted_not_whispered():
+    text = reconcile.Report(blind_spots=["vaulten saknas — omdömet är osynligt"]).as_text()
+    assert "BLIND KÖRNING" in text
+    assert "INTE tillförlitligt" in text
+
+
+def test_a_seeing_run_with_no_findings_is_clean():
+    """Motsatsen måste också hålla: ser vi allt och hittar inget, DÅ är det rent."""
+    assert reconcile.Report(derived=2, annotated=10, merged=45).is_clean

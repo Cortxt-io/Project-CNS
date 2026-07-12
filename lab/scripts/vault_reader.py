@@ -197,13 +197,15 @@ def vault_root(explicit: Path | str | None = None) -> Path | None:
         path = Path(explicit)
         return path if path.is_dir() else None
 
-    for candidate in (os.environ.get("CORTXT_VAULT_PATH"), DEFAULT_VAULT):
-        if not candidate:
-            continue
-        path = Path(candidate)
-        if path.is_dir():
-            return path
-    return None
+    # En SATT men felaktig env-var är en felkonfiguration, inte en frånvaro. Att tyst falla
+    # tillbaka på standardsökvägen skulle dölja den — och i CI betyder det att jobbet läser
+    # "någon vault" i stället för den man pekade ut, eller tror sig ha en när den inte har det.
+    env = os.environ.get("CORTXT_VAULT_PATH")
+    if env:
+        path = Path(env)
+        return path if path.is_dir() else None
+
+    return DEFAULT_VAULT if DEFAULT_VAULT.is_dir() else None
 
 
 def _note_paths(root: Path) -> list[Path]:
