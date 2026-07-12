@@ -33,8 +33,8 @@ Föreslå modell baserat på syfte (motivera på substans, ej enkelhet):
 **Auth-fallback (exakt som agent_host.py):**
 `ANTHROPIC_API_KEY` → `.cns-agent-key` → Claude Code-login (ingen API-credit krävs med Claude Code-subscription)
 
-Provider `qwen` / `glm` kräver lokal Ollama-endpoint (se `nodes/local-ai/planning/local-ai-research.md`
-för att slutföra deploy-research innan du väljer dessa).
+Provider `qwen` / `glm` kräver lokal Ollama-endpoint. Deploy-researchen för dessa är inte gjord —
+underlaget revs med nodmodellen och finns inte kvar. Välj dem inte utan att göra om den.
 
 **Claw Code (beslutspunkt):** Utvärdera om Claw Code passar bättre som agent-host på Railway
 *innan* du låser arkitekturen för servern. Jämför mot Claude Agent SDK och eget. Notera valet i
@@ -116,7 +116,8 @@ Starta agenten med ett minimalt uppdrag som matchar dess syfte:
 
 **Om testet misslyckas:** felsök, uppdatera agentfilen, kör testet igen. Markera inte sessionen klar.
 
-**Om testet godkänns:** uppdatera nodens `stage` från `idea` → `building` och commit.
+**Om testet godkänns:** flytta agentens kort framåt på boarden (GitHub Projects) och commit.
+Livscykeln bor på boarden, inte i katalogen — noden har inget stage-fält att uppdatera.
 
 ## GitHub Agents API (undersök)
 Om GitHub Agents API är stabilt vid tidpunkten: exportera agentdefinitionen
