@@ -257,3 +257,64 @@ def test_reference_notes_are_not_scanned_as_ventures(vault: Path):
     ann = vr.load_annotations(vault)
     assert "README" not in ann
     assert not any(f.slug == "README" for f in vr.check(vault, catalog_slugs={"juvahem", "orgkomp"}))
+
+
+# -- den tysta lögnen: en vault vars ventures läsaren inte hittar --------------
+#
+# 2026-07-12: vaulten byggdes om (Cortxt/Verticals → Cortxt-io/Work/Verticals). VERTICALS_REL
+# var hårdkodad, så _note_paths hittade noll noter och check() returnerade [] — GRÖNT. Ett
+# kontrolltorn som tittar rakt in i en vägg och rapporterar klart väder.
+#
+# Modulen formulerar redan principen, om env-varen: "En SATT men felaktig env-var är en
+# felkonfiguration, inte en frånvaro. Att tyst falla tillbaka skulle dölja den." Den regeln
+# gällde aldrig sökvägen. Nu gör den det.
+
+
+def test_a_vault_without_a_verticals_dir_is_a_finding_not_silence(tmp_path: Path):
+    """Vaulten finns, men ingen Verticals-mapp. Det är en felkonfiguration, inte tomhet.
+
+    Noll ventures i en portfölj med tio är inte hälsa — det är ett brutet kontrakt.
+    """
+    (tmp_path / "Ideaverse").mkdir(parents=True)
+
+    findings = vr.check(tmp_path)
+
+    assert findings, "en vault utan venture-mapp måste skrika, inte returnera grönt"
+    assert any("Verticals" in f.message for f in findings)
+
+
+def test_a_verticals_dir_with_no_notes_is_a_finding(tmp_path: Path):
+    """Mappen finns men är tom. Också ett brutet kontrakt — inte ett rent hus."""
+    (tmp_path / "Ideaverse" / "Cortxt" / "Verticals").mkdir(parents=True)
+
+    findings = vr.check(tmp_path)
+
+    assert findings, "noll portföljnoter måste rapporteras, inte tolkas som hälsa"
+
+
+def test_the_verticals_dir_is_FOUND_not_dictated(tmp_path: Path):
+    """Läsaren hittar mappen var den än ligger i vaulten.
+
+    Sökvägen flyttades två gånger på en dag. En hårdkodad sökväg bygger in samma bugg igen:
+    vaulten äger sin layout, koden ska följa den — inte tvärtom.
+    """
+    moved = tmp_path / "Ideaverse" / "Cortxt-io" / "Work" / "Verticals" / "juvahem"
+    moved.mkdir(parents=True)
+    (moved / "juvahem.md").write_text(_note("""
+        ---
+        node: juvahem
+        type: venture
+        owner: rikard
+        last_reviewed: 2026-07-01
+        ---
+
+        # juvahem
+        """), encoding="utf-8")
+
+    assert vr.venture_root(tmp_path) == moved.parent
+    assert [p.name for p in vr._note_paths(tmp_path)] == ["juvahem.md"]
+
+
+def test_a_missing_vault_still_degrades_quietly(tmp_path: Path):
+    """Ingen vault alls är en FRÅNVARO, inte en felkonfiguration. Den ska förbli tyst."""
+    assert vr.check(tmp_path / "finns-inte") == []

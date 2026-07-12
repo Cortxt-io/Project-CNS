@@ -34,8 +34,14 @@ SCHEMA_PATH = REPO_ROOT / "schemas" / "annotation.schema.json"
 # Vaulten är ett SYSKON-repo, inte en del av detta. Default matchar arbetsytans layout.
 DEFAULT_VAULT = REPO_ROOT.parent / "vault"
 
-# Var venture-noterna bor inuti vaulten.
-VERTICALS_REL = Path("Ideaverse") / "Cortxt" / "Verticals"
+# Var venture-noterna bor inuti vaulten. Mappen HITTAS, den dikteras inte: layouten flyttades
+# två gånger på en dag (Cortxt/Verticals → Cortxt-io/Work/Verticals), och en hårdkodad sökväg
+# gjorde då läsaren tyst blind — noll ventures, noll findings, grönt. Vaulten äger sin struktur;
+# koden följer den.
+VENTURE_DIR = "Verticals"
+
+# Kataloger som aldrig är innehåll.
+_SKIP_DIRS = {".git", ".obsidian", ".makemd", ".space", ".smart-env", ".claudian", ".claude"}
 
 # Staleness-SLA per HÄRLEDD fas (dagar). Ju närmare verkligheten en venture är, desto snabbare
 # ruttnar en ogranskad anteckning: en idé i discovery får ligga i månader, men en not om något
@@ -208,10 +214,25 @@ def vault_root(explicit: Path | str | None = None) -> Path | None:
     return DEFAULT_VAULT if DEFAULT_VAULT.is_dir() else None
 
 
+def venture_root(root: Path | str | None = None) -> Path | None:
+    """Hitta venture-mappen i vaulten, var den än ligger. None om den inte finns.
+
+    Vi letar i stället för att peka: sökvägen har flyttats två gånger på en dag, och varje
+    hårdkodning bygger in nästa tysta blindhet.
+    """
+    resolved = vault_root(root)
+    if resolved is None:
+        return None
+    for path in sorted(resolved.rglob(VENTURE_DIR)):
+        if path.is_dir() and not any(part in _SKIP_DIRS for part in path.parts):
+            return path
+    return None
+
+
 def _note_paths(root: Path) -> list[Path]:
     """Hub-noter: Verticals/<venture>/<venture>.md samt Verticals/_pipeline/*.md (idéer)."""
-    verticals = root / VERTICALS_REL
-    if not verticals.is_dir():
+    verticals = venture_root(root)
+    if verticals is None:
         return []
 
     paths: list[Path] = []
@@ -286,11 +307,25 @@ def check(root: Path | str | None = None, *, catalog_slugs: set[str] | None = No
     """
     resolved = vault_root(root)
     if resolved is None:
-        return []
+        return []   # ingen vault = FRÅNVARO. Tyst är rätt.
+
+    # Men en vault som finns och vars ventures vi inte hittar är en FELKONFIGURATION — samma
+    # skillnad modulen redan gör för env-varen. Att returnera [] här vore ett kontrolltorn som
+    # tittar in i en vägg och rapporterar klart väder: noll ventures i en portfölj med tio är
+    # inte hälsa, det är ett brutet kontrakt. (Hände 2026-07-12: vaulten byggdes om, sökvägen
+    # var hårdkodad, och migreringen vi just bevisat mätte i tysthet ingenting.)
+    verticals = venture_root(resolved)
+    if verticals is None:
+        return [Finding(
+            "vault",
+            f"ingen {VENTURE_DIR}/-mapp i vaulten — läsaren mäter ingenting",
+            str(resolved),
+        )]
 
     schema = load_schema()
     findings: list[Finding] = []
     claimed: dict[str, str] = {}   # node-slug → första noten som gjorde anspråk
+    seen = 0
 
     # Iterera NOTERNA, inte load_annotations() — den nycklar på slug och skriver därmed över
     # en dubblett med den andra. Beviset vi letar efter försvinner i just den avdubbletteringen.
@@ -302,6 +337,7 @@ def check(root: Path | str | None = None, *, catalog_slugs: set[str] | None = No
         if not meta or not is_portfolio_note(meta, path):
             continue
 
+        seen += 1
         rel = str(path.relative_to(resolved))
         node = str(meta.get("node") or "").strip()
         key = node if node and node != "none" else path.stem
@@ -322,6 +358,14 @@ def check(root: Path | str | None = None, *, catalog_slugs: set[str] | None = No
                      f"{claimed[node]!r} och {rel!r}", rel))
         else:
             claimed[node] = rel
+
+    # En venture-mapp utan en enda portföljnot är inte ett rent hus — det är en tom mätning.
+    if seen == 0:
+        findings.append(Finding(
+            "vault",
+            f"{VENTURE_DIR}/ innehåller inga portföljnoter — läsaren mäter ingenting",
+            str(verticals.relative_to(resolved)),
+        ))
 
     return findings
 
