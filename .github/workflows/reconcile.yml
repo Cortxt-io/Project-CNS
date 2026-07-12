@@ -1,0 +1,82 @@
+name: Reconcile
+
+# Katalogen mot verkligheten — var 6:e timme.
+#
+# VARFÖR CRON OCH INTE EN CI-LINT: CI triggar på commits. Men Vercel, Railway och repona driver
+# på sin EGEN klocka — en katalog som bara regenereras vid push ljuger mellan pushar. Backstage
+# kör en kontinuerlig processing-loop av precis det skälet.
+#
+# Jobbet KRÖNER INGENTING. Det skriver catalog.generated.yaml BREDVID catalog.yaml och committar
+# diffen. Diffen i git ÄR driftloggen: den visar när verkligheten rörde sig. Flippen (att
+# load_catalog läser den genererade filen) görs för hand, när diffen granskats och är ren.
+#
+# Detta ersätter export-dashboard.yml, vars cron failade 6/6 körningar i tysthet.
+
+on:
+  schedule:
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checka ut CNS
+        uses: actions/checkout@v4
+
+      # Vertikalernas repon är BEVISET — härledningen läser deras struktur (tester, designsystem,
+      # API-söm). Utan dem kan reconcile inte mäta något, och då ska den säga det, inte gissa.
+      - name: Checka ut vertikalerna (syskonrepon)
+        run: |
+          for repo in orgkomp juvahem bkfinans crusade; do
+            git clone --depth 1 --quiet \
+              "https://x-access-token:${{ secrets.CNS_GITHUB_TOKEN }}@github.com/Cortxt-io/$repo.git" \
+              "../$repo" 2>/dev/null && echo "  klonade $repo" || echo "  hoppade över $repo (saknas eller ingen access)"
+          done
+
+      # Vaulten bär OMDÖMET (kill-kriterier, grindbeslut). Saknas den degraderar reconcile tyst
+      # till att bara mäta verkligheten — den hittar aldrig på ett omdöme.
+      - name: Checka ut vaulten (handlagret)
+        continue-on-error: true
+        run: |
+          git clone --depth 1 --quiet \
+            "https://x-access-token:${{ secrets.CNS_GITHUB_TOKEN }}@github.com/Cortxt-io/vault.git" \
+            "../vault" && echo "  vault klonad" || echo "  ingen vault — omdömet saknas i denna körning"
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installera beroenden
+        run: pip install -r requirements.txt
+
+      - name: Kör reconcile
+        id: reconcile
+        env:
+          CORTXT_VAULT_PATH: ${{ github.workspace }}/../vault
+        run: |
+          python lab/cns_lab.py reconcile --apply | tee reconcile-report.md
+          echo "clean=$(grep -q '^REN' reconcile-report.md && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+
+      - name: Committa den genererade katalogen om verkligheten rört sig
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add catalog.generated.yaml
+          if git diff --cached --quiet; then
+            echo "Ingen drift — verkligheten står still."
+          else
+            git commit -m "chore(reconcile): verkligheten rörde sig $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      # Rapporten hamnar i körningens sammanfattning — den ska INTE bara ligga i en logg ingen
+      # öppnar. En upptäckt som inte syns är samma sak som ingen upptäckt.
+      - name: Publicera rapporten
+        if: always()
+        run: cat reconcile-report.md >> "$GITHUB_STEP_SUMMARY"
