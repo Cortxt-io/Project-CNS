@@ -24,8 +24,16 @@ from typing import Any
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
+WORKSPACE = REPO_ROOT.parent          # Cortxt-io/ — vertikalernas repon ligger som syskon
 AGENTS_JSON = REPO_ROOT / "exports" / "agents.json"
-MCP_JSON = REPO_ROOT / ".mcp.json"
+
+# .mcp.json flyttade till lab/ i Core/Lab-splitten. Den gamla sökvägen (repo-roten) fanns inte
+# längre, så derive_from_disk() returnerade TYST noll noder — härledaren härledde ingenting alls,
+# och ingen märkte det eftersom "inga nya noder" ser identiskt ut med "allt är redan i katalogen".
+MCP_JSON = next(
+    (p for p in (REPO_ROOT / ".mcp.json", REPO_ROOT / "lab" / ".mcp.json") if p.exists()),
+    REPO_ROOT / "lab" / ".mcp.json",
+)
 CATALOG_PATH = REPO_ROOT / "catalog.yaml"
 DERIVED_PATH = REPO_ROOT / "catalog.derived.yaml"
 ANNOTATIONS_PATH = REPO_ROOT / "catalog.annotations.yaml"
@@ -271,17 +279,48 @@ def derive_from_disk() -> dict[str, dict]:
 
 
 def repo_file_stems() -> set[str]:
-    """Filstammar (utan ändelse, lowercase) ur scripts/ + app/ + repo-roten — backing-bevis."""
+    """Filstammar + mappnamn som utgör backing-bevis för en katalognod.
+
+    **Tittar även i SYSKONREPONA.** Delkomponenter som ``juvahem-etl``, ``orgkomp-graph`` och
+    ``bkfinans-rules`` bor inuti vertikalernas egna repon — inte i Project-CNS. Innan detta
+    tittade klassaren bara i sitt eget repo, och därför såg 17 av 44 noder ut att vara
+    "aspirational" (ej byggda) trots att de körde i produktion. Härledaren var blind åt exakt
+    det håll den skulle titta.
+    """
     stems: set[str] = set()
+
+    # Det egna repot (Python-kärnan).
     for sub in ("scripts", "app", "."):
         d = REPO_ROOT / sub if sub != "." else REPO_ROOT
         if not d.exists():
             continue
         for p in d.rglob("*.py"):
             stems.add(p.stem.lower())
-        for p in d.iterdir():  # mappnamn på toppnivå (t.ex. app, scripts)
+        for p in d.iterdir():
             if p.is_dir():
                 stems.add(p.name.lower())
+
+    # Syskonrepona (vertikalerna). En delkomponent heter `<repo>-<del>` i katalogen medan den på
+    # disk är repot `<repo>` som INNEHÅLLER `<del>` — så vi bygger det sammansatta namnet och
+    # lägger in det som bevis. Utan detta matchar "juvahem-etl" ingenting, trots att juvahem-repot
+    # har en etl-mapp mitt framför näsan.
+    skip = {"node_modules", ".git", ".next", "dist", "build", ".svelte-kit", "__pycache__"}
+    if WORKSPACE.exists():
+        for repo in WORKSPACE.iterdir():
+            if not (repo / ".git").is_dir():
+                continue
+            name = repo.name.lower()
+            stems.add(name)
+            for level in (repo, repo / "src", repo / "lib", repo / "packages", repo / "apps"):
+                if not level.is_dir():
+                    continue
+                for p in level.iterdir():
+                    if p.name.startswith(".") or p.name in skip:
+                        continue
+                    part = (p.stem if p.is_file() else p.name).lower()
+                    stems.add(part)
+                    stems.add(f"{name}-{part}")     # juvahem + etl → juvahem-etl
+                    stems.add(f"{name}_{part}")
     return stems
 
 

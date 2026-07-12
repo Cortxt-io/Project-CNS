@@ -1,8 +1,10 @@
 name: Export Dashboard
 
+# AVSTÄNGD cron 2026-07-12: failade 6/6 körningar sedan Core/Lab-splitten (exporterar till
+# nodes/, som inte finns; importerar scripts.eventstream, som ligger i lab/). Matar en
+# GitHub Pages-dashboard som cockpiten ersatt. Ersätts av reconcile.yml — se
+# decisions/derived-catalog.md. Kvar som manuellt körbar tills reconcile är i drift.
 on:
-  schedule:
-    - cron: "0 7 * * *"
   workflow_dispatch:
 
 permissions:

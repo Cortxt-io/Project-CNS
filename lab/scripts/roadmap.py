@@ -55,11 +55,38 @@ def load_roadmap(slug: str) -> dict | None:
         return None
 
 
+def current_phase(slug: str) -> dict:
+    """Var står bygget? **Mätt, inte påstått.**
+
+    ``current_phase`` var ett handfält i ``roadmaps/<slug>.md`` — och det var FEL i varenda
+    vertikal (orgkomp sa "spec" men låg live; bkfinans sa "spec" men låg live; crusade sa "spec"
+    men stod i mvp). Ett fält ingen har anledning att uppdatera blir alltid osant.
+
+    Nu härleds det ur verkligheten: repot, deployen, testerna. Samma nyckel ut till cockpiten —
+    men källan är en mätning. Degraderar tyst till ``{}`` om härledningen inte går.
+    """
+    try:
+        from . import phase_derive, signals, vault_reader
+        from scripts.catalog import load_catalog
+
+        entry = load_catalog().get(slug, {})
+        note = vault_reader.load_annotations().get(slug)
+        sig = signals.collect(slug, catalog_entry=entry, annotation=note)
+        return phase_derive.derive_phase(
+            load_recipe(), signals=sig, checked=signals.checked_steps(note)
+        )
+    except Exception:
+        return {}
+
+
 def roadmap_summary(slug: str) -> dict | None:
     """Kompakt fas-/beslutsläge för cockpit-kortet (eller None om ingen roadmap).
 
-    ``{current_phase, current_phase_title, phase_index, total_phases, open_decisions, next_decision}``.
-    ``phase_index`` är 1-baserad position i receptet (0 om ``current_phase`` ej matchar).
+    ``{current_phase, current_phase_title, phase_index, total_phases, open_decisions,
+    next_decision, gates_skipped}``. ``phase_index`` är 1-baserad position i receptet.
+
+    ``current_phase`` HÄRLEDS (se ``current_phase()``) — ``roadmaps/<slug>.md`` bär det inte
+    längre. ``gates_skipped`` är skulden: grindar bygget passerade utan att stänga.
     """
     rm = load_roadmap(slug)
     if rm is None:
@@ -67,7 +94,9 @@ def roadmap_summary(slug: str) -> dict | None:
     phases = load_recipe()["phases"]
     keys = [p["key"] for p in phases]
     titles = {p["key"]: p.get("title", p["key"]) for p in phases}
-    current = rm.get("current_phase")
+
+    derived = current_phase(slug)
+    current = derived.get("phase") or rm.get("current_phase")   # fallback tills allt är migrerat
     phase_index = keys.index(current) + 1 if current in keys else 0
     decisions = rm.get("open_decisions") or []
     return {
@@ -77,33 +106,70 @@ def roadmap_summary(slug: str) -> dict | None:
         "total_phases": len(keys),
         "open_decisions": len(decisions),
         "next_decision": (decisions[0].get("title") if decisions else None),
+        "gates_skipped": derived.get("gates_skipped") or [],
     }
 
 
 def roadmap_detail(slug: str) -> dict | None:
-    """Full roadmap för per-projekt-vyn: receptets faser slagna med projektets status/epics.
+    """Full roadmap för per-projekt-vyn: receptets faser slagna med projektets epics.
 
-    Returnerar ``{slug, current_phase, phases: [{key, title, summary, status, epics:[{title,done}]}],
-    open_decisions: [{title, why}]}`` — eller None.
+    ``status`` per fas HÄRLEDS numera (fältet är borta ur filerna):
+
+        passed   — bygget har passerat fasen OCH stängt dess grind
+        skipped  — bygget har passerat fasen men grinden stängdes ALDRIG (skulden)
+        active   — här står bygget nu
+        todo     — inte nådd än
+
+    ``skipped`` är den nya statusen, och den viktigaste: den är skillnaden mellan att ha byggt
+    något och att ha byggt det ordentligt. Tre av vertikalerna ligger live med fyra skipped var.
+
+    Returnerar ``{slug, current_phase, gates_skipped, phases: [...], open_decisions: [...]}``.
     """
     rm = load_roadmap(slug)
     if rm is None:
         return None
+
     recipe = load_recipe()["phases"]
+    keys = [p["key"] for p in recipe]
     proj_phases = rm.get("phases") or {}
+
+    derived = current_phase(slug)
+    current = derived.get("phase")
+    skipped = set(derived.get("gates_skipped") or [])
+    steps = derived.get("steps") or {}
+    current_index = keys.index(current) if current in keys else -1
+
     phases_out = []
-    for p in recipe:
-        pdata = proj_phases.get(p["key"]) or {}
+    for i, p in enumerate(recipe):
+        key = p["key"]
+        if key in skipped:
+            status = "skipped"
+        elif current_index >= 0 and i < current_index:
+            status = "passed"
+        elif key == current:
+            status = "active"
+        else:
+            status = "todo"
+
+        pdata = proj_phases.get(key) or {}
         phases_out.append({
-            "key": p["key"],
-            "title": p.get("title", p["key"]),
+            "key": key,
+            "title": p.get("title", key),
             "summary": p.get("summary", ""),
-            "status": pdata.get("status", "todo"),
+            "status": status,
             "epics": pdata.get("epics") or [],
+            "steps": [
+                {"key": s.get("key"), "title": s.get("title"),
+                 "check": s.get("check"), "done": steps.get(s.get("key"))}
+                for s in (p.get("steps") or [])
+            ],
+            "gate": p.get("gate") or {},
         })
+
     return {
         "slug": slug,
-        "current_phase": rm.get("current_phase"),
+        "current_phase": current,
+        "gates_skipped": sorted(skipped, key=lambda k: keys.index(k) if k in keys else 99),
         "phases": phases_out,
         "open_decisions": rm.get("open_decisions") or [],
     }

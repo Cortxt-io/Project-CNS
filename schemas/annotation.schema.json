@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cortxt.io/schemas/annotation.schema.json",
+  "title": "Vault annotation (venture hub frontmatter)",
+  "description": "The HAND layer of the portfolio catalog. Lives in Obsidian: vault/Ideaverse/Cortxt/Verticals/<venture>/<venture>.md. Carries only what cannot be derived from reality — judgement. Reality (existence, repo, deploy, commits, issues) is derived by scripts/derive_catalog.py and merged on top; NEVER hand-written here. Enum values that appear both here and in enums.json are duplicated for standalone validity — enums.json remains the single source of truth and vault_reader.py cross-checks them at load time.",
+
+  "type": "object",
+  "required": ["node", "type", "owner", "last_reviewed"],
+  "additionalProperties": true,
+
+  "properties": {
+    "node": {
+      "description": "JOIN KEY to the CNS catalog. A catalog slug, or the literal 'none' for a pre-gate idea that has no node yet. Referential integrity (does this slug exist?) is NOT enforceable by JSON Schema — vault_reader.py checks it.",
+      "type": "string",
+      "pattern": "^(none|[a-z0-9][a-z0-9-]*)$"
+    },
+    "type": {
+      "description": "venture = in the portfolio funnel. idea = pre-gate, lives in Verticals/_pipeline/, node is 'none'.",
+      "enum": ["venture", "idea"]
+    },
+    "owner": {
+      "description": "Who is accountable. Backstage makes owner required for the same reason: automation can never establish it.",
+      "type": "string",
+      "minLength": 1
+    },
+
+    "steps_done": {
+      "description": "The MANUAL steps you have ticked (recipe steps with `check: manual` — 'talked to 5 customers', 'core flow works'). The machine measures everything it can; these are the ones that need eyes. The phase itself is NEVER written here — it is derived from these plus reality (lab/scripts/phase_derive.py).",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "phase_override": {
+      "description": "Escape hatch: force a phase when the derivation is wrong. Reconcile LOGS the disagreement rather than hiding it — a persistent override means the deriver needs fixing, not that you need a bigger hammer.",
+      "enum": ["discovery", "spec", "mvp", "konsolidera", "live", "users", "validated", "paying"]
+    },
+    "gate_decision": {
+      "description": "AXIS 2 — whether we keep investing. Stage-Gate (Cooper). NEVER derivable: an act of will, not a measurement. This is the field the recipe lacked — which is why nothing ever got killed. A venture with gate_decision: kill is dead regardless of how far the build came.",
+      "enum": ["go", "kill", "hold", "recycle"]
+    },
+    "gate_date": {
+      "description": "When that gate decision was taken. Its age is what makes a stale 'go' visible.",
+      "type": "string",
+      "format": "date"
+    },
+    "next_gate": {
+      "description": "What this venture must SHOW to earn its next go. If you cannot write this, you are not running a gate — you are hoping.",
+      "type": "string"
+    },
+
+    "north_star": {
+      "description": "The one metric that says this is working.",
+      "type": "string"
+    },
+    "kill_criteria": {
+      "description": "What would make you stop. The literature's warning: gates degenerate into rubber stamps where Kill is never chosen. Written thresholds are the antidote — and reconcile shows how old they are.",
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "next_action": {
+      "description": "The single next move. Reconcile compares its age against repo activity — a three-week-old next_action beside 40 new commits is probably a lie.",
+      "type": "string"
+    },
+    "last_reviewed": {
+      "description": "The staleness clock. This is the ONLY defence against the hand layer rotting: reconcile knows when reality moved, this says when you last looked. Prior art solves the 'file vanished' case, never the 'file lies' case.",
+      "type": "string",
+      "format": "date"
+    },
+
+    "url_discord": { "type": "string", "format": "uri" },
+    "url_slack": { "type": "string", "format": "uri" },
+
+    "url_live": {
+      "description": "DERIVED from Vercel/Railway — do not hand-write. Present here only so a note can override a bad derivation.",
+      "type": "string",
+      "format": "uri"
+    },
+    "url_repo": {
+      "description": "DERIVED from GitHub — do not hand-write. Same override caveat as url_live.",
+      "type": "string",
+      "format": "uri"
+    },
+
+    "screenshots": {
+      "description": "Product artifacts under Artifacts/media/ — a deck without a product shot is a pitch without a product.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  },
+
+  "allOf": [
+    {
+      "description": "A pre-gate idea has no catalog node; a venture must have one.",
+      "if": { "properties": { "type": { "const": "idea" } }, "required": ["type"] },
+      "then": { "properties": { "node": { "const": "none" } } }
+    },
+    {
+      "description": "A venture is real code — it must be backed by a catalog node. (The phase is derived, so this cannot be keyed on it; being a `venture` at all is the claim that matters.)",
+      "if": { "properties": { "type": { "const": "venture" } }, "required": ["type"] },
+      "then": {
+        "properties": { "node": { "not": { "const": "none" } } },
+        "required": ["node"]
+      }
+    },
+    {
+      "description": "A kill must record when it was decided — otherwise it is not a decision, just neglect. And an undated kill can never go stale, which is exactly how a dead venture keeps quietly costing you.",
+      "if": {
+        "properties": { "gate_decision": { "const": "kill" } },
+        "required": ["gate_decision"]
+      },
+      "then": { "required": ["gate_date"] }
+    }
+  ]
+}

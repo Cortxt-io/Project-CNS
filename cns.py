@@ -1316,6 +1316,11 @@ def main() -> None:
 
 def register_lab(subparsers) -> None:
     """Register Lab/Agency commands (advanced/R&D — invoked via lab/cns_lab.py)."""
+    # cns venture {status|checklist|list} — fas, grindar, checklistor.
+    # Lazy import: Core får aldrig bero på Lab (namespace-splitten).
+    from lab.scripts import venture_cli
+    venture_cli.register(subparsers)
+
     # cns list
     sp_list = subparsers.add_parser("list", help="List all nodes")
     sp_list.set_defaults(func=cmd_list)
