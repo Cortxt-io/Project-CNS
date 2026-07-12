@@ -34,12 +34,12 @@ jobs:
           pip install -r requirements.txt
           pip install pytest
 
-      # The two TUI suites are frozen by policy (the TUI is parked until the core is proven).
-      # They fail at collection, and unfreezing them is a product decision, not a CI one.
+      # tests/frozen/ (the agency layer) is excluded via pytest.ini, not here — one declared
+      # boundary instead of a growing list of CI flags. test_lease_store needs fakeredis, which
+      # is not in requirements.txt.
       - name: Tests
         run: |
           python -m pytest tests/ -q \
-            --ignore=tests/test_control_tower.py \
             --ignore=tests/test_lease_store.py
 
       - name: Prose freshness

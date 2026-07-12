@@ -192,11 +192,17 @@ def load_retired(root: Path) -> dict[str, str]:
 
 
 def prose_files(root: Path) -> list[Path]:
-    """The descriptions we hold to the source: agent-facing prose that steers behaviour."""
+    """The descriptions we hold to the source: agent-facing prose that steers behaviour.
+
+    `frozen` is excluded for the same reason `archive` is: prose about a frozen layer is a record
+    of what was true when it was frozen, not a claim about the system now. Holding it to the
+    current source would force us to either edit a record or resurrect the layer. See
+    lab/frozen/FROZEN.md.
+    """
     found = []
     for pattern in ("CLAUDE.md", "ORIENTERING.md", "**/.claude/skills/**/*.md", "**/skills/**/*.md"):
         for path in root.glob(pattern):
-            if path.is_file() and "archive" not in path.parts and ".git" not in path.parts:
+            if path.is_file() and not {"archive", "frozen", ".git"} & set(path.parts):
                 found.append(path)
     return sorted(set(found))
 

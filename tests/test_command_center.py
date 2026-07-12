@@ -184,3 +184,30 @@ def test_next_step_roadmap_aware() -> None:
     assert cc._vertical_next_step({"url_live": "x", "roadmap": {"open_decisions": 2, "next_decision": "Publik yta?", "current_phase_title": "Spec"}}) == "Beslut: Publik yta?"
     assert cc._vertical_next_step({"url_live": "x", "roadmap": {"open_decisions": 0, "current_phase_title": "MVP"}}) == "Driv fas: MVP"
     assert cc._vertical_next_step({"url_live": "", "roadmap": None}) == "Skeppa/deploya MVP"
+
+
+def test_survives_frozen_recommend(monkeypatch) -> None:
+    """Agentur-lagret fryst (scripts.recommend oimporterbar) → cockpiten degraderar, kraschar inte.
+
+    Regressionsvakt för frysningen 2026-07-12: default-wiringen av milestones_fn/recommend_fn
+    gjorde oskyddade lata importer av scripts.recommend, så command_center_state() utan argument
+    kastade ImportError → /api/command-center svarade 500 → cockpiten blev tom.
+    Missions ska överleva (de kan hämtas direkt ur GitHub); bara orders får bli tomma.
+    """
+    monkeypatch.setitem(sys.modules, "scripts.recommend", None)  # import → ImportError
+
+    from scripts import issues_client as ic
+    monkeypatch.setattr(ic, "list_milestones", lambda **kw: [{"number": 1, "title": "Epic A"}])
+
+    s = cc.command_center_state(
+        issues_for_fn=lambda n: [],
+        all_open_issues_fn=lambda: [],
+        sessions_fn=lambda: [],
+        health_fn=lambda ms, now=None: {"level": "healthy", "checks": []},
+        prs_fn=lambda: [],
+        infra_fn=lambda: {},
+        verticals_fn=lambda: [],
+        now=NOW,
+    )
+    assert s["orders"] == []
+    assert [m["number"] for m in s["missions"]] == [1]

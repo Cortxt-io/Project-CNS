@@ -856,14 +856,22 @@ def cmd_btw_link(args: argparse.Namespace) -> None:
 
 
 # ---------------------------------------------------------------------------
-# TUI command (lazy import — textual laddas inte vid varje cns-anrop)
+# Agentur-lagret — fryst 2026-07-12 (lab/frozen/)
 # ---------------------------------------------------------------------------
 
-def cmd_tui(args: argparse.Namespace) -> None:
-    """Starta den interaktiva terminal-överblicken (Textual)."""
-    from scripts.tui.app import main as tui_main
+def _frozen(command: str) -> None:
+    """Avvisa ett kommando vars lager är fryst. Ett tydligt nej slår ett ImportError."""
+    console.print(
+        f"[yellow]'{command}' tillhör agentur-lagret, som är fryst sedan 2026-07-12.[/yellow]\n"
+        "Koden ligger kvar i [cyan]lab/frozen/[/cyan] — se [cyan]lab/frozen/FROZEN.md[/cyan] "
+        "för varför den frystes och vad som krävs för att väcka den."
+    )
+    sys.exit(2)
 
-    tui_main()
+
+def cmd_tui(args: argparse.Namespace) -> None:
+    """Fryst: den interaktiva terminal-överblicken (Textual)."""
+    _frozen("cns tui")
 
 
 def cmd_triage(args: argparse.Namespace) -> None:
@@ -914,94 +922,18 @@ def cmd_derive(args: argparse.Namespace) -> None:
 
 
 def cmd_mcp_servers(_args: argparse.Namespace) -> None:
-    """Lista MCP-servrarna i registret + om de är konfigurerade (MCP-routern)."""
-    from scripts import mcp_router
-
-    rows = mcp_router.list_servers()
-    table = Table(title="MCP-servrar (config-routern)", show_lines=False)
-    table.add_column("Server", style="cyan")
-    table.add_column("Kind")
-    table.add_column("Kapabilitet", style="magenta")
-    table.add_column("Status")
-    for r in rows:
-        ok = r["configured"]
-        status = f"[green]✓ {r['hint']}[/green]" if ok else f"[yellow]– {r['hint']}[/yellow]"
-        table.add_row(r["name"], r["kind"], r["capability"] or "—", status)
-    console.print(table)
-    console.print(
-        "\n[dim]En agent når en server när dess kapabilitet (härledd ur '## Tillåtna verktyg')\n"
-        "matchar serverns 'provides'-prefix. Externa servrar gatas på env, fail-open.[/dim]"
-    )
+    """Fryst: MCP-routern för agenturens lokala pass."""
+    _frozen("cns mcp-servers")
 
 
 def cmd_agent_tools(args: argparse.Namespace) -> None:
-    """Visa en rolls HÄRLEDDA effektiva verktyg (C1) utan att köra ett pass.
-
-    Matris-baslinje (cellens tool_families) + rollens override → effektiva tokens, och
-    de lokala feta verktygsnamnen de monterar i universum B. Diagnostik för verktygsåtkomst.
-    """
-    from scripts.agent_roles import load_role
-    from scripts.tool_families import derive_level
-    from scripts.tools import registry
-
-    role = load_role(args.role)
-    if role is None:
-        console.print(f"[red]Roll '{args.role}' hittades inte i .claude/agents/[/red]")
-        sys.exit(1)
-    level = derive_level(role)
-    local = registry.local_names_for(role.get("tools", []))
-    console.print(
-        f"[cyan]{role.get('title') or args.role}[/cyan]  "
-        f"[dim]({role.get('department') or '—'} · nivå={level} · "
-        f"modell={role.get('model') or '—'})[/dim]"
-    )
-
-    table = Table(title="Effektiva verktyg (C1: matris-baslinje + override)", show_lines=False)
-    table.add_column("Token", style="magenta")
-    table.add_column("Källa")
-    table.add_column("→ lokalt verktyg (universum B)", style="cyan")
-    override = set(role.get("tools_override") or [])
-    for tok in role.get("tools", []):
-        dom = registry.domain_for_token(tok)
-        local_name = registry.by_domain(dom).local_name if dom else "—"
-        källa = "override" if tok in override else "matris"
-        table.add_row(tok, källa, local_name)
-    console.print(table)
-    console.print(
-        f"\n[dim]Monterar {len(local)} feta CNS-verktyg i universum B: "
-        f"{', '.join(local) or '(inga — bara baseline)'}\n"
-        "Baseline (alltid): mcp__cns__project/issue/idea. Skriv-actions grindas i läsläge.[/dim]"
-    )
+    """Fryst: en rolls härledda effektiva verktyg (C1)."""
+    _frozen("cns agent-tools")
 
 
 def cmd_status(args: argparse.Namespace) -> None:
-    """Orientering headless: arbetslistan + statusräkning (samma data som ex-TUI-hemvyn)."""
-    from scripts.command_center import command_center_state
-    from scripts.tui import viewmodel as vm
-
-    state = command_center_state()
-    if getattr(args, "json", False):
-        print(json.dumps(state, ensure_ascii=False, indent=2, default=str))
-        return
-    c = vm.status_counts(state)
-    console.print(
-        f"[bold]Status[/bold]  [green]{c['ok']} ok[/green] · [yellow]{c['watch']} ser över[/yellow] · "
-        f"[red]{c['degraded']} fast[/red]  ·  {vm.pending_reviews(state)} att granska  {vm.freshness_label(state)}"
-    )
-    items = vm.work_items(state)
-    if not items:
-        console.print("[dim]  inget arbete[/dim]")
-    for it in items:
-        actor = f"🤖×{it.agents}" if it.agents else ("👤 din tur" if it.waiting_for_you else "")
-        nxt = f" → {it.next_action}" if it.next_action else ""
-        lev = f" ↑{it.leverage}" if it.leverage else ""
-        warn = "⚠ " if it.contact else ""
-        console.print(
-            f"  {it.status_icon} {warn}#{it.number} {it.title[:48]}  "
-            f"[{it.status_color}]{it.status_label}[/{it.status_color}]  {actor}{lev}{nxt}"
-        )
-    for o in vm.loose_orders(state):
-        console.print(f"  · {vm.type_tag(o.get('type'))} {o.get('title', '')}")
+    """Fryst: berodde på scripts.tui.viewmodel, som aldrig har funnits i repot."""
+    _frozen("cns status")
 
 
 def cmd_health(args: argparse.Namespace) -> None:
@@ -1077,42 +1009,13 @@ def cmd_pr_close(args: argparse.Namespace) -> None:
 
 
 def cmd_dispatch(args: argparse.Namespace) -> None:
-    """Kör ETT dispatch-pass headless (delegerar till scripts.dispatch.main). read-first default."""
-    from scripts import dispatch
-
-    argv: list[str] = []
-    if getattr(args, "write", False) and not getattr(args, "dry_run", False):
-        argv.append("--write")
-    if getattr(args, "autonomy", False) and not getattr(args, "dry_run", False):
-        argv.append("--autonomy")
-    if getattr(args, "yes", False):
-        argv.append("--yes")
-    sys.exit(dispatch.main(argv) or 0)
+    """Fryst: dispatch-loopen (agenturens puls)."""
+    _frozen("cns dispatch")
 
 
 def cmd_agent_ask(args: argparse.Namespace) -> None:
-    """Fråga Claude om en nod headless (agent-host, läs-först)."""
-    import asyncio
-
-    from scripts.tui.agent_host import run_turn
-
-    question = args.question or f"Sammanfatta noden {args.slug} och dess roll."
-
-    async def run() -> None:
-        got = False
-        async for kind, payload in run_turn(question, slug=args.slug):
-            if kind == "text":
-                got = True
-                print(payload, end="", flush=True)
-            elif kind == "tool":
-                print(f"\n[verktyg: {payload}]", file=sys.stderr)
-            elif kind == "error":
-                print(f"\nFEL: {payload}", file=sys.stderr)
-            elif kind == "result" and not got and payload:
-                print(payload, end="", flush=True)
-        print()
-
-    asyncio.run(run())
+    """Fryst: agent-host (lokala Claude-pass)."""
+    _frozen("cns agent-ask")
 
 
 def cmd_selftest(args: argparse.Namespace) -> None:
@@ -1138,15 +1041,12 @@ def cmd_selftest(args: argparse.Namespace) -> None:
         return f"{len(warnings)} varningar"
 
     def _orientering():
+        # Bevisar samtidigt att cockpit-seamet degraderar utan agentur-lagret (fryst 2026-07-12):
+        # command_center_state() får inte kasta bara för att scripts.recommend saknas.
         from scripts.command_center import command_center_state
-        from scripts.tui import viewmodel as vm
 
-        return f"{len(vm.work_items(command_center_state()))} arbets-rader"
-
-    def _recommend():
-        from scripts.recommend import recommend
-
-        return f"{len(recommend())} förslag"
+        state = command_center_state()
+        return f"{len(state.get('missions', []))} missions, {len(state.get('orders', []))} orders"
 
     def _triage():
         from scripts.idea_inbox import list_ideas
@@ -1169,17 +1069,6 @@ def cmd_selftest(args: argparse.Namespace) -> None:
         slug = nodes[0][0].get("slug") or "?"
         return f"{slug}: {health_for_node(slug).get('level')}"
 
-    def _dispatch_loop():
-        from scripts import dispatch
-
-        res = dispatch.crawl_once(
-            owner="selftest",
-            candidates_fn=lambda: [],
-            closed_numbers_fn=lambda: set(),
-            approve=lambda a, c: False,
-        )
-        return res.status  # "no-work" = loopen körde rent
-
     def _node_seam_gated():
         # Den rivna node.md-disk-modellen (teardown #11) ska resa fel, ej degradera tyst.
         from scripts.md_parser import write_node, list_node_files, scaffold_node_dirs
@@ -1197,11 +1086,9 @@ def cmd_selftest(args: argparse.Namespace) -> None:
     check("node.md-dödseam grindad (teardown #11)", _node_seam_gated)
     check("katalog-validering (validate_catalog)", _validate)
     check("orientering (command_center)", _orientering)
-    check("rekommendationer (recommend)", _recommend)
     check("triage (group_ideas)", _triage)
     check("sessioner (session_store)", _sessions)
     check("hälsa (health_for_node)", _health)
-    check("dispatch-loop (injicerad)", _dispatch_loop)
 
     if getattr(args, "live", False):
         def _gh_prs():
@@ -1214,25 +1101,8 @@ def cmd_selftest(args: argparse.Namespace) -> None:
 
             return f"{len(issues_client.list_issues(state='open'))} öppna issues"
 
-        def _llm_ping():
-            import asyncio
-
-            from scripts.tui.agent_host import run_turn
-
-            async def ping():
-                out = []
-                async for kind, payload in run_turn("Svara bara med ordet pong.", slug=None):
-                    if kind == "error":
-                        raise RuntimeError(payload)
-                    if kind in ("text", "result") and payload:
-                        out.append(str(payload))
-                return "".join(out)[:20]
-
-            return f"svar: {asyncio.run(ping()) or '(tomt)'}"
-
         check("GitHub: PR-läs (live)", _gh_prs)
         check("GitHub: issue-läs (live)", _gh_issues)
-        check("LLM: agent-host ping (live)", _llm_ping)
 
     if getattr(args, "json", False):
         print(json.dumps([{"check": n, "ok": ok, "detail": d} for n, ok, d in results], ensure_ascii=False, indent=2))
