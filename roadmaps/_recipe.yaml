@@ -1,31 +1,157 @@
 # Delade produkt-faser (nivå 1) — den gemensamma vägen mot första betalande/återkommande
 # användare. Receptet är SAMMA för alla vertikaler; den per-vertikal-anpassade planen
-# (epics + öppna beslut) bor i roadmaps/<slug>.md (nivå 2). Redigera faserna här — enkälla.
+# (avvikelser + öppna beslut) bor i roadmaps/<slug>.md (nivå 2). Redigera faserna här — enkälla.
+#
+# TRE NIVÅER, TRE OLIKA JOBB (Stage-Gates faktiska struktur: arbetsstadier åtskilda av grindar):
+#
+#   FAS    = var bygget står.     HÄRLEDS ur stegen — ingen handredigerar current_phase.
+#   STEG   = arbetet i fasen.     Härlett där det går (`check: derived:*`), kryssat där det
+#                                 inte går (`check: manual` → checkbox i vaultens venture-not).
+#   GRIND  = ska vi fortsätta?    Kan ALDRIG mätas. Rikard skriver go/kill/hold/recycle.
+#
+# Grinden är det receptet saknade — och därför har inget någonsin dött. En grind vars villkor
+# du inte kan formulera är ingen grind utan en förhoppning; `requires` gör villkoret konkret.
+#
+# check-språket (tolkas av lab/scripts/phase_derive.py):
+#   manual             — kräver ögon, inte mätning. Kryssbox i venture-noten.
+#   derived:<signal>   — mäts ur verkligheten. Kan inte avgöras → `unknown`, ALDRIG en gissning.
+#
+# Per-venture avvikelser (lägg till/hoppa över steg) i roadmaps/<slug>.md. Receptet är default,
+# inte tvång — men en avvikelse ska vara ett beslut, inte slentrian.
+
 phases:
   - key: discovery
     title: Discovery
     summary: Utforska problemet + bestäm visionen — vad ska det bli, för vem, värt att bygga —
       INNAN scope låses. Ger visionen en hemvist (det divergenta steget före Spec).
+    steps:
+      - key: problem-interviews
+        title: Pratat med riktiga människor om problemet
+        check: manual
+      - key: market-map
+        title: Marknads- och konkurrentkarta
+        check: manual
+      - key: north-star
+        title: North star formulerad — vad betyder "det funkar"?
+        check: derived:has_north_star
+    gate:
+      title: Discovery → Spec
+      question: Är problemet värt att lösa, och är vi rätt att lösa det?
+      requires: [problem-interviews, market-map, north-star]
+
   - key: spec
     title: Spec
+    reached_when: has_decision_record
     summary: Problem + vem + scope definierat (konvergerar visionen till ett kontrakt)
+    steps:
+      - key: kill-criteria
+        title: Kill-kriterier skrivna — vad får oss att lägga ner?
+        check: derived:has_kill_criteria
+      - key: decision-record
+        title: Beslut nedskrivet (decisions/<slug>.md)
+        check: derived:has_decision_record
+      - key: repo
+        title: Repo finns
+        check: derived:has_repo
+    gate:
+      title: Spec → MVP
+      question: Vet vi vad vi bygger, för vem, och när vi ska sluta?
+      requires: [kill-criteria, decision-record, repo]
+
   - key: mvp
     title: MVP
+    reached_when: has_repo
     summary: Kärnan byggd, funkar end-to-end (får vara slit-och-släng)
+    steps:
+      - key: core-flow
+        title: Kärnflödet funkar end-to-end
+        check: manual
+      - key: has-tests
+        title: Tester finns
+        check: derived:has_tests
+      - key: deployed
+        title: Deployad någonstans (staging eller prod)
+        check: derived:has_deploy
+    gate:
+      title: MVP → Konsolidera
+      question: Funkar kärnan — och är den värd att härda?
+      requires: [core-flow, has-tests, deployed]
+
   - key: konsolidera
     title: Konsolidera
+    reached_when: has_tests
     summary: Härda sömmarna innan features — extrahera kärnan (data + logik), lås en tunn
       typad API-söm, sätt UI på designsystemet. Det saknade steget som gör features additiva
       i stället för vibe-kaos.
+    steps:
+      - key: design-system
+        title: UI sitter på designsystemet (inte hårdkodade färger per app)
+        check: derived:uses_design_system
+      - key: api-seam
+        title: Tunn typad API-söm — UI anropar aldrig fetch direkt
+        check: derived:has_api_seam
+      - key: core-extracted
+        title: Data + logik extraherad ur UI-lagret
+        check: manual
+    gate:
+      title: Konsolidera → Live
+      question: Håller sömmarna? Blir nästa feature additiv, eller kaos?
+      requires: [design-system, api-seam, core-extracted]
+
   - key: live
     title: Live
+    reached_when: has_live_url
     summary: Deployad på sin domän
+    steps:
+      - key: own-domain
+        title: Kör på sin egen domän
+        check: derived:has_live_url
+      - key: prod-healthy
+        title: Prod svarar och är grön
+        check: derived:deploy_healthy
+    gate:
+      title: Live → Första användare
+      question: Är den redo att visas för någon som inte är vi?
+      requires: [own-domain, prod-healthy]
+
   - key: users
     title: Första användare
     summary: Riktiga människor använder den
+    steps:
+      - key: real-users
+        title: Minst en människa utanför Cortxt har använt den
+        check: manual
+      - key: feedback-loop
+        title: Vi hör vad de tycker (kanalen finns)
+        check: manual
+    gate:
+      title: Första användare → Validerad
+      question: Använder de den igen — eller var det artighet?
+      requires: [real-users, feedback-loop]
+
   - key: validated
     title: Validerad
     summary: Levererar värde — feedback bekräftar
+    steps:
+      - key: north-star-hit
+        title: North star uppnådd
+        check: manual
+      - key: retention
+        title: Någon kom tillbaka utan att bli påmind
+        check: manual
+    gate:
+      title: Validerad → Betalande
+      question: Är värdet värt pengar — och vågar vi be om dem?
+      requires: [north-star-hit, retention]
+
   - key: paying
     title: Betalande/återkommande
     summary: Intäkt eller återkommande användning — målet
+    steps:
+      - key: first-revenue
+        title: Första betalningen mottagen
+        check: manual
+    gate:
+      title: Betalande → skala eller skörda
+      question: Skalar vi, eller är detta så stort det blir?
+      requires: [first-revenue]
