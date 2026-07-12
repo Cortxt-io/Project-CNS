@@ -103,7 +103,12 @@ def command_center_state(
     if milestones_fn is None:
         # Missionerna läser samma recommend-cache som ORDERS (hybrid-källan i specen) så
         # FRONTLINE kommer till liv UTAN lokal GitHub-token. Faller tillbaka på live-hämtning.
-        from scripts.recommend import _cached_quests
+        # recommend bor i agentur-lagret (fryst 2026-07-12, lab/frozen/) — saknas det hämtar
+        # vi direkt ur GitHub istället. Missionerna överlever; bara cachen tappas.
+        try:
+            from scripts.recommend import _cached_quests
+        except ImportError:
+            _cached_quests = lambda: []  # noqa: E731
 
         def milestones_fn():
             cached = _cached_quests()
@@ -121,8 +126,12 @@ def command_center_state(
         from scripts.session_store import list_sessions
         sessions_fn = lambda: list_sessions()  # noqa: E731
     if recommend_fn is None:
-        from scripts.recommend import recommend
-        recommend_fn = lambda: recommend()  # noqa: E731
+        # ORDERS kommer ur agentur-lagret. Är det fryst blir listan tom — ärligt, inte en 500:a.
+        try:
+            from scripts.recommend import recommend
+            recommend_fn = lambda: recommend()  # noqa: E731
+        except ImportError:
+            recommend_fn = lambda: []  # noqa: E731
     if health_fn is None:
         from scripts.health import health_for_milestone
         health_fn = health_for_milestone

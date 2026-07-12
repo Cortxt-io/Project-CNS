@@ -2,15 +2,20 @@
 """CNS Lab/Agency entrypoint — the full, advanced command surface.
 
 CNS Core (`python cns.py`) deliberately exposes only validate / new / export.
-Everything else — TUI, dispatch loop, sessions, quests, GitHub/PR clients,
-agent-host, MCP introspection, dashboard exports — is R&D and lives here.
+Everything else — sessions, quests, ventures/roadmaps, GitHub/PR clients,
+health, triage, dashboard exports — is R&D and lives here.
+
+The agency layer (TUI, dispatch loop, agent-host, agent routing, MCP
+introspection) was FROZEN on 2026-07-12 and moved to `lab/frozen/`. Those
+subcommands still parse, but reject with exit 2 and a pointer to
+`lab/frozen/FROZEN.md`. Do not wire new work to them.
 
 This entrypoint reuses the command functions defined in `cns.py`; it only adds
 the extra parser registrations. Run it from the repo root:
 
     python lab/cns_lab.py -h
-    python lab/cns_lab.py tui
-    python lab/cns_lab.py dispatch --dry-run
+    python lab/cns_lab.py venture list
+    python lab/cns_lab.py selftest
 
 Putting both the repo root and `lab/` on sys.path merges the `scripts` namespace
 package (Core modules in scripts/, Lab modules in lab/scripts/) so the agency

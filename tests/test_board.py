@@ -180,3 +180,18 @@ if __name__ == "__main__":
     test_who_acts()
     test_degrades_silently()
     print("OK — board_state: fas-härledning + WIP + enablement + hävstång + vem-agerar + degradering gröna")
+
+
+def test_survives_frozen_recommend(monkeypatch) -> None:
+    """Agentur-lagret fryst (scripts.recommend oimporterbar) → board_state degraderar, kraschar inte."""
+    import sys as _sys
+    monkeypatch.setitem(_sys.modules, "scripts.recommend", None)  # import → ImportError
+
+    s = board.board_state(
+        issues_fn=lambda: [],
+        closed_numbers_fn=lambda: set(),
+        sessions_fn=lambda: [],
+        health_fn=lambda i, now=None: {"level": "healthy", "checks": []},
+        now=datetime(2026, 7, 12, 12, 0, 0),
+    )
+    assert isinstance(s, dict)

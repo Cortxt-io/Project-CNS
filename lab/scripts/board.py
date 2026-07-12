@@ -162,8 +162,13 @@ def board_state(
         from scripts.session_store import list_sessions
         sessions_fn = lambda: list_sessions()  # noqa: E731
     if recommend_fn is None:
-        from scripts.recommend import recommend
-        recommend_fn = lambda: recommend()  # noqa: E731
+        # recommend bor i agentur-lagret (fryst 2026-07-12, lab/frozen/). Saknas det → tomma
+        # nudges istället för ImportError.
+        try:
+            from scripts.recommend import recommend
+            recommend_fn = lambda: recommend()  # noqa: E731
+        except ImportError:
+            recommend_fn = lambda: []  # noqa: E731
     if health_fn is None:
         from scripts.health import health_for_issue
         health_fn = health_for_issue
