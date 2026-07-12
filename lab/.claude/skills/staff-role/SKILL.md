@@ -12,11 +12,12 @@ körbar agent — inte bara flytta en fil. En halvfärdig agent gör mer skada �
 (rollkonfusion = 41,77 % av spec-fel; agent-bloat ökar koordinationsfel).
 
 **Gräns:** @people-lead äger behovet + verktygen, @learning-developer promptkvaliteten,
-@org-architect att strukturen stämmer. Mekaniken: `scripts/staff-role.py` (grindad av
+@org-architect att strukturen stämmer. Mekaniken: `scripts/bemanna.py` (grindad av
 `scripts/validate_agent.py`).
 
-> Grundad i `docs/agent-design-playbook.md` + onboarding-research (systemprompt = agentens DNA;
-> Zero Trust least-privilege; reliability > tillfällig framgång).
+> Grundad i `archive/docs/agent-design-playbook.md` (arkiverad, men fortfarande grunden) +
+> onboarding-research (systemprompt = agentens DNA; Zero Trust least-privilege;
+> reliability > tillfällig framgång).
 
 ---
 
@@ -80,7 +81,7 @@ Systemprompten är agentens **DNA** — vem den är, hur den tänker, vad den v�
 
 1. `python scripts/validate_agent.py <slug>` → **0 error** (grinden: komplett frontmatter,
    inga skelettmarkörer, sektionerna Roll/Verktyg/Eval/Session-protokoll finns).
-2. `python scripts/staff-role.py <slug>` — kör grinden igen och **blockerar vid error** (annars
+2. `python scripts/bemanna.py <slug>` — kör grinden igen och **blockerar vid error** (annars
    `--force`). Flyttar roster→agents, sätter `status: active`, flippar manifest, regenererar.
 3. **Routing** (om agenten ska nås via [ROUTING]): lägg en `ROUTING_RULE` i `scripts/router.py`
    med ett domän-regex → `<slug>`. Uppdatera CLAUDE.md routing-tabell om den ska synas där.

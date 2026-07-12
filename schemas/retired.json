@@ -1,0 +1,9 @@
+{
+  "_comment": "Fields that were removed from the node model but still haunt prose. Consumed by scripts/prose_check.py, which fails any DESCRIPTION that still steers one of them. Records (ADRs, gate reviews) are exempt — they describe a past in which these fields were real, and rewriting history is exactly what a record forbids. When you retire a field, add it here in the same PR; that is what makes the retirement stick instead of decaying into folklore.",
+  "retired": {
+    "stage": "retired with the node teardown (epic #11) — node lifecycle/maturity is delegated to the board, not declared. A venture's funnel position is a different axis: use `gate_decision`.",
+    "mvp_stage": "retired with the health-scorecard work — maturity is derived at read time (scripts/health.py), not declared.",
+    "risk_category": "retired with the health-scorecard work — risk is derived, not declared.",
+    "node.md": "the node-as-file model was torn down 2026-06-12 (PR #104). The structured truth is catalog.yaml; the prose is decisions/<slug>.md."
+  }
+}

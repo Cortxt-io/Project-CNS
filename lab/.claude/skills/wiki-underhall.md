@@ -43,12 +43,15 @@ description: När och hur du uppdaterar CNS-wikin — memory card-format, stale-
 
 ## Stale-termer att alltid uppdatera
 
+Kolumnen "Gammalt" skrivs utan backticks med flit: backticks är ett anspråk om **levande** kod, och
+de här termerna är döda. Skriver du dem som kod fäller färskhetschecken dig — med rätta.
+
 | Gammalt | Rätt |
 |---------|------|
-| `projects/` | `nodes/` |
-| `project.md` | `node.md` |
-| `quest_manager.py` | `issues_client` + GitHub Milestones |
-| `status` (primärt fält) | `stage` |
+| projects/, nodes/ | `catalog.yaml` — enda strukturerade källan |
+| project.md, node.md | `catalog.yaml` (fält) + `decisions/<slug>.md` (prosa). Nodmodellen revs 2026-06-12. |
+| quest_manager.py | `issues_client` + GitHub Milestones |
+| stage, status (som nodfält) | Finns inte. Livscykel och arbete bor på **boarden** (GitHub Projects/Linear). |
 | "quest som JSON" | "quest = GitHub Milestone" |
 
 ## Vad du INTE skriver i wikin

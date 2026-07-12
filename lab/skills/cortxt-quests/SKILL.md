@@ -94,14 +94,18 @@ drifts, every future session starts from stale assumptions.
 
 ## Node model reference
 
-The live model is **kind + stage + relations**. A node is `nodes/<slug>/node.md`.
+The live model is **kind + relations**. A node is an entry in `catalog.yaml`; its prose, where
+there is any, lives in `decisions/<slug>.md`. The node-as-file model (nodes/<slug>/node.md) was
+torn down 2026-06-12.
 
 - `kind`: component | system | framework — **emerges from structure**, not declared. A
   node is a *system* if other nodes point to it via `part_of`, a *component* if none do,
   a *framework* if it is top-level. Fractal.
-- `stage`: idea | building | working | maturing — **"idea" is a stage, not a kind**.
-- `status`: idea | early_mvp | mvp | live | shelved
 - relations: `part_of` (containment), `feeds` (data flow), `depends_on` (dependency)
 
-`layer` and `pipeline` are **legacy** frontmatter fields, usually empty — structure now
-comes from `part_of`/`kind`. Do not rely on them.
+**A node has no lifecycle field.** stage, status, risk and work are delegated to the **board**
+(GitHub Projects/Linear) — they are not in the catalog, and a node's maturity is derived at read
+time (`scripts/health.py`), not declared. A venture's funnel position is a different axis and does
+live in the vault: `gate_decision` (go | kill | hold | recycle).
+
+layer and pipeline are dead frontmatter fields. Do not reintroduce them.
