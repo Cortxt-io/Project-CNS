@@ -27,8 +27,12 @@ jobs:
         with:
           python-version: "3.11"
 
+      # pytest is not in requirements.txt — it was only ever installed locally, which is what
+      # you get when nothing ever ran the tests anywhere but on one laptop.
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
 
       # The two TUI suites are frozen by policy (the TUI is parked until the core is proven).
       # They fail at collection, and unfreezing them is a product decision, not a CI one.
