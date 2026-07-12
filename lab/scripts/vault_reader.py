@@ -38,7 +38,9 @@ DEFAULT_VAULT = REPO_ROOT.parent / "vault"
 # två gånger på en dag (Cortxt/Verticals → Cortxt-io/Work/Verticals), och en hårdkodad sökväg
 # gjorde då läsaren tyst blind — noll ventures, noll findings, grönt. Vaulten äger sin struktur;
 # koden följer den.
-VENTURE_DIR = "Verticals"
+# Två namn: mappen döps om Verticals → Ventures (schemat säger `venture`, inte `vertical` —
+# "vertical" var historia). Båda accepteras, så en pågående rename aldrig gör läsaren blind.
+VENTURE_DIRS = ("Ventures", "Verticals")
 
 # Kataloger som aldrig är innehåll.
 _SKIP_DIRS = {".git", ".obsidian", ".makemd", ".space", ".smart-env", ".claudian", ".claude"}
@@ -223,9 +225,10 @@ def venture_root(root: Path | str | None = None) -> Path | None:
     resolved = vault_root(root)
     if resolved is None:
         return None
-    for path in sorted(resolved.rglob(VENTURE_DIR)):
-        if path.is_dir() and not any(part in _SKIP_DIRS for part in path.parts):
-            return path
+    for name in VENTURE_DIRS:
+        for path in sorted(resolved.rglob(name)):
+            if path.is_dir() and not any(part in _SKIP_DIRS for part in path.parts):
+                return path
     return None
 
 
@@ -318,7 +321,7 @@ def check(root: Path | str | None = None, *, catalog_slugs: set[str] | None = No
     if verticals is None:
         return [Finding(
             "vault",
-            f"ingen {VENTURE_DIR}/-mapp i vaulten — läsaren mäter ingenting",
+            f"ingen {VENTURE_DIRS[0]}/-mapp i vaulten — läsaren mäter ingenting",
             str(resolved),
         )]
 
@@ -363,7 +366,7 @@ def check(root: Path | str | None = None, *, catalog_slugs: set[str] | None = No
     if seen == 0:
         findings.append(Finding(
             "vault",
-            f"{VENTURE_DIR}/ innehåller inga portföljnoter — läsaren mäter ingenting",
+            f"{VENTURE_DIRS[0]}/ innehåller inga portföljnoter — läsaren mäter ingenting",
             str(verticals.relative_to(resolved)),
         ))
 

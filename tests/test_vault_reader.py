@@ -280,7 +280,7 @@ def test_a_vault_without_a_verticals_dir_is_a_finding_not_silence(tmp_path: Path
     findings = vr.check(tmp_path)
 
     assert findings, "en vault utan venture-mapp måste skrika, inte returnera grönt"
-    assert any("Verticals" in f.message for f in findings)
+    assert any("Ventures" in f.message for f in findings)
 
 
 def test_a_verticals_dir_with_no_notes_is_a_finding(tmp_path: Path):
@@ -318,3 +318,25 @@ def test_the_verticals_dir_is_FOUND_not_dictated(tmp_path: Path):
 def test_a_missing_vault_still_degrades_quietly(tmp_path: Path):
     """Ingen vault alls är en FRÅNVARO, inte en felkonfiguration. Den ska förbli tyst."""
     assert vr.check(tmp_path / "finns-inte") == []
+
+
+def test_the_venture_dir_may_be_called_Ventures(tmp_path: Path):
+    """Mappen döps om Verticals → Ventures (schemat säger `venture`, inte `vertical`).
+
+    Läsaren accepterar båda: en rename får aldrig göra kontrolltornet blint mitt i flytten.
+    """
+    moved = tmp_path / "Ideaverse" / "Cortxt-io" / "Work" / "Ventures" / "bkfinans"
+    moved.mkdir(parents=True)
+    (moved / "bkfinans.md").write_text(_note("""
+        ---
+        node: bkfinans
+        type: venture
+        owner: rikard
+        last_reviewed: 2026-07-01
+        ---
+
+        # bkfinans
+        """), encoding="utf-8")
+
+    assert vr.venture_root(tmp_path) == moved.parent
+    assert [p.name for p in vr._note_paths(tmp_path)] == ["bkfinans.md"]
