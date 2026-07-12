@@ -76,7 +76,13 @@ jobs:
         continue-on-error: true
         env:
           CORTXT_VAULT_PATH: ${{ github.workspace }}/../vault
-        run: python lab/cns_lab.py reconcile --apply | tee reconcile-report.md
+        run: |
+          # pipefail är INTE valfritt här. En pipeline returnerar exit-koden från det SISTA
+          # kommandot, och `tee` lyckas alltid — så utan detta sväljer röret reconciles exit 1
+          # och den blinda körningen rapporteras som success igen. Ärlighetsgrinden tystad av
+          # ett rör: samma bugg-klass som den finns för att fånga, en nivå ner.
+          set -o pipefail
+          python lab/cns_lab.py reconcile --apply | tee reconcile-report.md
 
       - name: Committa den genererade katalogen om verkligheten rört sig
         if: steps.reconcile.outcome == 'success'
