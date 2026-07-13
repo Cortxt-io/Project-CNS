@@ -27,20 +27,20 @@ jobs:
         with:
           python-version: "3.11"
 
-      # pytest is not in requirements.txt — it was only ever installed locally, which is what
-      # you get when nothing ever ran the tests anywhere but on one laptop.
+      # requirements-dev.txt pulls in requirements.txt and adds pytest + fakeredis. Test deps are
+      # declared, not installed ad-hoc — the previous version pip-installed pytest here by hand and
+      # left fakeredis undeclared entirely, which is how test_lease_store ended up running nowhere.
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install pytest
+        run: pip install -r requirements-dev.txt
 
       # tests/frozen/ (the agency layer) is excluded via pytest.ini, not here — one declared
-      # boundary instead of a growing list of CI flags. test_lease_store needs fakeredis, which
-      # is not in requirements.txt.
+      # boundary instead of a growing list of CI flags.
+      #
+      # test_lease_store used to be skipped with --ignore because fakeredis was missing. A test
+      # that runs nowhere is not a test, it is a comment: the lease store was untested locally AND
+      # in CI while the build reported green. It runs now.
       - name: Tests
-        run: |
-          python -m pytest tests/ -q \
-            --ignore=tests/test_lease_store.py
+        run: python -m pytest tests/ -q
 
       - name: Prose freshness
         run: python scripts/prose_check.py

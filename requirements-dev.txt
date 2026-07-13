@@ -1,0 +1,19 @@
+# Test- och utvecklingsberoenden. Skeppas ALDRIG till produktion.
+#
+# requirements.txt går till Railway-deployen. Ett testbibliotek där är en mock i produktion, och
+# `redis>=5.0` (den riktiga klienten) hör hemma i den — `fakeredis` gör det inte.
+#
+# Bakgrunden till att den här filen finns: `tests/test_lease_store.py` importerade `fakeredis` utan
+# att någon deklarerat det. Följden var att testet föll lokalt och att CI hoppade över det med
+# `--ignore` — så lease-store-koden var otestad ÖVERALLT medan bygget rapporterade grönt.
+#
+# Det är samma mönster som resten av portföljen har lidit av: något som ser grönt ut medan en bit
+# är död. Ett test som inte körs någonstans är inte ett test; det är en kommentar.
+
+-r requirements.txt
+
+pytest>=8.0
+# EVAL (Lua) krävs: lease_store släpper och förnyar lease atomärt med Lua-skript, annars kan
+# två processer släppa varandras lease. Utan [lua] svarar fakeredis "unknown command 'eval'" och
+# just de två testerna faller — vilket är precis varför testet ignorerades i stället för lagades.
+fakeredis[lua]>=2.23
