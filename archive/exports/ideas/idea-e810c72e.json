@@ -1,8 +1,0 @@
-{
-  "id": "idea-e810c72e",
-  "text": "Säkerhetsmodell med scoping — princip: kolla alltid vad som KAN köras lokalt innan något läggs i molnet/delas.\n\nStående hållning för säkerhetsagenten/granskning: när en ny förmåga byggs (agent-host, MCP-verktyg, nyckelhantering, sync), ställ först frågan \"vad av detta kan/bör vara lokalt?\" och scopa åtkomst minimalt. Lokalt-först är redan Cortxts grundbult (lokalt-först, Markdown, GitHub = sanning) — den här idén lyfter det till en explicit säkerhetslins som appliceras på varje nytt spår.\n\nKonkreta tillämpningar:\n- Agent-host: nyckel/credentials lokalt (otrackad .cns-agent-key), aldrig i repo eller efemär disk. Jfr [[idea-376539fe]] (dedikerad nyckelväg) och [[idea-34298e57]] (key-management — där står redan \"säkerhetsmodell/scoping innan något byggs\").\n- Vad behöver faktiskt nå nätet vs kan stanna på maskinen? Minimera exponerad yta per förmåga.\n- Scoping: minsta möjliga behörighet per token/nyckel/verktyg, inte bred org-access.\n\nAvgränsning: detta är en granskningsprincip/lins, inte en enskild feature — den ska triggas vid varje nytt bygge, inte byggas en gång. Samma anda som read-first för irreversibelt.",
-  "created_at": "2026-06-09T04:06:25",
-  "source": "chat",
-  "slug": null,
-  "status": "open"
-}

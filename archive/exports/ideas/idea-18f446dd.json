@@ -1,9 +1,0 @@
-{
-  "id": "idea-18f446dd",
-  "text": "Dra-loop idempotens (nyans ur #43-re-verifiering): i Control Towers handlingsbara \"Härnäst\" (scripts/tui/app.py, OverviewScreen.on_option_list_option_selected) registrerar varje Enter ett NYTT running-pass via start_session. Upprepade tryck (eller att redan stå i ett matchande pass) kan yngla av sig flera running-sessioner — fantom-detektorn fångar de inaktuella men det är städning i efterhand. Renare: gör dra-loopen idempotent — om det redan finns ett running-pass med samma (type, focus/link) återanvänd/uppdatera det i stället för att skapa nytt; sätt bara markören. Liten, isolerad till on_option_list_option_selected + ev. en session_store-hjälpare (find_running(type, link)). Värde marginellt tills running-sessioner faktiskt prolifererar; bygg om/när det stör. Hänger ihop med phantom-detektorn (session #58) och dra-loop (idea-5132a8f6).",
-  "created_at": "2026-06-14T01:20:03",
-  "source": "chat",
-  "slug": "interface",
-  "session_id": null,
-  "status": "open"
-}

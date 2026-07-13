@@ -1,8 +1,0 @@
-{
-  "id": "idea-2089c2a5",
-  "text": "Cookbook: ladda ner flera (lokala) modeller till mina egna servrar.\n\nÖnskan: kunna dra ner och köra flera modeller lokalt på egen hårdvara/servrar — inte vara låst till ett enda moln-API. Ett \"cookbook\"/recept som beskriver hur man sätter upp lokal modell-hosting (t.ex. Ollama/llama.cpp/vLLM-stil) och hämtar flera modeller, så man kan välja modell per uppgift och köra billigt/offline.\n\nMotiv kopplat till sessionen: rate limits på prenumerationen blockerade arbete; lokala modeller ger en fallback-väg som inte slår i sessionsgränser och inte kostar per token. Passar ihop med lokalt-först-principen och med agent-host-spåret (agent-host kan på sikt rikta mot en lokal modell i stället för Anthropic-API, jfr path 2 i [[idea-376539fe]]).\n\nAtt utreda i receptet:\n- Vilka modeller/storlekar går på den hårdvara Rikard har (VRAM/RAM-tak)?\n- Runtime-val: Ollama (enklast, multi-modell ur lådan) vs vLLM/llama.cpp (mer kontroll).\n- Hur agent-host/TUI:t skulle peka mot en lokal endpoint (OpenAI-kompatibel shim eller Agent-SDK-bas-URL).\n- Gräns: lokala modeller ersätter inte Claude för det svåra; de är för billiga/snabba/offline-uppgifter och som fallback när limit slår.\n\nAvgränsning: detta är ett kunskaps-/infrastruktur-recept (cookbook), inte produktkod i något av de två repona — håll det som referens tills det faktiskt ska kopplas in.",
-  "created_at": "2026-06-09T04:06:37",
-  "source": "chat",
-  "slug": null,
-  "status": "open"
-}

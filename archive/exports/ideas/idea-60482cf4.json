@@ -1,8 +1,0 @@
-{
-  "id": "idea-60482cf4",
-  "text": "Event-driven sync av sessions-slutsatser mot CNS. Istället för intervall-pollning med /loop: kör flush-skriptet händelse-styrt. (1) GitHub Action (on: pull_request / on: push) som körs på GitHubs sida exakt när PR öppnas/mergas — naturlig plats eftersom GitHub är källan till sanning och Railway-backenden redan kör git_pull() + export_json() live. (2) git post-commit/pre-push hook lokalt som flushar innan det når GitHub. Mål: CNS-noderna speglar alltid det som hamnar på GitHub. Relaterat: flera parallella Claude Code-sessioner ska konvergera mot samma noder (merga inte transkript — spola ner slutsatser i node.md), ev. via en /cns-flush- eller /cns-sync-skill.",
-  "created_at": "2026-06-09T00:51:48",
-  "source": "chat",
-  "slug": null,
-  "status": "open"
-}

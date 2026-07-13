@@ -229,19 +229,18 @@ Regel: lär du dig något *bestående om strukturen* → `catalog.yaml`; en *var
 | Katalog-läsaren | `scripts/catalog.py` (`load_catalog`, `derive_kind`) |
 | Export till dashboard | `lab/scripts/json_exporter.py` |
 | Arbetslagret | GitHub Issues/Milestones/PRs via `lab/scripts/issues_client.py` |
-| Agenturen (dispatch, routing, agenter, TUI) | **Fryst 2026-07-12** → `lab/frozen/` (se `lab/frozen/FROZEN.md`) |
-| MCP-verktyg | `lab/app/tools/` (`cortxt_*`) |
-| Backend | `lab/app/server.py` (Flask) + `lab/app/mcp_server.py` (MCP) på Railway |
+| Agenturen (dispatch, routing, agenter, TUI) | **Riven 2026-07-13.** Frystes 2026-07-12, revs sedan helt — git är minnet |
+| MCP-verktyg | **Rivna 2026-07-13** — 53 exponerade, noll anrop |
+| Backend | `lab/app/server.py` (Flask) på Railway — fyra läs-endpoints |
 | Dashboard | repo `cortxt`, Vercel, `app.cortxt.io` |
 | Färskhetscheck | `scripts/prose_check.py` — håller beskrivande prosa mot källan |
 
 > Sökvägarna ovan bär `lab/`-prefix sedan Core/Lab-splitten: repo-roten är Core (katalog, CLI,
 > validering), allt övrigt bor i `lab/`.
 >
-> **Tre lager sedan 2026-07-12, inte två:** Core (repo-roten) · Lab (`lab/scripts`, `lab/app` —
-> pipelinen, cockpiten, GitHub-ryggraden) · **Frozen** (`lab/frozen/` — agenturen: dispatch,
-> routning, agent-registret, TUI, prompt-hookarna). Frozen ligger **utanför** `scripts`-namespacet
-> och importeras av ingenting. `lab/frozen/FROZEN.md` säger varför och hur det väcks.
+> **Två lager sedan rivningen 2026-07-13:** Core (repo-roten — katalog, CLI, validering) · Lab
+> (`lab/scripts`, `lab/app` — pipelinen, cockpiten, GitHub-ryggraden). Frozen-lagret revs; det som
+> frystes 2026-07-12 väcktes aldrig, och ett lik i en garderob är fortfarande ett lik. Historiken
+> ligger i git.
 
-> Detaljerad arkitektur per modul: `lab/CLAUDE.md`. Kontrollplanens koncept-topologi (inkl.
-> Vercel/Shopify-riktningen) är arkiverad: `archive/docs/cortxt-kontrollplan-arkitektur.md`.
+> Detaljerad arkitektur per modul: `lab/CLAUDE.md`.

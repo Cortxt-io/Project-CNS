@@ -1,8 +1,0 @@
-{
-  "id": "idea-07177682",
-  "text": "CLI-kommandostatistik + kommando-rekommendationer. Två sammanhängande delar:\n\n1. Statistik på CLI-kommandon — logga och visa vilka cns-kommandon som körs, hur ofta, över tid. Insyn i faktisk användning (heta vs aldrig rörda kommandon).\n\n2. Rekommendationssystem för kommandon — föreslår nästa/relevanta kommandon utifrån användningsmönster, aktuell nod/kontext, eller vad som brukar följa på det man just körde.\n\nKoppling: statistiken (1) är underlaget rekommendationerna (2) bygger på. Troligen eget spår, isolerat mot datalagret; statistiken kan på sikt visas i TUI-översikten.",
-  "created_at": "2026-06-09T02:23:34",
-  "source": "chat",
-  "slug": "cns-core",
-  "status": "open"
-}

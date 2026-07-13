@@ -23,7 +23,6 @@ from scripts.health import (  # noqa: E402
     health_for_issue,
     health_for_milestone,
     health_for_node,
-    health_for_session,
 )
 
 NOW = datetime(2026, 6, 13, 12, 0, 0)
@@ -31,17 +30,6 @@ NOW = datetime(2026, 6, 13, 12, 0, 0)
 
 def _iso(dt: datetime) -> str:
     return dt.isoformat(timespec="seconds")
-
-
-def _session(**kw) -> dict:
-    base = {
-        "status": "running",
-        "created_at": _iso(NOW - timedelta(hours=1)),
-        "updated_at": _iso(NOW - timedelta(hours=1)),
-        "metrics": {"tokens_in": 0, "tokens_out": 0, "artifacts": []},
-    }
-    base.update(kw)
-    return base
 
 
 def _issue(**kw) -> dict:
@@ -96,26 +84,7 @@ def test_scorecard_shape():
     assert sc["checks"] == [{"name": "x", "level": "attention", "feedback": "fix it"}]
 
 
-# --- Session ---------------------------------------------------------------
-
-def test_session_phantom_degraded():
-    s = _session(metrics={"tokens_in": 3000, "tokens_out": 4000, "artifacts": []})
-    assert health_for_session(s, now=NOW)["level"] == "degraded"
-
-
-def test_session_fresh_running_healthy():
-    s = _session(updated_at=_iso(NOW - timedelta(minutes=10)))
-    assert health_for_session(s, now=NOW)["level"] == "healthy"
-
-
-def test_session_stale_running_attention():
-    s = _session(updated_at=_iso(NOW - timedelta(hours=24)))
-    assert health_for_session(s, now=NOW)["level"] == "attention"
-
-
-def test_session_done_healthy():
-    s = _session(status="done", updated_at=_iso(NOW - timedelta(days=5)))
-    assert health_for_session(s, now=NOW)["level"] == "healthy"
+# Sessionshälsan revs 2026-07-13 med sessionslagret (0 sessioner på en månad).
 
 
 # --- Issue -----------------------------------------------------------------

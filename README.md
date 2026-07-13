@@ -58,9 +58,7 @@ Includes: `agents/`, `skills/`, `sessions/`, `scripts/`, `app/`, `config/`, `.cl
 
 Intentionally out of scope for Core v1 — reachable only via `lab/cns_lab.py`:
 
-- **TUI / Control Tower** — `python lab/cns_lab.py tui`
-- **Dispatch loop** — `lab/frozen/dispatch.py` (`python lab/cns_lab.py dispatch`)
-- **MCP server** — `lab/app/` + `lab/config/`
+- **Backend** — `lab/app/server.py` (Flask), fyra läs-endpoints för app.cortxt.io
 - **Sessions / quests / PR client** — `lab/cns_lab.py session|quest|pr`
 - **Dashboard exports** — `lab/cns_lab.py export-json|export-xlsx`
 - **Flask backend / Railway deploy** — `lab/Procfile`, `railway.json`

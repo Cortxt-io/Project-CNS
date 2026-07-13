@@ -1,9 +1,0 @@
-{
-  "id": "idea-7b5e4de4",
-  "text": "Triage-verktyg form (b)+(c): MCP-batchverktyg cortxt_triage (grupperad inkorg + batch-resolve/promote, nåbart från alla klienter) och TUI-triagevy med piltangentval. Återanvänd scripts/triage.group_ideas() (form a, levererad i #39). Restdel ur stängda #39.",
-  "created_at": "2026-06-16T16:07:17",
-  "source": "chat",
-  "slug": "cns-core",
-  "session_id": null,
-  "status": "open"
-}

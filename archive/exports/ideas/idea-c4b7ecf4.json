@@ -1,9 +1,0 @@
-{
-  "id": "idea-c4b7ecf4",
-  "text": "Vidareutveckla CNS-TUI:t (scripts/tui/) från läs-bar överblick till en handlingsbar yta — \"inte bara en överblick\".\n\nRiktning: gör noder actionable direkt i TUI:t, inte bara visningsbara. Bevara isolationsprincipen ([[cns-isolerat-mot-datalagret]]): all läsning via datalagret, ev. skrivningar via befintliga funktioner — rör inte cns.py:s kommandostruktur.\n\nKandidatfunktioner (att prioritera/avgränsa i specen):\n- Öppna/visa vald nods node.md inne i TUI:t (read_node → Markdown-widget).\n- Hoppa i relationsgrafen: navigera till feeds/depends_on-mål med Enter.\n- Kör cns validate på vald nod och visa resultat inline.\n- Sök i nodinnehåll (sektioner), inte bara filter på stage/status.\n- Visa quest-/CI-status per nod (eventstream/quests).\n- Redigera frontmatter-fält (stage/status) — kräver skrivväg; öppen fråga nedan.\n- Skapa idé/quest från markerad nod.\n\nÖppna frågor (besvara innan kod):\n1. Hur långt mot skrivning? Förblir TUI read-first (mutationer delegeras till cns-kommandon/GitHub-push) eller får den egna edit-vägar?\n2. Vilka 2-3 funktioner är v2-kärnan? (Undvik att bygga allt på en gång.)\n3. Timing mot CLI-flytten — fortsatt isolerat i scripts/tui/, ingen cns.py-yta förrän flytten landat.",
-  "created_at": "2026-06-08T22:55:30",
-  "source": "chat",
-  "slug": "cns-core",
-  "status": "promoted",
-  "promoted_to": "quest-13dbeedf"
-}

@@ -15,7 +15,7 @@ from datetime import datetime
 from typing import Callable
 
 # Fas-kolumnerna vänster→höger (livscykeln). Enablement är INTE en kolumn — den är ett
-# parallellt spår. Speglar session_store.VALID_SESSION_TYPES minus enablement.
+# parallellt spår.
 PHASES: list[str] = ["triage", "discovery", "definition", "delivery", "review", "retro"]
 
 # WIP-tak per fas (forskningsrevidering: constraints/pull drar arbete vidare, inte passiv
@@ -159,8 +159,8 @@ def board_state(
             from scripts.issues_client import list_issues
             return {i["number"] for i in list_issues(state="closed") if i.get("number")}
     if sessions_fn is None:
-        from scripts.session_store import list_sessions
-        sessions_fn = lambda: list_sessions()  # noqa: E731
+        # Sessionslagret revs 2026-07-13 — det skrev aldrig en session, så listan var alltid tom.
+        sessions_fn = lambda: []  # noqa: E731
     if recommend_fn is None:
         # recommend bor i agentur-lagret (fryst 2026-07-12, lab/frozen/). Saknas det → tomma
         # nudges istället för ImportError.

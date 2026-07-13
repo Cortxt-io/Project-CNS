@@ -1,8 +1,0 @@
-{
-  "id": "idea-165cb676",
-  "text": "Köa råa idé-fragment (korta meningar) och mass-konvertera dem till CNS-idéer med rätt format.\n\nTvå medvetet skilda faser:\n1. Fångst (snabb, dum, rå): kasta in korta meningar i en lättviktig kö — ingen formatering, ingen väntan, kan vara lokal.\n2. Bearbetning (batch): kör hela kön på en gång → varje fragment expanderas/struktureras till korrekt idé-format (text, source, ev. slug) och skrivs till CNS-inkorgen (exports/ideas/).\n\nAvgränsning mot närliggande idéer:\n- vs parallella /btw (idea-5e8919bc): där fångas flera MEDAN en fork jobbar; här är det en kö man själv samlar och sedan medvetet mass-kör — inget forkande, bara batch-konvertering.\n- Passar ihop med intent+slots/kommando-registret (idea-f6a95c91): mass-körningen är i praktiken ett kommando som tar N råa rader → N formaterade idéer.\n\nDesignnotering: håll fångsten dum/snabb (bara text in), lägg formaterings-/struktureringslogiken i bearbetnings-steget (skilj tolkning från utförande). Gräns: rå kö lokalt/snabbt vs idéer som hör hemma i CNS (GitHub-sanning) — mass-körningen är det som faktiskt skriver in dem i rätt format.",
-  "created_at": "2026-06-09T02:45:37",
-  "source": "chat",
-  "slug": "cns-core",
-  "status": "open"
-}
