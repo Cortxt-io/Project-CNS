@@ -712,183 +712,25 @@ def _session_link_str(s: dict) -> str:
     return f"({link.get('kind', '?')}:{link.get('ref', '?')}) " if link else ""
 
 
-def cmd_session_list(args: argparse.Namespace) -> None:
-    """Lista sessioner (nyast först), valfritt filtrerade på status."""
-    from scripts.session_store import list_sessions
-
-    sessions = list_sessions(status=args.status)
-    if not sessions:
-        console.print("[dim]Inga sessioner bokförda.[/dim]")
-        return
-    for s in sessions:
-        dot = "[bold green]*[/bold green]" if s.get("status") == "running" else "[dim]-[/dim]"
-        stype = s.get("session_type") or "-"
-        summary = (s.get("summary") or "-")[:70]
-        console.print(f"{dot} [cyan]{s.get('id', '?')}[/cyan]  [dim]{stype}[/dim]  {_session_link_str(s)}{summary}")
 
 
-def cmd_session_show(args: argparse.Namespace) -> None:
-    """Visa en session i detalj (rå JSON)."""
-    from scripts.session_store import get_session
-
-    s = get_session(args.session_id)
-    if s is None:
-        console.print(f"[red]Session '{args.session_id}' hittades inte.[/red]")
-        sys.exit(1)
-    console.print_json(data=s)
 
 
-def cmd_session_fork(args: argparse.Namespace) -> None:
-    """Forka en barn-session under en förälder (bokför i sessionsträdet)."""
-    from scripts.session_store import fork_session
 
-    try:
-        s = fork_session(args.parent_id, summary=args.summary or "", fork_name=args.name)
-    except FileNotFoundError as exc:
-        console.print(f"[red]{exc}[/red]")
-        sys.exit(1)
-    console.print(f"[green]Forkade session [cyan]{s.get('id')}[/cyan] under {args.parent_id}.[/green]")
-
-
-def cmd_session_tree(args: argparse.Namespace) -> None:
-    """Visa sessionsträdet (forks-under-forks)."""
-    from scripts.session_store import tree
-
-    result = tree(args.root_id)
-    roots = ([result] if result else []) if args.root_id is not None else (result or [])
-    if not roots:
-        console.print("[dim]Inga sessioner.[/dim]")
-        return
-
-    def render(node: dict, depth: int = 0) -> None:
-        dot = "[bold green]*[/bold green]" if node.get("status") == "running" else "[dim]-[/dim]"
-        name = node.get("fork_name") or node.get("id", "?")
-        summary = (node.get("summary") or "")[:55]
-        console.print(f"{'  ' * depth}{dot} [cyan]{name}[/cyan] [dim]{summary}[/dim]")
-        for kid in node.get("children", []):
-            render(kid, depth + 1)
-
-    for r in roots:
-        render(r)
-
-
-def cmd_session_set_active(args: argparse.Namespace) -> None:
-    """Sätt lokal aktiv sessionstyp-markör (läses av router-hooken)."""
-    from scripts.session_store import set_active
-
-    try:
-        state = set_active(args.session_type, session_id=args.session_id)
-    except Exception as exc:
-        console.print(f"[red]{exc}[/red]")
-        sys.exit(1)
-    console.print(f"[green]Aktiv sessionstyp: [bold]{state['type']}[/bold][/green]")
-
-
-def cmd_session_get_active(args: argparse.Namespace) -> None:
-    """Visa aktiv sessionstyp-markör."""
-    from scripts.session_store import get_active
-
-    state = get_active()
-    if not state:
-        console.print("[dim]Ingen aktiv sessionstyp satt.[/dim]")
-        return
-    console.print(
-        f"[bold]{state.get('type')}[/bold]  "
-        f"[dim]session_id={state.get('session_id')}  set_at={state.get('set_at')}[/dim]"
-    )
-
-
-def cmd_session_clear_active(args: argparse.Namespace) -> None:
-    """Rensa aktiv sessionstyp-markör."""
-    from scripts.session_store import clear_active
-
-    clear_active()
-    console.print("[dim]Aktiv sessionstyp rensad.[/dim]")
 
 
 # ---------------------------------------------------------------------------
 # btw commands (personlig sessionslogg — lokalt datalager; push via MCP)
 # ---------------------------------------------------------------------------
 
-def cmd_btw_list(args: argparse.Namespace) -> None:
-    """Lista btw-sessionsloggar (senast uppdaterad först)."""
-    from scripts.btw_log import list_sessions
 
-    sessions = list_sessions()
-    if not sessions:
-        console.print("[dim]Inga btw-loggar.[/dim]")
-        return
-    for s in sessions:
-        n = len(s.get("asides", []))
-        console.print(
-            f"[cyan]{s.get('session_id', '?')}[/cyan]  "
-            f"[dim]{n} asides  {s.get('updated_at', '')}[/dim]"
-        )
-
-
-def cmd_btw_show(args: argparse.Namespace) -> None:
-    """Visa asides i en btw-session."""
-    from scripts.btw_log import get_session
-
-    s = get_session(args.session_id)
-    if s is None:
-        console.print(f"[red]btw-session '{args.session_id}' hittades inte.[/red]")
-        sys.exit(1)
-    asides = s.get("asides", [])
-    if not asides:
-        console.print("[dim]Inga asides.[/dim]")
-        return
-    for a in asides:
-        fork = a.get("fork") or ""
-        console.print(f"[dim]{a.get('ts', '')}[/dim] [yellow]{fork}[/yellow] {a.get('text', '')}")
-
-
-def cmd_btw_link(args: argparse.Namespace) -> None:
-    """Soft-länka en btw-session till quest och/eller idé."""
-    from scripts.btw_log import link_session
-
-    try:
-        link_session(args.session_id, quest_id=args.quest, idea_id=args.idea)
-    except ValueError as exc:
-        console.print(f"[red]{exc}[/red]")
-        sys.exit(1)
-    console.print(f"[green]Länkade btw-session {args.session_id}.[/green]")
 
 
 # ---------------------------------------------------------------------------
 # Agentur-lagret — fryst 2026-07-12 (lab/frozen/)
 # ---------------------------------------------------------------------------
 
-def _frozen(command: str) -> None:
-    """Avvisa ett kommando vars lager är fryst. Ett tydligt nej slår ett ImportError."""
-    console.print(
-        f"[yellow]'{command}' tillhör agentur-lagret, som är fryst sedan 2026-07-12.[/yellow]\n"
-        "Koden ligger kvar i [cyan]lab/frozen/[/cyan] — se [cyan]lab/frozen/FROZEN.md[/cyan] "
-        "för varför den frystes och vad som krävs för att väcka den."
-    )
-    sys.exit(2)
 
-
-def cmd_tui(args: argparse.Namespace) -> None:
-    """Fryst: den interaktiva terminal-överblicken (Textual)."""
-    _frozen("cns tui")
-
-
-def cmd_triage(args: argparse.Namespace) -> None:
-    """Gruppera den öppna idé-inkorgen i åtgärdbara hinkar (#39, Control Tower)."""
-    import json as _json
-    import sys as _sys
-
-    from scripts.idea_inbox import list_ideas
-    from scripts.triage import group_ideas, render_triage
-
-    if hasattr(_sys.stdout, "reconfigure"):
-        _sys.stdout.reconfigure(encoding="utf-8")  # Windows-konsol klarar inte å-ä-ö/emoji
-    grouping = group_ideas(list_ideas(status="open"))
-    if getattr(args, "json", False):
-        print(_json.dumps(grouping, ensure_ascii=False, indent=2))
-    else:
-        print(render_triage(grouping))
 
 
 def cmd_derive(args: argparse.Namespace) -> None:
@@ -921,19 +763,7 @@ def cmd_derive(args: argparse.Namespace) -> None:
     print("Kör 'cns derive --diff' för diff, 'cns derive --apply' för sammanslagen karta.")
 
 
-def cmd_mcp_servers(_args: argparse.Namespace) -> None:
-    """Fryst: MCP-routern för agenturens lokala pass."""
-    _frozen("cns mcp-servers")
 
-
-def cmd_agent_tools(args: argparse.Namespace) -> None:
-    """Fryst: en rolls härledda effektiva verktyg (C1)."""
-    _frozen("cns agent-tools")
-
-
-def cmd_status(args: argparse.Namespace) -> None:
-    """Fryst: berodde på scripts.tui.viewmodel, som aldrig har funnits i repot."""
-    _frozen("cns status")
 
 
 def cmd_health(args: argparse.Namespace) -> None:
@@ -1008,14 +838,6 @@ def cmd_pr_close(args: argparse.Namespace) -> None:
         console.print(f"[red]Close misslyckades:[/red] {exc}")
 
 
-def cmd_dispatch(args: argparse.Namespace) -> None:
-    """Fryst: dispatch-loopen (agenturens puls)."""
-    _frozen("cns dispatch")
-
-
-def cmd_agent_ask(args: argparse.Namespace) -> None:
-    """Fryst: agent-host (lokala Claude-pass)."""
-    _frozen("cns agent-ask")
 
 
 def cmd_skill_export(args: argparse.Namespace) -> None:
@@ -1074,18 +896,6 @@ def cmd_selftest(args: argparse.Namespace) -> None:
         state = command_center_state()
         return f"{len(state.get('missions', []))} missions, {len(state.get('orders', []))} orders"
 
-    def _triage():
-        from scripts.idea_inbox import list_ideas
-        from scripts.triage import group_ideas
-
-        group_ideas(list_ideas(status="open"))
-        return "ok"
-
-    def _sessions():
-        from scripts import session_store
-
-        return f"{len(session_store.list_sessions())} sessioner"
-
     def _health():
         from scripts.health import health_for_node
 
@@ -1112,8 +922,6 @@ def cmd_selftest(args: argparse.Namespace) -> None:
     check("node.md-dödseam grindad (teardown #11)", _node_seam_gated)
     check("katalog-validering (validate_catalog)", _validate)
     check("orientering (command_center)", _orientering)
-    check("triage (group_ideas)", _triage)
-    check("sessioner (session_store)", _sessions)
     check("hälsa (health_for_node)", _health)
 
     if getattr(args, "live", False):
@@ -1274,19 +1082,6 @@ def register_lab(subparsers) -> None:
         help="Klassa katalognoder mot repo-verkligheten (true/stale/aspirational/grouping)",
     )
     sp_derive.set_defaults(func=cmd_derive)
-
-    # cns mcp-servers — lista MCP-routerns servrar + konfig-status
-    sp_mcp = subparsers.add_parser(
-        "mcp-servers", help="Lista MCP-servrarna agenturen kan nå + om de är konfigurerade"
-    )
-    sp_mcp.set_defaults(func=cmd_mcp_servers)
-
-    # cns agent-tools <roll> — visa en rolls härledda effektiva verktyg (C1)
-    sp_atools = subparsers.add_parser(
-        "agent-tools", help="Visa en rolls härledda effektiva verktyg (matris + override → lokala namn)"
-    )
-    sp_atools.add_argument("role", help="Roll-slug (t.ex. backend-utvecklare)")
-    sp_atools.set_defaults(func=cmd_agent_tools)
 
     # cns deploy {connect|status|deploy} — drift-ekrar (#78). Läser nodens integrations.deploy.
     sp_deploy = subparsers.add_parser("deploy", help="Drift-adaptrar (Vercel): connect/status/deploy")
@@ -1456,63 +1251,8 @@ def register_lab(subparsers) -> None:
     )
     sp_es_import.set_defaults(func=cmd_eventstream_import)
 
-    # cns session {list|show|fork|tree|set-active|get-active|clear-active}
-    sp_session = subparsers.add_parser("session", help="AI-arbetspass (sessioner) — lokalt datalager")
-    session_sub = sp_session.add_subparsers(dest="session_command")
 
-    sp_s_list = session_sub.add_parser("list", help="Lista sessioner (nyast först)")
-    sp_s_list.add_argument("--status", default=None, help="Filtrera på status, t.ex. running/done")
-    sp_s_list.set_defaults(func=cmd_session_list)
 
-    sp_s_show = session_sub.add_parser("show", help="Visa en session i detalj")
-    sp_s_show.add_argument("session_id", help="Sessions-id")
-    sp_s_show.set_defaults(func=cmd_session_show)
-
-    sp_s_fork = session_sub.add_parser("fork", help="Forka en barn-session under en förälder")
-    sp_s_fork.add_argument("parent_id", help="Förälderns sessions-id")
-    sp_s_fork.add_argument("--summary", default=None, help="Sammanfattning för barn-sessionen")
-    sp_s_fork.add_argument("--name", default=None, help="Fork-namn (t.ex. agent-slug)")
-    sp_s_fork.set_defaults(func=cmd_session_fork)
-
-    sp_s_tree = session_sub.add_parser("tree", help="Visa sessionsträdet")
-    sp_s_tree.add_argument("root_id", nargs="?", default=None, help="Valfri rot (annars alla rötter)")
-    sp_s_tree.set_defaults(func=cmd_session_tree)
-
-    sp_s_seta = session_sub.add_parser("set-active", help="Sätt lokal aktiv sessionstyp")
-    sp_s_seta.add_argument("session_type", help="brainstorm|spec|bygg|triage|review|verktygsladan|retro")
-    sp_s_seta.add_argument("--session-id", dest="session_id", default=None, help="Koppla markören till ett sessions-id")
-    sp_s_seta.set_defaults(func=cmd_session_set_active)
-
-    sp_s_geta = session_sub.add_parser("get-active", help="Visa aktiv sessionstyp")
-    sp_s_geta.set_defaults(func=cmd_session_get_active)
-
-    sp_s_clra = session_sub.add_parser("clear-active", help="Rensa aktiv sessionstyp")
-    sp_s_clra.set_defaults(func=cmd_session_clear_active)
-
-    # cns btw {list|show|link}
-    sp_btw = subparsers.add_parser("btw", help="Personlig btw-sessionslogg — lokalt datalager")
-    btw_sub = sp_btw.add_subparsers(dest="btw_command")
-
-    sp_b_list = btw_sub.add_parser("list", help="Lista btw-loggar")
-    sp_b_list.set_defaults(func=cmd_btw_list)
-
-    sp_b_show = btw_sub.add_parser("show", help="Visa asides i en btw-session")
-    sp_b_show.add_argument("session_id", help="Sessions-id")
-    sp_b_show.set_defaults(func=cmd_btw_show)
-
-    sp_b_link = btw_sub.add_parser("link", help="Soft-länka en btw-session till quest/idé")
-    sp_b_link.add_argument("session_id", help="Sessions-id")
-    sp_b_link.add_argument("--quest", default=None, help="Quest-id att länka till")
-    sp_b_link.add_argument("--idea", default=None, help="Idé-id att länka till")
-    sp_b_link.set_defaults(func=cmd_btw_link)
-
-    # cns tui
-    sp_tui = subparsers.add_parser("tui", help="Starta interaktiv terminal-överblick (Textual)")
-    sp_tui.set_defaults(func=cmd_tui)
-
-    sp_triage = subparsers.add_parser("triage", help="Gruppera öppna idéer i åtgärdbara hinkar (#39)")
-    sp_triage.add_argument("--json", action="store_true", help="Skriv grupperingen som JSON")
-    sp_triage.set_defaults(func=cmd_triage)
 
     # cns skill-export — vaulten äger skills, .claude/skills/ är en härledd artefakt
     sp_skx = subparsers.add_parser(
@@ -1538,10 +1278,6 @@ def register_lab(subparsers) -> None:
     sp_sku.add_argument("--json", action="store_true")
     sp_sku.set_defaults(func=cmd_skill_usage)
 
-    # cns status — orientering/arbetslista headless
-    sp_status = subparsers.add_parser("status", help="Orientering: arbetslista + statusräkning (headless)")
-    sp_status.add_argument("--json", action="store_true", help="Skriv command_center_state som JSON")
-    sp_status.set_defaults(func=cmd_status)
 
     # cns health <slug>
     sp_health = subparsers.add_parser("health", help="Härledd hälso-scorecard för en nod")
@@ -1563,19 +1299,7 @@ def register_lab(subparsers) -> None:
     sp_pr_close.add_argument("number", type=int, help="PR-nummer")
     sp_pr_close.set_defaults(func=cmd_pr_close)
 
-    # cns dispatch — kör ETT pass (read-first default)
-    sp_dispatch = subparsers.add_parser("dispatch", help="Kör ETT dispatch-pass (read-first default)")
-    sp_dispatch.add_argument("--write", action="store_true", help="Skriv-läge: worktree + draft-PR")
-    sp_dispatch.add_argument("--autonomy", action="store_true", help="Self-merga lågrisk (kräver --write)")
-    sp_dispatch.add_argument("--yes", action="store_true", help="Auto-ja på grindar")
-    sp_dispatch.add_argument("--dry-run", action="store_true", dest="dry_run", help="Tvinga read-first (ignorera --write/--autonomy)")
-    sp_dispatch.set_defaults(func=cmd_dispatch)
 
-    # cns agent-ask <slug>
-    sp_aa = subparsers.add_parser("agent-ask", help="Fråga Claude om en nod (agent-host, läs-först)")
-    sp_aa.add_argument("slug", help="Nod-slug")
-    sp_aa.add_argument("-q", "--question", default=None, help="Frågan (default: sammanfatta noden)")
-    sp_aa.set_defaults(func=cmd_agent_ask)
 
     # cns selftest — förtroende-loop
     sp_self = subparsers.add_parser("selftest", help="Kör varje kärn-förmåga → grönt/rött")

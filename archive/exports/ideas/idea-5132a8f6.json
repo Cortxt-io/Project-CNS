@@ -1,9 +1,0 @@
-{
-  "id": "idea-5132a8f6",
-  "text": "Dra-loop: systemet ska AKTIVT dra användaren genom faserna (discovery→definition→delivery→review→retro), inte bara visa var hen står. Föddes ur Rikards observation 2026-06-13: \"jag vill ju bli dragen igenom dom\" + att han alltid fastnar i delivery och sällan når review/retro. Skillnaden karta vs GPS: idag finns mekaniken men inget lim. Tre delar finns redan men pratar inte ihop sig: (1) recommend.py vet redan nästa fas (triage/definition/delivery/review-regler, recommend.py:117-189) — det ÄR dragkraften, kodad; (2) router.py _detect_type sätter aktiv-markören automatiskt ur promptens arbetsspråk; (3) hälsostatus-scorecard (byggs nu, scripts/health.py) ger signalerna när en fas är KLAR att lämna (epic 100% men öppen → review; stale session; blocked issue). LIMMET SAKNAS: inget tar recommend.py:s \"härnäst → review\" och faktiskt FÖR dig dit (öppnar passet, sätter markören, \"nu granskar vi\"). Rekommendationen landar i statusraden och dör om man inte agerar. Dra-loopen = aktivt fas-övergångslager: när hälsosignal säger fas klar → systemet föreslår OCH förbereder nästa pass. Varför delivery fastnar: delivery drar sig själv (känns produktivt), review/retro kräver en yttre putt som inte finns. Bygger ovanpå nudge-lagret (aktivt, inte passivt) och hälsostatus (förutsättning — ger signalerna). Hör ihop med idea-7548a67a (orienteringsyta), epic #8 (Sessions-UX), idea-bac0f5c5 (auto session-livscykel). Eget spår, fångat efter beslut att bygga hälsa först.",
-  "created_at": "2026-06-13T20:21:18",
-  "source": "chat",
-  "slug": "cns-core",
-  "session_id": null,
-  "status": "open"
-}

@@ -123,8 +123,10 @@ def command_center_state(
         from scripts.issues_client import list_issues
         all_open_issues_fn = lambda: list_issues(state="open")  # noqa: E731
     if sessions_fn is None:
-        from scripts.session_store import list_sessions
-        sessions_fn = lambda: list_sessions()  # noqa: E731
+        # Sessionslagret revs 2026-07-13. Det producerade aldrig en enda session på en månad, så
+        # list_sessions() returnerade alltid []. Tomt är därför samma svar som förut — inte en
+        # regression, utan samma sanning utan modulen bakom.
+        sessions_fn = lambda: []  # noqa: E731
     if recommend_fn is None:
         # ORDERS kommer ur agentur-lagret. Är det fryst blir listan tom — ärligt, inte en 500:a.
         try:

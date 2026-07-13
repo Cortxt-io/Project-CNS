@@ -14,65 +14,72 @@ python cns.py validate <slug>       # validate one system
 python cns.py new <slug>            # add a new system to catalog.yaml
 python cns.py export <slug>         # export a decision brief (Markdown)
 python cns.py export <slug> --format=json   # JSON output
-# python cns.py export <slug> --with-llm    # reserved: agent enrichment (not in Core v1)
 ```
 
-`python cns.py -h` shows exactly these three commands. Everything else is Lab/Agency.
+`python cns.py -h` shows exactly these three commands. Everything else lives in Lab.
 
-## Architecture layers
+## Architecture
 
-### CNS Core
+Two layers. `scripts/` (Core) and `lab/scripts/` (Lab) form one PEP 420 namespace package: Core never
+imports from Lab; Lab may import Core.
 
-The minimal, self-contained layer. No network calls, no agents required.
+### Core — repo root
+
+Minimal and self-contained. No network calls.
 
 | Path | Role |
 |---|---|
-| `catalog.yaml` | Node model — all systems + graph |
-| `decisions/<slug>.md` | Decision prose per system |
+| `catalog.yaml` | The node model — every system, plus the graph |
+| `decisions/<slug>.md` | Decision prose per system (sparse; only where one exists) |
 | `schemas/` | Enum definitions, used by validate |
-| `scripts/` | Core modules: `catalog`, `md_parser`, `validator`, `derive_catalog` |
+| `scripts/` | `catalog`, `md_parser`, `validator`, `derive_catalog`, `prose_check` |
 | `cns.py` | Core CLI: `validate`, `new`, `export` |
-| `requirements.txt` | Full backend dependency set (Flask, FastMCP, gunicorn, uvicorn, anthropic, redis, …) — installed by the Railway deploy and the export-dashboard CI; not Core-only |
-| `railway.json` | Railway deploy config (NIXPACKS; runs `app.asgi` from `lab/` with both repo-root and `lab/` on `PYTHONPATH`) |
-| `tests/` | Test suite (Core + Lab, via `tests/conftest.py`) |
+| `tests/` | The suite (Core + Lab, via `tests/conftest.py`) |
 
-`scripts/` (Core) and `lab/scripts/` (Lab) form one PEP 420 namespace package. Core never
-imports from Lab; Lab may import Core. Running `cns.py` from the repo root only ever sees the
-Core modules.
+### Lab — `lab/`
 
-### CNS Lab / Agency
-
-The R&D layer for AI agency, dispatch, MCP and the Flask backend. Lives in `lab/`, with its own
-entrypoint:
+The Flask backend and the portfolio pipeline. Entrypoint:
 
 ```bash
-python lab/cns_lab.py -h          # full command surface (Core + everything else)
-python lab/cns_lab.py tui         # Textual Control Tower
-python lab/cns_lab.py dispatch --dry-run
+python lab/cns_lab.py -h                 # full command surface
+python lab/cns_lab.py skill-export       # vault → .claude/skills/. One direction.
+python lab/cns_lab.py selftest           # every core capability, green or red
 ```
 
-Not required for Core. See [`lab/README.md`](lab/README.md).
-Includes: `agents/`, `skills/`, `sessions/`, `scripts/`, `app/`, `config/`, `.claude/`, `CLAUDE.md`.
+## What the backend actually serves
 
-## Parked features
+Four read-only endpoints, and they exist for one consumer — the portfolio view on app.cortxt.io:
 
-Intentionally out of scope for Core v1 — reachable only via `lab/cns_lab.py`:
+| Endpoint | Read by |
+|---|---|
+| `/api/command-center` | the Cockpit |
+| `/api/vertical/<slug>` | the per-venture page |
+| `/api/nodes?domain=` | the architecture graph |
+| `/api/cookbook/<slug>` | the build guide |
 
-- **TUI / Control Tower** — `python lab/cns_lab.py tui`
-- **Dispatch loop** — `lab/frozen/dispatch.py` (`python lab/cns_lab.py dispatch`)
-- **MCP server** — `lab/app/` + `lab/config/`
-- **Sessions / quests / PR client** — `lab/cns_lab.py session|quest|pr`
-- **Dashboard exports** — `lab/cns_lab.py export-json|export-xlsx`
-- **Flask backend / Railway deploy** — `lab/Procfile`, `railway.json`
+`tests/test_api_contract.py` pins their shape against recordings in `tests/golden/`. Re-record with
+`python scripts/record_golden.py` before and after a change: same fields, and the app survives.
 
-## Archive
+Everything else was removed on 2026-07-13 — the MCP server (53 tools, never once called), the session
+store (zero sessions written), the idea inbox, the agency layer, 36 unused endpoints, and an archive
+that was a third of the repo. Git is the memory.
 
-Historical artefacts in `archive/`: old `nodes/`, generated `exports/`, `research/` notes,
-`docs/`, and superseded `catalog.*.yaml` migration files.
+## The honesty gate
+
+`scripts/prose_check.py` runs in CI on every PR. It reads the prose in this repo and fails the build
+when a description claims something the source does not support: a backticked path that does not
+exist, a CLI command that is not registered, a retired field described as live.
+
+A file with `prose: record` in its frontmatter is never checked — a record makes no claim about the
+present. Everything else is a description, and a description must be true today.
+
+**What it cannot see:** anything outside this repo, and any claim that is not mechanically
+verifiable. "Three routes" and "exactly four functions" are invisible to it. It is a floor, not a
+ceiling.
 
 ## Design principles
 
-- **GitHub is the source of truth** — AI content is pushed via the GitHub API.
+- **GitHub is the source of truth** for work — issues, milestones, PRs. CNS does not mirror them.
 - **Derive, don't store** — `kind` and health emerge from structure; never hand-set.
-- **One canonical model** — CNS owns the model; dashboards and other tools are projection targets.
-- **Core first** — Lab/Agency is activated on top of Core, never the other way around.
+- **One canonical model** — CNS owns it; dashboards are projection targets.
+- **Nothing without a consumer.** If nobody reads it, it goes. It cannot be kept honest otherwise.

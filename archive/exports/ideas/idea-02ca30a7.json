@@ -1,9 +1,0 @@
-{
-  "id": "idea-02ca30a7",
-  "text": "Verktygsgap: cortxt_idea saknar en `set_slug`/`update`-action för att sätta nodhemvist på en BEFINTLIG öppen idé. Idag går bara capture (ny, med slug), list, promote, resolve — vill man flytta en sluglös idé till en nod måste man resolva+återskapa eller redigera exports/ideas/<id>.json för hand (pushas inte den vägen). Triage-passet 2026-06-13 kunde därför inte sätta slug på ~8 idéer. Skiss: lägg action='set_slug' (idea_id, slug) i scripts/idea_inbox.py + app/tools/ideas.py-wrappern (med push, samma split som capture). Slugs som väntar: interface→idea-c675bbf2, idea-376539fe(redan), idea-aa9cd7aa; cns-core→idea-119ebe45, idea-2b6dfaf5, idea-337b37ff, idea-60482cf4; agentur→idea-2089c2a5, idea-e810c72e.",
-  "created_at": "2026-06-13T19:41:18",
-  "source": "chat",
-  "slug": "cns-core",
-  "session_id": "session-11ae1985",
-  "status": "open"
-}

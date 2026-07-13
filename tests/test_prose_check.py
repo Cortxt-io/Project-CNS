@@ -142,6 +142,27 @@ def test_known_cns_command_is_not_reported():
     assert findings == []
 
 
+def test_lab_cli_command_is_checked_too():
+    """`python lab/cns_lab.py tui` är ett påstående om ett kommando — samma sak som `cns tui`.
+
+    Grinden såg det inte 2026-07-13: README lovade `tui` och `dispatch` långt efter att de rivits,
+    och rapporterade grönt. En grind som bara känner igen ett av två skrivsätt är blind för det andra.
+    """
+    text = "kör `python lab/cns_lab.py frobnicate` för att synka"
+    findings = check_text(text, repo_files=set(), commands={"export", "validate"}, retired={})
+
+    assert len(findings) == 1
+    assert findings[0].kind == "unknown-command"
+    assert "frobnicate" in findings[0].token
+
+
+def test_known_lab_command_is_not_reported():
+    text = "kör `python lab/cns_lab.py skill-export` efter att ha ändrat en skill"
+    findings = check_text(text, repo_files=set(), commands={"skill-export"}, retired={})
+
+    assert findings == []
+
+
 # --- check_text: retired fields --------------------------------------------------------
 
 

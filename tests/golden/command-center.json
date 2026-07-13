@@ -1,0 +1,179 @@
+{
+  "command": {
+    "decisions": 0,
+    "dispatch": "IDLE",
+    "fobs": 0
+  },
+  "freshness": {
+    "age_s": null,
+    "reachable": false
+  },
+  "infra": {
+    "behind_s": null,
+    "checks": [
+      {
+        "feedback": "Prod kör main HEAD.",
+        "level": "healthy",
+        "name": "deploy_staleness"
+      }
+    ],
+    "level": "healthy",
+    "main_head": "400165ce",
+    "running": "400165ce"
+  },
+  "logistics": [],
+  "missions": [
+    {
+      "commander": false,
+      "contact": null,
+      "fronts": [],
+      "leverage": 0,
+      "number": 12,
+      "open_objectives": 1,
+      "order": null,
+      "readiness": "operational",
+      "title": "Integrations & drift-adaptrar",
+      "units": 0
+    },
+    {
+      "commander": false,
+      "contact": null,
+      "fronts": [],
+      "leverage": 0,
+      "number": 14,
+      "open_objectives": 2,
+      "order": null,
+      "readiness": "operational",
+      "title": "MCP-router & agent-verktygsåtkomst",
+      "units": 0
+    }
+  ],
+  "orders": [],
+  "sitrep": {
+    "dark": 0,
+    "degraded": 0,
+    "operational": 2,
+    "watch": 0
+  },
+  "verticals": [
+    {
+      "activity": {
+        "last_commit_age_s": null
+      },
+      "deploy": {
+        "state": "unknown"
+      },
+      "domain": "bkfinans",
+      "next_step": "Beslut: Bygga om från grunden eller refaktorera vibe-koden?",
+      "open_issues": 0,
+      "open_milestones": [],
+      "roadmap": {
+        "current_phase": "live",
+        "current_phase_title": "Live",
+        "gates_skipped": [
+          "discovery",
+          "spec",
+          "mvp",
+          "konsolidera"
+        ],
+        "next_decision": "Bygga om från grunden eller refaktorera vibe-koden?",
+        "open_decisions": 2,
+        "phase_index": 5,
+        "total_phases": 8
+      },
+      "slug": "bkfinans",
+      "title": "BK Finans",
+      "top_issue": null,
+      "url_live": "https://bkfinans.se",
+      "url_repo": "https://github.com/Cortxt-io/bkfinans"
+    },
+    {
+      "activity": {
+        "last_commit_age_s": null
+      },
+      "deploy": {
+        "state": "unknown"
+      },
+      "domain": "crusade",
+      "next_step": "Beslut: Publik yta nu eller stängd beta?",
+      "open_issues": 0,
+      "open_milestones": [],
+      "roadmap": {
+        "current_phase": "discovery",
+        "current_phase_title": "Discovery",
+        "gates_skipped": [],
+        "next_decision": "Publik yta nu eller stängd beta?",
+        "open_decisions": 2,
+        "phase_index": 1,
+        "total_phases": 8
+      },
+      "slug": "crusade",
+      "title": "Crusade",
+      "top_issue": null,
+      "url_live": "",
+      "url_repo": ""
+    },
+    {
+      "activity": {
+        "last_commit_age_s": 1408453.390305
+      },
+      "deploy": {
+        "state": "unknown"
+      },
+      "domain": "juvahem",
+      "next_step": "Beslut: Gratis-data-MVP räcker eller krävs betald datakälla?",
+      "open_issues": 0,
+      "open_milestones": [],
+      "roadmap": {
+        "current_phase": "live",
+        "current_phase_title": "Live",
+        "gates_skipped": [
+          "discovery",
+          "spec",
+          "mvp",
+          "konsolidera"
+        ],
+        "next_decision": "Gratis-data-MVP räcker eller krävs betald datakälla?",
+        "open_decisions": 1,
+        "phase_index": 5,
+        "total_phases": 8
+      },
+      "slug": "juvahem",
+      "title": "Juvahem",
+      "top_issue": null,
+      "url_live": "https://juvahem.se",
+      "url_repo": "https://github.com/Cortxt-io/juvahem"
+    },
+    {
+      "activity": {
+        "last_commit_age_s": null
+      },
+      "deploy": {
+        "state": "unknown"
+      },
+      "domain": "orgkomp",
+      "next_step": "Beslut: JumpYard-specifik leverans eller generell produkt?",
+      "open_issues": 0,
+      "open_milestones": [],
+      "roadmap": {
+        "current_phase": "live",
+        "current_phase_title": "Live",
+        "gates_skipped": [
+          "discovery",
+          "spec",
+          "mvp",
+          "konsolidera"
+        ],
+        "next_decision": "JumpYard-specifik leverans eller generell produkt?",
+        "open_decisions": 2,
+        "phase_index": 5,
+        "total_phases": 8
+      },
+      "slug": "orgkomp",
+      "title": "Orgkomp",
+      "top_issue": null,
+      "url_live": "https://orgkomp.com",
+      "url_repo": "https://github.com/Cortxt-io/orgkomp"
+    }
+  ]
+}

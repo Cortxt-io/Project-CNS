@@ -1,8 +1,0 @@
-{
-  "id": "idea-337b37ff",
-  "text": "Koppla idéer till sessioner (inte bara noder): lagra session_id på idén när den fångas, vid sidan av slug. Skapa ett anrop som hämtar de idéer som hör till en given session. Hooka in detta i Claude Code via UserPromptSubmit-hook: nästa gång användaren skriver en prompt i den sessionen, dras sessionens öppna idéer in som kontext + en instruktion \"kolla om någon av dessa går att implementera i ljuset av prompten\". Gör idé-inboxen aktiv istället för passiv. Behöver: (1) gemensam stabil session-nyckel mellan hook (stdin ger session_id) och datalager, (2) brusfilter — bara öppna idéer, ev. semantisk matchning mot prompten, och en snooze-funktion så en idé slutar poppa upp. Biter ihop med kollapsbara svar: en hookad idé kan visas minimerad tills den blir relevant.",
-  "created_at": "2026-06-09T01:49:01",
-  "source": "chat",
-  "slug": null,
-  "status": "open"
-}

@@ -103,53 +103,9 @@ def _todo_ratio(todos: list[dict]) -> tuple[int, int]:
     return done, total
 
 
-# ---------------------------------------------------------------------------
-# Session / run
-# ---------------------------------------------------------------------------
-
-def check_phantom(session: dict) -> Check:
-    """Fantom-arbete (running + tokenförbrukning men inga artefakter) ⇒ degraded."""
-    try:
-        from scripts.session_store import is_phantom
-    except ImportError:
-        return Check("phantom", "unknown", "Kan inte avgöra fantom-status.")
-    if is_phantom(session):
-        return Check(
-            "phantom", "degraded",
-            "Token-förbrukning utan artefakter — kör /save eller markera done.",
-        )
-    return Check("phantom", "healthy", "Producerar artefakter eller under tröskel.")
-
-
-def check_session_staleness(session: dict, *, now: datetime, sla_hours: float = SESSION_SLA_HOURS) -> Check:
-    """Running-pass utan uppdatering > SLA ⇒ attention."""
-    if session.get("status") != "running":
-        return Check("staleness", "unknown", "Inte ett pågående pass.")
-    age = _age_hours(session.get("updated_at"), now)
-    if age is None:
-        return Check("staleness", "unknown", "Saknar tolkbar updated_at.")
-    if age > sla_hours:
-        return Check(
-            "staleness", "attention",
-            f"Pass igång {age:.0f}h utan uppdatering — heartbeat eller mark_done.",
-        )
-    return Check("staleness", "healthy", "Nyligen uppdaterat.")
-
-
-def check_session_done(session: dict) -> Check:
-    """Avslutat pass ⇒ healthy."""
-    if session.get("status") == "done":
-        return Check("done", "healthy", "Avslutat.")
-    return Check("done", "unknown", "Inte avslutat.")
-
-
-def health_for_session(session: dict, *, now: datetime | None = None) -> dict:
-    now = now or datetime.now()
-    return _scorecard([
-        check_phantom(session),
-        check_session_staleness(session, now=now),
-        check_session_done(session),
-    ])
+# Sessionshälsa (fantom-arbete, staleness, done) revs 2026-07-13 med sessionslagret. Den lazy-importen
+# föll tyst tillbaka på "healthy" när modulen försvann — en grind som svarar friskt utan att ha
+# tittat är värre än ingen grind.
 
 
 # ---------------------------------------------------------------------------

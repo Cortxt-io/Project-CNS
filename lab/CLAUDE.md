@@ -2,175 +2,95 @@
 
 CNS-kärnan och backenden. Läs detta först varje session. Arbetsspråk: **svenska**.
 
-> **⛔ Agentur-lagret är FRYST (2026-07-12) → `lab/frozen/`.** Dispatch, agent-routing, `recommend`,
-> agent-registret, MCP-routern för lokala pass, TUI:t och de fem prompt-hookarna bor nu i
-> `lab/frozen/` — **utanför `scripts`-namespacet, importeras av ingenting**. Kommandona
-> `cns tui|status|dispatch|agent-ask|agent-tools|mcp-servers` avvisar med exit 2.
-> **Ytorna beskrivs inte längre här.** En beskrivning påstår något om nuet; det lagret finns inte i
-> nuet. Vad de var, vad som var trasigt, och vad som krävs för att väcka dem står i
-> `lab/frozen/FROZEN.md` (register). Väck ingenting av det av vana — det mesta fungerade aldrig som
-> det beskrevs.
-> Kvar levande: Core, portfölj-pipelinen (`vault_reader`/`phase_derive`/`venture_*`/`roadmap`/
-> `reconcile`/`systemmap`), GitHub-ryggraden (`issues_client`/`prs_client`/`gh_project_sync`) och
-> cockpiten (`command_center`/`board`/`app/server.py` — ORDERS är tom medan agenturen är fryst).
-
-> **Core/Lab-split (2026-06-17):** Core-CLI:t (`cns.py`, repo-rot) exponerar bara `validate`/`new`/`export`
-> och importerar bara fyra moduler ur **root-`scripts/`** (`catalog`, `md_parser`, `validator`,
-> `derive_catalog`). Allt agentur (dispatch, agent-host, MCP-router, sessions, TUI, dashboard-export,
-> Flask/MCP-backend) bor i **`lab/scripts/`** + `lab/app/` och nås via **`python lab/cns_lab.py`**.
-> `scripts/` (Core) och `lab/scripts/` (Lab) är ETT PEP 420 namespace-paket — Core importerar aldrig Lab,
-> Lab får importera Core. Sökvägshänvisningar `scripts/<modul>` nedan som inte är de fyra Core-modulerna
-> avser numera `lab/scripts/<modul>`; de konverteras när respektive rad ändå rörs (ingen bulk-omskrivning).
-
-> **Orienteringsvy** (visuell karta — infra-topologi, arbetsflöde uppåt mot main, begreppskarta +
-> ordlista, med Mermaid-diagram): `ORIENTERING.md` (repo-rot). Den här filen är referens; den filen är vyn.
+> **Rivning 2026-07-13.** Agentur-lagret (fryst 2026-07-12) är **borttaget**, tillsammans med allt
+> annat som inte hade en konsument: MCP-servern (10 feta verktyg + 43 alias — **noll anrop** i
+> samtliga transkript), sessionslagret (**noll sessioner** på en månad), idé-inkorgen, btw-lagret,
+> 36 av 40 HTTP-endpoints, `archive/` (171 filer) och `lab/frozen/`. Repot gick från 525 till ~165
+> spårade filer. **Git är minnet** — inget är arkiverat till en finare adress.
+>
+> Agentur-kommandona (tui, status, dispatch, agent-ask, agent-tools, mcp-servers) är **borttagna ur
+> CLI:t**. De avvisar inte längre med exit 2 — de existerar inte.
 
 ## Vad det är
-CNS (Central Node Store): ett lokalt-först system för att modellera och driva ett produktsystem från idé till drift. Varje system är en post i **`catalog.yaml`** (graf + routing) plus en valfri **`decisions/<slug>.md`** (ADR-prosa). **GitHub är källan till sanning.**
 
-## Nodmodellen (viktigast) — teardown 2026-06-12, epic #11
-**`catalog.yaml` (repo-rot) är enda strukturerade källan.** Ersatte 31× `nodes/<slug>/node.md`-blanketten (den var en stilla hand-underhållen parallellkopia av verkligheten). Spec: `cns-internal/plans/nodmodell-teardown-spec.md` (privat repo).
+CNS (Central Node Store): en katalog över portföljen, och en läs-API som matar **app.cortxt.io**.
+Varje system är en post i **`catalog.yaml`** (graf + routing) plus en valfri `decisions/<slug>.md`
+(ADR-prosa). **GitHub är källan till sanning** för arbete (issues, PR:er) — CNS speglar det inte.
 
-Varje system under `systems:` bär: `title`, `summary`, `part_of`, `feeds`, `depends_on`, `type`, `domain`, `owner_agent`, valfritt `url_repo`/`contributing_agents`/`integrations`.
-- `integrations.deploy` (#77/#78): list där varje element är antingen en platt str (`railway`) ELLER ett objekt `{target: vercel, project: <id>}` (vald form för drift-adaptern — bär projekt-instans). Båda valideras additivt; `capabilities._deploy_surfaces` + `validator` hanterar str/objekt/dict-formerna.
-- `kind` (component | system | framework): **härleds ur `part_of`-strukturen, lagras inte** — system om andra pekar på den via `part_of`, component om inga gör det, framework om toppnivå. Fraktal. Se `catalog.derive_kind()`.
-- Tre relationer driver grafen: `part_of` (nesting), `feeds` (dataflöde), `depends_on` (beroende).
-- **`stage`/`status`/risk/arbete delegeras till board** (GitHub Projects/Linear), inte CNS — de bor inte i katalogen. (`stage`-enumet finns kvar i `enums.json` tills board-integrationen wirar tillbaka det, steg 5/#102.)
+## Kontraktet — det enda som får gå sönder på riktigt
 
-ADR-prosa (varaktig beslutskunskap, t.ex. teknikval) bor i `decisions/<slug>.md` — **bara där sådan finns**, ingen tom mall per system.
+Frontendens söm — cns.js i cortxt-repot (apps/app/src/lib/) — har **exakt fyra funktioner**. De
+motsvarar de fyra endpoints som är kvar:
 
-**Läsning går via katalogen:** `md_parser.read_node`/`read_all_nodes` är tunna wrappers ovanpå `scripts/catalog.py:load_catalog()` (returnerar samma `(meta, sections)`-form; `sections` är tomt — prosan ligger i `decisions/`). Konsumenter (json_exporter, tui, projects, analyst, recommend, `role_for_node`) är därför oförändrade. **Skriv-vägen (`write_node`) är pensionerad** — redigera `catalog.yaml`/`decisions/` för hand; web/analyst/quest/local_editor-redigering rewiras i uppföljnings-issue.
+| Endpoint | Läses av |
+|---|---|
+| `/api/command-center` | Cockpit + Sidebar (`useCommandCenter.js`) |
+| `/api/vertical/<slug>` | `pages/Vertical.jsx` |
+| `/api/nodes?domain=` | grafen i `pages/Vertical.jsx` (rått — behöver `part_of`/`feeds`/`depends_on`/`kind`) |
+| `/api/cookbook/<slug>` | `pages/Vertical.jsx` |
+
+`tests/test_api_contract.py` pinnar formen mot inspelade svar i `tests/golden/`. Spela in på nytt med
+`python scripts/record_golden.py` före och efter en ändring — samma fält ⇒ appen överlever.
+
+## Nodmodellen
+
+**`catalog.yaml` (repo-rot) är enda strukturerade källan.** 44 poster under `systems:`, handredigerad.
+Varje post: `title`, `summary`, `type`, `domain`, `feeds`, `depends_on`, valfritt `part_of`,
+`url_repo`, `url_live`, `owner_agent`, `integrations`.
+
+- `kind` (component | system | framework) **härleds ur `part_of`, lagras inte** (`catalog.derive_kind`).
+- `layer` härleds i `catalog.derive_layer` — **den implementerar fortfarande den ersatta
+  tre-lagersmodellen**, inte `portfolio-lager-v2` (vaulten). Rör den inte förrän den regeln är prövad.
+- Hälsa härleds vid läsning (`scripts/health.py`), deklareras aldrig.
+- Livscykel/status/stage bor **inte** i katalogen — de delegeras till GitHub.
+
+Läsning går via `scripts/catalog.py:load_catalog()`. `md_parser.read_node`/`read_all_nodes` är tunna
+wrappers ovanpå den; skriv-vägen är pensionerad (redigera `catalog.yaml` för hand).
 
 ## Repo-layout
-- `cns.py` — CLI-entrypoint. **Headless-först (2026-06-15):** kärnan drivs/verifieras via kommandon, inte via UI. **`cns selftest [--live]`** = förtroende-loopen — kör varje kärn-förmåga och rapporterar grönt/rött (default rent/nätverksfritt; `--live` läs-only-pingar mot GitHub + LLM-seamen, de tidigare bara mock-testade). Tunna skal över befintlig logik: `cns status` (orientering ur `command_center_state`+`viewmodel`), `cns health <slug>` (`health.py`-scorecard), `cns pr {list|merge|close}` (`prs_client`), `cns dispatch [--write|--autonomy|--dry-run]` (delegerar `scripts.dispatch.main`), `cns agent-ask <slug>` (`agent_host.run_turn`). Ingen ny affärslogik — bara CLI-portar. Den interaktiva TUI:n (`scripts/tui`) är **parkerad** tills kärnan är beprövad; bygg ev. UI tunt ovanpå samma seam senare.
-- `catalog.yaml` (repo-rot) — **enda strukturerade källan** för nodmodellen (systemkatalog + graf + routing). `decisions/<slug>.md` = glesa ADR-noter. Genererades av `scripts/migrate_to_catalog.py` (engångs), redigeras sedan för hand.
-- `scripts/catalog.py` — **katalog-läsaren**: `load_catalog()`, `derive_kind()` (fraktal kind ur part_of), `catalog_to_meta()`. Nodmodellens nya seam.
-- `scripts/md_parser.py` — **tunna wrappers** (`read_node`/`read_all_nodes`) ovanpå `catalog.py`. `write_node` pensionerad (teardown #101). Kvarvarande mallar/`node_dir` är döda rester tills skriv-ytorna rewiras.
-- `scripts/validator.py` — katalog-validering (`cns validate` = hela `catalog.yaml`; `<slug>` = ett system): referensintegritet + part_of-cykelkoll + mjuk type/domain/owner_agent
-- `scripts/json_exporter.py` — exporterar katalogen till nodes.json (livscykelfälten är pensionerade och exporteras tomma). **Per-nod `is_product`** (härlett, additivt): produkt = system med egen venture-domän (`domain != cortxt`) — enkälla här så frontenden (`cortxt/apps/app`) slipper hårdkoda venture-listan. `/api/nodes` tar additiva filter `?domain=<d>` och `?products=1` (default = full portfölj, oförändrat). OBS: `url_live` exporteras nu på riktigt — kräver att `catalog_to_meta` släpper igenom fältet (gjordes; `url_repo` mappades men `url_live` föll tidigare i tomt fallback).
-- `scripts/analyst.py` — AI-analys (anropar Claude via ANTHROPIC_API_KEY)
-- `scripts/portfolio_brief.py` — daglig portföljbrief
-- `scripts/issues_client.py` — **arbetsuppgiftslagret** (GitHub REST, ingen `git`-subprocess). Tre nivåer: nod (label `node:<slug>`) ← **quest = GitHub Milestone** (progress beräknas av GitHub) ← **issue = uppgift** (open/closed). Under issue: **todos = task-list-checkboxar** i issue-body — sanningen lever på GitHub. Verktygen i `app/tools/{issues,quests}.py`. **Dekompositionsprimitiver på issues** (härleds i `_normalize` med tomma defaults — gamla issues/dashboarden bryts ej): `type` (label `type:<value>`, story|bug|spike|chore, default story; enkälla `VALID_ISSUE_TYPES`), `depends_on` (body-rad `Depends-on: #12, #34`), `acceptance_criteria` (Given/When/Then-checkboxar under `## Acceptanskriterier`, sektionsmedvetet skilda från todos = agent-DoD). **`initiative`** = valfri toppnivå över quest, `Initiative: <namn>` i milestone-description. Spec: `cns-internal/plans/work-model-taxonomy-spec.md` (privat repo). **Cross-repo:** `list_issues`/`list_milestones` tar valfri `repo`-param (default `GITHUB_REPO`) så per-vertikal-vyn kan läsa vertikalernas EGNA repon.
-- `scripts/idea_inbox.py` — idé-inkorg (lättviktig fångst; `exports/ideas/<id>.json`, glob `idea-*.json`; valfritt `session_id`). Promote → `issues_client.create_issue` (`cortxt_promote_idea_to_issue`, ev. under en quest/milestone).
-- `scripts/btw_log.py` — btw-sessionslogg. **Personlig logg, ej produktdata:** `/btw`-asides (Claude Code-forkkommandot) grupperade per session i `exports/btw/<session-id>.json`, mjukt länkbara till quest/idé via `link_session`. Rent datalager — pushar inte själv. **Isolerat:** rör inte nodmodellen eller `cns.py`. **Fångsten är FRYST** (2026-07-12): `btw_capture` och Stop-hooken togs bort med agentur-lagret. Datalagret lever, men inget skriver till det längre. Inkopplad som `cns btw {list|show|link}` (lokalt datalager, ingen push) och som MCP-verktyg.
-- `scripts/session_store.py` — sessioner (AI-arbetspass) som förstklassiga objekt; en post per fil i `exports/sessions/session-*.json`, länkbar till quest/issue/idea/node och till Claude Code-transkriptet. **`running → done` är en pollbar signal** (en parallell session kan `/loop`:a tills en annan flippar `done` innan merge). **Rent datalager — pushar inte själv;** pushen ligger i MCP-wrappern (`app/tools/sessions.py`), samma split som idéer/btw. Överlappsfrågan = flera sessioner på samma nod ⇒ arbete att förena. **Sessionsträd** via valfritt `parent_id` (forks-under-forks, ortogonalt mot link). **Sessionstyp (intent, branch-standard engelska 2026-06-12)** (discovery | definition | delivery | triage | review | enablement | retro; `definition` = definitionssteget mellan triage och delivery, ägt av produktchef + losningsarkitekt, ingen kod). Fem matchar routnings-stationerna i `agentur_routing` (discovery/definition/delivery/review/retro) — **stations↔intents förenade**; triage + enablement saknar station. Gamla namn (brainstorm/spec/bygg/verktygsladan) kanoniseras via `SESSION_TYPE_ALIASES` på skriv+läs (bakåtkompat). **Visuell identitet per typ är enkälla** (#41): `SESSION_TYPE_STYLE` (icon/ansi/rich) — `recommend.py` (statusrad-ANSI) och `scripts/tui` (rich-färg) härleder härifrån, ingen dubblerad palett. **Auto-namn** (`auto_session_name`, "Triage #3 – 14 jun") sätts i `start_session` när summary saknas. (Den lokala aktiv-typ-markören och `router.py`-hooken som injicerade `[SESSION: <typ>]` per prompt är **frysta** — se `lab/frozen/FROZEN.md`.) **Markören följer arbetet automatiskt:** hooken `_detect_type` härleder typ ur promptens arbetsspråk (`TYPE_SIGNALS`-regex) och **auto-sätter** markören (`set_active`) vid tydlig signal — vanlig/konversationell chatt lämnar typen orörd (ingen tjafs-växling). Manuellt `/session <typ>` funkar fortfarande men behövs inte (beslut Rikard 2026-06-11: "vill inte ändra session manuellt" — tidigare flaggades bara `[SESSION-SKIFTE?]`, nu växlas tyst eftersom en kvarglömd markör visade sig vara värre än auto). Markören är en sidofil (inte en session-post) för att hooken behöver omedelbar lokal synlighet medan kanonisk bokföring går via GitHub. Inkopplad som `cns session {list|show|fork|tree|set-active|get-active|clear-active}` (lokalt datalager, ingen push).
-- `scripts/prs_client.py` — **PR-klient** (plain REST, samma split som `issues_client` ↔ `app/tools/issues.py`): `list_prs`/`get_pr`/`create_pr(draft=…)`/`set_reviewers`. Logiken lyftes hit ur `app/tools/prs.py` (som nu är tunna wrappers som delegerar) så dispatch-loopen kan öppna draft-PR utan MCP-servern. Connector-namnen `cortxt_*` oförändrade.
-- `scripts/command_center.py` — **kompositören** bakom cockpiten: `command_center_state()` väver ihop missions(quests)/sitrep/orders + `infra` (`_infra_health` — deploy-hälsa: körande SHA vs main HEAD, cachad) + `verticals` (`_verticals` — per-vertikal: deploy/aktivitet/öppna issues + `roadmap`-sammanfattning + härlett `next_step`, cachad, cross-repo via `issues_client(repo=…)`/`eventstream`/`adapters.vercel`). Injicerbara `*_fn` för test, degraderar tyst. Aktivitet: misslyckad/tom läsning → `unknown`, ALDRIG falsk "stale".
-- `scripts/roadmap.py` — **per-projekt roadmap** (strategiska lagret; CNS äger riktning, GitHub exekvering). `roadmaps/_recipe.yaml` = delade faser (spec→mvp→live→users→validated→paying, mot första betalande/återkommande användare); `roadmaps/<slug>.md` (YAML-frontmatter) = per-vertikal plan (`current_phase`, per fas `{status, epics}`, `open_decisions`). `load_recipe`/`load_roadmap`/`roadmap_summary`/`roadmap_detail` (ren, transport-fri, saknad fil → None). Öppet beslut som fattas → promotas till `decisions/<slug>.md`. Tunn fas-axel (ej Jira-klon); medvetet återinförd trots stage-teardown #11.
-- `scripts/triage.py` — **idé-triage-grupperare** (#39, Control Tower form a): `group_ideas()` sorterar öppna idéer i åtgärdbara hinkar (kluster per slug · mature · stale · untriaged), transport-fri/testbar så MCP-form (b) och TUI-form (c) återanvänder samma logik. Exponerad som `cns triage [--json]`; skillen `idea-triage` som drev den är **fryst**. **`find_overlaps()`** (#146 triage-variant av beslutspunkt-kritikern): flaggar sannolikt överlappande öppna idéer via token-Jaccard (tröskel 0.30) tvärs olika slugs — fångar dubbletter som slug-klustring missar; merge-KANDIDATER för agenten, aldrig auto-merge.
-- `scripts/adapters/` — **drift-ekrar** (#78): plain-REST-adaptrar mot externa drift-ytor (CNS *agerar*). `vercel.py` = connect/find_project/status (read-only) + deploy (mutating, gatad). Samma form som `prs_client.py` (modulfunktioner, fail-open utan token, plain dicts; env `VERCEL_TOKEN`/`VERCEL_TEAM_ID`). Skild från GitHub-ryggraden (`integration-ryggrad-vs-ekrar`). Inkopplad som `cns deploy {connect|status|deploy}` (läser nodens `integrations.deploy`, väljer adapter per `target`).
-- `app/git_ops.py` — direkt GitHub API-push (Contents API, ingen `git`-subprocess).
-- `app/server.py` — Flask-backend (Railway). **`/api/command-center`** (läs-only, ingen auth, ingen `git_pull`) exponerar `command_center_state()` — `{missions, sitrep, logistics, orders, command, freshness, infra, verticals}` — så vilken webyta som helst (idag `cortxt/apps/app` Cockpit) når kompositören, inte bara TUI:t. **`/api/vertical/<slug>`** = per-projekt-detalj (roadmap-faser/epics/öppna beslut via `roadmap_detail` + vertikal-posten). Per-vertikal nodgraf ritas av frontenden ur `/api/nodes?domain=<slug>` (`@cortxt/graph`).
-- `app/mcp_server.py` — MCP-server (FastMCP, GitHub OAuth, Redis token-store). Äger auth + allowlist + `mcp`-instansen; verktygen själva bor i `app/tools/` (`issues`/`quests`/`ideas`/`projects`/`sessions`, var sin `register(mcp)`).
-- `app/asgi.py` — ASGI-entrypoint. **FastMCP är yttersta appen** och äger `/mcp` + OAuth-routes (`/.well-known/...`, `/authorize`, `/token`); Flask monteras *inuti* via `a2wsgi` som fallthrough (WSGI kan inte hålla ASGI, därför denna riktning). Kör med uvicorn-worker, inte sync-gunicorn. `/mcp` exponeras bara när OAuth är konfigurerat (annars 503) — annars vore en data-muterande endpoint öppen.
-- `schemas/catalog_schema.json` — strukturschema för `catalog.yaml`. (`node_schema.json` = död rest från node.md-eran, kvar tills AI-redigeringsvägen rewiras.)
-- `skills/` — portabla konventioner: `cortxt-quests` (quest/issue-arbetsflöde), `cns-flush` (spola ner en sessions slutsats i CNS via `cortxt_save_session`), `cns-sync` (read-only överlappsdetektering av parallella sessioner via `cortxt_list_sessions(link_ref=…)`, körs före flush), `cns-fork` (bokför en fork i sessionsträdet via `cortxt_fork_session`).
-- `scripts/tools/` — **delad verktygskärna** (enkälla för agenturens verktyg): `registry.py` (taxonomi + namn + läs/skriv-flagga + `local_names_for`/`LEGACY_TOOL_DOMAINS`), `<domän>_core.py` (transport-fri logik mot datalagret). Läses av `app/tools/*` (connector), `agent_host` (lokala pass), `_aliases.py` och `tool_families.py`. Se "Agenter, verktygslåda & minne".
-- `.mcp.json` — MCP-router (config), se "Agenter, verktygslåda & minne" nedan.
-- `.claude/` — verktygslådan (Plan A), versionerad. Egen `README.md`.
-- `agents/` — produktens agenter (Plan B), tom tills en verklig agent kräver det.
 
-## Agenter, verktygslåda & minne (två plan)
-Två skilda plan med **hård vägg emellan** — produktkod importerar aldrig från `.claude/`, och `.claude/` är aldrig ett produktberoende.
-- **Plan A — verktygslådan (`.claude/`, versionerad här):** subagenter (`.claude/agents/`), egna skills (`.claude/skills/`), slash-kommandon (`.claude/commands/`), delade permissions (`.claude/settings.json`). Detta är hur *vi* driver portföljen, inte produkten. Arbetsytans `.claude/` är maskinlokal och oversionerad — **lägg inget VARAKTIGT där.** Två härledda undantag som får bo där just för att de är regenererbara: btw-Stop-hooken i arbetsytans `settings.json`, och `cortxt-io/.claude/skills/` (skill-exportens `workspace`-mål, se nedan).
-- **Skills laddas per katalog, och det avgör om de finns när det spelar roll.** Claude Code plockar upp en katalogs skills först när en fil i den katalogen rörs. Startar man sessionen i `cortxt-io`-roten dyker CNS-skillsen upp först när man redan börjat arbeta i `lab/` — alltså **efter** det beslut de skulle ha påverkat. Mätaren visade följden: 1 skill-anrop på 923 transkript, trots vassa triggers. Därför har `skill-export` tre mål: **`workspace`** (`cortxt-io/.claude/skills/`, laddat från sessionens första prompt — allt som ska vara med från start), **`cns`** (`lab/.claude/skills/`, lazy — skills som ändå bara betyder något med `catalog.yaml` i närheten: `issue-lifecycle`, `pr-protokoll`, `katalog-audit`) och **`vault`** (vaultens egen, för Obsidian-skills). En skills *plats* styr bara **när den laddas**, aldrig vad den får redigera. Mät med `python lab/cns_lab.py skill-usage`.
-- **Plan B — produktens agenter (`agents/`):** om Cortxt själv ska köra agenter åt slutanvändare bor de här som produktkod, bredvid `app/` och `scripts/`. Tom tills en verklig agent kräver det.
-- **MCP-router:** `.mcp.json` (versionerad) listar servrarna **externa** klienter (Claude Code) når — `project-cns` (Railway) plus `github` (GitHubs hostade MCP `api.githubcopilot.com/mcp/`, auth via `Authorization: Bearer ${GITHUB_PAT}` — osatt env-var får Claude Code att inte parsa configen, så håll `GITHUB_PAT` satt). Den andra routern — den som monterade servrar per lokalt agentur-pass — är **fryst** med resten av lagret. En separat gateway-process är inritad som noden `mcp-gateway` (`depends_on: cns-mcp`) och byggs först när Plan B-agenter når många servrar / behöver central auth. Beslut + env: `decisions/mcp-router.md`.
-- **MCP-verktyg: feta verktyg ur en delad domänkärna (`scripts/tools/`).** De 46 granulära `cortxt_*`-verktygen är konsoliderade till **10 feta verktyg** (ett per domän, `cortxt_<domän>` med en `action`-param) — research visar att prestanda faller skarpt >~20 verktyg/pass. **Enkällan är `scripts/tools/registry.py`** (taxonomi: domän, family, actions med läs/skriv-flagga, namnhjälpare `cortxt_<d>` ↔ `mcp__cns__<d>`). Logiken bor transport-fritt i `scripts/tools/<domän>_core.py` (`<domän>(action, **kw)`, kastar `ValueError`), delad av båda universum. **Lagret bor i `scripts/`** så både servern och de lokala passen importerar nedåt.
-  - **Universum A (connector, `app/tools/*.py`):** tunna FastMCP-wrappers (typad signatur → `_fat.call` → kärna). Push (idéer/sessioner) + OAuth-owner (leases) ligger i wrappern, inte kärnan.
-  - **Bakåtkompat:** de 43 gamla granulära namnen lever som **alias** i `app/tools/_aliases.py` (`register_aliases`, Fas α) så claude.ai-connectorn inte bryts — tas bort när användningen tystnat (Fas γ). Connector-namn är fortfarande stabila kontrakt; nya verktyg = ny domän i registry, inte fler dekoratörer i `mcp_server.py`.
-  - Domäner: `issue`/`quest`/`idea`/`project`/`session` (CNS-data) · `pr`/`gh_project`/`action`/`wiki`/`lease` (GitHub-ytor). `linear` = död rest (oregistrerad).
+- `cns.py` — Core-CLI: `new`, `validate`, `export`. Importerar bara root-`scripts/`.
+- `lab/cns_lab.py` — Lab-CLI: allt övrigt (`venture`, `deploy`, `project`, `quest`, `cookbook`,
+  `health`, `pr`, `skill-export`, `memory-export`, `skill-usage`, `selftest`, …).
+- `scripts/` (Core) och `lab/scripts/` (Lab) är **ett PEP 420 namespace-paket**. Core importerar
+  aldrig Lab; Lab får importera Core.
+- `scripts/catalog.py` — katalog-läsaren. `scripts/validator.py` — `cns validate`.
+- `scripts/prose_check.py` — **ärlighetsgrinden**. Kontrollerar backtickade sökvägar, `cns`-kommandon
+  och pensionerade fält i all prosa. Kör i CI på varje PR. En `prose: record`-fil checkas aldrig.
+- `lab/scripts/command_center.py` — kompositören bakom `/api/command-center`.
+- `lab/scripts/roadmap.py` — per-vertikal roadmap (`roadmaps/_recipe.yaml` + `roadmaps/<slug>.md`).
+- `lab/scripts/health.py` — härledd hälso-scorecard (nod, issue, milestone, initiative).
+- `lab/scripts/issues_client.py` / `prs_client.py` — GitHub REST, ingen `git`-subprocess.
+- `lab/scripts/skill_export.py` — **vaulten äger skills**; `.claude/skills/` är en härledd artefakt.
+  Tre mål: `workspace` (laddas från första prompten), `cns` (lazy), `vault`. En riktning.
+- `lab/scripts/memory_export.py` — samma för minnen (`Studio/Memory/` → `~/.claude/.../memory/`).
+- `lab/app/server.py` — Flask. `lab/app/asgi.py` — ASGI-entrypoint (Starlette runt Flask).
 
-### Fyra minneslager (förväxla inte)
-- **Claude-minne** (`~/.claude/projects/.../memory/`) — hur Claude ska jobba med dig. Personligt, Plan A.
-- **Sessionsminne** — `exports/btw/` (btw-asides per session) **och** `exports/sessions/` (`session_store.py`, AI-arbetspass som förstklassiga objekt). Arbetstillstånd, ej kunskap.
-- **Kunskap/wiki** (`catalog.yaml` + `decisions/<slug>.md`) — varaktig portföljkunskap, produktens sanning. `.qoder/repowiki/` är verktygsgenererat och räknas inte.
-En agent som lär sig något *bestående om portföljens struktur* uppdaterar `catalog.yaml`; en *varaktig beslutskunskap* → `decisions/<slug>.md`; något *om sessionen/arbetspasset* → btw/sessions; något *om hur Claude ska bete sig* → Claude-minnet.
+## Deploy
 
-## Deploy & dataflöde
-- GitHub = sanning. AI-genererat innehåll pushas via **direkt GitHub API** (`git_ops.py`), inte till Railways efemära disk.
-- Backend på Railway: `https://project-cns-production.up.railway.app`. `/api/nodes` kör `export_json()` mot den kod/de noder som checkades ut **vid deploy-tillfället**. OBS: `git_pull()` i `app/git_ops.py` är en **no-op** (`return True, "ok"`) — backenden pullar *inte* vid runtime. Färskheten beror helt på att **Railway auto-redeployar** vid push till main. Syns inte en ändring i dashboarden trots att den ligger på main ⇒ Railway har inte redeployat (kolla Deployments-loggen).
-- **Deploy-config (enkälla): repo-rotens `railway.json`.** Railways Root Directory = **repo-roten**. Builder = NIXPACKS; startkommando `cd lab && PYTHONPATH=/app:/app/lab gunicorn app.asgi:asgi_app -k uvicorn.workers.UvicornWorker`. **Varför både roten och `lab/` på `PYTHONPATH`:** `scripts/` är ett PEP 420 namespace-paket som spänner root-`scripts/` (Core) + `lab/scripts/` (Lab); backenden (Lab) importerar Core — modellerat som `cns-mcp depends_on cns-core` — så deployen måste bära **båda**. Därför byggs den från repo-roten, inte från `lab/`. (Historik: Core/Lab-splitten 2026-06-17 tog bort root-`railway.json` → Railway föll till default-byggaren RAILPACK → alla deploys failade tyst i 5 dagar tills root-`railway.json` återställdes.) `lab/Procfile` är inte deploy-config (oläst när Root Directory = roten).
-- Dashboarden (separat `cortxt`-repo på Vercel) proxar `/api/*` hit via sin `vercel.json`.
-- **Ett system är inte "tillagt" förrän `catalog.yaml` är committad, pushad OCH exporterad.** Nya filer (t.ex. `decisions/<slug>.md`) måste `git add`:as explicit — `git commit -am` missar otrackade filer.
+Railway, från repo-roten. `railway.json` är enkälla; start:
+`gunicorn app.asgi:asgi_app -k uvicorn.workers.UvicornWorker`. **Railway redeployar vid push till
+main** — syns inte en ändring i appen, kolla Deployments-loggen.
 
-## GitHub-interaktion
-Tre kanaler, lätta att förväxla: inkommande webhooks (GitHub → Flask, quest-transitioner), utgående skrivningar (Contents API via `git_ops.py`, **inte** `git`-subprocess), pollande läsning (`eventstream.py`) och GitHub Actions (`export-dashboard.yml`).
+Dashboarden (`cortxt`-repot, Vercel) proxar `/api/*` hit via sin `vercel.json`.
 
 ## Enums
-**Enkälla: `schemas/enums.json`** — läses av `scripts/validator.py` (Python, som `set`) och av `cortxt/packages/cns-schema` (JS, genererad via dess `generate.mjs`). Ändra värden där, inte handkodat. Lägg INTE in layer/pipeline/family (legacy, ovaliderade — kvar som referens i validator.py).
-- kind: component | system | framework — **härleds ur `part_of`, lagras inte** (se `catalog.derive_kind`)
-- type: frontend | service | mcp-server | pipeline | cli | tool | agent | infra | library | dataset | ai-model — driver agent-routing
-- domain: cortxt | shopify-venture | juvahem | crusade | orgkomp | bkfinans
-- entity_type (valfritt, ortogonal axel): municipality | course | organisation | financing_case — **vad en nod MODELLERAR i sin vertikal**, skilt från `type` (teknisk/routing) och `domain` (vertikal). Mjukvalidering, framåtblickande (CNS modellerar idag mjukvarusystemen, inte domänentiteterna). Export-adapters kan keya per vertikal på detta fält.
-- **Pensionerade (borttagna ur `enums.json`):** `status`, `stage`, `mvp_stage`, `risk_category`. De var produkt-livscykel, delegerade till board och oanvända i katalogen — men levde kvar kod-vägen i `analyst.py`/`server.py` (förslag för fält som inte längre lagras). Städade i hälso-scorecard-arbetet. **Entitetshälsa härleds nu vid läsning** (se nedan), inte som deklarerad status.
 
-## Hälso-scorecard (härledd, ej deklarerad)
-`scripts/health.py` — **hälsa härleds vid läsning** ur objektiva signaler, lagras aldrig (samma princip som `derive_kind`/`is_phantom`; research: dbt data-health, Backstage Soundcheck, RAG-best-practice — en handsatt status blir själv stale). Vokabulär (4 nivåer): `healthy` · `attention` · `degraded` · `unknown`. En entitets hälsa = en **scorecard** `{level, checks:[{name, level, feedback}]}` där `level` = värsta check-nivån (unknown bara om ingen check gav signal). Fem entiteter: `health_for_session` (phantom + staleness), `health_for_issue` (blocked depends_on + todo-stale + acceptans), `health_for_milestone` (epic stalled + bokföringssläp-proxy + staleness), `health_for_initiative` (roll-up av epics), `health_for_node` (roll-up av öppna issues + strukturell `validate_catalog`). SLA per typ (timmar/veckor/månader) som modulkonstanter. **Livscykel/mognad är en SEPARAT, pensionerad axel — inte en hälso-check.** Ytas i `nodes.json` (per-nod `health`, v3.1, additiv/degraderar till `{}`) och i `recommend.py`-statusraden (degraded/attention-räkning, ingen nätrunda). Djup bokföringssläp-detektor (merged-PR-vs-öppen-issue) deferred (för dyr read-time).
-
-## Begreppsmodell (branschstandard-mappning)
-CNS-termerna mappar mot branschstandard (granskad spec: `cns-internal/plans/work-model-taxonomy-spec.md`, privat repo). Standardtermen är vokabulär i dok/prompter; **MCP-verktygsnamn (`cortxt_*`) är connector-kontrakt och behålls oförändrade** — ny standardterm exponeras vid behov som alias, inte som hård rename.
-
-### Ordlista — EN kanonisk term per koncept
-
-| CNS-term | Kanonisk term | Alias / synonymer |
-|----------|---------------|-------------------|
-| system (`catalog.yaml`-post) | **component** | nod, node, project |
-| idé | **opportunity** | idea |
-| quest | **epic** | GitHub Milestone, milestone |
-| issue | **story** | bug, spike, chore (via `type`-fält) |
-| todo | **sub-task** | task-list-checkbox |
-| session | **run** | arbetspass |
-
-Valfri toppnivå **initiative** över epic. `issue_type`-enkälla: `VALID_ISSUE_TYPES` i `issues_client.py` (inte `enums.json` — issues schemavalideras inte).
-
-### Två axlar — håll isär (objekt vs session)
-Förvirring uppstår när man blandar *vad* som jobbas på med *hur* man jobbar just nu. Det är två oberoende axlar som löper samtidigt:
-
-```
-AXEL 1 — OBJEKT (vad jobbas på; en hierarki som LAGRAS)
-  initiative          strategisk satsning, spänner över flera epics
-    └─ epic           sammanhållet spår (= GitHub Milestone)
-         └─ story     en konkret uppgift (= GitHub issue, type:story)
-              └─ sub-task   checkbox i issuen (todo)
-  opportunity         billig fångst INNAN nivån bestäms (idé-inkorg)
-
-AXEL 2 — SESSION (hur du jobbar just NU; ett LÄGE, lagras ej som objekt)
-  discovery → definition → triage → delivery → review → retro   (+ enablement)
-```
-
-- **Objektet rör sig uppåt i sin egen hierarki** (opportunity → story → ev. epic) via promotion.
-- **Sessionen är ett läge du växlar mellan** för samma objekt — en story går genom definition → delivery → review utan att själv byta nivå.
-- Idéfångst = discovery · forma en story (scope/approach/acceptans, ingen kod) = definition · skriva koden = delivery.
-- Sessionstyperna bor i `session_store.py` (intent-enum); objekt-hierarkin i ordlistan ovan. Förväxla dem inte.
-
-### CNS · cortxt · Cortxt — tre distinkta begrepp
-- **CNS** = hjärnan/datalagret — repo `Project-CNS`, Python-backend, nodmodellen.
-- **cortxt** = ansiktet/dashboarden — repo `cortxt`, React-frontend på Vercel.
-- **Cortxt** = produkten som helhet (båda repona tillsammans).
-
-### Nummer-konvention
-GitHub delar EN räknare för issues och PR:er — samma siffra kan vara en issue eller en PR. Skriv **alltid** typen före numret: `issue #39`, `PR #50`, `epic #8`. Aldrig bara `#39`.
-
-## Automatisk agent-routing — FRYST 2026-07-12
-Fanns: hooken `router.py` (UserPromptSubmit) injicerade `[ROUTING] @agent → reason` + `[MODEL: X]`
-per prompt, och regeln var att delegera direkt när det syntes.
-
-**Den hooken är borttagen ur arbetsytans `.claude/settings.json` och koden ligger i `lab/frozen/`.
-`[ROUTING]` kommer aldrig att synas. Det finns inget att lyda.** Delegera efter omdöme, som vanligt.
-
-Varför: routningen var handunderhållna nyckelord i `ROUTING_RULES`, inte agentur-modellen — och den
-riktiga routningen (`agentur_routing.route`) var redan tyst död — den krävde en agent-export som inte fanns, så squaden blev tom. Se `lab/frozen/FROZEN.md`.
+Enkälla: `schemas/enums.json` — läses av `scripts/validator.py` och av `cortxt/packages/cns-schema`
+(genererad). Lägg inte tillbaka `layer`/`pipeline`/`family`.
 
 ## Arbetsregler
-- **Git/GitHub-grund:** repo-topologi + branchstandard (trunk-based, `feat/`/`fix/`/`chore/`/`docs/` + `dispatch/issue-N`,
-  squash-merge, radera efter merge) + org/branch-protection är låsta i `decisions/git-github-grund.md`. Följ den.
-- **Spec först:** skriv/granska en implementationsspec innan kod. Vid osäkerhet — ställ frågan i specen så den måste besvaras. **Specs bor i det privata repot `cns-internal` (`plans/`), inte här** — det publika repot är showcase. "Spec: plans/…"-referenser nedan avser `cns-internal/plans/…`. När en ADR når Accepted: promota till `decisions/<slug>.md` via PR (publikt = färdiga beslut, aldrig utkast).
-- **Additiv migrering:** nya fält är valfria; migrera en nod i taget; behåll fallback på gamla fält så dashboarden inte bryts.
-- **Övergeneralisera inte mallar:** inga mallvarianter förrän en verklig nod kräver det.
-- Validera (`cns validate <slug>`) innan commit — särskilt handskrivna noder.
-- AI-funktioner (analyze, suggest-quest, brief, devlog) kräver `ANTHROPIC_API_KEY` satt på Railway.
-- **`cortxt_mark_session_done` kräver explicit done-checklista:** (1) ursprungsuppgiften är levererad, (2) kod är committad och pushad om kodändringar gjordes, (3) öppna delfrågor är fångade som idéer/todos. Anropa aldrig done om någon av dessa inte stämmer.
+
+- **Git/GitHub-grund:** trunk-based, `feat/`/`fix/`/`chore/`/`docs/`, squash-merge. Låst i
+  `decisions/git-github-grund.md`.
+- **Issues och PR:er går genom `gh` CLI.** MCP-verktygen är borta. Skillsen `issue-lifecycle` och
+  `pr-protokoll` (vaulten) beskriver hur.
+- **Spec först.** Specar bor i **vaulten**, under den effort de tjänar — inte i `docs/` här.
+- Validera (`cns validate`) innan commit.
+- **Prosa som beskriver koden måste ändras i samma PR som koden.** Det är vad grinden mäter.
 
 ## Underhåll av denna fil
-Denna fil läses in varje session och är din primära kontext. **Uppdatera den i samma ändring som du ändrar något den beskriver** — arkitektur, dataflöde, repo-layout, konventioner, nya/omdöpta noder, eller en gotcha du snubblat på. Håll den koncis och högsignalerad: det här är inte fullständig dokumentation, utan det du behöver för att inte göra fel. Låter du den driva börjar varje framtida session från felaktiga antaganden.
+
+Läses varje session. **Uppdatera den i samma ändring som du ändrar något den beskriver.** Låter du
+den driva börjar varje framtida session från felaktiga antaganden — och det var precis det som gjorde
+rivningen ovan nödvändig.

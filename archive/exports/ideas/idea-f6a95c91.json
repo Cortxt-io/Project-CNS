@@ -1,8 +1,0 @@
-{
-  "id": "idea-f6a95c91",
-  "text": "Bygg kommandolagret nu så att speech-to-command kan läggas på senare.\n\nDesignprinciper som gör kommandona röst-redo redan idag (även om röst byggs senare):\n- Modellera kommandon som INTENT + SLOTS, inte exakt syntax (intent \"lista noder\", slot stage=working) — så naturligt tal kan mappas dit.\n- Ett enda maskinläsbart KOMMANDO-REGISTER (namn, beskrivning, parametrar/typer) som matar CLI-parser, röst-/NLU-tolk OCH rekommendationssystem (idea cns-core: kommandostatistik + rekommendationer). Beskriv kommandona en gång, inte på flera ställen.\n- Verb-först, uttalbara namn (visa/lista/öppna nod X/fråga Claude om Y); undvik flaggor som inte går att säga (-x, --mode=2).\n- Separera TOLKNING från UTFÖRANDE: text/tal → intent+slots → kör kommando. Röst blir då bara en ny frontend ovanpå ett stabilt lager (samma isolationsprincip som TUI/agent-host: ny inmatningsyta mot stabilt lager, inte mot den heta filen).\n- Bekräftelse/read-first för irreversibelt (tal är felbenäget — homonymer/brus).\n\nKnyter ihop med: kommandostatistik+rekommendationer (samma register), agent-host (intent-lager = ny inmatningsyta). Röst behöver inte byggas nu — bara modellera intent+slots + centralt register + skild tolkning/utförande.",
-  "created_at": "2026-06-09T02:44:28",
-  "source": "chat",
-  "slug": "cns-core",
-  "status": "open"
-}

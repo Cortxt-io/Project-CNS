@@ -1,9 +1,0 @@
-{
-  "id": "idea-93af5b03",
-  "text": "Smoke-testa validator.py:s enums.json-loader innan Project-CNS pushas till Railway. Ändringen (VALID_* läses ur schemas/enums.json i stället för hårdkodat) är committad (e91c66d) men ej pushad och ej körd på Python lokalt. Loadern körs vid modul-import → om den har en bugg kraschar backend vid start. Verifiera först: `python -c \"from scripts.validator import VALID_STATUSES, VALID_KINDS; print(sorted(VALID_STATUSES), sorted(VALID_KINDS))\"`. (Python 3.12 finns i AppData\\Local\\Programs\\Python\\Python312 — kan köras lokalt; kräver dock att jsonschema/frontmatter är installerade för full import.)",
-  "created_at": "2026-06-09T00:12:23",
-  "source": "chat",
-  "slug": "cns-core",
-  "status": "promoted",
-  "promoted_to": "quest-712675fd"
-}

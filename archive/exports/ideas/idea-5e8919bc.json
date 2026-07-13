@@ -1,8 +1,0 @@
-{
-  "id": "idea-5e8919bc",
-  "text": "Köa flera /btw parallellt — icke-blockerande idéfångst.\n\nKunna skriva en ny /btw MEDAN den förra forken fortfarande jobbar, så en skur av idéer kan fångas direkt utan att vänta på att varje fork blir klar. Behov: när idéerna kommer i skur måste de ner fort; i dag upplevs en pågående /btw blockera nästa, så tankar riskerar tappas.\n\nÖnskat beteende:\n- Flera /btw kan köas/köras samtidigt, var och en som egen lättviktig fork.\n- Fångsten är icke-blockerande — skriv nästa direkt; de bearbetas parallellt eller i kö i bakgrunden.\n- Var och en landar ändå korrekt i CNS-inkorgen (ingen tappas, ingen krockar).\n\nKopplingar: hänger ihop med navigera/nå forks från ett kommando (idea-c3e2202f) och med sessioner/forks som förstklassiga objekt länkade till nod/quest (varje köad btw = under-session som bör gå att lista/länka).\n\nGräns att vakta: forkarnas tillstånd lever i harness-katalogen, inte i repot — köa+fånga (skriva till inkorgen) är det lätta; samordning/visning av flera samtidiga forks drar in samma cross-boundary-fråga som sessioner/transkript.",
-  "created_at": "2026-06-09T02:42:53",
-  "source": "chat",
-  "slug": "cns-core",
-  "status": "open"
-}

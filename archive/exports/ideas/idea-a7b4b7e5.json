@@ -1,9 +1,0 @@
-{
-  "id": "idea-a7b4b7e5",
-  "text": "Kontrolltorns-form för orienteringsytan [[idea-7548a67a]] (ur dashboard-brainstorm 2026-06-13). Subjektsskifte: dashboarden ska handla om AKTIVITETEN (agenturen som bygger), inte STRUKTUREN (nodgrafen) — grafen degraderas till ett perspektiv man dyker till. Hemskärm = kontrolltorn med tre ortogonala axlar: (1) FAS = kolumner ur de faktiska sessionstyperna, sex i livscykeln vänster→höger: triage → discovery → definition → delivery → review → retro; (2) ENABLEMENT = parallellt spår i full bredd under boarden (agenturen på sig själv — verktyg/skills/org), ortogonalt, säger sin natur genom att INTE vara en kolumn; (3) VEM AGERAR = markör på kort (⚠ väntar på dig vs på agent), inte en kolumn. Idéer matar in i TRIAGE från sidan (discovery-backlog, inte en fas). NUDGE-rad ovanför kolumnerna = \"vad du bör göra härnäst\" (rekommendationer ur recommend.py/pending_recommendation) — skillnaden mellan statustavla (visar läget) och kontrolltorn (föreslår nästa drag); en föreslagen handling skapar objektet vid klick (t.ex. fånga opportunity → kort i TRIAGE). Två syften bärs av EN vy via en överblick↔jobba-toggle: pulsrad (få tal, överblick) + kort med åtgärder (jobba). KOPPLING till hälso-scorecarden (byggd 2026-06-13, scripts/health.py, branch worktree-health-scorecard): per-entitet health {level, checks} är just det nudge-/markör-lagret behöver — degraded/attention driver \"väntar på dig\". Insikt: Rikard fastnar i delivery, når sällan review/retro — fas-kolumner gör de försummade faserna omöjliga att ignorera = kärnargumentet för tornet. En TUI-cockpit-embryo finns redan (PR #80 under epic #8); webb-versionen är dashboard-motsvarigheten. Epic #8 (Sessions-UX) är hemmet; #39/#40/#41/#42/#43 är fragment av samma orienteringsyta — överväg rama om #8 kring \"kontrolltorn\" som enande mål.",
-  "created_at": "2026-06-13T20:30:27",
-  "source": "chat",
-  "slug": "cns-core",
-  "session_id": null,
-  "status": "open"
-}

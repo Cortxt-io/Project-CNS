@@ -1,9 +1,0 @@
-{
-  "id": "idea-c675bbf2",
-  "text": "Claude Code-verktyg (eget MCP-spår): (1) recap-MCP — strukturerad sessionssammanfattning med beslutspunkter som Rikard kan ta ställning till direkt, (2) hotkey-editor — redigera ~/.claude/keybindings.json via TUI eller skill, (3) prompt-förslag — föreslår nästa kommando baserat på sessionskontext. Research: granska Claude Code API/hooks för vilka verktyg som faktiskt är möjliga.",
-  "created_at": "2026-06-09T08:35:22",
-  "source": "chat",
-  "slug": null,
-  "session_id": null,
-  "status": "open"
-}
