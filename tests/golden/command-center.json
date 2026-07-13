@@ -18,8 +18,8 @@
       }
     ],
     "level": "healthy",
-    "main_head": "400165ce",
-    "running": "400165ce"
+    "main_head": "6cc644ee",
+    "running": "6cc644ee"
   },
   "logistics": [],
   "missions": [
@@ -115,7 +115,7 @@
     },
     {
       "activity": {
-        "last_commit_age_s": 1408453.390305
+        "last_commit_age_s": 1411329.844208
       },
       "deploy": {
         "state": "unknown"
