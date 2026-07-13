@@ -4,6 +4,14 @@
 dör), så källan bor i vaultens `Studio/Skills/`. Men Claude Code kan bara KÖRA en skill som ligger
 i `.claude/skills/` — alltså måste källan exporteras dit.
 
+**Tre mål, för laddningstidpunkten är en del av skillen.** Claude Code plockar upp en katalogs
+skills först när en fil i den katalogen rörs. En vault-skill exporterad till `vault/.claude/skills/`
+dyker därför upp först när vaulten redan är öppnad — efter det beslut skillen skulle ha påverkat.
+`skill_usage.py` mätte kostnaden: 1 anrop på 923 transkript, trots att 13 av 16 hade vassa triggers.
+Därav `workspace` (arbetsytans rot, laddad från sessionens FÖRSTA prompt) vid sidan av `cns` och
+`vault`, som är rätt för skills som ändå bara betyder något i sitt eget repo. `target:` i
+källnotens frontmatter väljer. Platsen styr **när skillen laddas**, aldrig vad den får redigera.
+
 **En riktning.** Vaultens `_templates/Skill.md` säger det själv: "Redigerar du exporten glider den
 från källan, och då har du två sanningar som tyst säger olika saker." Därav `check_drift()`. Utan
 den är "en riktning" en förhoppning, och tyst divergens mellan två beskrivningar av samma sak är
@@ -22,6 +30,7 @@ Kör:
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
@@ -90,7 +99,12 @@ def compose_description(sections: dict[str, str]) -> str:
     return " ".join(p for p in (vad, nar) if p).strip()
 
 
-VALID_TARGETS = ("cns", "vault")
+# `cns` och `vault` laddas LAZILY — Claude Code plockar upp en katalogs skills först när en fil i
+# den katalogen rörs. Det gör dem värdelösa som triggers: skillen dyker upp efter att beslutet den
+# skulle ha påverkat redan är fattat. Mätaren (`skill_usage.py`) visade följden — 1 anrop på 923
+# transkript, trots att 13 av 16 hade vassa triggers. `workspace` är arbetsytans rot och den enda
+# destination som är laddad från sessionens FÖRSTA prompt.
+VALID_TARGETS = ("cns", "vault", "workspace")
 
 
 def validate_skill(meta: dict, sections: dict[str, str]) -> list[str]:
@@ -178,10 +192,28 @@ def target_of(meta: dict) -> str:
     return str(meta.get("target") or "cns").strip()
 
 
-def _out_for(target: str, outs: dict[str, Path] | Path | None) -> Path:
+def _out_for(target: str, outs: dict[str, Path] | Path | None) -> Path | None:
+    """Vart en skill med detta target ska. None = destinationen finns inte i den här miljön.
+
+    Frånvaro är inte fel. CI checkar ut vaulten men har ingen arbetsyta att skriva till — då ska
+    `workspace`-skillsen hoppas över, inte fälla bygget.
+    """
     if isinstance(outs, dict):
-        return Path(outs[target])
+        d = outs.get(target)
+        return Path(d) if d else None
     return Path(outs or DEFAULT_OUT)
+
+
+def workspace_root(vault: Path) -> Path | None:
+    """Arbetsytan: $CORTXT_WORKSPACE_PATH, annars vaultens föräldramapp (`cortxt-io/`).
+
+    En katalog är en arbetsyta först när den har en `.claude/` — vaultens förälder är annars vad
+    som helst. I CI är den runnerns arbetskatalog, och utan det kravet skulle drift-checken
+    rapportera tolv "saknade" exporter mot en yta som inte finns. Frånvaro är inte drift.
+    """
+    env = os.environ.get("CORTXT_WORKSPACE_PATH")
+    cand = Path(env) if env else vault.parent
+    return cand if (cand / ".claude").is_dir() else None
 
 
 def _render_one(path: Path) -> tuple[str, str] | None:
@@ -203,8 +235,11 @@ def _plan(root: Path, outs) -> list[tuple[Path, str, Path, str]]:
         rendered = _render_one(src)
         if rendered is None:
             continue
+        dest_root = _out_for(target_of(meta), outs)
+        if dest_root is None:  # destinationen finns inte här — hoppa, fäll inte
+            continue
         slug, content = rendered
-        out.append((src, slug, _out_for(target_of(meta), outs) / slug, content))
+        out.append((src, slug, dest_root / slug, content))
     return out
 
 
@@ -281,9 +316,17 @@ def main(argv: list[str] | None = None) -> int:
         print("Ingen vault hittad (sätt CORTXT_VAULT_PATH eller lägg den som ../vault).", file=sys.stderr)
         return 1
 
-    # Två destinationer, en källa: repo-skills till Project-CNS, vault-skills (grindarna, som
-    # arbetar på vault-noter) till vaultens egen .claude/skills/.
-    outs = args.out or {"cns": DEFAULT_OUT, "vault": root / ".claude" / "skills"}
+    # Tre destinationer, en källa. `cns` och `vault` laddas lazily (per katalog) och är rätt för
+    # skills som ändå bara betyder något i sitt repo. `workspace` laddas från första prompten och
+    # är där allt som ska vara med FRÅN START bor.
+    outs: dict[str, Path] | Path
+    if args.out:
+        outs = args.out
+    else:
+        outs = {"cns": DEFAULT_OUT, "vault": root / ".claude" / "skills"}
+        ws = workspace_root(root)
+        if ws:
+            outs["workspace"] = ws / ".claude" / "skills"
 
     if args.check:
         problems = check_drift(root, outs)
@@ -296,8 +339,9 @@ def main(argv: list[str] | None = None) -> int:
     written = export_all(root, outs)
     skills = sorted(p for p in written if p.name == "SKILL.md")
     bundles = len(written) - len(skills)
+    where_of = {str(Path(d).resolve()): t for t, d in outs.items()} if isinstance(outs, dict) else {}
     for w in skills:
-        where = "vault" if str(w).startswith(str(root)) else "cns"
+        where = where_of.get(str(w.parent.parent.resolve()), "?")
         print(f"  [{where}] {w.parent.name}")
     print(f"Exporterade {len(skills)} skill(s) + {bundles} buntad(e) fil(er) ur Studio/Skills/.")
     return 0

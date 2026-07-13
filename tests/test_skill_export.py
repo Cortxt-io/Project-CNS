@@ -194,6 +194,44 @@ def test_export_routes_by_target(tmp_path: Path) -> None:
     assert (tmp_path / "v" / "run-gate" / "SKILL.md") in written
 
 
+def test_workspace_target_lands_in_the_workspace(tmp_path: Path) -> None:
+    """`workspace` = arbetsytans rot, den enda katalog som laddas från sessionens FÖRSTA prompt.
+
+    Vault- och cns-målen laddas lazily — först när en fil i respektive mapp rörs, alltså efter att
+    beslutet skillen skulle ha påverkat redan är fattat. Det var därför 12 skills aldrig avfyrades.
+    """
+    d = tmp_path / "Ideaverse" / "Cortxt-io" / "Studio" / "Skills"
+    d.mkdir(parents=True)
+    (d / "Capture.md").write_text(VAULT_SKILL.replace("target: vault", "target: workspace")
+                                 .replace("skill_name: run-gate", "skill_name: capture"), encoding="utf-8")
+
+    written = se.export_all(tmp_path, {"cns": tmp_path / "cns", "vault": tmp_path / "v",
+                                       "workspace": tmp_path / "ws"})
+    assert (tmp_path / "ws" / "capture" / "SKILL.md") in written
+
+
+def test_workspace_root_needs_a_dot_claude(tmp_path: Path, monkeypatch) -> None:
+    """Utan `.claude/` är föräldramappen inte en arbetsyta — den är bara en katalog.
+
+    I CI är vaultens förälder runnerns arbetskatalog. Utan det här kravet skulle drift-checken
+    rapportera tolv saknade exporter mot en yta som aldrig funnits, och grinden bli röd på
+    frånvaro. Frånvaro är inte drift.
+    """
+    monkeypatch.delenv("CORTXT_WORKSPACE_PATH", raising=False)
+    vault = tmp_path / "ws" / "vault"
+    vault.mkdir(parents=True)
+    assert se.workspace_root(vault) is None
+
+    (tmp_path / "ws" / ".claude").mkdir()
+    assert se.workspace_root(vault) == tmp_path / "ws"
+
+
+def test_workspace_is_a_valid_target() -> None:
+    meta, sections = se.parse_skill(VAULT_SKILL.replace("target: vault", "target: workspace"))
+    assert se.validate_skill(meta, sections) == []
+    assert se.target_of(meta) == "workspace"
+
+
 # --- buntade filer -----------------------------------------------------------------------------
 # run-gate/references/STEPS.md, demand-scan/scripts/jobtech_scan.py. Exporten får inte tappa dem.
 

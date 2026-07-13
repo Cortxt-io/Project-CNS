@@ -1,6 +1,6 @@
 ---
 name: katalog-audit
-description: "Granskar relationerna i `catalog.yaml` — pekar `part_of`, `feeds` och `depends_on` på verkligheten, eller på en ambition någon hade en gång? Använd vid \"städa katalogen\", \"stämmer beroendena\", \"är den här noden fortfarande med\" — och alltid efter att ett system rivits eller döpts om, för det är då relationerna tyst blir lögner."
+description: "Granskar relationerna i `catalog.yaml` — pekar `part_of`, `feeds` och `depends_on` på verkligheten, eller på en ambition någon hade en gång? Använd vid \"städa katalogen\", \"stämmer beroendena\", \"är den här noden fortfarande med\" — och alltid efter att ett system rivits eller döpts om, för det är då relationerna tyst blir lögner. Använd den INTE för att avgöra om ett venture ska gå vidare; den granskar strukturen i `catalog.yaml`, inte affären — det är run-gate."
 ---
 
 <!-- GENERERAD ur vaulten — redigera INTE här.
@@ -15,7 +15,7 @@ Granskar relationerna i `catalog.yaml` — pekar `part_of`, `feeds` och `depends
 
 ## När den ska köras
 
-Använd vid "städa katalogen", "stämmer beroendena", "är den här noden fortfarande med" — och alltid efter att ett system rivits eller döpts om, för det är då relationerna tyst blir lögner.
+Använd vid "städa katalogen", "stämmer beroendena", "är den här noden fortfarande med" — och alltid efter att ett system rivits eller döpts om, för det är då relationerna tyst blir lögner. Använd den INTE för att avgöra om ett venture ska gå vidare; den granskar strukturen i `catalog.yaml`, inte affären — det är [[run-gate]].
 
 ## Relations-audit
 

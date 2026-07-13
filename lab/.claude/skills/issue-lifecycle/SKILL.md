@@ -1,6 +1,6 @@
 ---
 name: issue-lifecycle
-description: "Skapa, uppdatera och stäng GitHub-issues korrekt i CNS-systemet. Använd när en GitHub-issue ska skapas, få todos eller stängas — \"skapa en issue för X\", \"stäng #42\", \"lägg till delsteg\". Och innan du stänger något: kontrollera acceptanskriterierna, inte bara att arbetet är gjort. Allt går genom det feta verktyget `cortxt_issue(action=…)`. Actions: `list`, `get`, `create`, `close`, `move_to_quest`, `add_todo`, `check_todo`, `set_type`, `set_depends_on`, `add_acceptance`."
+description: "Skapa, uppdatera och stäng GitHub-issues korrekt i CNS-systemet. Använd när en GitHub-issue ska skapas, få todos eller stängas — \"skapa en issue för X\", \"stäng #42\", \"lägg till delsteg\". Och innan du stänger något: kontrollera acceptanskriterierna, inte bara att arbetet är gjort. Använd den INTE för PR:er — det är pr-protokoll."
 ---
 
 <!-- GENERERAD ur vaulten — redigera INTE här.
@@ -15,7 +15,9 @@ Skapa, uppdatera och stäng GitHub-issues korrekt i CNS-systemet.
 
 ## När den ska köras
 
-Använd när en GitHub-issue ska skapas, få todos eller stängas — "skapa en issue för X", "stäng #42", "lägg till delsteg". Och innan du stänger något: kontrollera acceptanskriterierna, inte bara att arbetet är gjort.
+Använd när en GitHub-issue ska skapas, få todos eller stängas — "skapa en issue för X", "stäng #42", "lägg till delsteg". Och innan du stänger något: kontrollera acceptanskriterierna, inte bara att arbetet är gjort. Använd den INTE för PR:er — det är [[pr-protokoll]].
+
+## Verktyget
 
 Allt går genom det feta verktyget `cortxt_issue(action=…)`. Actions: `list`, `get`, `create`, `close`, `move_to_quest`, `add_todo`, `check_todo`, `set_type`, `set_depends_on`, `add_acceptance`.
 

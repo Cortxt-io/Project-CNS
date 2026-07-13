@@ -120,22 +120,26 @@ def report(root: Path | str | None = None, *, known: set[str] | None = None) -> 
 
 
 def known_skills(skills_dir: Path | None = None) -> set[str]:
-    """Våra skills — BÅDA destinationerna.
+    """Våra skills — ALLA TRE destinationerna.
 
-    Exporten skriver till två ställen: repo-skills till `lab/.claude/skills/` och vault-skills
-    (grindarna, som arbetar på vault-noter) till vaultens egen `.claude/skills/`. Räknar man bara
-    den ena döljer mätaren halva sanningen — och en mätare som visar halva sanningen är sämre än
-    ingen, för den blir trodd.
+    Exporten skriver till tre ställen: repo-skills till `lab/.claude/skills/`, vault-skills till
+    vaultens egen `.claude/skills/`, och allt som ska vara laddat från sessionens första prompt
+    till arbetsytans `.claude/skills/`. Räknar man bara några av dem döljer mätaren en del av
+    sanningen — och en mätare som visar halva sanningen är sämre än ingen, för den blir trodd.
     """
     if skills_dir is not None:
         dirs = [Path(skills_dir)]
     else:
+        from scripts.skill_export import workspace_root
         from scripts.vault_reader import vault_root
 
         dirs = [Path(__file__).resolve().parent.parent / ".claude" / "skills"]
         vault = vault_root()
         if vault:
             dirs.append(vault / ".claude" / "skills")
+            ws = workspace_root(vault)
+            if ws:
+                dirs.append(ws / ".claude" / "skills")
 
     return {
         p.name
