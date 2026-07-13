@@ -1,6 +1,6 @@
 ---
 name: pr-protokoll
-description: "PR-checklista för CNS — skapa, koppla och begär review korrekt. Använd innan en PR skapas, och när CI är röd på en öppen PR — \"öppna en PR för det här\", \"be om review\", \"varför är checken röd\". Täcker branch/issue-koppling, body-format, reviewers, och att aldrig merga eller pusha till main själv."
+description: "PR-checklista för CNS — skapa, koppla och begär review korrekt. Använd innan en PR skapas, och när CI är röd på en öppen PR — \"öppna en PR för det här\", \"be om review\", \"varför är checken röd\". Använd den INTE för att skapa eller stänga issues — det är issue-lifecycle."
 ---
 
 <!-- GENERERAD ur vaulten — redigera INTE här.
@@ -15,7 +15,11 @@ PR-checklista för CNS — skapa, koppla och begär review korrekt.
 
 ## När den ska köras
 
-Använd innan en PR skapas, och när CI är röd på en öppen PR — "öppna en PR för det här", "be om review", "varför är checken röd". Täcker branch/issue-koppling, body-format, reviewers, och att aldrig merga eller pusha till main själv.
+Använd innan en PR skapas, och när CI är röd på en öppen PR — "öppna en PR för det här", "be om review", "varför är checken röd". Använd den INTE för att skapa eller stänga issues — det är [[issue-lifecycle]].
+
+## Vad protokollet täcker
+
+Branch/issue-koppling, body-format, reviewers, och att aldrig merga eller pusha till main själv.
 
 ## Innan du skapar en PR
 
