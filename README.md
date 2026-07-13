@@ -61,21 +61,28 @@ Four read-only endpoints, and they exist for one consumer — the portfolio view
 `python scripts/record_golden.py` before and after a change: same fields, and the app survives.
 
 Everything else was removed on 2026-07-13 — the MCP server (53 tools, never once called), the session
-store (zero sessions written), the idea inbox, the agency layer, 36 unused endpoints, and an archive
+store (zero sessions written), the idea inbox, the agency layer, 31 unused endpoints, and an archive
 that was a third of the repo. Git is the memory.
 
 ## The honesty gate
 
-`scripts/prose_check.py` runs in CI on every PR. It reads the prose in this repo and fails the build
-when a description claims something the source does not support: a backticked path that does not
-exist, a CLI command that is not registered, a retired field described as live.
+`scripts/prose_check.py` runs in CI on every PR. It fails the build when a description claims
+something the source does not support: a backticked path that does not exist, a CLI command that is
+not registered, a retired field described as live.
+
+**The root is an argument.** CI runs it over this repo *and* `cortxt`, and every file is held against
+its own repo — a path in cortxt prose resolves in cortxt, not here. A cross-repo reference must name
+the repo (`Project-CNS/tests/...`); a path without its repo is a path the reader cannot follow.
 
 A file with `prose: record` in its frontmatter is never checked — a record makes no claim about the
 present. Everything else is a description, and a description must be true today.
 
-**What it cannot see:** anything outside this repo, and any claim that is not mechanically
-verifiable. "Three routes" and "exactly four functions" are invisible to it. It is a floor, not a
-ceiling.
+**What it cannot see:** any claim that is not mechanically verifiable. "Three routes" and "exactly
+four functions" are invisible to it, and so is a Mermaid diagram — `ORIENTERING.md` drew a dead MCP
+server as live infrastructure for a day and the gate never blinked. It is a floor, not a ceiling.
+
+The vault's rules are still ungated, and twelve of fifteen skills export to a machine-local directory
+CI cannot see. Those gaps are tracked in the Ärlighetsgrinden effort, not hidden here.
 
 ## Design principles
 
