@@ -1018,6 +1018,13 @@ def cmd_agent_ask(args: argparse.Namespace) -> None:
     _frozen("cns agent-ask")
 
 
+def cmd_skill_export(args: argparse.Namespace) -> None:
+    """Skriv (eller verifiera) skill-exporten. Vaulten är källan; .claude/skills/ är härlett."""
+    from scripts import skill_export
+
+    sys.exit(skill_export.main(["--check"] if getattr(args, "check", False) else []))
+
+
 def cmd_selftest(args: argparse.Namespace) -> None:
     """Förtroende-loop: kör varje kärn-förmåga → grönt/rött. Default = rena checkar (ingen mutation);
     --live = läs-only-pingar mot GitHub/LLM-seamen (bevisar de osäkra lagren)."""
@@ -1487,6 +1494,14 @@ def register_lab(subparsers) -> None:
     sp_triage = subparsers.add_parser("triage", help="Gruppera öppna idéer i åtgärdbara hinkar (#39)")
     sp_triage.add_argument("--json", action="store_true", help="Skriv grupperingen som JSON")
     sp_triage.set_defaults(func=cmd_triage)
+
+    # cns skill-export — vaulten äger skills, .claude/skills/ är en härledd artefakt
+    sp_skx = subparsers.add_parser(
+        "skill-export", help="Exportera Studio/Skills/ (vaulten) → .claude/skills/. En riktning."
+    )
+    sp_skx.add_argument("--check", action="store_true",
+                        help="Falla om exporten drivit isär från vaulten (CI-grinden)")
+    sp_skx.set_defaults(func=cmd_skill_export)
 
     # cns status — orientering/arbetslista headless
     sp_status = subparsers.add_parser("status", help="Orientering: arbetslista + statusräkning (headless)")

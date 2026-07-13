@@ -44,3 +44,15 @@ jobs:
 
       - name: Prose freshness
         run: python scripts/prose_check.py
+
+      # The vault owns skills; .claude/skills/ is a derived artifact. This gate fails if someone
+      # hand-edited an export — otherwise "one direction" is a hope, not a guarantee, and the two
+      # descriptions drift apart in silence. Skipped when the vault isn't checked out (it's a
+      # separate private repo), because absence of the source is not evidence of drift.
+      - name: Skill export drift
+        run: |
+          if [ -d "$CORTXT_VAULT_PATH" ]; then
+            python lab/cns_lab.py skill-export --check
+          else
+            echo "No vault checked out — skipping skill drift gate."
+          fi
