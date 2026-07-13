@@ -127,16 +127,6 @@
       "type": "addresses"
     },
     {
-      "from": "issue:117",
-      "to": "agentur",
-      "type": "addresses"
-    },
-    {
-      "from": "quest:5",
-      "to": "agentur",
-      "type": "targets"
-    },
-    {
       "from": "quest:10",
       "to": "agentur",
       "type": "targets"
@@ -162,7 +152,7 @@
       "type": "targets"
     }
   ],
-  "exported_at": "2026-07-13T20:50:45.257064",
+  "exported_at": "2026-07-13T21:12:08.914093",
   "nodes": [
     {
       "assumptions": [],

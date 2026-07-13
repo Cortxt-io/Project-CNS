@@ -253,10 +253,9 @@ def load_retired(root: Path) -> dict[str, str]:
 def prose_files(root: Path) -> list[Path]:
     """The descriptions we hold to the source: agent-facing prose that steers behaviour.
 
-    `frozen` is excluded for the same reason `archive` is: prose about a frozen layer is a record
-    of what was true when it was frozen, not a claim about the system now. Holding it to the
-    current source would force us to either edit a record or resurrect the layer. See
-    lab/frozen/FROZEN.md.
+    `archive`/`frozen` are excluded because prose about a torn-down or frozen layer is a record of
+    what was true then, not a claim about now. Holding a record to the current source would force us
+    to either edit the record or resurrect the layer.
     """
     found = []
     # Rekursivt. `CLAUDE.md` (icke-rekursivt) matchade bara roten — och repots enda CLAUDE.md bor
@@ -267,38 +266,112 @@ def prose_files(root: Path) -> list[Path]:
             # `archetypes/` är MALLAR för andra repon — deras sökvägar (`data/index.json`) beskriver
             # vad ett genererat projekt producerar, inte vad som finns här. Att hålla en mall till
             # det här repots verklighet är att kräva att den beskriver fel system.
-            if path.is_file() and not {"archive", "frozen", "archetypes", ".git"} & set(path.parts):
+            #
+            # `node_modules`/`dist` är främmande prosa: tredjepartspaket bär egna README som beskriver
+            # SINA repon. Att fälla vårt bygge för att clsx nämner `dist/clsx.mjs` är brus, och brus
+            # dödar en grind lika säkert som blindhet — man slutar läsa den.
+            #
+            # `_<namn>/` är en nästlad utcheckning av ETT ANNAT repo (CI klonar syskonrepot dit).
+            # Dess prosa hör till det repot och checkas när det är sin egen `--root` — inte som en
+            # del av vårt filträd, där varje sökväg den nämner ser ut att saknas.
+            if not path.is_file():
+                continue
+            parts = path.relative_to(root).parts  # relativt roten — annars skippar `_cortxt` sig själv
+            skip = {"archive", "frozen", "archetypes", ".git", "node_modules", "dist", "build"}
+            nested_checkout = any(p.startswith("_") for p in parts[:-1])
+            if not skip & set(parts) and not nested_checkout:
                 found.append(path)
     return sorted(set(found))
+
+
+def sibling_index(roots: list[Path]) -> set[str]:
+    """Filer i syskonrepon, adresserade med repo-namn: `Project-CNS/decisions/x.md`.
+
+    Ett påstående får peka över en repo-gräns — men bara om det säger vilket repo. Bar `tests/x.py`
+    i cortxt-prosa är ett fel även om filen finns i CNS; läsaren (och jag) hittar den inte.
+    """
+    files: set[str] = set()
+    for root in roots:
+        # I CI checkas syskonrepot ut i `_cortxt/` (understreck = "nästlad utcheckning, inte vår
+        # kod" — se prose_files). Prosan skriver `cortxt/...`, alltså repots riktiga namn.
+        name = root.name.lstrip("_")
+        for rel in load_repo_files(root):
+            files.add(f"{name}/{rel}")
+    return files
+
+
+def check_root(
+    root: Path,
+    targets: list[Path] | None = None,
+    *,
+    extra_files: set[str] | None = None,
+) -> list[tuple[str, Finding]]:
+    """Kontrollera ett repos prosa mot *det repots* källa.
+
+    Roten är ett argument, inte en konstant. Ett påstående i `cortxt/CLAUDE.md` handlar om cortxt —
+    slår man upp dess sökvägar i Project-CNS rapporterar grinden att varje fil saknas, vilket är
+    åtta falska positiv och noll värde. Varje fil hålls mot sitt eget repo.
+
+    `cns`-kommandon och pensionerade fält är CNS-begrepp. Saknar roten `cns.py` respektive
+    `schemas/retired.json` görs de kontrollerna inte — frånvaro av en källa är inte ett fel, den är
+    bara en check som inte gäller här.
+    """
+    repo_files = load_repo_files(root) | (extra_files or set())
+    cns_py = root / "cns.py"
+    commands = known_commands(cns_py.read_text(encoding="utf-8")) if cns_py.exists() else set()
+    retired = load_retired(root)
+
+    out: list[tuple[str, Finding]] = []
+    for path in targets or prose_files(root):
+        text = path.read_text(encoding="utf-8")
+        rel = path.relative_to(root) if path.is_absolute() else path
+        base = "lab" if rel.parts and rel.parts[0] == "lab" else ""
+        here = rel.parent.as_posix()
+        for f in check_text(
+            text, repo_files=repo_files, commands=commands, retired=retired, base=base, here=here
+        ):
+            out.append((rel.as_posix(), f))
+    return out
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("paths", nargs="*", type=Path, help="prose files (default: agent-facing prose)")
+    parser.add_argument(
+        "--root", action="append", type=Path, dest="roots", metavar="DIR",
+        help="repo to check (repeatable). Default: this repo. Prose is held to ITS OWN repo.",
+    )
     args = parser.parse_args(argv)
 
-    repo_files = load_repo_files(REPO_ROOT)
-    commands = known_commands((REPO_ROOT / "cns.py").read_text(encoding="utf-8"))
-    retired = load_retired(REPO_ROOT)
+    roots = [r.resolve() for r in (args.roots or [REPO_ROOT])]
+    for root in roots:
+        if not root.is_dir():
+            print(f"root does not exist: {root}", file=sys.stderr)
+            return 2
+    # Korsrepo-referenser (`Project-CNS/decisions/x.md`) slås upp mot syskonen — men bara med prefix.
+    siblings = sibling_index(roots) if len(roots) > 1 else set()
 
-    targets = args.paths or prose_files(REPO_ROOT)
-    total = 0
-    for path in targets:
-        text = path.read_text(encoding="utf-8")
-        rel = path.relative_to(REPO_ROOT) if path.is_absolute() else path
-        base = "lab" if rel.parts and rel.parts[0] == "lab" else ""
-        here = rel.parent.as_posix()
-        findings = check_text(
-            text, repo_files=repo_files, commands=commands, retired=retired, base=base, here=here
-        )
-        for f in findings:
-            print(f"{rel.as_posix()}:{f.line}: {f.kind}: {f.message}")
-            total += 1
+    if args.paths:
+        findings = check_root(roots[0], [p.resolve() for p in args.paths], extra_files=siblings)
+        checked = len(args.paths)
+    else:
+        findings = []
+        checked = 0
+        for root in roots:
+            targets = prose_files(root)
+            checked += len(targets)
+            for rel, f in check_root(root, targets, extra_files=siblings):
+                prefix = "" if len(roots) == 1 else f"{root.name}/"
+                findings.append((f"{prefix}{rel}", f))
 
-    if total:
-        print(f"\n{total} stale claim(s). Prose that describes the system must match it.", file=sys.stderr)
+    for rel, f in findings:
+        print(f"{rel}:{f.line}: {f.kind}: {f.message}")
+
+    if findings:
+        print(f"\n{len(findings)} stale claim(s). Prose that describes the system must match it.",
+              file=sys.stderr)
         return 1
-    print(f"{len(targets)} description(s) checked, all true to the source.")
+    print(f"{checked} description(s) checked, all true to the source.")
     return 0
 
 
