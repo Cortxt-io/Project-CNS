@@ -247,9 +247,18 @@ def _note_paths(root: Path) -> list[Path]:
             if hub.is_file():
                 paths.append(hub)
 
+    # Idéer i `_pipeline/`: som lös fil (`<idé>.md`) ELLER som mapp (`<idé>/<idé>.md`).
+    # En idé växer — den får outreach-listor, research, en gate review — och behöver då en mapp,
+    # precis som en venture. Att bara läsa lösa filer gjorde en mognande idé osynlig i exakt det
+    # ögonblick den började betyda något.
     pipeline = verticals / "_pipeline"
     if pipeline.is_dir():
         paths.extend(sorted(p for p in pipeline.glob("*.md") if p.is_file()))
+        for child in sorted(pipeline.iterdir()):
+            if child.is_dir() and not child.name.startswith("_"):
+                hub = child / f"{child.name}.md"
+                if hub.is_file():
+                    paths.append(hub)
     return paths
 
 
