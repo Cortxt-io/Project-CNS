@@ -1,29 +1,33 @@
 ---
-name: session-handoff
-description: "Hur du lämnar över ett pågående arbete till NÄSTA SESSION: en session-fork plus ett fullständigt handoff-dokument. Använd när sessionen tar slut men jobbet inte är klart — \"forka ut det här\", \"vi tar det nästa pass\", kontexten börjar bli full. Fork plus handoff-dokument, så nästa pass kan börja utan att fråga en enda fråga."
+type: skill
+prose: description
+status: active
+skill_name: session-handoff
+department: Program
+serves_gate:
+routing: skill
+reads:
+writes:
+decays_to:
+exported: true
+created: 2026-07-12
+updated: 2026-07-13
+tags: [skill]
 ---
-
-<!-- GENERERAD ur vaulten — redigera INTE här.
-     Källa: Ideaverse/Cortxt-io/Studio/Skills/session-handoff.md
-     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
 
 # session-handoff
 
 ## Vad den gör
-
 Hur du lämnar över ett pågående arbete till NÄSTA SESSION: en session-fork plus ett fullständigt handoff-dokument.
 
 ## När den ska köras
-
 Använd när sessionen tar slut men jobbet inte är klart — "forka ut det här", "vi tar det nästa pass", kontexten börjar bli full. Fork plus handoff-dokument, så nästa pass kan börja utan att fråga en enda fråga.
 
 ## Syfte
-
 Strukturera överlämningen så att kontexten inte tappas mellan pass. Nästa session ska kunna läsa
 dokumentet och gå direkt på arbetet — inte rekonstruera vad som hände.
 
 ## När du använder den
-
 - Sessionen avslutas men arbete återstår
 - Kontexten är full och arbetet behöver ett rent pass
 - Ett spår grenar ut sig och förtjänar en egen session (fork under samma förälder)

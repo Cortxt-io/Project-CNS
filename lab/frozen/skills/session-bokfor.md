@@ -1,20 +1,26 @@
 ---
-name: session-bokfor
-description: "Registrera session-start, fork och avslut korrekt i CNS session-store. Använd i början och slutet av varje AI-arbetspass — \"starta en session\", \"bokför det här passet\", \"markera klar\" — samt när en hängande running-session (>45 min utan uppdatering) behöver stängas. Alla AI-arbetspass ska registreras. Det ger överlappsdetektion, sessionsträd och pollbara signaler. Allt går genom det feta verktyget `cortxt_session(action=…)`. Actions: `start`, `done`, `save`, `list`, `fork`, `tree`."
+type: skill
+prose: description
+status: active
+skill_name: session-bokfor
+department: Program
+serves_gate:
+routing: skill
+reads:
+writes:
+decays_to:
+exported: true
+created: 2026-07-12
+updated: 2026-07-13
+tags: [skill]
 ---
-
-<!-- GENERERAD ur vaulten — redigera INTE här.
-     Källa: Ideaverse/Cortxt-io/Studio/Skills/session-bokfor.md
-     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
 
 # session-bokfor
 
 ## Vad den gör
-
 Registrera session-start, fork och avslut korrekt i CNS session-store.
 
 ## När den ska köras
-
 Använd i början och slutet av varje AI-arbetspass — "starta en session", "bokför det här passet", "markera klar" — samt när en hängande running-session (>45 min utan uppdatering) behöver stängas.
 
 Alla AI-arbetspass ska registreras. Det ger överlappsdetektion, sessionsträd och pollbara signaler.

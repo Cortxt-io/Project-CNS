@@ -34,6 +34,23 @@ hit med `git mv` — historiken är intakt, inget är raderat.
   gått att köra.** Rättat i samma svep.
   `secure-secrets` (den enda av de fem utan en enda död referens) räddades istället in i
   vaultens `Studio/Skills/` och är nu anropbar för första gången.
+
+  **Sex till, frysta samma dag på MÄTDATA — inte på magkänsla:** `idea-session`, `idea-triage`,
+  `session-bokfor`, `session-handoff`, `wiki-underhall`, `board-underhall`. De ljög inte om koden;
+  de beskrev flöden **utan en enda användning**:
+  - `session-bokfor` + `session-handoff` → **0 sessioner bokförda. Någonsin.**
+  - `idea-session` → **0 idéer** i kod-inkorgen. Det verkliga idé-intaget är Grinden
+    (`problem-capture` → `_pipeline/G0`, elva ventures ligger där).
+  - `idea-triage` → samma; vaultens `Raw/` innehöll två noter, varav en felplacerad dashboard.
+  - `wiki-underhall` → **wiki-repot existerar inte** (`Repository not found`). Skillen beskrev
+    underhåll av en wiki som aldrig skapats.
+  - `board-underhall` → boarden används inte (Rikards besked).
+
+  **Det avgörande beviset:** Claude Code-transkripten (28 sessioner) visar **40 skill-anrop**, varav
+  **exakt ett** var en egen skill: `run-gate`. Inte `pr-protokoll`, inte `issue-lifecycle`, inte
+  `phase-planner`. Aldrig. Och `run-gate` är den enda som skrevs med en description som säger både
+  *vad* och *när*. En skill med en riktig trigger avfyras; de andra **kunde inte**.
+  `idea-triage` kommer tillbaka när flödet den ska tjäna faktiskt finns (Raw→triage-workflowet).
   **Rättelse (samma dag):** frysningen tog först HELA `lab/.claude/skills/` (18 poster) på ett
   overifierat antagande. Tolv av dem beskriver levande kod (`phase-planner`, `idea-triage`,
   `board-underhall`, `issue-lifecycle`, `pr-protokoll`, `wiki-underhall`, `nod-granska`,

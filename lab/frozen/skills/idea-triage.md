@@ -1,21 +1,38 @@
 ---
-name: idea-triage
-description: "Tömmer inkorgen. Varje rånot i `Raw/` får en dom: bli register, bli beskrivning, bli issue — eller raderas. Använd när inkorgen ska tömmas — \"triagera idéerna\", \"vad ligger i inkorgen\", \"gå igenom Raw/\" — och när en rånot är äldre än sju dagar, för då är den synlig skuld."
+type: skill
+prose: description
+status: active
+skill_name: idea-triage
+department: Produkt
+serves_gate:
+routing: skill
+reads: Ideaverse/CNS/Work/Raw/
+writes: register, beskrivningar, GitHub-issues
+decays_to: "inget — domen är omdöme, och omdöme blir aldrig kod"
+exported: true
+created: 2026-07-12
+updated: 2026-07-13
+tags: [skill]
 ---
-
-<!-- GENERERAD ur vaulten — redigera INTE här.
-     Källa: Ideaverse/Cortxt-io/Studio/Skills/idea-triage.md
-     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
 
 # idea-triage
 
 ## Vad den gör
-
 Tömmer inkorgen. Varje rånot i `Raw/` får en dom: bli register, bli beskrivning, bli issue — eller raderas.
 
 ## När den ska köras
-
 Använd när inkorgen ska tömmas — "triagera idéerna", "vad ligger i inkorgen", "gå igenom Raw/" — och när en rånot är äldre än sju dagar, för då är den synlig skuld.
+
+## Routningen — varför är detta en skill och inte kod?
+
+Grupperingen *gick* att koda, och gjordes det (`scripts/triage.group_ideas`). Men **domen** —
+är det här värt att bygga? — är omdöme, och omdöme får inte bli en poängformel som låtsas vara ett
+beslut. `decays_to:` är därför tomt: den här skillen blir aldrig kod.
+
+> **Omskriven 2026-07-13.** Den tidigare versionen drev kod-inkorgen (`exports/ideas/`,
+> `cortxt_idea(action="capture")`, `cns triage`). Den inkorgen är **tom**, och
+> [[Inkorgsregeln]] (en *regel*, `status: decided`) har flyttat inkorgen till vaultens `Raw/`.
+> En regel är överordnad en skill. Mekaniken byttes; omdömeslagret nedan överlevde oförändrat.
 
 ## Steg 1: Fånga
 
