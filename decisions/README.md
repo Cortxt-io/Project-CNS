@@ -2,7 +2,7 @@
 
 This folder holds **node prose**: the free-form rationale for a system in `catalog.yaml`, keyed by
 slug. It is **machine-read** — `scripts/catalog.py` (`read_node` → `raw`), `cns export` and the MCP
-tool `app/tools/projects.py` all load `decisions/<slug>.md`. Files here are generated-adjacent
+tool `lab/app/tools/projects.py` all load `decisions/<slug>.md`. Files here are generated-adjacent
 (originally by `lab/scripts/migrate_to_catalog.py`) and belong to the node model.
 
 Node prose answers: *why is this system shaped the way it is?* It is not a decision log.
