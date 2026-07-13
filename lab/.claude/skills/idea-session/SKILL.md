@@ -78,5 +78,5 @@ skriv inte dit.)
 ## Relaterat
 
 - `idea-triage` — nästa pass: bedömer rånoterna, ger dem art eller raderar dem.
-- `/cns-flush` — spola ner en sessions slutsatser om passet handlar om kod/beslut.
+- `cortxt_session(action="save", …)` — spola ner passets slutsats om det handlade om kod/beslut.
 - `cortxt_session(action="fork")` — bokför en fork om en idé växer till ett eget spår.

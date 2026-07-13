@@ -1,10 +1,21 @@
 ---
 name: secure-secrets
-department: Plattform
-description: Skapa och lägg in tokens/secrets säkert — hemligheten passerar aldrig chatt, shell-historik eller processargument. Använd när användaren ska sätta en GitHub Actions-secret eller lokal nyckel (CLAUDE_CODE_OAUTH_TOKEN, ANTHROPIC_API_KEY, MCP-/deploy-tokens), när någon råkat klistra en hemlighet i klartext, eller när en token behöver roteras.
+description: "Skapa och lägg in tokens/secrets säkert — hemligheten passerar aldrig chatt, shell-historik eller processargument. Använd när användaren ska sätta en GitHub Actions-secret eller lokal nyckel (CLAUDE_CODE_OAUTH_TOKEN, ANTHROPIC_API_KEY, MCP-/deploy-tokens), när någon råkat klistra en hemlighet i klartext, eller när en token behöver roteras. En hemlighet ska gå **direkt från där den skapas till där den lagras**, via stdin — aldrig genom chatten, ett kommandoradsargument eller shell-historiken. Klistras en token i en delad yta (chatt, `--body \"<token>\"`, ett committat skript) är den läckt och måste roteras."
 ---
 
-# /secure-secrets — sätt och rotera tokens säkert
+<!-- GENERERAD ur vaulten — redigera INTE här.
+     Källa: Ideaverse/Cortxt-io/Studio/Skills/secure-secrets.md
+     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
+
+# secure-secrets
+
+## Vad den gör
+
+Skapa och lägg in tokens/secrets säkert — hemligheten passerar aldrig chatt, shell-historik eller processargument.
+
+## När den ska köras
+
+Använd när användaren ska sätta en GitHub Actions-secret eller lokal nyckel (CLAUDE_CODE_OAUTH_TOKEN, ANTHROPIC_API_KEY, MCP-/deploy-tokens), när någon råkat klistra en hemlighet i klartext, eller när en token behöver roteras.
 
 En hemlighet ska gå **direkt från där den skapas till där den lagras**, via stdin —
 aldrig genom chatten, ett kommandoradsargument eller shell-historiken. Klistras en
@@ -12,6 +23,7 @@ token i en delad yta (chatt, `--body "<token>"`, ett committat skript) är den l
 och måste roteras.
 
 ## Gyllene regler
+
 1. **Aldrig i chatten.** Be aldrig användaren klistra en token i konversationen, och
    gör det aldrig själv. Om det ändå händer: behandla token:n som komprometterad → rotera.
 2. **Aldrig som argument.** Inte `gh secret set NAME --body "<token>"` (syns i
@@ -24,6 +36,7 @@ och måste roteras.
      eller OS-nyckelringen.
 
 ## Verktyget
+
 `scripts/set_secret.ps1` gör det säkra flödet i ett svep — dold prompt → stdin → `gh secret set`:
 
 ```powershell
@@ -37,6 +50,7 @@ pwsh scripts/set_secret.ps1 -Name ANTHROPIC_API_KEY -Env .env
 Värdet matas in i en **dold prompt** — det hamnar aldrig på skärmen, i historik eller i argument.
 
 ## Generera token (separat, interaktivt)
+
 Generering är webbläsarbaserad och kan inte automatiseras helt:
 - **Claude-prenumeration (OAuth):** `claude setup-token` i en riktig interaktiv terminal →
   slutför inloggningen → token `sk-ant-oat01-…` skrivs ut **en gång**. (Kräver Pro/Max.)
@@ -47,12 +61,14 @@ Generering är webbläsarbaserad och kan inte automatiseras helt:
 Kopiera token:n och klistra in den i den **dolda prompten** från `set_secret.ps1` — inte i chatten.
 
 ## Rotera (när en token läckt eller går ut)
+
 OAuth-token gäller 1 år; en som passerat en delad yta ska roteras direkt:
 1. Generera ny (ovan).
 2. `pwsh scripts/set_secret.ps1 -Name <SAMMA_NAMN>` → skriver över secreten.
 3. Den gamla blir oanvändbar så fort den nya är aktiv. Bekräfta nästa körning går grön.
 
 ## Steg (när skillen körs)
+
 1. **Bekräfta typ + lagringsmål** (CI-secret vs lokal nyckel) och secret-namnet.
 2. **Påminn om generering** om token saknas (peka på rätt kommando ovan).
 3. **Peka på `set_secret.ps1`** — låt användaren köra det själv så värdet aldrig passerar

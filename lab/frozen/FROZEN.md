@@ -23,8 +23,17 @@ hit med `git mv` — historiken är intakt, inget är raderat.
 - **Exekvering:** `dispatch.py`, `mcp_router.py`, `claude_client.py`, `worktree.py`, `tui/`
 - **Registret:** `agents/` (27 agenter), `org/` (manifest + bemanningsmatris),
   `config-agenturer/`
-- **Skills:** bara de sex som faktiskt beskriver agenturen — `agent-routing`, `agent-studio`,
-  `ekonomi-uppskattning`, `eskalera-uppat`, `org-maintenance/`, `staff-role/`.
+- **Skills:** de sex som beskriver agenturen — `agent-routing`, `agent-studio`,
+  `ekonomi-uppskattning`, `eskalera-uppat`, `org-maintenance/`, `staff-role/` — **plus fyra ur
+  `lab/skills/`** (fryst 2026-07-13): `cns-flush`, `cns-fork`, `cns-sync`, `cortxt-quests`.
+  De fyra var **redundanta och oanropbara**: de låg utanför `.claude/skills/`, så Claude Code
+  laddade dem aldrig — och deras innehåll var pensionerade granulära `cortxt_*`-namn, plus
+  `node.md`/`nodes/` i `cortxt-quests` (8 juni, den äldsta filen i uppsättningen). Sessionsbokföring
+  täcks av `session-bokfor`/`session-handoff`, issues av `issue-lifecycle`.
+  Flera skills hänvisade till `/cns-sync` och `/cns-flush` som körbara kommandon — **de har aldrig
+  gått att köra.** Rättat i samma svep.
+  `secure-secrets` (den enda av de fem utan en enda död referens) räddades istället in i
+  vaultens `Studio/Skills/` och är nu anropbar för första gången.
   **Rättelse (samma dag):** frysningen tog först HELA `lab/.claude/skills/` (18 poster) på ett
   overifierat antagande. Tolv av dem beskriver levande kod (`phase-planner`, `idea-triage`,
   `board-underhall`, `issue-lifecycle`, `pr-protokoll`, `wiki-underhall`, `nod-granska`,

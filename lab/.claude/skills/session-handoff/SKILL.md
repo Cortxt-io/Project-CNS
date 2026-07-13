@@ -58,8 +58,8 @@ dokumentet och gå direkt på arbetet — inte rekonstruera vad som hände.
    fil/uppgift ägs av exakt ett spår. Dokumentera ägarskapet explicit i varje forks `summary`.
 
 5. **Återsamling** när spåren är klara:
-   - `/cns-sync` — detektera om sessioner överlappar på samma nod
-   - `/cns-flush` — spola ner slutsatsen i CNS
+   - `cortxt_session(action="list", link_ref=…)` — se om andra sessioner rör samma nod
+   - `cortxt_session(action="save", …)` — spola ner slutsatsen i CNS
 
 ## Output-format
 

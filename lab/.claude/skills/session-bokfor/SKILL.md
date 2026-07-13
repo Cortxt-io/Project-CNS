@@ -80,10 +80,10 @@ En session med `status: running` >45 min utan `updated_at`-ändring = troligen h
 ## Överlappsdetektion
 
 ```
-/cns-sync  ← kör innan du börjar om du är osäker på om annan session jobbar på samma nod
+cortxt_session(action="list", link_ref=…)   ← kör innan du börjar: rör någon annan session samma nod?
 ```
 
 Sedan:
 ```
-/cns-flush ← spola ner slutsatsen när du är klar
+cortxt_session(action="save", …)            ← spola ner slutsatsen när du är klar
 ```
