@@ -1025,6 +1025,18 @@ def cmd_skill_export(args: argparse.Namespace) -> None:
     sys.exit(skill_export.main(["--check"] if getattr(args, "check", False) else []))
 
 
+def cmd_memory_export(args: argparse.Namespace) -> None:
+    """Vaulten äger minnet; ~/.claude/…/memory/ är härlett.
+
+    Minnena styr hur Claude arbetar och läses vid varje sessionsstart. Låg de bara i ~/.claude/ var
+    de osynliga för Rikard — och ett minne han inte kan se kan vara fel i veckor. Det hände
+    2026-07-13. Nu kan han läsa och rätta dem.
+    """
+    from scripts import memory_export
+
+    sys.exit(memory_export.main(["--check"] if getattr(args, "check", False) else []))
+
+
 def cmd_skill_usage(args: argparse.Namespace) -> None:
     """Avfyras skillsen faktiskt? Läser Claude Code-transkripten. Deterministiskt → kod, ej skill."""
     from scripts import skill_usage
@@ -1509,6 +1521,15 @@ def register_lab(subparsers) -> None:
     sp_skx.add_argument("--check", action="store_true",
                         help="Falla om exporten drivit isär från vaulten (CI-grinden)")
     sp_skx.set_defaults(func=cmd_skill_export)
+
+    # cns memory-export — vaulten äger minnena, ~/.claude/…/memory/ är en härledd artefakt.
+    # Du kan inte rätta det du inte kan se.
+    sp_mem = subparsers.add_parser(
+        "memory-export", help="Exportera Studio/Memory/ (vaulten) → ~/.claude/…/memory/. En riktning."
+    )
+    sp_mem.add_argument("--check", action="store_true",
+                        help="Falla om exporten drivit isär från vaulten")
+    sp_mem.set_defaults(func=cmd_memory_export)
 
     # cns skill-usage — svaret på "används skillsen?". Utan mätning fyller gissningar tomrummet.
     sp_sku = subparsers.add_parser(
