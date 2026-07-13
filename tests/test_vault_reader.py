@@ -340,3 +340,40 @@ def test_the_venture_dir_may_be_called_Ventures(tmp_path: Path):
 
     assert vr.venture_root(tmp_path) == moved.parent
     assert [p.name for p in vr._note_paths(tmp_path)] == ["bkfinans.md"]
+
+
+def test_an_idea_may_be_a_FOLDER_in_the_pipeline(tmp_path: Path):
+    """En idé växer: den får outreach-listor, research, en gate review.
+
+    Då behöver den en mapp — precis som en venture. Läsaren hittade tidigare bara lösa
+    `.md`-filer direkt i `_pipeline/`, så en idé som mognade till en mapp blev osynlig.
+    En idé som blir seriös får inte försvinna ur kontrolltornet just när den börjar betyda något.
+    """
+    idea = tmp_path / "Ideaverse" / "Ventures" / "_pipeline" / "bemanning-dok-collector"
+    (idea / "outreach").mkdir(parents=True)
+    (idea / "bemanning-dok-collector.md").write_text(_note("""
+        ---
+        node: none
+        type: idea
+        owner: rikard
+        last_reviewed: 2026-07-12
+        ---
+
+        # bemanning-dok-collector
+        """), encoding="utf-8")
+    # en fristående idé-fil bredvid mappen ska fortfarande hittas
+    (idea.parent / "lös-idé.md").write_text(_note("""
+        ---
+        node: none
+        type: idea
+        owner: rikard
+        last_reviewed: 2026-07-12
+        ---
+
+        # lös-idé
+        """), encoding="utf-8")
+
+    found = {p.stem for p in vr._note_paths(tmp_path)}
+
+    assert "bemanning-dok-collector" in found, "en idé i mappform måste hittas"
+    assert "lös-idé" in found, "en idé som lös fil måste fortfarande hittas"
