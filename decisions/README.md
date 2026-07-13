@@ -1,9 +1,8 @@
 # decisions/ — node prose, not rules
 
 This folder holds **node prose**: the free-form rationale for a system in `catalog.yaml`, keyed by
-slug. It is **machine-read** — `scripts/catalog.py` (`read_node` → `raw`), `cns export` and the MCP
-and the export path all load `decisions/<slug>.md`. Files here are generated-adjacent
-(originally by `lab/scripts/migrate_to_catalog.py`) and belong to the node model.
+slug. It is **machine-read** — `scripts/catalog.py` (`read_node` → `raw`) and `cns export` load
+`decisions/<slug>.md`. Files here belong to the node model.
 
 Node prose answers: *why is this system shaped the way it is?* It is not a decision log.
 
@@ -15,16 +14,13 @@ That conflation is why a rule could not be told apart from an artifact.
 
 As of 2026-07-12 the rules live in the Obsidian vault, which is now the canonical rulebook:
 
-    Ideaverse/Cortxt/Playbook/Rules/
+    Ideaverse/Cortxt-io/Studio/Rules/
 
-| Rule | Was |
-|---|---|
-| Git/GitHub foundation — repo topology, branch standard, org | `decisions/git-github-grund.md` |
-| MCP router & agent tool access | `decisions/mcp-router.md` |
-| Portfolio layers — substrate → fog → vertical | `decisions/portfolio-layers.md` |
-| ADR: Decision-point critic | `decisions/decision-point-critic.md` |
+Four files moved there: the git/GitHub foundation, the MCP router, the portfolio layers, and the
+decision-point critic. None of them was node prose — they were rules, with no slug in `catalog.yaml`
+and no code reading them. That conflation is why a rule could not be told apart from an artifact.
 
-Precedence: **vault rules → CLAUDE.md → skills → memories.** See the `Regelboken` dashboard.
+Precedence: **vault rules → CLAUDE.md → skills → memories.**
 
 ## Adding to this folder
 
