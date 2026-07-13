@@ -1,6 +1,6 @@
 ---
 name: pr-protokoll
-description: "PR-checklista för CNS — skapa, koppla och begär review korrekt. Använd innan en PR skapas, och när CI är röd på en öppen PR — \"öppna en PR för det här\", \"be om review\", \"varför är checken röd\". Använd den INTE för att skapa eller stänga issues — det är issue-lifecycle."
+description: "PR-checklista — skapa, koppla och begär review korrekt, via `gh` CLI. Använd innan en PR skapas, och när CI är röd på en öppen PR — \"öppna en PR för det här\", \"be om review\", \"varför är checken röd\". Använd den INTE för att skapa eller stänga issues — det är issue-lifecycle."
 ---
 
 <!-- GENERERAD ur vaulten — redigera INTE här.
@@ -11,57 +11,69 @@ description: "PR-checklista för CNS — skapa, koppla och begär review korrekt
 
 ## Vad den gör
 
-PR-checklista för CNS — skapa, koppla och begär review korrekt.
+PR-checklista — skapa, koppla och begär review korrekt, via `gh` CLI.
 
 ## När den ska köras
 
 Använd innan en PR skapas, och när CI är röd på en öppen PR — "öppna en PR för det här", "be om review", "varför är checken röd". Använd den INTE för att skapa eller stänga issues — det är [[issue-lifecycle]].
 
-## Vad protokollet täcker
+## Verktyget
 
-Branch/issue-koppling, body-format, reviewers, och att aldrig merga eller pusha till main själv.
+**`gh` CLI.** MCP-verktygen `cortxt_pr` och `cortxt_action` är borttagna (revs 2026-07-13 — 53 exponerade verktyg, noll anrop). Interaktiva flaggor fungerar inte här.
 
 ## Innan du skapar en PR
 
-- [ ] Arbetet är committat på en feature-branch (aldrig direkt på main)
-- [ ] Branch-namnet speglar uppgiften: `feature/<slug>-<kort-beskrivning>`
-- [ ] Det finns en öppen issue som PRen löser
-- [ ] CI (GitHub Actions) är grön
+- [ ] Arbetet är committat på en egen branch — **aldrig direkt på main**
+- [ ] Branchnamnet följer [[git-github-grund]]: `feat/`, `fix/`, `chore/` eller `docs/` + kort beskrivning
+- [ ] Det finns en öppen issue som PR:en löser
+- [ ] Testerna är gröna lokalt
+
+> [!warning] Branchprefix
+> `feature/` är fel och har stått fel i den här skillen. Regeln är `feat/` — trunk-based, squash-merge, radera branchen efter merge. Regeln går före skillen.
 
 ## Skapa PR
 
-```python
-cortxt_pr(
-    action="create",
-    title="[Verb + vad]",
-    body="## Vad\n[vad ändrades]\n\n## Varför\nLöser #[issue-nr]\n\n## Test\n- [ ] [hur det testades]",
-    head="feature/min-branch",
-    base="main",
-    draft=False
-)
+```bash
+gh pr create \
+  --title "Verb + vad" \
+  --body "## Vad
+[vad ändrades]
+
+## Varför
+
+Fixes #<issue-nr>
+
+## Test
+
+- [ ] [hur det testades]" \
+  --base main \
+  --head feat/min-branch
 ```
+
+Lägg till `--draft` när arbetet inte är klart för review.
 
 ## Koppla till issue
 
-Lägg i PR-body: `Fixes #[issue-nr]` — GitHub stänger issuen automatiskt vid merge.
+`Fixes #<nr>` i bodyn — GitHub stänger issuen automatiskt vid merge. En PR utan kopplad issue skapas inte.
 
 ## Begär review
 
-```python
-cortxt_pr(action="set_reviewers", number=42, reviewers=["rian010194"])
+```bash
+gh pr edit <nr> --add-reviewer rian010194
 ```
+
+## Om CI är röd
+
+```bash
+gh pr checks <nr>                 # vilka checkar failar
+gh run view <run-id> --log-failed # bara de rader som föll
+```
+
+Analysera felet. Fixa på branchen. Push — CI kör om automatiskt. Begär inte review förrän CI är grön.
 
 ## Vad du INTE gör
 
 - Mergar aldrig direkt — CI + Rikard beslutar
-- Pushar aldrig direkt till main
+- Pushar aldrig till main
 - Skapar aldrig PR utan kopplad issue
-
-## Om CI är röd
-
-```python
-cortxt_action(action="get_run", run_id=12345678)   # run_id är en int
-```
-
-Analysera felet. Fixa på branchen. Push. CI kör om automatiskt.
-Öppna inte PRen förrän CI är grön.
+- Kringgår aldrig hooks (`--no-verify`) eller signering

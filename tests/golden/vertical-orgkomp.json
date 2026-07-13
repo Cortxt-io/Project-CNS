@@ -1,0 +1,362 @@
+{
+  "roadmap": {
+    "current_phase": "live",
+    "gates_skipped": [
+      "discovery",
+      "spec",
+      "mvp",
+      "konsolidera"
+    ],
+    "open_decisions": [
+      {
+        "title": "JumpYard-specifik leverans eller generell produkt?",
+        "why": "Byggd som kundleverans åt JumpYard; avgör om ombyggnaden generaliseras."
+      },
+      {
+        "title": "Bygga om från grunden eller behålla Next-basen?",
+        "why": "Live på orgkomp.com; avgör ombyggnadens start."
+      }
+    ],
+    "phases": [
+      {
+        "epics": [
+          {
+            "done": false,
+            "title": "Vision: vem är verktyget för när det INTE är en JumpYard-leverans?"
+          },
+          {
+            "done": false,
+            "title": "Marknads-/konkurrentkarta (org-chart-verktyg: vad saknas hos dem?)"
+          }
+        ],
+        "gate": {
+          "question": "Är problemet värt att lösa, och är vi rätt att lösa det?",
+          "requires": [
+            "problem-interviews",
+            "market-map",
+            "north-star"
+          ],
+          "title": "Discovery → Spec"
+        },
+        "key": "discovery",
+        "status": "skipped",
+        "steps": [
+          {
+            "check": "manual",
+            "done": false,
+            "key": "problem-interviews",
+            "title": "Pratat med riktiga människor om problemet"
+          },
+          {
+            "check": "manual",
+            "done": false,
+            "key": "market-map",
+            "title": "Marknads- och konkurrentkarta"
+          },
+          {
+            "check": "derived:has_north_star",
+            "done": null,
+            "key": "north-star",
+            "title": "North star formulerad — vad betyder \"det funkar\"?"
+          }
+        ],
+        "summary": "Utforska problemet + bestäm visionen — vad ska det bli, för vem, värt att bygga — INNAN scope låses. Ger visionen en hemvist (det divergenta steget före Spec).",
+        "title": "Discovery"
+      },
+      {
+        "epics": [
+          {
+            "done": false,
+            "title": "Re-spec: redigerbar org-/ansvars-/beroende-utforskare (roller-först typad graf)"
+          },
+          {
+            "done": false,
+            "title": "Datamodell: reports_to / depends_on + lagring/export"
+          },
+          {
+            "done": false,
+            "title": "Kill-kriterier: vad får oss att lägga ner om JumpYard inte förlänger?"
+          }
+        ],
+        "gate": {
+          "question": "Vet vi vad vi bygger, för vem, och när vi ska sluta?",
+          "requires": [
+            "kill-criteria",
+            "decision-record",
+            "repo"
+          ],
+          "title": "Spec → MVP"
+        },
+        "key": "spec",
+        "status": "skipped",
+        "steps": [
+          {
+            "check": "derived:has_kill_criteria",
+            "done": null,
+            "key": "kill-criteria",
+            "title": "Kill-kriterier skrivna — vad får oss att lägga ner?"
+          },
+          {
+            "check": "derived:has_decision_record",
+            "done": false,
+            "key": "decision-record",
+            "title": "Beslut nedskrivet (decisions/<slug>.md)"
+          },
+          {
+            "check": "derived:has_repo",
+            "done": false,
+            "key": "repo",
+            "title": "Repo finns"
+          }
+        ],
+        "summary": "Problem + vem + scope definierat (konvergerar visionen till ett kontrakt)",
+        "title": "Spec"
+      },
+      {
+        "epics": [
+          {
+            "done": true,
+            "title": "Graf-editor + roll-modell"
+          },
+          {
+            "done": true,
+            "title": "Import/export (JSON/Excel) + localStorage"
+          }
+        ],
+        "gate": {
+          "question": "Funkar kärnan — och är den värd att härda?",
+          "requires": [
+            "core-flow",
+            "has-tests",
+            "deployed"
+          ],
+          "title": "MVP → Konsolidera"
+        },
+        "key": "mvp",
+        "status": "skipped",
+        "steps": [
+          {
+            "check": "manual",
+            "done": false,
+            "key": "core-flow",
+            "title": "Kärnflödet funkar end-to-end"
+          },
+          {
+            "check": "derived:has_tests",
+            "done": null,
+            "key": "has-tests",
+            "title": "Tester finns"
+          },
+          {
+            "check": "derived:has_deploy",
+            "done": true,
+            "key": "deployed",
+            "title": "Deployad någonstans (staging eller prod)"
+          }
+        ],
+        "summary": "Kärnan byggd, funkar end-to-end (får vara slit-och-släng)",
+        "title": "MVP"
+      },
+      {
+        "epics": [
+          {
+            "done": true,
+            "title": "UI på designsystemet (shadcn) — landat"
+          },
+          {
+            "done": true,
+            "title": "Grafstacken konsoliderad: ELK + ReactFlow ersatte handkodad SVG"
+          },
+          {
+            "done": false,
+            "title": "Typad API-söm: UI anropar aldrig fetch direkt"
+          },
+          {
+            "done": false,
+            "title": "Extrahera kärnan ur UI-lagret (model.ts-lib påbörjad i OrgChart-refaktorn)"
+          }
+        ],
+        "gate": {
+          "question": "Håller sömmarna? Blir nästa feature additiv, eller kaos?",
+          "requires": [
+            "design-system",
+            "api-seam",
+            "core-extracted"
+          ],
+          "title": "Konsolidera → Live"
+        },
+        "key": "konsolidera",
+        "status": "skipped",
+        "steps": [
+          {
+            "check": "derived:uses_design_system",
+            "done": null,
+            "key": "design-system",
+            "title": "UI sitter på designsystemet (inte hårdkodade färger per app)"
+          },
+          {
+            "check": "derived:has_api_seam",
+            "done": null,
+            "key": "api-seam",
+            "title": "Tunn typad API-söm — UI anropar aldrig fetch direkt"
+          },
+          {
+            "check": "manual",
+            "done": false,
+            "key": "core-extracted",
+            "title": "Data + logik extraherad ur UI-lagret"
+          }
+        ],
+        "summary": "Härda sömmarna innan features — extrahera kärnan (data + logik), lås en tunn typad API-söm, sätt UI på designsystemet. Det saknade steget som gör features additiva i stället för vibe-kaos.",
+        "title": "Konsolidera"
+      },
+      {
+        "epics": [
+          {
+            "done": false,
+            "title": "Konsoliderad version ersätter vibe-v1 på orgkomp.com"
+          }
+        ],
+        "gate": {
+          "question": "Är den redo att visas för någon som inte är vi?",
+          "requires": [
+            "own-domain",
+            "prod-healthy"
+          ],
+          "title": "Live → Första användare"
+        },
+        "key": "live",
+        "status": "active",
+        "steps": [
+          {
+            "check": "derived:has_live_url",
+            "done": true,
+            "key": "own-domain",
+            "title": "Kör på sin egen domän"
+          },
+          {
+            "check": "derived:deploy_healthy",
+            "done": null,
+            "key": "prod-healthy",
+            "title": "Prod svarar och är grön"
+          }
+        ],
+        "summary": "Deployad på sin domän",
+        "title": "Live"
+      },
+      {
+        "epics": [],
+        "gate": {
+          "question": "Använder de den igen — eller var det artighet?",
+          "requires": [
+            "real-users",
+            "feedback-loop"
+          ],
+          "title": "Första användare → Validerad"
+        },
+        "key": "users",
+        "status": "todo",
+        "steps": [
+          {
+            "check": "manual",
+            "done": false,
+            "key": "real-users",
+            "title": "Minst en människa utanför Cortxt har använt den"
+          },
+          {
+            "check": "manual",
+            "done": false,
+            "key": "feedback-loop",
+            "title": "Vi hör vad de tycker (kanalen finns)"
+          }
+        ],
+        "summary": "Riktiga människor använder den",
+        "title": "Första användare"
+      },
+      {
+        "epics": [],
+        "gate": {
+          "question": "Är värdet värt pengar — och vågar vi be om dem?",
+          "requires": [
+            "north-star-hit",
+            "retention"
+          ],
+          "title": "Validerad → Betalande"
+        },
+        "key": "validated",
+        "status": "todo",
+        "steps": [
+          {
+            "check": "manual",
+            "done": false,
+            "key": "north-star-hit",
+            "title": "North star uppnådd"
+          },
+          {
+            "check": "manual",
+            "done": false,
+            "key": "retention",
+            "title": "Någon kom tillbaka utan att bli påmind"
+          }
+        ],
+        "summary": "Levererar värde — feedback bekräftar",
+        "title": "Validerad"
+      },
+      {
+        "epics": [],
+        "gate": {
+          "question": "Skalar vi, eller är detta så stort det blir?",
+          "requires": [
+            "first-revenue"
+          ],
+          "title": "Betalande → skala eller skörda"
+        },
+        "key": "paying",
+        "status": "todo",
+        "steps": [
+          {
+            "check": "manual",
+            "done": false,
+            "key": "first-revenue",
+            "title": "Första betalningen mottagen"
+          }
+        ],
+        "summary": "Intäkt eller återkommande användning — målet",
+        "title": "Betalande/återkommande"
+      }
+    ],
+    "slug": "orgkomp"
+  },
+  "slug": "orgkomp",
+  "vertical": {
+    "activity": {
+      "last_commit_age_s": null
+    },
+    "deploy": {
+      "state": "unknown"
+    },
+    "domain": "orgkomp",
+    "next_step": "Beslut: JumpYard-specifik leverans eller generell produkt?",
+    "open_issues": 0,
+    "open_milestones": [],
+    "roadmap": {
+      "current_phase": "live",
+      "current_phase_title": "Live",
+      "gates_skipped": [
+        "discovery",
+        "spec",
+        "mvp",
+        "konsolidera"
+      ],
+      "next_decision": "JumpYard-specifik leverans eller generell produkt?",
+      "open_decisions": 2,
+      "phase_index": 5,
+      "total_phases": 8
+    },
+    "slug": "orgkomp",
+    "title": "Orgkomp",
+    "top_issue": null,
+    "url_live": "https://orgkomp.com",
+    "url_repo": "https://github.com/Cortxt-io/orgkomp"
+  }
+}

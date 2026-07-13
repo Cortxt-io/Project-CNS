@@ -1,0 +1,384 @@
+{
+  "agents": [],
+  "edges": [
+    {
+      "from": "backend-developer",
+      "to": "agentur",
+      "type": "owns"
+    },
+    {
+      "from": "devops-engineer",
+      "to": "cns-hosting-infra",
+      "type": "owns"
+    },
+    {
+      "from": "backend-developer",
+      "to": "cns-mcp",
+      "type": "owns"
+    },
+    {
+      "from": "backend-developer",
+      "to": "cns-vault-app",
+      "type": "owns"
+    },
+    {
+      "from": "frontend-developer",
+      "to": "cortxt-dashboard-app",
+      "type": "owns"
+    },
+    {
+      "from": "frontend-developer",
+      "to": "cortxt-graph-view",
+      "type": "owns"
+    },
+    {
+      "from": "frontend-developer",
+      "to": "cortxt-landing",
+      "type": "owns"
+    },
+    {
+      "from": "research-lead",
+      "to": "research-agent",
+      "type": "owns"
+    },
+    {
+      "from": "issue:161",
+      "to": "agentur",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:160",
+      "to": "agentur",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:159",
+      "to": "agentur",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:158",
+      "to": "agentur",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:146",
+      "to": "cns-core",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:145",
+      "to": "cns-mcp",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:139",
+      "to": "agentur",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:137",
+      "to": "cns-mcp",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:136",
+      "to": "cns-mcp",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:130",
+      "to": "cns-mcp",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:129",
+      "to": "mcp-gateway",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:128",
+      "to": "cns-mcp",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:127",
+      "to": "cns-mcp",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:124",
+      "to": "agentur",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:122",
+      "to": "agentur",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:119",
+      "to": "cns-mcp",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:118",
+      "to": "cns-mcp",
+      "type": "addresses"
+    },
+    {
+      "from": "issue:117",
+      "to": "agentur",
+      "type": "addresses"
+    },
+    {
+      "from": "quest:5",
+      "to": "agentur",
+      "type": "targets"
+    },
+    {
+      "from": "quest:10",
+      "to": "agentur",
+      "type": "targets"
+    },
+    {
+      "from": "quest:13",
+      "to": "cns-mcp",
+      "type": "targets"
+    },
+    {
+      "from": "quest:14",
+      "to": "cns-mcp",
+      "type": "targets"
+    },
+    {
+      "from": "quest:14",
+      "to": "mcp-gateway",
+      "type": "targets"
+    },
+    {
+      "from": "quest:14",
+      "to": "agentur",
+      "type": "targets"
+    }
+  ],
+  "exported_at": "2026-07-13T20:04:31.508926",
+  "nodes": [
+    {
+      "assumptions": [],
+      "contributing_agents": [],
+      "cost_sek": 0,
+      "created": "",
+      "current_slice": "",
+      "depends_on": [],
+      "domain": "orgkomp",
+      "family": "",
+      "feeds": [],
+      "health": {
+        "checks": [
+          {
+            "feedback": "Inga öppna issues på noden.",
+            "level": "unknown",
+            "name": "issue_rollup"
+          },
+          {
+            "feedback": "Katalogvalidering ren.",
+            "level": "healthy",
+            "name": "structural"
+          }
+        ],
+        "level": "healthy"
+      },
+      "integrations": {},
+      "is_product": true,
+      "kind": "framework",
+      "layer": "vertical",
+      "mvp_stage": "",
+      "mvp_steps": [],
+      "owner_agent": "",
+      "part_of": "",
+      "pipeline": "",
+      "primary_audience": "",
+      "problem": "",
+      "reality_status": "grouping",
+      "roi_percent": 0,
+      "slug": "orgkomp",
+      "solution": "",
+      "stage": "",
+      "status": "",
+      "summary": "Interactive, editable explorer for an organisation's roles, responsibilities, and dependencies — hierarchy + the cross-department responsibility/dependency map. Customer delivery for JumpYard, rebuilt from the archived OrgVis project. Next.js (App Router), AntV G6, zod, Vitest. Own venture, own repo.",
+      "syfte": "",
+      "tags": [],
+      "title": "Orgkomp",
+      "top_risk": "",
+      "type": "frontend",
+      "updated": "",
+      "url_live": "https://orgkomp.com",
+      "url_repo": "https://github.com/Cortxt-io/orgkomp",
+      "value_sek": 0
+    },
+    {
+      "assumptions": [],
+      "contributing_agents": [],
+      "cost_sek": 0,
+      "created": "",
+      "current_slice": "",
+      "depends_on": [],
+      "domain": "orgkomp",
+      "family": "",
+      "feeds": [],
+      "health": {
+        "checks": [
+          {
+            "feedback": "Inga öppna issues på noden.",
+            "level": "unknown",
+            "name": "issue_rollup"
+          },
+          {
+            "feedback": "Katalogvalidering ren.",
+            "level": "healthy",
+            "name": "structural"
+          }
+        ],
+        "level": "healthy"
+      },
+      "integrations": {},
+      "is_product": true,
+      "kind": "component",
+      "layer": "vertical",
+      "mvp_stage": "",
+      "mvp_steps": [],
+      "owner_agent": "",
+      "part_of": "orgkomp",
+      "pipeline": "",
+      "primary_audience": "",
+      "problem": "",
+      "reality_status": "aspirational",
+      "roi_percent": 0,
+      "slug": "orgkomp-export",
+      "solution": "",
+      "stage": "",
+      "status": "",
+      "summary": "JSON-export + localStorage-persistens.",
+      "syfte": "",
+      "tags": [],
+      "title": "Orgkomp Export",
+      "top_risk": "",
+      "type": "tool",
+      "updated": "",
+      "url_live": "",
+      "url_repo": "",
+      "value_sek": 0
+    },
+    {
+      "assumptions": [],
+      "contributing_agents": [],
+      "cost_sek": 0,
+      "created": "",
+      "current_slice": "",
+      "depends_on": [],
+      "domain": "orgkomp",
+      "family": "",
+      "feeds": [],
+      "health": {
+        "checks": [
+          {
+            "feedback": "Inga öppna issues på noden.",
+            "level": "unknown",
+            "name": "issue_rollup"
+          },
+          {
+            "feedback": "Katalogvalidering ren.",
+            "level": "healthy",
+            "name": "structural"
+          }
+        ],
+        "level": "healthy"
+      },
+      "integrations": {},
+      "is_product": true,
+      "kind": "component",
+      "layer": "vertical",
+      "mvp_stage": "",
+      "mvp_steps": [],
+      "owner_agent": "",
+      "part_of": "orgkomp",
+      "pipeline": "",
+      "primary_audience": "",
+      "problem": "",
+      "reality_status": "aspirational",
+      "roi_percent": 0,
+      "slug": "orgkomp-graph",
+      "solution": "",
+      "stage": "",
+      "status": "",
+      "summary": "Interaktiv, redigerbar org-/ansvars-/beroende-graf (AntV G6).",
+      "syfte": "",
+      "tags": [],
+      "title": "Orgkomp Graf-editor",
+      "top_risk": "",
+      "type": "frontend",
+      "updated": "",
+      "url_live": "",
+      "url_repo": "",
+      "value_sek": 0
+    },
+    {
+      "assumptions": [],
+      "contributing_agents": [],
+      "cost_sek": 0,
+      "created": "",
+      "current_slice": "",
+      "depends_on": [],
+      "domain": "orgkomp",
+      "family": "",
+      "feeds": [
+        "orgkomp-graph",
+        "orgkomp-export"
+      ],
+      "health": {
+        "checks": [
+          {
+            "feedback": "Inga öppna issues på noden.",
+            "level": "unknown",
+            "name": "issue_rollup"
+          },
+          {
+            "feedback": "Katalogvalidering ren.",
+            "level": "healthy",
+            "name": "structural"
+          }
+        ],
+        "level": "healthy"
+      },
+      "integrations": {},
+      "is_product": true,
+      "kind": "component",
+      "layer": "vertical",
+      "mvp_stage": "",
+      "mvp_steps": [],
+      "owner_agent": "",
+      "part_of": "orgkomp",
+      "pipeline": "",
+      "primary_audience": "",
+      "problem": "",
+      "reality_status": "aspirational",
+      "roi_percent": 0,
+      "slug": "orgkomp-model",
+      "solution": "",
+      "stage": "",
+      "status": "",
+      "summary": "Roller-först typad graf (reports_to / depends_on) + validering.",
+      "syfte": "",
+      "tags": [],
+      "title": "Orgkomp Datamodell",
+      "top_risk": "",
+      "type": "library",
+      "updated": "",
+      "url_live": "",
+      "url_repo": "",
+      "value_sek": 0
+    }
+  ],
+  "version": "3.1"
+}
