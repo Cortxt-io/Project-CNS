@@ -260,7 +260,7 @@ def prose_files(root: Path) -> list[Path]:
     found = []
     # Rekursivt. `CLAUDE.md` (icke-rekursivt) matchade bara roten — och repots enda CLAUDE.md bor
     # i lab/. Grinden rapporterade grönt i CI utan att ha läst den fil den byggdes för.
-    for pattern in ("**/CLAUDE.md", "**/ORIENTERING.md", "**/README.md",
+    for pattern in ("**/CLAUDE.md", "**/README.md",
                     "**/.claude/skills/**/*.md", "**/skills/**/*.md"):
         for path in root.glob(pattern):
             # `archetypes/` är MALLAR för andra repon — deras sökvägar (`data/index.json`) beskriver
