@@ -43,7 +43,14 @@ DEFAULT_VAULT = REPO_ROOT.parent / "vault"
 VENTURE_DIRS = ("Ventures", "Verticals")
 
 # Kataloger som aldrig är innehåll.
-_SKIP_DIRS = {".git", ".obsidian", ".makemd", ".space", ".smart-env", ".claudian", ".claude"}
+_SKIP_DIRS = {
+    ".git", ".obsidian", ".makemd", ".space", ".smart-env", ".claudian", ".claude",
+    # Mallar bär `type: venture` som exempelvärde — de skulle annars räknas som en venture som
+    # heter "Vertical". Understreck betyder INTE "inte innehåll": `_pipeline/` bär pre-gate-idéer,
+    # och att hoppa över allt med `_` gjorde dem osynliga i exakt det ögonblick de började betyda
+    # något. Namnge det som ska hoppas över; gissa inte på prefix.
+    "_templates", "_dashboards", "_archive",
+}
 
 # Staleness-SLA per HÄRLEDD fas (dagar). Ju närmare verkligheten en venture är, desto snabbare
 # ruttnar en ogranskad anteckning: en idé i discovery får ligga i månader, men en not om något
@@ -64,6 +71,14 @@ TERMINAL_DECISIONS = {"kill"}
 # Noter som INTE är ventures/idéer trots att de bor bland dem (README:er, förklaringsnoter).
 # De ska inte valideras som portföljposter — de gör inga anspråk.
 NON_VENTURE_TYPES = {"reference", "moc", "index", "template"}
+
+# Vad en portföljnot ÄR — en allowlist, inte en denylist.
+#
+# Förr räknades allt vars `type` inte stod i NON_VENTURE_TYPES som en portföljnot. Det gick så
+# länge läsaren bara tittade i EN mapp. När den nu söker på innehåll i hela vaulten skulle en
+# denylist svälja varje research-not, logg och skill — och rapportera dem som ventures.
+# En denylist måste förutse allt som INTE är; en allowlist behöver bara veta vad som är.
+VENTURE_TYPES = {"venture", "idea", "vertical"}
 
 
 @dataclass(frozen=True)
@@ -233,32 +248,32 @@ def venture_root(root: Path | str | None = None) -> Path | None:
 
 
 def _note_paths(root: Path) -> list[Path]:
-    """Hub-noter: Verticals/<venture>/<venture>.md samt Verticals/_pipeline/*.md (idéer)."""
-    verticals = venture_root(root)
-    if verticals is None:
-        return []
+    """Portföljnoterna — hittade på VAD de är, inte på VAR de ligger.
 
+    **Positionsberoendet var buggen.** Läsaren letade efter `Ventures/<venture>/<venture>.md`, exakt
+    en nivå ner. Vaulten har sedan dess flyttats fyra gånger på två dygn (Verticals → Ventures →
+    Products/ → Work/), grindmapparna (`G0 Problem/` … `G5 Live-Kill/`) sköts in MELLAN `Ventures/`
+    och venturen, och `file-order` skrev sorteringsordningen in i mappnamnen (`2 Ventures`). Varje
+    gång blev läsaren **tyst blind**: `venture_root() → None`, `load_annotations() → {}` — och
+    rapporten förblev grön, eftersom CLI:t föll tillbaka på `catalog.yaml`.
+
+    Att lära läsaren varje ny mappform är att bygga in nästa blindhet. Frågan är inte var noten
+    ligger. Frågan är vad den är: en not med `type: venture` (eller en pre-gate-idé) ÄR en
+    portföljnot, oavsett hur många mappar Rikard skjuter in ovanför den i morgon.
+    """
     paths: list[Path] = []
-    for child in sorted(verticals.iterdir()):
-        if child.name.startswith("_"):
+    for p in sorted(root.rglob("*.md")):
+        if any(part in _SKIP_DIRS for part in p.parts):
             continue
-        if child.is_dir():
-            hub = child / f"{child.name}.md"
-            if hub.is_file():
-                paths.append(hub)
-
-    # Idéer i `_pipeline/`: som lös fil (`<idé>.md`) ELLER som mapp (`<idé>/<idé>.md`).
-    # En idé växer — den får outreach-listor, research, en gate review — och behöver då en mapp,
-    # precis som en venture. Att bara läsa lösa filer gjorde en mognande idé osynlig i exakt det
-    # ögonblick den började betyda något.
-    pipeline = verticals / "_pipeline"
-    if pipeline.is_dir():
-        paths.extend(sorted(p for p in pipeline.glob("*.md") if p.is_file()))
-        for child in sorted(pipeline.iterdir()):
-            if child.is_dir() and not child.name.startswith("_"):
-                hub = child / f"{child.name}.md"
-                if hub.is_file():
-                    paths.append(hub)
+        try:
+            meta, _ = parse_note(p.read_text(encoding="utf-8", errors="replace"))
+        except Exception:
+            # En not med trasig YAML får inte fälla de andra. Vi läser nu HELA vaulten, så en enda
+            # felskriven frontmatter någonstans skulle annars döda hela mätningen — precis den
+            # sortens totalhaveri som gör att man slutar lita på verktyget.
+            continue
+        if is_portfolio_note(meta, p):
+            paths.append(p)
     return paths
 
 
@@ -270,7 +285,7 @@ def is_portfolio_note(meta: dict, path: Path) -> bool:
     """
     if path.stem.upper() == "README":
         return False
-    return str(meta.get("type") or "").strip().lower() not in NON_VENTURE_TYPES
+    return str(meta.get("type") or "").strip().lower() in VENTURE_TYPES
 
 
 def load_annotations(root: Path | str | None = None) -> dict[str, dict]:
@@ -324,13 +339,16 @@ def check(root: Path | str | None = None, *, catalog_slugs: set[str] | None = No
     # Men en vault som finns och vars ventures vi inte hittar är en FELKONFIGURATION — samma
     # skillnad modulen redan gör för env-varen. Att returnera [] här vore ett kontrolltorn som
     # tittar in i en vägg och rapporterar klart väder: noll ventures i en portfölj med tio är
-    # inte hälsa, det är ett brutet kontrakt. (Hände 2026-07-12: vaulten byggdes om, sökvägen
-    # var hårdkodad, och migreringen vi just bevisat mätte i tysthet ingenting.)
-    verticals = venture_root(resolved)
-    if verticals is None:
+    # inte hälsa, det är ett brutet kontrakt.
+    #
+    # Vakten stod tidigare vid FEL DÖRR: den kollade att en mapp med rätt NAMN fanns. Vaulten
+    # byggdes om fyra gånger på två dygn (2026-07-12/13) — grindmappar sköts in, `file-order`
+    # numrerade om — och varje gång var mappen "borta" fast noterna låg kvar. Det som betyder
+    # något är inte om en mapp heter Ventures. Det är om vi hittar några noter alls.
+    if not _note_paths(resolved):
         return [Finding(
             "vault",
-            f"ingen {VENTURE_DIRS[0]}/-mapp i vaulten — läsaren mäter ingenting",
+            "noll portföljnoter i vaulten — läsaren mäter ingenting (fel struktur, eller fel vault?)",
             str(resolved),
         )]
 

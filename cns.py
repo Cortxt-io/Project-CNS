@@ -1025,6 +1025,13 @@ def cmd_skill_export(args: argparse.Namespace) -> None:
     sys.exit(skill_export.main(["--check"] if getattr(args, "check", False) else []))
 
 
+def cmd_skill_usage(args: argparse.Namespace) -> None:
+    """Avfyras skillsen faktiskt? Läser Claude Code-transkripten. Deterministiskt → kod, ej skill."""
+    from scripts import skill_usage
+
+    sys.exit(skill_usage.main(["--json"] if getattr(args, "json", False) else []))
+
+
 def cmd_selftest(args: argparse.Namespace) -> None:
     """Förtroende-loop: kör varje kärn-förmåga → grönt/rött. Default = rena checkar (ingen mutation);
     --live = läs-only-pingar mot GitHub/LLM-seamen (bevisar de osäkra lagren)."""
@@ -1502,6 +1509,13 @@ def register_lab(subparsers) -> None:
     sp_skx.add_argument("--check", action="store_true",
                         help="Falla om exporten drivit isär från vaulten (CI-grinden)")
     sp_skx.set_defaults(func=cmd_skill_export)
+
+    # cns skill-usage — svaret på "används skillsen?". Utan mätning fyller gissningar tomrummet.
+    sp_sku = subparsers.add_parser(
+        "skill-usage", help="Vilka skills avfyras faktiskt (och vilka aldrig)? Ur transkripten."
+    )
+    sp_sku.add_argument("--json", action="store_true")
+    sp_sku.set_defaults(func=cmd_skill_usage)
 
     # cns status — orientering/arbetslista headless
     sp_status = subparsers.add_parser("status", help="Orientering: arbetslista + statusräkning (headless)")
