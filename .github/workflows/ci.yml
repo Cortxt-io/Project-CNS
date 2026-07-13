@@ -42,8 +42,18 @@ jobs:
       - name: Tests
         run: python -m pytest tests/ -q
 
-      - name: Prose freshness
-        run: python scripts/prose_check.py
+      # cortxt är den andra ytan jag läser varje session, och den var ogrindad fram till 2026-07-13:
+      # dess CLAUDE.md påstod i en månad att den parkerade dashboarden "rivs inte" och att auth var
+      # ett kommande arbetspaket — båda döda. Repot är publikt, så det kostar ingen hemlighet att
+      # hålla dess prosa mot dess egen källa. Roten är ett argument; varje fil hålls mot SITT repo.
+      - name: Checkout cortxt (sibling repo, for the prose gate)
+        uses: actions/checkout@v4
+        with:
+          repository: Cortxt-io/cortxt
+          path: _cortxt
+
+      - name: Prose freshness (this repo + cortxt)
+        run: python scripts/prose_check.py --root . --root _cortxt
 
       # The vault owns skills; .claude/skills/ is a derived artifact. This gate fails if someone
       # hand-edited an export — otherwise "one direction" is a hope, not a guarantee, and the two
