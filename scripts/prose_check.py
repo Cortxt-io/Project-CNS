@@ -62,7 +62,12 @@ EXTERNAL_PREFIXES = ("cns-internal/",)
 
 _BACKTICKED = re.compile(r"`([^`\n]+)`")
 _ADD_PARSER = re.compile(r'add_parser\(\s*["\']([a-z0-9][a-z0-9-]*)["\']')
-_CNS_COMMAND = re.compile(r"^(?:python\s+)?cns(?:\.py)?\s+([a-z][a-z0-9-]*)")
+#: Båda skrivsätten är samma påstående: "det här kommandot finns". `cns <cmd>` är Core-CLI:t,
+#: `python lab/cns_lab.py <cmd>` är Lab-CLI:t — och Lab-formen var osynlig för grinden fram till
+#: 2026-07-13, så README lovade `tui` och `dispatch` långt efter att de rivits, i grönt CI.
+_CNS_COMMAND = re.compile(
+    r"^(?:python\s+)?(?:lab/)?cns(?:\.py|_lab\.py)?\s+([a-z][a-z0-9-]*)"
+)
 _TOKENS = re.compile(r"[\s|;'\"()]+")
 
 
