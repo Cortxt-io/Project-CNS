@@ -136,6 +136,16 @@ def cmd_venture_list(args) -> None:
     """Hela portföljen på en skärm. Det som saknades: en yta som visar sanningen."""
     from lab.scripts import vault_reader
 
+    # Slugarna kommer ur KATALOGEN; vaultens annoteringar (grindbeslut, kill-kriterier) är en
+    # berikning ovanpå. När vaulten blev oläsbar föll varje `note` till None — och tabellen såg
+    # komplett ut medan grindkolumnen tyst visade "—" för allihop. En blind mätare som ser hel är
+    # farligare än en som kraschar. Säg det högt.
+    for finding in vault_reader.check():
+        if finding.slug == "vault":
+            print(f"\n  !! VAULTEN GÅR INTE ATT LÄSA: {finding}")
+            print("     Grindbeslut och kill-kriterier nedan är TOMMA av den anledningen,")
+            print("     inte för att de saknas. Laga vaulten innan du litar på tabellen.")
+
     print(f"\n{'venture':12} {'fas':13} {'skuld':6} {'grindbeslut':12} kill-kriterier")
     print("-" * 68)
     for slug in _venture_slugs():

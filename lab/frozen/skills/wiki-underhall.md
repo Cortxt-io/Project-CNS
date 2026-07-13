@@ -1,20 +1,26 @@
 ---
-name: wiki-underhall
-description: "När och hur du uppdaterar CNS-wikin — memory card-format, stale-termer, vad som hör var. Använd när ett beslut eller ett systemmönster ska skrivas ner i GitHub-wikin — \"dokumentera hur X fungerar\", \"uppdatera wiki-sidan\", \"den här sidan är gammal\" — och alltid när en sida bär döda termer (nodes/, node.md, quest_manager.py, stage/status som nodfält)."
+type: skill
+prose: description
+status: active
+skill_name: wiki-underhall
+department: Kommunikation
+serves_gate:
+routing: skill
+reads:
+writes:
+decays_to:
+exported: true
+created: 2026-07-12
+updated: 2026-07-13
+tags: [skill]
 ---
-
-<!-- GENERERAD ur vaulten — redigera INTE här.
-     Källa: Ideaverse/Cortxt-io/Studio/Skills/wiki-underhall.md
-     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
 
 # wiki-underhall
 
 ## Vad den gör
-
 När och hur du uppdaterar CNS-wikin — memory card-format, stale-termer, vad som hör var.
 
 ## När den ska köras
-
 Använd när ett beslut eller ett systemmönster ska skrivas ner i GitHub-wikin — "dokumentera hur X fungerar", "uppdatera wiki-sidan", "den här sidan är gammal" — och alltid när en sida bär döda termer (nodes/, node.md, quest_manager.py, stage/status som nodfält).
 
 ## Vad hör i wikin (vs katalogen vs sessioner)
@@ -25,29 +31,24 @@ Använd när ett beslut eller ett systemmönster ska skrivas ner i GitHub-wikin 
 | Vad ett specifikt system/en komponent är | `catalog.yaml` (fält) + `decisions/<slug>.md` (prosa) |
 | Vad som gjordes i ett arbetspass | `exports/sessions/`, `exports/btw/` |
 
-**Regel:** Spekulativ arkitektur → inkorgen (`Ideaverse/CNS/Products/Raw/`, se [[Inkorgsregeln]]).
+**Regel:** Spekulativ arkitektur → inkorgen (`Ideaverse/CNS/Work/Raw/`, se [[Inkorgsregeln]]).
 Personliga anteckningar → btw. Beslut och mönster → wiki.
 
 ## Memory card-format (för agenter och beslut)
 
 ```markdown
-
 ## Syfte
-
 [Vad detta är och varför det finns — en mening]
 
 ## Nyckelinformation
-
 - [Viktigaste faktum 1]
 - [Viktigaste faktum 2]
 - [Viktigaste faktum 3]
 
 ## Kontext
-
 [Bakgrund: varför beslutades detta, vad ersatte det]
 
 ## Senast verifierad
-
 [Datum]
 ```
 

@@ -270,17 +270,22 @@ def test_reference_notes_are_not_scanned_as_ventures(vault: Path):
 # gällde aldrig sökvägen. Nu gör den det.
 
 
-def test_a_vault_without_a_verticals_dir_is_a_finding_not_silence(tmp_path: Path):
-    """Vaulten finns, men ingen Verticals-mapp. Det är en felkonfiguration, inte tomhet.
+def test_a_vault_with_no_portfolio_notes_is_a_finding_not_silence(tmp_path: Path):
+    """Vaulten finns, men läsaren hittar inga portföljnoter. Felkonfiguration, inte tomhet.
 
     Noll ventures i en portfölj med tio är inte hälsa — det är ett brutet kontrakt.
+
+    Testet krävde tidigare att meddelandet innehöll ordet "Ventures", alltså att vakten stod vid en
+    mapp med ett visst NAMN. Det var att testa implementationen, inte beteendet — och det var just
+    det positionsberoendet som gjorde läsaren blind fyra gånger. Det som ska hålla är att vakten
+    skriker; vad den skriker om är fri att ändras.
     """
     (tmp_path / "Ideaverse").mkdir(parents=True)
 
     findings = vr.check(tmp_path)
 
-    assert findings, "en vault utan venture-mapp måste skrika, inte returnera grönt"
-    assert any("Ventures" in f.message for f in findings)
+    assert findings, "en vault utan portföljnoter måste skrika, inte returnera grönt"
+    assert findings[0].slug == "vault"
 
 
 def test_a_verticals_dir_with_no_notes_is_a_finding(tmp_path: Path):
@@ -377,3 +382,57 @@ def test_an_idea_may_be_a_FOLDER_in_the_pipeline(tmp_path: Path):
 
     assert "bemanning-dok-collector" in found, "en idé i mappform måste hittas"
     assert "lös-idé" in found, "en idé som lös fil måste fortfarande hittas"
+
+
+# --- läsaren ska hitta noten på VAD den är, inte VAR den ligger --------------------------------
+# Vaulten har flyttats fyra gånger på två dygn: Verticals → Ventures → Products/ → Work/, och
+# grindmapparna (G0…G5) sköts in MELLAN Ventures/ och venturen. Varje gång blev läsaren tyst blind:
+# venture_root() → None, load_annotations() → {}, och rapporten förblev grön eftersom CLI:t föll
+# tillbaka på catalog.yaml. Positionsberoendet ÄR buggen. Fråga noten vad den är.
+
+def test_finds_ventures_nested_under_gate_folders(tmp_path: Path):
+    """Ventures/G0 Problem/juvahem/juvahem.md — två nivåer ner, inte en."""
+    g0 = tmp_path / "Ideaverse" / "CNS" / "Work" / "Ventures" / "G0 Problem"
+    (g0 / "juvahem").mkdir(parents=True)
+    (g0 / "juvahem" / "juvahem.md").write_text(_note("""
+        ---
+        node: juvahem
+        type: venture
+        owner: rikard
+        ---
+        # juvahem
+    """), encoding="utf-8")
+
+    ann = vr.load_annotations(tmp_path)
+    assert "juvahem" in ann
+
+
+def test_gate_folder_note_is_not_mistaken_for_a_venture(tmp_path: Path):
+    """`G0 Problem/G0 Problem.md` är en mappnot (type: index). Läsaren får inte räkna den."""
+    g0 = tmp_path / "Ideaverse" / "CNS" / "Work" / "Ventures" / "G0 Problem"
+    g0.mkdir(parents=True)
+    (g0 / "G0 Problem.md").write_text(_note("""
+        ---
+        type: index
+        tags: [MOC, gate]
+        ---
+        # G0 Problem
+    """), encoding="utf-8")
+
+    assert vr.load_annotations(tmp_path) == {}
+
+
+def test_numbered_folders_do_not_blind_the_reader(tmp_path: Path):
+    """`0 Raw` / `2 Ventures` — file-order skrev sorteringen in i mappnamnet och läsaren dog."""
+    v = tmp_path / "Ideaverse" / "CNS" / "Work" / "2 Ventures" / "orgkomp"
+    v.mkdir(parents=True)
+    (v / "orgkomp.md").write_text(_note("""
+        ---
+        node: orgkomp
+        type: venture
+        owner: rikard
+        ---
+        # orgkomp
+    """), encoding="utf-8")
+
+    assert "orgkomp" in vr.load_annotations(tmp_path)
