@@ -55,14 +55,31 @@ jobs:
       - name: Prose freshness (this repo + cortxt)
         run: python scripts/prose_check.py --root . --root _cortxt
 
-      # The vault owns skills; .claude/skills/ is a derived artifact. This gate fails if someone
-      # hand-edited an export — otherwise "one direction" is a hope, not a guarantee, and the two
-      # descriptions drift apart in silence. Skipped when the vault isn't checked out (it's a
-      # separate private repo), because absence of the source is not evidence of drift.
+      # The vault owns skills and memories; .claude/skills/ and ~/.claude/.../memory/ are derived
+      # artifacts. These gates fail if someone hand-edited an export — otherwise "one direction" is
+      # a hope, not a guarantee, and the two descriptions drift apart in silence.
+      #
+      # FAIL CLOSED (2026-07-13). This step used to be wrapped in `if [ -d "$CORTXT_VAULT_PATH" ]`,
+      # and that variable was never set in CI — the vault is a separate private repo and was never
+      # checked out. So the gate skipped itself on every run and the build went green having looked
+      # at nothing. That is the same false green prose_check had this morning, and it is worse than
+      # having no gate: a gate that reports OK teaches you to stop checking.
+      #
+      # The vault is now checked out with PAT_TOKEN. If that fails, CI fails. Absence of the source
+      # is not evidence of drift — but it IS absence of proof, and a gate must not report proof it
+      # does not have.
+      - name: Checkout vault (private — the source of skills and memories)
+        uses: actions/checkout@v4
+        with:
+          repository: Cortxt-io/vault
+          token: ${{ secrets.PAT_TOKEN }}
+          path: _vault
+
+      # KÄND RÄCKVIDD: bara `cns`-målet (lab/.claude/skills/) är versionerat här och kan grindas.
+      # De tolv workspace-skillsen exporteras till Cortxt-io/.claude/ — en maskinlokal katalog som
+      # inte ligger i något repo, och som CI därför aldrig kan se. Den checken är lokal. Det är en
+      # verklig lucka, och den skrivs ut här hellre än att döljas bakom ett grönt kryss.
       - name: Skill export drift
-        run: |
-          if [ -d "$CORTXT_VAULT_PATH" ]; then
-            python lab/cns_lab.py skill-export --check
-          else
-            echo "No vault checked out — skipping skill drift gate."
-          fi
+        env:
+          CORTXT_VAULT_PATH: ${{ github.workspace }}/_vault
+        run: python lab/cns_lab.py skill-export --check
