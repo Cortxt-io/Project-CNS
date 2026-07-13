@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import posixpath
 import re
 import sys
 from dataclasses import dataclass
@@ -38,6 +39,26 @@ PATH_SUFFIXES = (".py", ".json", ".yaml", ".yml", ".md", ".ts", ".tsx", ".js", "
 #: `roadmaps/{name}.md`, `nodes/*/node.md`. Flagging templates would make the check cry wolf,
 #: and the first thing anyone does with a noisy check is switch it off.
 PLACEHOLDERS = ("<", ">", "{", "}", "*")
+
+#: En rad som säger att ett fält ÄR pensionerat styr inte mot fältet — den varnar för det. Utan
+#: detta undantag straffar grinden den enda prosa som hindrar nästa läsare från att återinföra det,
+#: och priset för att varna blir en röd check.
+_DECLARES_RETIREMENT = re.compile(
+    r"pensionerad|pensionerade|retired|teardown|delegeras till board|borttagna ur|död rest",
+    re.IGNORECASE,
+)
+
+#: En rad som säger att något SAKNAS eller är FRYST påstår inte att det finns. Att flagga den vore
+#: att kräva att prosan tiger om det som gick sönder — och det är just den tystnaden som lät
+#: agentur-lagret ljuga i månader.
+_DECLARES_ABSENCE = re.compile(
+    r"som inte fanns|inte finns|finns inte|saknas|är fryst|FRYST|togs bort|borttagen|död rest",
+    re.IGNORECASE,
+)
+
+#: Sökvägar i andra repon kan inte slås upp här. De märks ut explicit istället för att låtsas
+#: vara lokala — specs bor i det privata `cns-internal`.
+EXTERNAL_PREFIXES = ("cns-internal/",)
 
 _BACKTICKED = re.compile(r"`([^`\n]+)`")
 _ADD_PARSER = re.compile(r'add_parser\(\s*["\']([a-z0-9][a-z0-9-]*)["\']')
@@ -128,6 +149,7 @@ def check_text(
     commands: set[str],
     retired: dict[str, str],
     base: str = "",
+    here: str = "",
 ) -> list[Finding]:
     """Every claim this prose makes about the source, checked against the source.
 
@@ -140,10 +162,15 @@ def check_text(
 
     findings: list[Finding] = []
     for lineno, line in enumerate(text.splitlines(), start=1):
+        # Att NAMNGE en pensionerad fält för att säga att den är pensionerad är inte att styra mot
+        # den — det är den enda prosa som får rädda nästa läsare från att återinföra den. Grinden
+        # flaggade den varningen som en lögn, vilket gör att den enda ärliga meningen straffas.
+        declares_retirement = _DECLARES_RETIREMENT.search(line) is not None
+
         for span in _BACKTICKED.findall(line):
             span = span.strip()
 
-            hit = _retired_in(span, retired)
+            hit = None if declares_retirement else _retired_in(span, retired)
             if hit:
                 findings.append(
                     Finding(
@@ -169,8 +196,18 @@ def check_text(
                     )
                 continue
 
+            if _DECLARES_ABSENCE.search(line):
+                continue
+
             for path in sorted(_paths_in(span)):
+                if path.startswith(EXTERNAL_PREFIXES):
+                    continue
                 candidates = {path, f"{base}/{path}"} if base else {path}
+                # `../CLAUDE.md` i lab/agents/README.md betyder lab/CLAUDE.md — inte roten. Prosan
+                # skriver relativt sin egen mapp; grinden läste den relativt repo-roten och kallade
+                # en sökväg som stämmer för en lögn.
+                if path.startswith(("./", "../")) and here:
+                    candidates.add(posixpath.normpath(f"{here}/{path}"))
                 if candidates & repo_files:
                     continue
                 findings.append(
@@ -217,9 +254,15 @@ def prose_files(root: Path) -> list[Path]:
     lab/frozen/FROZEN.md.
     """
     found = []
-    for pattern in ("CLAUDE.md", "ORIENTERING.md", "**/.claude/skills/**/*.md", "**/skills/**/*.md"):
+    # Rekursivt. `CLAUDE.md` (icke-rekursivt) matchade bara roten — och repots enda CLAUDE.md bor
+    # i lab/. Grinden rapporterade grönt i CI utan att ha läst den fil den byggdes för.
+    for pattern in ("**/CLAUDE.md", "**/ORIENTERING.md", "**/README.md",
+                    "**/.claude/skills/**/*.md", "**/skills/**/*.md"):
         for path in root.glob(pattern):
-            if path.is_file() and not {"archive", "frozen", ".git"} & set(path.parts):
+            # `archetypes/` är MALLAR för andra repon — deras sökvägar (`data/index.json`) beskriver
+            # vad ett genererat projekt producerar, inte vad som finns här. Att hålla en mall till
+            # det här repots verklighet är att kräva att den beskriver fel system.
+            if path.is_file() and not {"archive", "frozen", "archetypes", ".git"} & set(path.parts):
                 found.append(path)
     return sorted(set(found))
 
@@ -239,8 +282,9 @@ def main(argv: list[str] | None = None) -> int:
         text = path.read_text(encoding="utf-8")
         rel = path.relative_to(REPO_ROOT) if path.is_absolute() else path
         base = "lab" if rel.parts and rel.parts[0] == "lab" else ""
+        here = rel.parent.as_posix()
         findings = check_text(
-            text, repo_files=repo_files, commands=commands, retired=retired, base=base
+            text, repo_files=repo_files, commands=commands, retired=retired, base=base, here=here
         )
         for f in findings:
             print(f"{rel.as_posix()}:{f.line}: {f.kind}: {f.message}")

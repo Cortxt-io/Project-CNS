@@ -240,3 +240,51 @@ def test_exact_span_still_caught() -> None:
 def test_no_false_positive_on_an_unrelated_word() -> None:
     """`stagehand` innehåller 'stage' men styr inte fältet. Ett ordgränskrav, inte blind substring."""
     assert _retired_tokens("Kör `stagehand` och `backstage/config`.") == []
+
+
+# --- the gate must not punish the prose that warns you ---------------------------------
+#
+# Four holes, all found on 2026-07-13 when the gate was first pointed at lab/CLAUDE.md — the one
+# file it exists to guard, and the one file it had never read (the glob was not recursive).
+
+
+def test_a_line_that_declares_a_field_retired_is_not_a_lie():
+    """The only sentence that stops the next reader reinventing `stage` must not be flagged.
+
+    Punish it and the honest move — warning about a retired field — costs you a red check, so the
+    warning gets deleted and the field comes back.
+    """
+    text = "- **Pensionerade:** `status`, `stage`, `mvp_stage` — delegerade till board."
+    findings = check_text(text, repo_files=set(), commands=set(), retired={"stage": "gone"})
+
+    assert findings == []
+
+
+def test_a_line_that_declares_a_path_absent_does_not_claim_it_exists():
+    text = "routningen krävde `exports/agents.json`, som inte fanns → tom squad"
+    findings = check_text(text, repo_files=set(), commands=set(), retired={})
+
+    assert findings == []
+
+
+def test_a_relative_path_resolves_against_the_prose_file_s_own_directory():
+    """`../CLAUDE.md` in lab/agents/README.md is lab/CLAUDE.md — not the repo root."""
+    text = "conventions live in `../CLAUDE.md`"
+    findings = check_text(
+        text,
+        repo_files={"lab/CLAUDE.md"},
+        commands=set(),
+        retired={},
+        base="lab",
+        here="lab/agents",
+    )
+
+    assert findings == []
+
+
+def test_a_path_in_another_repo_is_not_checked_here():
+    """Specs live in the private `cns-internal`. We cannot look them up — so we do not pretend to."""
+    text = "Spec: `cns-internal/plans/work-model-taxonomy-spec.md` (privat repo)."
+    findings = check_text(text, repo_files=set(), commands=set(), retired={})
+
+    assert findings == []
