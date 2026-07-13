@@ -1,10 +1,21 @@
 ---
 name: idea-session
-department: Produkt
-description: Starta en strukturerad idésession — Claude lyssnar, klusterar och bokför idéer i CNS. Använd när användaren vill brainstorma, dumpa tankar eller samla idéer i ett pass. Triggar på /idea-session.
+description: "Starta en strukturerad idésession — Claude lyssnar, klusterar och bokför idéer i CNS. Använd när användaren vill brainstorma, dumpa tankar eller samla idéer i ett pass. Triggar på /idea-session. En idésession är ett avgränsat arbetspass för fri tankedumpning. Claude lyssnar, klusterar och bokför allt i CNS så inget tappas mellan sessioner."
 ---
 
-# /idea-session — strukturerad idésession
+<!-- GENERERAD ur vaulten — redigera INTE här.
+     Källa: Ideaverse/Cortxt-io/Studio/Skills/idea-session.md
+     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
+
+# idea-session
+
+## Vad den gör
+
+Starta en strukturerad idésession — Claude lyssnar, klusterar och bokför idéer i CNS.
+
+## När den ska köras
+
+Använd när användaren vill brainstorma, dumpa tankar eller samla idéer i ett pass. Triggar på /idea-session.
 
 En idésession är ett avgränsat arbetspass för fri tankedumpning. Claude lyssnar,
 klusterar och bokför allt i CNS så inget tappas mellan sessioner.

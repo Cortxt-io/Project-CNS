@@ -1,10 +1,21 @@
 ---
 name: issue-lifecycle
-department: Engineering
-description: Skapa, uppdatera och stäng GitHub-issues korrekt i CNS-systemet.
+description: "Skapa, uppdatera och stäng GitHub-issues korrekt i CNS-systemet. Använd när en GitHub-issue ska skapas, få todos eller stängas — \"skapa en issue för X\", \"stäng #42\", \"lägg till delsteg\". Och innan du stänger något: kontrollera acceptanskriterierna, inte bara att arbetet är gjort."
 ---
 
-# Issue-livscykeln
+<!-- GENERERAD ur vaulten — redigera INTE här.
+     Källa: Ideaverse/Cortxt-io/Studio/Skills/issue-lifecycle.md
+     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
+
+# issue-lifecycle
+
+## Vad den gör
+
+Skapa, uppdatera och stäng GitHub-issues korrekt i CNS-systemet.
+
+## När den ska köras
+
+Använd när en GitHub-issue ska skapas, få todos eller stängas — "skapa en issue för X", "stäng #42", "lägg till delsteg". Och innan du stänger något: kontrollera acceptanskriterierna, inte bara att arbetet är gjort.
 
 ## Skapa en issue
 

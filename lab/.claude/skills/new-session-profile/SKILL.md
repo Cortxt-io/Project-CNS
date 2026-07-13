@@ -1,10 +1,21 @@
 ---
 name: new-session-profile
-department: Platform
-description: Skapa en ny session-profil interaktivt — fyller session-profile.schema.json via guided frågor, validerar och sparar under schemas/profiles/. Triggar på /new-session-profile. Använd när du vill definiera hur en ny typ av arbetspass ska se ut (vilken kontext det laddar, vilka verktyg det har, vad det producerar).
+description: "Skapa en ny session-profil interaktivt — fyller session-profile.schema.json via guided frågor, validerar och sparar under schemas/profiles/. Triggar på /new-session-profile. Använd när du vill definiera hur en ny typ av arbetspass ska se ut (vilken kontext det laddar, vilka verktyg det har, vad det producerar). En session-profil definierar ett standardiserat arbetspassformat: vad som laddas vid start, vilka verktyg som är tillgängliga och vad passet ska producera. Guiden validerar mot `schemas/session-profile.schema.json` och sparar resultatet i `schemas/profiles/<name>.json`."
 ---
 
-# /new-session-profile — skapa en session-profil utan JSON-redigering
+<!-- GENERERAD ur vaulten — redigera INTE här.
+     Källa: Ideaverse/Cortxt-io/Studio/Skills/new-session-profile.md
+     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
+
+# new-session-profile
+
+## Vad den gör
+
+Skapa en ny session-profil interaktivt — fyller session-profile.schema.json via guided frågor, validerar och sparar under schemas/profiles/.
+
+## När den ska köras
+
+Triggar på /new-session-profile. Använd när du vill definiera hur en ny typ av arbetspass ska se ut (vilken kontext det laddar, vilka verktyg det har, vad det producerar).
 
 En session-profil definierar ett standardiserat arbetspassformat: vad som laddas
 vid start, vilka verktyg som är tillgängliga och vad passet ska producera.
@@ -63,6 +74,7 @@ Skriv `schemas/profiles/<name>.json`. Bekräfta innehållet med användaren
 Rapportera: filsökväg, namn, kontext-items, kapacitet-antal, artefakttyp.
 
 ## Relaterat
+
 - `/agent-studio` — skapa en agent att binda till profilen
 - `/new-skill` — skapa en skill som aktiverar profilen
 - Befintliga profiler: `schemas/profiles/` (discovery, cns-build, research)

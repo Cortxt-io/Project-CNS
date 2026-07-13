@@ -1,10 +1,21 @@
 ---
 name: pr-protokoll
-department: Engineering
-description: PR-checklista för CNS — skapa, koppla och begär review korrekt.
+description: "PR-checklista för CNS — skapa, koppla och begär review korrekt. Använd innan en PR skapas, och när CI är röd på en öppen PR — \"öppna en PR för det här\", \"be om review\", \"varför är checken röd\". Täcker branch/issue-koppling, body-format, reviewers, och att aldrig merga eller pusha till main själv."
 ---
 
-# PR-protokollet
+<!-- GENERERAD ur vaulten — redigera INTE här.
+     Källa: Ideaverse/Cortxt-io/Studio/Skills/pr-protokoll.md
+     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
+
+# pr-protokoll
+
+## Vad den gör
+
+PR-checklista för CNS — skapa, koppla och begär review korrekt.
+
+## När den ska köras
+
+Använd innan en PR skapas, och när CI är röd på en öppen PR — "öppna en PR för det här", "be om review", "varför är checken röd". Täcker branch/issue-koppling, body-format, reviewers, och att aldrig merga eller pusha till main själv.
 
 ## Innan du skapar en PR
 

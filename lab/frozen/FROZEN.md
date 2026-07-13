@@ -22,7 +22,15 @@ hit med `git mv` — historiken är intakt, inget är raderat.
   `ekonom_tracker.py`
 - **Exekvering:** `dispatch.py`, `mcp_router.py`, `claude_client.py`, `worktree.py`, `tui/`
 - **Registret:** `agents/` (27 agenter), `org/` (manifest + bemanningsmatris),
-  `config-agenturer/`, `skills/` (`org-maintenance`, `staff-role`)
+  `config-agenturer/`
+- **Skills:** bara de sex som faktiskt beskriver agenturen — `agent-routing`, `agent-studio`,
+  `ekonomi-uppskattning`, `eskalera-uppat`, `org-maintenance/`, `staff-role/`.
+  **Rättelse (samma dag):** frysningen tog först HELA `lab/.claude/skills/` (18 poster) på ett
+  overifierat antagande. Tolv av dem beskriver levande kod (`phase-planner`, `idea-triage`,
+  `board-underhall`, `issue-lifecycle`, `pr-protokoll`, `wiki-underhall`, `nod-granska`,
+  `new-skill`, `new-session-profile`, `session-bokfor`, `session-handoff`, `idea-session`) och är
+  återställda till `lab/.claude/skills/`. Klassningen gjordes om mot källan: en skill fryses bara
+  om den faktiskt beror på fryst kod — inte för att den låg i samma mapp.
 - **Tester:** `tests/frozen/` (14 filer). De raderas inte — de är beviset som gör lagret väckbart.
   De körs inte (`pytest.ini` exkluderar katalogen), eftersom modulerna medvetet inte längre ligger
   på `scripts`-namespacet.

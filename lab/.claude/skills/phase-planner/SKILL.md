@@ -1,10 +1,21 @@
 ---
 name: phase-planner
-department: Produkt
-description: Planera en ventures faser och grindar — avvikelser från receptet, kill-kriterier, north star. Använd vid "planera faser för X", "nytt venture", "receptet passar inte här". Omdöme, inte beräkning.
+description: "Planera en ventures faser och grindar — avvikelser från receptet, kill-kriterier, north star. Använd vid \"planera faser för X\", \"nytt venture\", \"receptet passar inte här\". Omdöme, inte beräkning. Receptet (`roadmaps/_recipe.yaml`) ger **default**-vägen: åtta faser, nitton steg, åtta grindar, samma för alla ventures. Den här skillen behövs bara när något **avviker** — och för det som receptet omöjligt kan veta: vad som får det här specifika bygget att dö."
 ---
 
-# Fas-planeraren
+<!-- GENERERAD ur vaulten — redigera INTE här.
+     Källa: Ideaverse/Cortxt-io/Studio/Skills/phase-planner.md
+     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
+
+# phase-planner
+
+## Vad den gör
+
+Planera en ventures faser och grindar — avvikelser från receptet, kill-kriterier, north star.
+
+## När den ska köras
+
+Använd vid "planera faser för X", "nytt venture", "receptet passar inte här". Omdöme, inte beräkning.
 
 Receptet (`roadmaps/_recipe.yaml`) ger **default**-vägen: åtta faser, nitton steg, åtta grindar,
 samma för alla ventures. Den här skillen behövs bara när något **avviker** — och för det som

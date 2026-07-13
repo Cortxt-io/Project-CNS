@@ -1,10 +1,21 @@
 ---
 name: wiki-underhall
-department: Kommunikation
-description: När och hur du uppdaterar CNS-wikin — memory card-format, stale-termer, vad som hör var.
+description: "När och hur du uppdaterar CNS-wikin — memory card-format, stale-termer, vad som hör var. Använd när ett beslut eller ett systemmönster ska skrivas ner i GitHub-wikin — \"dokumentera hur X fungerar\", \"uppdatera wiki-sidan\", \"den här sidan är gammal\" — och alltid när en sida bär döda termer (nodes/, node.md, quest_manager.py, stage/status som nodfält)."
 ---
 
-# Wiki-underhåll
+<!-- GENERERAD ur vaulten — redigera INTE här.
+     Källa: Ideaverse/Cortxt-io/Studio/Skills/wiki-underhall.md
+     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
+
+# wiki-underhall
+
+## Vad den gör
+
+När och hur du uppdaterar CNS-wikin — memory card-format, stale-termer, vad som hör var.
+
+## När den ska köras
+
+Använd när ett beslut eller ett systemmönster ska skrivas ner i GitHub-wikin — "dokumentera hur X fungerar", "uppdatera wiki-sidan", "den här sidan är gammal" — och alltid när en sida bär döda termer (nodes/, node.md, quest_manager.py, stage/status som nodfält).
 
 ## Vad hör i wikin (vs node.md vs sessions)
 
@@ -19,18 +30,23 @@ description: När och hur du uppdaterar CNS-wikin — memory card-format, stale-
 ## Memory card-format (för agenter och beslut)
 
 ```markdown
+
 ## Syfte
+
 [Vad detta är och varför det finns — en mening]
 
 ## Nyckelinformation
+
 - [Viktigaste faktum 1]
 - [Viktigaste faktum 2]
 - [Viktigaste faktum 3]
 
 ## Kontext
+
 [Bakgrund: varför beslutades detta, vad ersatte det]
 
 ## Senast verifierad
+
 [Datum]
 ```
 

@@ -1,15 +1,28 @@
 ---
 name: session-handoff
-department: Program
-description: Hur du överlämnar ett pågående arbete till en annan agent via session-fork med fullständigt handoff-dokument.
+description: "Hur du överlämnar ett pågående arbete till en annan agent via session-fork med fullständigt handoff-dokument. Använd när ett pågående arbete ska lämnas vidare — \"lämna över till backend-agenten\", \"forka ut det här\", \"sessionen tar slut men jobbet är inte klart\". Fork plus ett fullständigt handoff-dokument, så nästa agent kan börja utan att fråga."
 ---
 
-# /session-handoff
+<!-- GENERERAD ur vaulten — redigera INTE här.
+     Källa: Ideaverse/Cortxt-io/Studio/Skills/session-handoff.md
+     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
+
+# session-handoff
+
+## Vad den gör
+
+Hur du överlämnar ett pågående arbete till en annan agent via session-fork med fullständigt handoff-dokument.
+
+## När den ska köras
+
+Använd när ett pågående arbete ska lämnas vidare — "lämna över till backend-agenten", "forka ut det här", "sessionen tar slut men jobbet är inte klart". Fork plus ett fullständigt handoff-dokument, så nästa agent kan börja utan att fråga.
 
 ## Syfte
+
 Strukturera överlämning av ett pågående arbete till en annan agent (eller nästa session) så att kontexten inte tappas och nästa agent kan starta utan frågor.
 
 ## När du använder den
+
 - Du har gjort din del och nästa steg tillhör en annan agent
 - En lång session forkas ut till en specialistagent (t.ex. Ekonomen lämnar vidare till Backend-agent)
 - Parallella agenter ska köra delar av ett uppdrag och du orkestrerar återsamlingen

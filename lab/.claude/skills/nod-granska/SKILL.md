@@ -1,10 +1,21 @@
 ---
 name: nod-granska
-department: Produkt
-description: Revidera noder — zombie-kriterier, stage-transitioner, relations-audit.
+description: "Revidera noder — zombie-kriterier, stage-transitioner, relations-audit. Använd vid \"är den här noden död?\", \"städa katalogen\", \"bör den här slugen byta stage\" — dvs när systemen i catalog.yaml ska revideras: zombie-audit, stage-transition eller relations-audit av part_of/feeds/depends_on."
 ---
 
-# Nod-granskning
+<!-- GENERERAD ur vaulten — redigera INTE här.
+     Källa: Ideaverse/Cortxt-io/Studio/Skills/nod-granska.md
+     Skriv om källnoten och kör `cns skill-export`. En riktning. -->
+
+# nod-granska
+
+## Vad den gör
+
+Revidera noder — zombie-kriterier, stage-transitioner, relations-audit.
+
+## När den ska köras
+
+Använd vid "är den här noden död?", "städa katalogen", "bör den här slugen byta stage" — dvs när systemen i catalog.yaml ska revideras: zombie-audit, stage-transition eller relations-audit av part_of/feeds/depends_on.
 
 ## Zombie-kriterier (3+ av 5 = zombie)
 
