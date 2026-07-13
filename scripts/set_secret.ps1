@@ -1,41 +1,50 @@
 <#
 .SYNOPSIS
-    Sätt en hemlighet utan att den passerar chatt, historik eller processargument.
+    Set a secret without it passing through chat, history or process arguments.
 
 .DESCRIPTION
-    En hemlighet ska gå direkt från där den skapas till där den lagras — via stdin.
-    Klistras den i ett kommandoargument (`gh secret set X --body "<token>"`) hamnar den i
-    processlistan och i shell-historiken, och då är den läckt.
+    A secret must travel straight from where it is created to where it is stored, via stdin.
+    Paste it into a command argument (gh secret set X --body "<token>") and it lands in the
+    process list and the shell history. At that point it is leaked and must be rotated.
 
-    Värdet läses med en DOLD prompt och pipas till `gh secret set` (Actions-secret) eller
-    skrivs till en otrackad env-fil. Det syns aldrig på skärmen.
+    The value is read with a HIDDEN prompt and piped to `gh secret set`, or written to an
+    untracked env file. It is never echoed.
+
+    ASCII only, deliberately: Windows PowerShell 5.1 reads a UTF-8 file without BOM as ANSI,
+    and an em-dash or an "a-ring" turns into a parser error. A script that will not run is
+    worse than no script, because the fallback is pasting the token on the command line.
 
 .EXAMPLE
-    pwsh scripts/set_secret.ps1 -Name VAULT_TOKEN -Repo Cortxt-io/Project-CNS
+    powershell -File scripts/set_secret.ps1 -Name VAULT_TOKEN -Repo Cortxt-io/Project-CNS
 
 .EXAMPLE
-    pwsh scripts/set_secret.ps1 -Name ANTHROPIC_API_KEY -EnvFile .env
+    powershell -File scripts/set_secret.ps1 -Name ANTHROPIC_API_KEY -EnvFile .env
 #>
 [CmdletBinding()]
 param(
+    # The NAME of the secret. Never the value.
     [Parameter(Mandatory = $true)]
     [string]$Name,
 
-    # GitHub Actions-secret. Default: repot du står i.
+    # GitHub Actions secret. Defaults to the repo you are standing in.
     [string]$Repo,
 
-    # Alternativ: skriv till en otrackad env-fil i stället för en Actions-secret.
+    # Alternative target: an untracked env file instead of an Actions secret.
     [string]$EnvFile
 )
 
 $ErrorActionPreference = 'Stop'
 
 if ($EnvFile -and $Repo) {
-    throw "Välj ett mål: -Repo (Actions-secret) ELLER -EnvFile (lokal nyckel)."
+    throw "Pick one target: -Repo (Actions secret) OR -EnvFile (local key)."
 }
 
-# Dold inmatning. Värdet renderas aldrig, hamnar aldrig i historiken.
-$secure = Read-Host -Prompt "Klistra in värdet för $Name (dolt)" -AsSecureString
+if ($Name -match '^(gh[pousr]_|github_pat_|sk-ant-)') {
+    throw "That looks like a TOKEN VALUE, not a name. -Name is the secret's NAME (e.g. VAULT_TOKEN). Revoke it: it is now in your shell history."
+}
+
+# Hidden input. The value is never rendered and never enters history.
+$secure = Read-Host -Prompt "Paste the value for $Name (hidden)" -AsSecureString
 $bstr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($secure)
 try {
     $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($bstr)
@@ -43,31 +52,30 @@ try {
     [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr)
 }
 
-if (-not $plain) { throw "Tomt värde — inget sattes." }
+if (-not $plain) { throw "Empty value. Nothing was set." }
 
 try {
     if ($EnvFile) {
-        # Lokal nyckel. Filen MÅSTE vara gitignored — annars är hemligheten committad.
+        # Local key. The file MUST be gitignored, or the secret gets committed.
         $ignored = & git check-ignore $EnvFile 2>$null
         if (-not $ignored) {
-            throw "$EnvFile är INTE gitignored. Lägg till den i .gitignore först — annars committas hemligheten."
+            throw "$EnvFile is NOT gitignored. Add it to .gitignore first, or the secret gets committed."
         }
         $lines = @()
         if (Test-Path $EnvFile) {
             $lines = Get-Content $EnvFile | Where-Object { $_ -notmatch "^$([regex]::Escape($Name))=" }
         }
         $lines + "$Name=$plain" | Set-Content $EnvFile -Encoding utf8
-        Write-Host "Skrev $Name till $EnvFile (otrackad)." -ForegroundColor Green
+        Write-Host "Wrote $Name to $EnvFile (untracked)." -ForegroundColor Green
     } else {
-        # Actions-secret. Via stdin — aldrig som --body.
-        $args = @('secret', 'set', $Name)
-        if ($Repo) { $args += @('--repo', $Repo) }
-        $plain | & gh @args
-        if ($LASTEXITCODE -ne 0) { throw "gh secret set misslyckades (exit $LASTEXITCODE)." }
-        Write-Host "Satte $Name som Actions-secret$(if ($Repo) { " i $Repo" })." -ForegroundColor Green
+        # Actions secret. Via stdin, never as --body.
+        $ghArgs = @('secret', 'set', $Name)
+        if ($Repo) { $ghArgs += @('--repo', $Repo) }
+        $plain | & gh @ghArgs
+        if ($LASTEXITCODE -ne 0) { throw "gh secret set failed (exit $LASTEXITCODE)." }
+        Write-Host "Set $Name as an Actions secret." -ForegroundColor Green
     }
 } finally {
-    # Nolla klartexten i minnet så snart den gjort sitt.
     $plain = $null
     [GC]::Collect()
 }
