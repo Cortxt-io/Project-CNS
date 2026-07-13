@@ -59,9 +59,3 @@ python lab/cns_lab.py project sync --dry-run  # visa utan att skriva
 - Org-projekt kan kräva **SSO-godkännande** av token mot `Cortxt-io`.
 - GitHubs native "Auto-add"-workflow drar bara från repos orgen äger → fungerar först när repot flyttats
   in i `Cortxt-io`. Tills dess är `project sync` mekanismen som håller Projektet aktuellt.
-
-## Autonomi-gräns
-
-Sync-*körningar* är inte kod → fria. Ändringar i `lab/scripts/gh_project_sync.py` är feature-kod →
-`classify_risk` **eskalerar** (draft-PR + människa-grind) även i Fas 5. Den här skillen + konfig
-self-mergas.

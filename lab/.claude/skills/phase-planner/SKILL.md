@@ -103,12 +103,12 @@ som kräver ögon.
 
 ## Granskare per grind
 
-En grind utan granskare är en fråga du ställer dig själv. Koppla in rätt lins:
+En grind utan granskare är en fråga du ställer dig själv.
 
-| Grind | Granskare |
-|---|---|
-| discovery → spec | opportunity-evaluator |
-| spec → mvp | plan-reviewer, `superpowers:writing-plans` |
-| mvp → konsolidera | delivery-reviewer, acceptance-test-builder |
-| konsolidera → live | architecture-auditor, test-suite-auditor, codebase-auditor |
-| live → users | `verify`, seo-intel |
+> **De namngivna granskarna finns inte.** Tidigare stod här en tabell med sju agent-sluggar
+> (`opportunity-evaluator`, `plan-reviewer`, `delivery-reviewer`, …). Ingen av dem existerar — inte i
+> repot, inte i agentkatalogen. Tabellen var en ambition som läste som ett faktum, vilket är värre än
+> ingen tabell alls: den fick grinden att se bemannad ut.
+>
+> Tills granskarna faktiskt är skrivna är granskaren **du**, plus de skills som finns:
+> `superpowers:writing-plans` inför bygget, `/verify` innan live.

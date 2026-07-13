@@ -90,11 +90,16 @@ def compose_description(sections: dict[str, str]) -> str:
     return " ".join(p for p in (vad, nar) if p).strip()
 
 
+VALID_TARGETS = ("cns", "vault")
+
+
 def validate_skill(meta: dict, sections: dict[str, str]) -> list[str]:
     """Hårda fel. En otriggbar eller namnlös skill ska falla, inte exporteras tyst."""
     errs: list[str] = []
     if not (meta.get("skill_name") or "").strip():
         errs.append("skill_name saknas — den blir slug och `name:` i exporten")
+    if str(meta.get("target") or "cns").strip() not in VALID_TARGETS:
+        errs.append(f"okänd target: {meta.get('target')!r} — välj {' eller '.join(VALID_TARGETS)}")
     if not _strip_markup(_section(sections, "Vad den gör") or ""):
         errs.append("'## Vad den gör' saknas eller är tom — halva descriptionen (triggern)")
     if not _strip_markup(_section(sections, "När den ska köras") or ""):
@@ -142,11 +147,41 @@ def skills_dir(root: Path) -> Path:
 
 
 def _sources(root: Path) -> list[Path]:
+    """Källnoterna. Två former, båda giltiga:
+
+    - **Platt:** `Studio/Skills/<Namn>.md` — en skill utan buntade filer.
+    - **Mapp-not:** `Studio/Skills/<Namn>/<Namn>.md` — buntade filer (`references/`, `scripts/`)
+      ligger bredvid noten och följer med ut. Det är Obsidians egen mappnot-form, så vaulten
+      behöver inte lära sig något nytt.
+    """
     d = skills_dir(root)
     if not d.is_dir():
         return []
-    # Mappnoten (Skills.md) är ett index, inte en skill.
-    return sorted(p for p in d.glob("*.md") if p.stem.lower() != "skills")
+    found = [p for p in d.glob("*.md") if p.stem.lower() != "skills"]
+    for sub in d.iterdir():
+        if sub.is_dir():
+            note = sub / f"{sub.name}.md"
+            if note.is_file():
+                found.append(note)
+    return sorted(found)
+
+
+def _bundles(src: Path) -> list[Path]:
+    """Buntade filer bredvid en mapp-not: allt utom själva noten."""
+    if src.parent.name != src.stem:  # platt not → inga buntar
+        return []
+    return sorted(p for p in src.parent.rglob("*") if p.is_file() and p != src)
+
+
+def target_of(meta: dict) -> str:
+    """Vart skillen hör hemma. Default `cns` — de flesta skills är repo-skills."""
+    return str(meta.get("target") or "cns").strip()
+
+
+def _out_for(target: str, outs: dict[str, Path] | Path | None) -> Path:
+    if isinstance(outs, dict):
+        return Path(outs[target])
+    return Path(outs or DEFAULT_OUT)
 
 
 def _render_one(path: Path) -> tuple[str, str] | None:
@@ -160,47 +195,76 @@ def _render_one(path: Path) -> tuple[str, str] | None:
     return str(meta["skill_name"]).strip(), render_skill_md(meta, sections, source=path.name)
 
 
-def export_all(root: Path, out_dir: Path | None = None) -> list[Path]:
-    """Skriv exporten. Returnerar de filer som skrevs."""
-    out_dir = Path(out_dir or DEFAULT_OUT)
-    written: list[Path] = []
+def _plan(root: Path, outs) -> list[tuple[Path, str, Path, str]]:
+    """(källa, slug, exportkatalog, SKILL.md-innehåll) för varje not som ska exporteras."""
+    out: list[tuple[Path, str, Path, str]] = []
     for src in _sources(root):
+        meta, _ = parse_skill(src.read_text(encoding="utf-8"))
         rendered = _render_one(src)
         if rendered is None:
             continue
         slug, content = rendered
-        target = out_dir / slug / "SKILL.md"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(content, encoding="utf-8")
-        written.append(target)
+        out.append((src, slug, _out_for(target_of(meta), outs) / slug, content))
+    return out
+
+
+def export_all(root: Path, outs: dict[str, Path] | Path | None = None) -> list[Path]:
+    """Skriv exporten. `outs` är en katalog, eller {target: katalog}. Returnerar skrivna filer."""
+    written: list[Path] = []
+    for src, _slug, dest, content in _plan(root, outs):
+        dest.mkdir(parents=True, exist_ok=True)
+        skill_md = dest / "SKILL.md"
+        skill_md.write_text(content, encoding="utf-8")
+        written.append(skill_md)
+        for b in _bundles(src):
+            copy = dest / b.relative_to(src.parent)
+            copy.parent.mkdir(parents=True, exist_ok=True)
+            copy.write_bytes(b.read_bytes())
+            written.append(copy)
     return written
 
 
-def check_drift(root: Path, out_dir: Path | None = None) -> list[str]:
+def check_drift(root: Path, outs: dict[str, Path] | Path | None = None) -> list[str]:
     """Vad har drivit isär? Tomt = exporten är exakt vad källan säger.
 
-    Tre sorters drift: handredigerad export, saknad export, och föräldralös export (källnoten
-    borta). Alla tre betyder att `.claude/skills/` påstår något vaulten inte gör.
+    Fyra sorters drift: handredigerad SKILL.md, handredigerad buntad fil, saknad export, och
+    föräldralös export (källnoten borta). Alla fyra betyder att `.claude/skills/` påstår något
+    vaulten inte gör — och en handredigerad `references/STEPS.md` ljuger lika mycket som en
+    handredigerad SKILL.md.
     """
-    out_dir = Path(out_dir or DEFAULT_OUT)
     problems: list[str] = []
-    expected: set[str] = set()
+    expected: dict[Path, set[str]] = {}
 
-    for src in _sources(root):
-        rendered = _render_one(src)
-        if rendered is None:
-            continue
-        slug, content = rendered
-        expected.add(slug)
-        target = out_dir / slug / "SKILL.md"
-        if not target.is_file():
+    for src, slug, dest, content in _plan(root, outs):
+        expected.setdefault(dest.parent, set()).add(slug)
+
+        skill_md = dest / "SKILL.md"
+        if not skill_md.is_file():
             problems.append(f"{slug}: exporten saknas — kör `cns skill-export`")
-        elif target.read_text(encoding="utf-8") != content:
+            continue
+        if skill_md.read_text(encoding="utf-8") != content:
             problems.append(f"{slug}: exporten är handredigerad — källan är {src.name}, skriv om DEN")
 
-    if out_dir.is_dir():
+        for b in _bundles(src):
+            rel = b.relative_to(src.parent)
+            copy = dest / rel
+            if not copy.is_file():
+                problems.append(f"{slug}/{rel.as_posix()}: buntad fil saknas i exporten")
+            elif copy.read_bytes() != b.read_bytes():
+                problems.append(f"{slug}/{rel.as_posix()}: buntad fil är handredigerad — skriv om källan")
+
+    # Föräldralösa: en GENERERAD export vars källnot är borta. Handskrivna skills som aldrig gått
+    # genom pipelinen (inlånade verktyg som obsidian-markdown, defuddle) rörs inte — de saknar
+    # genererad-headern och är därför inte våra. Drift gäller det vi själva har producerat; att
+    # kräva att främmande filer har en källnot vore att göra checken till en gränspolis.
+    for out_dir, slugs in expected.items():
+        if not out_dir.is_dir():
+            continue
         for d in sorted(out_dir.iterdir()):
-            if d.is_dir() and (d / "SKILL.md").is_file() and d.name not in expected:
+            skill_md = d / "SKILL.md"
+            if not (d.is_dir() and skill_md.is_file()) or d.name in slugs:
+                continue
+            if "GENERERAD ur vaulten" in skill_md.read_text(encoding="utf-8"):
                 problems.append(f"{d.name}: export utan källnot i Studio/Skills/ — föräldralös")
     return problems
 
@@ -217,18 +281,25 @@ def main(argv: list[str] | None = None) -> int:
         print("Ingen vault hittad (sätt CORTXT_VAULT_PATH eller lägg den som ../vault).", file=sys.stderr)
         return 1
 
+    # Två destinationer, en källa: repo-skills till Project-CNS, vault-skills (grindarna, som
+    # arbetar på vault-noter) till vaultens egen .claude/skills/.
+    outs = args.out or {"cns": DEFAULT_OUT, "vault": root / ".claude" / "skills"}
+
     if args.check:
-        problems = check_drift(root, args.out)
+        problems = check_drift(root, outs)
         for p in problems:
             print(f"  {p}", file=sys.stderr)
         print(f"{len(problems)} skill(s) har drivit isär." if problems
               else "Exporten är exakt vad vaulten säger.")
         return 1 if problems else 0
 
-    written = export_all(root, args.out)
-    for w in written:
-        print(f"  {w.parent.name}/SKILL.md")
-    print(f"Exporterade {len(written)} skill(s) ur Studio/Skills/.")
+    written = export_all(root, outs)
+    skills = sorted(p for p in written if p.name == "SKILL.md")
+    bundles = len(written) - len(skills)
+    for w in skills:
+        where = "vault" if str(w).startswith(str(root)) else "cns"
+        print(f"  [{where}] {w.parent.name}")
+    print(f"Exporterade {len(skills)} skill(s) + {bundles} buntad(e) fil(er) ur Studio/Skills/.")
     return 0
 
 

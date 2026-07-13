@@ -150,9 +150,87 @@ def test_drift_check_catches_a_hand_edited_export(tmp_path: Path) -> None:
 
 
 def test_drift_check_catches_an_orphan_export(tmp_path: Path) -> None:
-    """En export vars källnot raderats ska flaggas — annars lever en skill vidare utan hemvist."""
+    """En GENERERAD export vars källnot raderats ska flaggas — annars lever en skill utan hemvist."""
     root, out = _vault(tmp_path), tmp_path / "out"
     se.export_all(root, out)
-    (out / "spoke" ).mkdir()
-    (out / "spoke" / "SKILL.md").write_text("---\nname: spoke\n---\n", encoding="utf-8")
+    (out / "spoke").mkdir()
+    (out / "spoke" / "SKILL.md").write_text(
+        "---\nname: spoke\n---\n\n<!-- GENERERAD ur vaulten — redigera INTE här. -->\n", encoding="utf-8"
+    )
     assert any("spoke" in d for d in se.check_drift(root, out))
+
+
+# --- target: vart skillen hör hemma ------------------------------------------------------------
+# En skill hör antingen till vaulten (grindskillsen arbetar på vault-noter) eller till Project-CNS.
+# EN källa, två destinationer.
+
+VAULT_SKILL = NOTE.replace("skill_name: pr-protokoll", "skill_name: run-gate\ntarget: vault")
+
+
+def test_target_defaults_to_cns(tmp_path: Path) -> None:
+    meta, _ = se.parse_skill(NOTE)
+    assert se.target_of(meta) == "cns"
+
+
+def test_target_vault_is_read_from_frontmatter() -> None:
+    meta, _ = se.parse_skill(VAULT_SKILL)
+    assert se.target_of(meta) == "vault"
+
+
+def test_unknown_target_is_a_hard_error() -> None:
+    meta, sections = se.parse_skill(NOTE.replace("skill_name: pr-protokoll", "skill_name: x\ntarget: månen"))
+    assert any("target" in e for e in se.validate_skill(meta, sections))
+
+
+def test_export_routes_by_target(tmp_path: Path) -> None:
+    """Vault-skills landar i vaultens .claude/skills, CNS-skills i repots."""
+    d = tmp_path / "Ideaverse" / "Cortxt-io" / "Studio" / "Skills"
+    d.mkdir(parents=True)
+    (d / "PR-protokoll.md").write_text(NOTE, encoding="utf-8")
+    (d / "Run-gate.md").write_text(VAULT_SKILL, encoding="utf-8")
+
+    written = se.export_all(tmp_path, {"cns": tmp_path / "cns", "vault": tmp_path / "v"})
+    assert (tmp_path / "cns" / "pr-protokoll" / "SKILL.md") in written
+    assert (tmp_path / "v" / "run-gate" / "SKILL.md") in written
+
+
+# --- buntade filer -----------------------------------------------------------------------------
+# run-gate/references/STEPS.md, demand-scan/scripts/jobtech_scan.py. Exporten får inte tappa dem.
+
+
+def _bundled(tmp_path: Path) -> Path:
+    """Källan som mapp-not: Studio/Skills/<Namn>/<Namn>.md + buntade filer bredvid."""
+    d = tmp_path / "Ideaverse" / "Cortxt-io" / "Studio" / "Skills" / "Run-gate"
+    (d / "references").mkdir(parents=True)
+    (d / "Run-gate.md").write_text(VAULT_SKILL, encoding="utf-8")
+    (d / "references" / "STEPS.md").write_text("# Steg\n", encoding="utf-8")
+    return tmp_path
+
+
+def test_export_copies_bundled_files(tmp_path: Path) -> None:
+    se.export_all(_bundled(tmp_path), {"vault": tmp_path / "v", "cns": tmp_path / "cns"})
+    assert (tmp_path / "v" / "run-gate" / "SKILL.md").is_file()
+    assert (tmp_path / "v" / "run-gate" / "references" / "STEPS.md").read_text(encoding="utf-8") == "# Steg\n"
+
+
+def test_drift_check_covers_bundled_files(tmp_path: Path) -> None:
+    """En handredigerad references/-fil är lika mycket drift som en handredigerad SKILL.md."""
+    outs = {"vault": tmp_path / "v", "cns": tmp_path / "cns"}
+    root = _bundled(tmp_path)
+    se.export_all(root, outs)
+    assert se.check_drift(root, outs) == []
+    (tmp_path / "v" / "run-gate" / "references" / "STEPS.md").write_text("# Handredigerad\n", encoding="utf-8")
+    assert any("STEPS.md" in d for d in se.check_drift(root, outs))
+
+
+def test_hand_written_foreign_skill_is_not_an_orphan(tmp_path: Path) -> None:
+    """Inlånade skills (obsidian-markdown, defuddle) gick aldrig genom pipelinen — de är inte våra.
+
+    Drift gäller det vi själva har genererat. Att kräva en källnot för en främmande fil vore att
+    göra checken till en gränspolis, och den skulle tvinga fram raderingar av fungerande verktyg.
+    """
+    root, out = _vault(tmp_path), tmp_path / "out"
+    se.export_all(root, out)
+    (out / "defuddle").mkdir()
+    (out / "defuddle" / "SKILL.md").write_text("---\nname: defuddle\n---\n\nHandskriven.\n", encoding="utf-8")
+    assert se.check_drift(root, out) == []

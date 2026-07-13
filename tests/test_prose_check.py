@@ -204,3 +204,39 @@ def test_known_commands_reads_registered_subparsers():
     sp_export = subparsers.add_parser("export", help="Export a brief")
     '''
     assert known_commands(source) == {"new", "export"}
+
+
+# --- pensionerade fält INUTI ett större kodspann ------------------------------------------------
+# Hålet som lät skräpet överleva: checken matchade bara kodspann som var EXAKT lika med det
+# pensionerade fältet. `stage` föll — men `stage: working`, som är vad nod-granska.md faktiskt
+# skriver, gled rakt igenom, och prose_check svarade "all true to the source" om en skill vars
+# hela ryggrad var ett raderat fält.
+
+RETIRED = {
+    "stage": "retired with the node teardown (epic #11)",
+    "node.md": "the node-as-file model was torn down 2026-06-12 (PR #104)",
+}
+
+
+def _retired_tokens(text: str) -> list[str]:
+    found = check_text(text, repo_files=set(), commands=set(), retired=RETIRED)
+    return [f.token for f in found if f.kind == "retired-field"]
+
+
+def test_retired_field_inside_a_larger_code_span() -> None:
+    """`stage: working` styr ett pensionerat fält lika mycket som `stage` gör."""
+    assert _retired_tokens("Sätt aldrig `stage: working` utan bevis.") == ["stage"]
+
+
+def test_retired_path_inside_a_glob() -> None:
+    """`nodes/*/node.md` påstår att den rivna fil-modellen lever."""
+    assert _retired_tokens("| Vad en nod är | `nodes/*/node.md` |") == ["node.md"]
+
+
+def test_exact_span_still_caught() -> None:
+    assert _retired_tokens("Fältet `stage` är borta.") == ["stage"]
+
+
+def test_no_false_positive_on_an_unrelated_word() -> None:
+    """`stagehand` innehåller 'stage' men styr inte fältet. Ett ordgränskrav, inte blind substring."""
+    assert _retired_tokens("Kör `stagehand` och `backstage/config`.") == []

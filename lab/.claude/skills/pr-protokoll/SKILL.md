@@ -27,11 +27,13 @@ Använd innan en PR skapas, och när CI är röd på en öppen PR — "öppna en
 ## Skapa PR
 
 ```python
-cortxt_create_pr(
-    title="[Verb + vad]: Implementera cortxt_list_agents i app/tools/agents.py",
+cortxt_pr(
+    action="create",
+    title="[Verb + vad]",
     body="## Vad\n[vad ändrades]\n\n## Varför\nLöser #[issue-nr]\n\n## Test\n- [ ] [hur det testades]",
     head="feature/min-branch",
-    base="main"
+    base="main",
+    draft=False
 )
 ```
 
@@ -42,24 +44,20 @@ Lägg i PR-body: `Fixes #[issue-nr]` — GitHub stänger issuen automatiskt vid 
 ## Begär review
 
 ```python
-cortxt_set_pr_reviewers(
-    pr_number=42,
-    reviewers=["rian010194"]
-)
+cortxt_pr(action="set_reviewers", number=42, reviewers=["rian010194"])
 ```
 
 ## Vad du INTE gör
 
 - Mergar aldrig direkt — CI + Rikard beslutar
 - Pushar aldrig direkt till main
-- Öppnar aldrig draft-PRs utan att informera operativ-chefn
 - Skapar aldrig PR utan kopplad issue
 
 ## Om CI är röd
 
 ```python
-cortxt_get_workflow_run(run_id="[id]")
+cortxt_action(action="get_run", run_id=12345678)   # run_id är en int
 ```
 
 Analysera felet. Fixa på branchen. Push. CI kör om automatiskt.
-Öppna inte PRen förrän CI är grön — det är en devops-ingenjor-uppgift att bevaka.
+Öppna inte PRen förrän CI är grön.

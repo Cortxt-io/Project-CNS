@@ -1,6 +1,6 @@
 ---
 name: session-bokfor
-description: "Registrera session-start, fork och avslut korrekt i CNS session-store. Använd i början och slutet av varje AI-arbetspass — \"starta en session\", \"bokför det här passet\", \"markera klar\" — samt när en hängande running-session (>45 min utan uppdatering) behöver stängas. Alla AI-arbetspass ska registreras. Det ger överlappsdetektion, sessionsträd och pollbara signaler."
+description: "Registrera session-start, fork och avslut korrekt i CNS session-store. Använd i början och slutet av varje AI-arbetspass — \"starta en session\", \"bokför det här passet\", \"markera klar\" — samt när en hängande running-session (>45 min utan uppdatering) behöver stängas. Alla AI-arbetspass ska registreras. Det ger överlappsdetektion, sessionsträd och pollbara signaler. Allt går genom det feta verktyget `cortxt_session(action=…)`. Actions: `start`, `done`, `save`, `list`, `fork`, `tree`."
 ---
 
 <!-- GENERERAD ur vaulten — redigera INTE här.
@@ -19,12 +19,15 @@ Använd i början och slutet av varje AI-arbetspass — "starta en session", "bo
 
 Alla AI-arbetspass ska registreras. Det ger överlappsdetektion, sessionsträd och pollbara signaler.
 
+Allt går genom det feta verktyget `cortxt_session(action=…)`. Actions: `start`, `done`, `save`, `list`, `fork`, `tree`.
+
 ## Session-start
 
 Kör i början av varje arbetspass:
 
 ```python
-session = cortxt_start_session(
+session = cortxt_session(
+    action="start",
     summary="[Vad detta pass ska åstadkomma]",
     link_kind="issue",  # "quest", "node", "idea"
     link_ref="[id]",
@@ -36,9 +39,9 @@ session = cortxt_start_session(
 ## Fork (om du forkar ut ett delproblem)
 
 ```python
-fork = cortxt_fork_session(
+fork = cortxt_session(
+    action="fork",
     parent_id="[din session-id]",
-    fork_name="[agent]: [uppgift]",
     summary="[vad forken gör]",
     link_kind="issue",
     link_ref="[id]"
@@ -50,20 +53,21 @@ fork = cortxt_fork_session(
 Kör ALLTID när du är klar:
 
 ```python
-cortxt_mark_session_done(
+cortxt_session(
+    action="done",
     session_id="[din session-id]",
     summary="[Vad som levererades, vad som återstår]"
 )
 ```
 
-Eller kombinerat:
+Eller kombinerat (start+avslut i ett svep, default `status="done"`):
 
 ```python
-cortxt_save_session(
+cortxt_session(
+    action="save",
     summary="[Slutsats + vad som levererades]",
     link_kind="issue",
-    link_ref="[id]",
-    status="done"
+    link_ref="[id]"
 )
 ```
 

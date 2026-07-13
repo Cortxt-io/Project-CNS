@@ -105,6 +105,22 @@ def known_commands(source: str) -> set[str]:
     return set(_ADD_PARSER.findall(source))
 
 
+def _retired_in(span: str, retired: dict[str, str]) -> str | None:
+    """Which retired field does this code span steer — if any?
+
+    Substring, not equality. The check used to compare the whole span against the retired key, so
+    ``stage`` was caught but ``stage: working`` — which is what the prose actually writes — slipped
+    through, and a skill whose entire spine was a deleted field passed as "true to the source".
+
+    Word-bounded, so ``stagehand`` and ``backstage/config`` stay clean: we want the field, not the
+    letters.
+    """
+    for field in retired:
+        if re.search(rf"(?<![\w-]){re.escape(field)}(?![\w-])", span):
+            return field
+    return None
+
+
 def check_text(
     text: str,
     *,
@@ -127,13 +143,14 @@ def check_text(
         for span in _BACKTICKED.findall(line):
             span = span.strip()
 
-            if span in retired:
+            hit = _retired_in(span, retired)
+            if hit:
                 findings.append(
                     Finding(
                         line=lineno,
                         kind="retired-field",
-                        token=span,
-                        message=f"`{span}` is retired: {retired[span]}",
+                        token=hit,
+                        message=f"`{hit}` is retired: {retired[hit]}",
                     )
                 )
                 continue

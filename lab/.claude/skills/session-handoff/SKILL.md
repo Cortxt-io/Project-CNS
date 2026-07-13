@@ -1,6 +1,6 @@
 ---
 name: session-handoff
-description: "Hur du överlämnar ett pågående arbete till en annan agent via session-fork med fullständigt handoff-dokument. Använd när ett pågående arbete ska lämnas vidare — \"lämna över till backend-agenten\", \"forka ut det här\", \"sessionen tar slut men jobbet är inte klart\". Fork plus ett fullständigt handoff-dokument, så nästa agent kan börja utan att fråga."
+description: "Hur du lämnar över ett pågående arbete till NÄSTA SESSION: en session-fork plus ett fullständigt handoff-dokument. Använd när sessionen tar slut men jobbet inte är klart — \"forka ut det här\", \"vi tar det nästa pass\", kontexten börjar bli full. Fork plus handoff-dokument, så nästa pass kan börja utan att fråga en enda fråga."
 ---
 
 <!-- GENERERAD ur vaulten — redigera INTE här.
@@ -11,66 +11,65 @@ description: "Hur du överlämnar ett pågående arbete till en annan agent via 
 
 ## Vad den gör
 
-Hur du överlämnar ett pågående arbete till en annan agent via session-fork med fullständigt handoff-dokument.
+Hur du lämnar över ett pågående arbete till NÄSTA SESSION: en session-fork plus ett fullständigt handoff-dokument.
 
 ## När den ska köras
 
-Använd när ett pågående arbete ska lämnas vidare — "lämna över till backend-agenten", "forka ut det här", "sessionen tar slut men jobbet är inte klart". Fork plus ett fullständigt handoff-dokument, så nästa agent kan börja utan att fråga.
+Använd när sessionen tar slut men jobbet inte är klart — "forka ut det här", "vi tar det nästa pass", kontexten börjar bli full. Fork plus handoff-dokument, så nästa pass kan börja utan att fråga en enda fråga.
 
 ## Syfte
 
-Strukturera överlämning av ett pågående arbete till en annan agent (eller nästa session) så att kontexten inte tappas och nästa agent kan starta utan frågor.
+Strukturera överlämningen så att kontexten inte tappas mellan pass. Nästa session ska kunna läsa
+dokumentet och gå direkt på arbetet — inte rekonstruera vad som hände.
 
 ## När du använder den
 
-- Du har gjort din del och nästa steg tillhör en annan agent
-- En lång session forkas ut till en specialistagent (t.ex. Ekonomen lämnar vidare till Backend-agent)
-- Parallella agenter ska köra delar av ett uppdrag och du orkestrerar återsamlingen
-- Session avslutas men arbete återstår — lämna underlag för nästa pass
+- Sessionen avslutas men arbete återstår
+- Kontexten är full och arbetet behöver ett rent pass
+- Ett spår grenar ut sig och förtjänar en egen session (fork under samma förälder)
 
 ## Steg
 
-1. **Spara nuläget** med `cortxt_save_session` innan du forkar:
+1. **Spara nuläget** med `cortxt_session(action="save", …)` innan du forkar:
    ```
-   cortxt_save_session(
+   cortxt_session(
+     action="save",
      summary="[Vad som gjorts] + [Vad som återstår]",
      link_kind="issue" | "quest" | "node",
      link_ref="[id]",
-     status="running"   # om arbetet fortsätter i fork
+     status="running"   # arbetet fortsätter i forken
    )
    ```
 
-2. **Skapa fork** för nästa agent med `cortxt_fork_session`:
+2. **Skapa forken** för nästa pass:
    ```
-   cortxt_fork_session(
+   cortxt_session(
+     action="fork",
      parent_id="[din session-id]",
-     fork_name="[agent-namn]: [kort uppgiftsbeskrivning]",
-     summary="[Vad forken ska göra och leverera]",
+     summary="[Vad nästa pass ska göra och leverera]",
      link_kind="issue" | "quest" | "node",
      link_ref="[id]"
    )
    ```
 
-3. **Formulera handoff-dokumentet** (se Output-format nedan) och inkludera `fork-id` från steg 2.
+3. **Formulera handoff-dokumentet** (se Output-format nedan) och inkludera fork-id från steg 2.
 
-4. **Vid parallella forkar** (flera agenter samtidigt):
-   - Varje fork får sin egna `cortxt_fork_session`
-   - Inga överlappande ansvar — en fil/uppgift ägs av exakt en agent
-   - Dokumentera ägarskap explicit i varje forks `summary`
+4. **Vid flera parallella forkar:** varje spår får sin egen fork, inga överlappande ansvar — en
+   fil/uppgift ägs av exakt ett spår. Dokumentera ägarskapet explicit i varje forks `summary`.
 
-5. **Återsamling** när parallella agenter är klara:
-   - Kör `/cns-sync` för att detektera om sessioner överlappar på samma nod
-   - Kör `/cns-flush` för att spola ner slutsatsen i CNS
+5. **Återsamling** när spåren är klara:
+   - `/cns-sync` — detektera om sessioner överlappar på samma nod
+   - `/cns-flush` — spola ner slutsatsen i CNS
 
 ## Output-format
 
 ```
-HANDOFF TILL: [agent-namn]
-SESSION-FORK: [fork-id från cortxt_fork_session]
+HANDOFF TILL: nästa session
+SESSION-FORK: [fork-id]
 PARENT-SESSION: [din session-id]
 LÄNK: [link_kind]/[link_ref]
 
-UPPGIFT: [Exakt vad nästa agent ska göra — en tydlig mening]
+UPPGIFT: [Exakt vad nästa pass ska göra — en tydlig mening]
 
 KONTEXT:
   Klart:       [lista över vad som redan är gjort]
@@ -78,28 +77,28 @@ KONTEXT:
   Blockerare:  [lista, eller "inga"]
   Beslut tagna:[relevanta beslut eller antaganden som gjorts]
 
-FÖRVÄNTAT RESULTAT: [Vad nästa agent ska leverera när den är klar]
-MARKERA DONE: [Vad som ska stå i cortxt_mark_session_done-summary när klart]
+FÖRVÄNTAT RESULTAT: [Vad nästa pass ska leverera när det är klart]
+MARKERA DONE: [Vad som ska stå i cortxt_session(action="done")-summary när klart]
 ```
 
 ## Exempel
 
-Ekonomen har analyserat kostnader och lämnar vidare till Scripts-agent för att implementera tröskelvärden:
+Specen är skriven och beslutad; implementationen ryms inte i det här passet:
 
 ```
-HANDOFF TILL: plattformsingenjor
+HANDOFF TILL: nästa session
 SESSION-FORK: session-a3f812cc
 PARENT-SESSION: session-9d21b4e0
 LÄNK: issue/42
 
-UPPGIFT: Implementera GUL/RÖD-trösklar i ekonom_tracker.py baserat på beslutad spec
+UPPGIFT: Implementera cross-repo-filtret i issues_client enligt beslutad spec
 
 KONTEXT:
-  Klart:       Kostnadsanalys klar, trösklar beslutade (GUL >200k, RÖD >500k Haiku-normaliserat)
-  Återstår:    Lägga till threshold-logik i ekonom_tracker.py + uppdatera exports/ekonom_stats.json-schemat
+  Klart:       Spec skriven och granskad; API-formen (valfri repo-param, default GITHUB_REPO) beslutad
+  Återstår:    Implementera param + test som täcker default-fallet och det explicita repo-fallet
   Blockerare:  Inga
-  Beslut tagna: Haiku-normalisering används, inte absoluta tokens; buffert 50 %
+  Beslut tagna: Additiv param, inte ny funktion — gamla anrop får inte bryta
 
-FÖRVÄNTAT RESULTAT: Fungerande threshold-check i ekonom_tracker.py med test
-MARKERA DONE: "ekonom_tracker threshold implementerad — GUL/RÖD live"
+FÖRVÄNTAT RESULTAT: Grön testsvit + draft-PR mot issue #42
+MARKERA DONE: "cross-repo-filter implementerat, PR öppen"
 ```

@@ -17,15 +17,16 @@ När och hur du uppdaterar CNS-wikin — memory card-format, stale-termer, vad s
 
 Använd när ett beslut eller ett systemmönster ska skrivas ner i GitHub-wikin — "dokumentera hur X fungerar", "uppdatera wiki-sidan", "den här sidan är gammal" — och alltid när en sida bär döda termer (nodes/, node.md, quest_manager.py, stage/status som nodfält).
 
-## Vad hör i wikin (vs node.md vs sessions)
+## Vad hör i wikin (vs katalogen vs sessioner)
 
 | Kunskap | Hemvist |
 |---------|---------|
 | Hur systemet fungerar, dataflöde, beslut | **GitHub Wiki** |
-| Vad en specifik nod/komponent är | `nodes/*/node.md` |
+| Vad ett specifikt system/en komponent är | `catalog.yaml` (fält) + `decisions/<slug>.md` (prosa) |
 | Vad som gjordes i ett arbetspass | `exports/sessions/`, `exports/btw/` |
 
-**Regel:** Spekulativ arkitektur → idé-inkorgen. Personliga anteckningar → btw. Beslut och mönster → wiki.
+**Regel:** Spekulativ arkitektur → inkorgen (`Ideaverse/CNS/Products/Raw/`, se [[Inkorgsregeln]]).
+Personliga anteckningar → btw. Beslut och mönster → wiki.
 
 ## Memory card-format (för agenter och beslut)
 
@@ -52,10 +53,11 @@ Använd när ett beslut eller ett systemmönster ska skrivas ner i GitHub-wikin 
 
 ## Arbetsflöde — alltid
 
-1. `cortxt_read_wiki_page` — läs befintlig sida om den finns
-2. Kolla relevanta noder för korrekt fakta
+1. `cortxt_wiki(action="read", page=<sida>)` — läs befintlig sida om den finns
+   (`action="list"` om du inte vet vad som finns)
+2. Verifiera fakta mot källan: `catalog.yaml` + `decisions/<slug>.md`
 3. Skriv nytt innehåll
-4. `cortxt_write_wiki_page` — spara
+4. `cortxt_wiki(action="write", page=<sida>, content=<text>, message=<commit-msg>)` — spara
 
 ## Stale-termer att alltid uppdatera
 
@@ -75,4 +77,4 @@ de här termerna är döda. Skriver du dem som kod fäller färskhetschecken dig
 - Implementationsdetaljer som framgår av koden
 - Spekulativ arkitektur ("om vi någon gång skulle...")
 - Personliga sessionsnoteringar
-- Duplicat av node.md-innehåll
+- Duplicat av `catalog.yaml`- eller `decisions/`-innehåll
